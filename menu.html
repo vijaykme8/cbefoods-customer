@@ -1308,6 +1308,25 @@ body.map-screen-open {
   pointer-events: auto;
   touch-action: pan-y;
   user-select: none;
+  position: relative;
+  transition: height 0.28s cubic-bezier(0.22, 1, 0.36, 1), transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.saved-add-drawer::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), #FFFFFF 78%);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.18s ease;
+}
+
+.map-address-bottom-section.is-expanded .saved-add-drawer::after {
+  opacity: 0;
 }
 
 .map-address-bottom-section.is-expanded .saved-add-drawer {
@@ -1356,11 +1375,20 @@ body.map-screen-open {
 .saved-add-group {
   width: 342px;
   max-height: 196px;
-  overflow-y: auto;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 8px;
+  touch-action: none;
+  overscroll-behavior: contain;
+}
+
+/* Collapsed drawer: list is only a preview, not a scroll area.
+   Expanded drawer: list becomes the only scrollable area. */
+.map-address-bottom-section.is-expanded .saved-add-group {
+  overflow-y: auto;
+  touch-action: pan-y;
 }
 
 .saved-address-card {
@@ -1375,6 +1403,15 @@ body.map-screen-open {
   align-items: flex-start;
   gap: 6px;
   cursor: pointer;
+}
+
+.saved-address-card:active {
+  transform: scale(0.99);
+}
+
+.saved-address-card:focus-visible {
+  outline: 2px solid rgba(8, 160, 69, 0.42);
+  outline-offset: 2px;
 }
 
 .saved-address-inside {
@@ -1446,18 +1483,16 @@ body.map-screen-open {
   text-overflow: ellipsis;
 }
 
-.use-button {
-  width: 67px;
+.saved-address-edit-button {
+  min-width: 76px;
   height: 34px;
-  padding: 10px 22px;
+  padding: 7px 12px;
   border: 1px solid #08A045;
   background: #FDFDFF;
   border-radius: 8px;
-  display: flex;
   justify-content: center;
-  align-items: center;
   color: #08A045;
-  font-size: 12px;
+  font-size: 13px;
   font-family: General Sans;
   font-weight: 600;
   line-height: 14.40px;
@@ -1465,7 +1500,11 @@ body.map-screen-open {
   flex-shrink: 0;
 }
 
-.use-button:active,
+.saved-address-edit-button svg {
+  width: 18px;
+  height: 18px;
+}
+
 .edit-button:active {
   transform: scale(0.97);
 }
@@ -1976,7 +2015,7 @@ body.map-screen-open {
   .continue-button,
   .saved-add-drawer,
   .saved-address-card,
-  .use-button,
+  .saved-address-edit-button,
   .address-details-shell,
   .details-search-button,
   .details-map-preview,
@@ -3629,19 +3668,18 @@ function renderSavedAddressList() {
     const line = escapeHtml(address.displayAddress || address.display || address.fullAddress || address.full || "Saved delivery address");
 
     return `
-      <div class="saved-address-card" data-saved-index="${index}">
+      <div class="saved-address-card" data-saved-index="${index}" role="button" tabindex="0" aria-label="Use ${label} address">
         <div class="saved-address-inside">
           <div class="saved-address-left">
             <div class="saved-address-top">
               <div class="saved-address-label">${label}</div>
-              <button class="edit-button" type="button" data-saved-edit="${index}">
-                ${makeEditIconSvg()}
-                Edit
-              </button>
             </div>
             <div class="saved-address-line">${line}</div>
           </div>
-          <button class="use-button" type="button" data-saved-use="${index}">Use</button>
+          <button class="edit-button saved-address-edit-button" type="button" data-saved-edit="${index}" aria-label="Edit ${label} address">
+            ${makeEditIconSvg()}
+            Edit
+          </button>
         </div>
       </div>
     `;
@@ -3664,12 +3702,14 @@ function renderSavedAddressList() {
     });
   }
 
-  savedAddressList.querySelectorAll("[data-saved-use]").forEach(button => {
-    button.addEventListener("click", event => {
-      event.stopPropagation();
-      openSavedAddressForm(Number(button.getAttribute("data-saved-use")));
-    });
-  });
+  function useSavedAddress(index) {
+    const selectedAddress = savedAddresses[index];
+    if (!selectedAddress) return;
+
+    saveLocationState(selectedAddress);
+    renderSavedAddressList();
+    closeLocationMapScreen();
+  }
 
   savedAddressList.querySelectorAll("[data-saved-edit]").forEach(button => {
     button.addEventListener("click", event => {
@@ -3681,7 +3721,13 @@ function renderSavedAddressList() {
   savedAddressList.querySelectorAll("[data-saved-index]").forEach(card => {
     card.addEventListener("click", event => {
       if (event.target.closest("button")) return;
-      openSavedAddressForm(Number(card.getAttribute("data-saved-index")));
+      useSavedAddress(Number(card.getAttribute("data-saved-index")));
+    });
+
+    card.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      useSavedAddress(Number(card.getAttribute("data-saved-index")));
     });
   });
 }
@@ -4001,10 +4047,14 @@ function setupSavedAddressDrawerGesture() {
     return mapAddressBottomSection.classList.contains("is-expanded");
   }
 
-  function canCollapseFromTarget(target) {
-    if (startedOnHandle) return true;
-    if (!savedAddressList || !savedAddressList.contains(target)) return true;
-    return savedAddressList.scrollTop <= 2;
+  function resetListScrollWhenCollapsed() {
+    if (!isExpanded() && savedAddressList) {
+      savedAddressList.scrollTop = 0;
+    }
+  }
+
+  function getDelta(y) {
+    return y - startY;
   }
 
   function begin(y, target) {
@@ -4014,22 +4064,49 @@ function setupSavedAddressDrawerGesture() {
     mapAddressBottomSection.classList.add("is-gesture-active");
   }
 
+  function shouldLetSavedListScroll(target, deltaY) {
+    if (!isExpanded()) return false;
+    if (!savedAddressList || !savedAddressList.contains(target)) return false;
+
+    const atTop = savedAddressList.scrollTop <= 2;
+    const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
+
+    // Finger up: list should scroll down unless it is already at bottom.
+    if (deltaY < 0) return !atBottom;
+
+    // Finger down: list should scroll up unless it is already at top.
+    if (deltaY > 0) return !atTop;
+
+    return false;
+  }
+
   function move(y, target, event) {
     if (!active) return;
-    const deltaY = y - startY;
 
-    // Finger drag up: reveal the saved-address drawer.
-    if (!isExpanded() && deltaY < -SWIPE_THRESHOLD) {
+    const deltaY = getDelta(y);
+    const expanded = isExpanded();
+
+    // Collapsed state: saved addresses are only a preview. Any upward swipe opens the drawer.
+    if (!expanded) {
       if (event && event.cancelable) event.preventDefault();
-      expandSavedAddressDrawer();
-      active = false;
+
+      if (deltaY < -SWIPE_THRESHOLD) {
+        expandSavedAddressDrawer();
+        active = false;
+      }
       return;
     }
 
-    // Finger drag down: hide it again. If the list is scrolled, let the list scroll first.
-    if (isExpanded() && deltaY > SWIPE_THRESHOLD && canCollapseFromTarget(target)) {
+    // Expanded state: saved address list owns normal scrolling.
+    if (shouldLetSavedListScroll(target, deltaY) && !startedOnHandle) {
+      return;
+    }
+
+    // Expanded + list already at top / handle dragged: downward swipe collapses drawer.
+    if (deltaY > SWIPE_THRESHOLD) {
       if (event && event.cancelable) event.preventDefault();
       collapseSavedAddressDrawer();
+      resetListScrollWhenCollapsed();
       active = false;
     }
   }
@@ -4043,10 +4120,12 @@ function setupSavedAddressDrawerGesture() {
   function handleWheel(event) {
     if (wheelLock) return;
 
+    const expanded = isExpanded();
     const delta = event.deltaY;
+    const isOverList = savedAddressList && savedAddressList.contains(event.target);
 
-    // Trackpad / mouse-wheel swipe up reveals the drawer.
-    if (!isExpanded() && delta > WHEEL_THRESHOLD) {
+    // Collapsed state: wheel/trackpad scroll on the drawer opens it. The list does not scroll yet.
+    if (!expanded && delta > WHEEL_THRESHOLD) {
       event.preventDefault();
       expandSavedAddressDrawer();
       wheelLock = true;
@@ -4054,24 +4133,35 @@ function setupSavedAddressDrawerGesture() {
       return;
     }
 
-    // Trackpad / mouse-wheel swipe down hides it, but only after saved list is at top.
-    if (isExpanded() && delta < -WHEEL_THRESHOLD) {
-      const listIsAtTop = !savedAddressList || savedAddressList.scrollTop <= 2 || !savedAddressList.contains(event.target);
+    if (!expanded) {
+      return;
+    }
 
-      if (listIsAtTop || event.target.closest(".drawer-handle-wide")) {
-        event.preventDefault();
-        collapseSavedAddressDrawer();
-        wheelLock = true;
-        setTimeout(() => { wheelLock = false; }, 260);
+    // Expanded state: let saved list scroll normally while it has scroll room.
+    if (isOverList) {
+      const atTop = savedAddressList.scrollTop <= 2;
+      const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
+
+      if ((delta > 0 && !atBottom) || (delta < 0 && !atTop)) {
+        return;
       }
+    }
+
+    // When expanded and already at the top, wheel/trackpad up collapses it.
+    if (delta < -WHEEL_THRESHOLD) {
+      event.preventDefault();
+      collapseSavedAddressDrawer();
+      resetListScrollWhenCollapsed();
+      wheelLock = true;
+      setTimeout(() => { wheelLock = false; }, 260);
     }
   }
 
-  // Click is only a convenience on the handle. Cards/buttons should keep their own actions.
   if (drawerHandleWide) {
     drawerHandleWide.addEventListener("click", () => {
       if (isExpanded()) {
         collapseSavedAddressDrawer();
+        resetListScrollWhenCollapsed();
       } else {
         expandSavedAddressDrawer();
       }
