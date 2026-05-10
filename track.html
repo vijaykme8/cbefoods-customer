@@ -138,6 +138,213 @@ img { max-width: 100%; display: block; }
 .delivery-only-row { justify-content: flex-start; }
 .delivery-text-only { width: 100%; gap: 0; }
 .delivery-text-only .address { max-width: 342px; }
+
+
+/* =========================
+   CUSTOMER TRACK MAP V4
+   Swiggy-like live tracking surface
+========================= */
+.track-v4-card {
+  width: 342px;
+  background: var(--surface);
+  border-radius: 44px;
+  box-shadow: var(--shadow);
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(18, 19, 15, 0.06);
+}
+
+.track-v4-map-wrap {
+  width: 100%;
+  height: 360px;
+  position: relative;
+  overflow: hidden;
+  background: #EEF1F6;
+}
+
+.track-v4-map {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.track-v4-map-message {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(18, 19, 15, 0.66);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 17px;
+  background: linear-gradient(135deg, rgba(253,253,255,.86), rgba(247,247,249,.70));
+}
+
+.track-v4-top-pill {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 8px 10px;
+  border-radius: 1998px;
+  background: rgba(253, 253, 255, 0.92);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 12px;
+  box-shadow: 0 8px 24px rgba(18, 19, 15, 0.12);
+  backdrop-filter: blur(14px);
+}
+
+.track-v4-bottom-sheet {
+  margin: -54px 12px 12px;
+  position: relative;
+  z-index: 5;
+  padding: 14px;
+  border-radius: 36px;
+  background: rgba(253, 253, 255, 0.96);
+  box-shadow: 0 14px 38px rgba(18, 19, 15, 0.16);
+  border: 1px solid rgba(18, 19, 15, 0.06);
+  backdrop-filter: blur(18px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.track-v4-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.track-v4-kicker {
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 12px;
+  margin-bottom: 4px;
+}
+
+.track-v4-title {
+  color: var(--ink);
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+}
+
+.track-v4-subtitle {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  margin-top: 4px;
+}
+
+.track-v4-live-chip {
+  flex: 0 0 auto;
+  padding: 7px 9px;
+  border-radius: 1998px;
+  background: rgba(136, 6, 206, 0.10);
+  color: var(--brand);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 11px;
+  white-space: nowrap;
+}
+
+.track-v4-live-chip.is-live {
+  background: rgba(8, 160, 69, 0.12);
+  color: var(--green);
+}
+
+.track-v4-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.track-v4-metric {
+  padding: 11px 12px;
+  border-radius: 28px;
+  background: #F7F7F9;
+  border: 1px solid rgba(18, 19, 15, 0.06);
+}
+
+.track-v4-metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 11px;
+}
+
+.track-v4-metric strong {
+  display: block;
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 18px;
+  margin-top: 4px;
+}
+
+.track-v4-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.track-v4-action {
+  min-height: 40px;
+  border-radius: 28px;
+  background: rgba(18, 19, 15, 0.06);
+  color: var(--ink);
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.track-v4-action.primary {
+  background: var(--brand);
+  color: var(--white);
+}
+
+.cbe-map-marker {
+  width: 34px;
+  height: 34px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  border: 3px solid rgba(253, 253, 255, 0.96);
+  box-shadow: 0 10px 24px rgba(18, 19, 15, 0.22);
+}
+
+.cbe-map-marker.customer { background: var(--brand); }
+.cbe-map-marker.rider { background: var(--green); }
+.cbe-map-marker.kitchen { background: var(--red); }
+
+@media (max-width: 389px) {
+  .track-v4-card { width: calc(100vw - 40px); }
+}
+
 </style>
 <script>
 (function () {
@@ -205,9 +412,8 @@ const mf = { name: "Tiffin CBE", short_name: "Tiffin", start_url: "./", display:
 const blob = new Blob([JSON.stringify(mf)], { type: "application/json" });
 document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
 </script>
-<script src="ola-map-v2.js"></script>
+<script src="ola-map-v4.js"></script>
 <script>
-
 function loadCart() {
   try {
     const saved = JSON.parse(localStorage.getItem("cart")) || [];
@@ -216,6 +422,7 @@ function loadCart() {
     return [];
   }
 }
+
 function loadOrder() {
   try {
     return JSON.parse(localStorage.getItem("current_order"));
@@ -223,25 +430,68 @@ function loadOrder() {
     return null;
   }
 }
-function formatRupee(value) {
-  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
-}
 
 function parseLocalJSON(value) {
   if (!value) return null;
   const trimmed = String(value).trim();
   if (!trimmed) return null;
   if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try { return JSON.parse(trimmed); } catch (error) { return trimmed; }
+    try { return JSON.parse(trimmed); } catch (error) { return null; }
   }
-  return trimmed;
+  return null;
 }
+
 function cleanText(value) {
   if (value === null || value === undefined) return "";
   return String(value).trim();
 }
+
+function escapeHTML(value) {
+  return cleanText(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function formatRupee(value) {
+  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+}
+
+function formatDistance(meters) {
+  const value = Number(meters || 0);
+  if (!value) return "—";
+  if (value < 1000) return `${Math.round(value)} m`;
+  return `${(value / 1000).toFixed(value < 10000 ? 1 : 0)} km`;
+}
+
+function formatDuration(seconds) {
+  const value = Number(seconds || 0);
+  if (!value) return "—";
+  const mins = Math.max(1, Math.round(value / 60));
+  if (mins < 60) return `${mins} min`;
+  const hours = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem ? `${hours}h ${rem}m` : `${hours}h`;
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById("cart-badge");
+  if (!badge) return;
+  const totalQty = loadCart().reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  badge.textContent = totalQty;
+  badge.style.display = totalQty > 0 ? "flex" : "none";
+}
+
 function getReadableDeliveryAddress(order = null) {
-  const orderAddress = cleanText(order?.address || order?.deliveryLocation?.address || order?.deliveryLocation?.fullAddress || order?.deliveryLocation?.full);
+  const orderAddress = cleanText(
+    order?.address ||
+    order?.deliveryLocation?.fullAddress ||
+    order?.deliveryLocation?.displayAddress ||
+    order?.deliveryLocation?.address ||
+    order?.deliveryLocation?.full
+  );
   if (orderAddress) return orderAddress;
 
   const keys = ["delivery_full_address", "cust_full_address", "delivery_address", "cust_address", "selected_address", "customer_address"];
@@ -250,90 +500,22 @@ function getReadableDeliveryAddress(order = null) {
     if (value) return value;
   }
 
-  const saved = parseLocalJSON(localStorage.getItem("cust_location")) || parseLocalJSON(localStorage.getItem("delivery_location")) || {};
-  const savedAddress = cleanText(saved.fullAddress || saved.full || saved.displayAddress || saved.address || saved.display);
-  return savedAddress || "Delivery address";
+  const saved =
+    parseLocalJSON(localStorage.getItem("cust_location_details")) ||
+    parseLocalJSON(localStorage.getItem("delivery_location_details")) ||
+    parseLocalJSON(localStorage.getItem("cust_location")) ||
+    parseLocalJSON(localStorage.getItem("delivery_location")) ||
+    {};
+
+  return cleanText(saved.fullAddress || saved.full || saved.displayAddress || saved.address || saved.display) || "Delivery address";
 }
+
 function renderHeaderAddress(order = null) {
   const addressEl = document.getElementById("delivery-address");
   if (!addressEl) return;
   const address = getReadableDeliveryAddress(order);
   addressEl.textContent = address.length > 26 ? `${address.slice(0, 26)}..` : address;
   addressEl.title = address;
-}
-function updateCartBadge() {
-  const badge = document.getElementById("cart-badge");
-  const totalQty = loadCart().reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
-  badge.textContent = totalQty;
-  badge.style.display = totalQty > 0 ? "flex" : "none";
-}
-
-let trackOlaMap = null;
-let riderMarker = null;
-let customerMarker = null;
-let kitchenMarker = null;
-let mapLibreLoadingPromise = null;
-let liveTrackingTimer = null;
-const OLA_PROXY_URL = "/ola-maps";
-
-function cbeCleanOlaTargetUrl(rawUrl) {
-  try {
-    const url = new URL(rawUrl);
-    url.searchParams.delete("api_key");
-    return url.toString();
-  } catch (_) {
-    return String(rawUrl || "");
-  }
-}
-
-function cbeIsOlaResourceUrl(rawUrl) {
-  const url = String(rawUrl || "");
-  return (
-    url.includes("olamaps.io") ||
-    url.includes("olakrutrim.com") ||
-    url.includes("api.olamaps.io") ||
-    url.includes("app.olamaps.io")
-  );
-}
-
-function cbeOlaTransformRequest(url) {
-  if (cbeIsOlaResourceUrl(url)) {
-    return {
-      url: OLA_PROXY_URL + "?type=proxy&url=" + encodeURIComponent(cbeCleanOlaTargetUrl(url))
-    };
-  }
-  return { url };
-}
-
-window.CBE_OLA_TRANSFORM_REQUEST = window.CBE_OLA_TRANSFORM_REQUEST || cbeOlaTransformRequest;
-
-function getOlaMapsApiKey() {
-  return "netlify_proxy";
-}
-
-function getOlaStyleUrl() {
-  return `${OLA_PROXY_URL}?type=style&style=default-light-standard`;
-}
-
-function appendOlaApiKey(url) {
-  return url;
-}
-
-function loadMapLibre() {
-  if (window.maplibregl) return Promise.resolve(window.maplibregl);
-  if (mapLibreLoadingPromise) return mapLibreLoadingPromise;
-
-  mapLibreLoadingPromise = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.js";
-    script.async = true;
-    script.defer = true;
-    script.onload = () => resolve(window.maplibregl);
-    script.onerror = () => reject(new Error("MapLibre failed to load"));
-    document.head.appendChild(script);
-  });
-
-  return mapLibreLoadingPromise;
 }
 
 function toNumber(value) {
@@ -374,120 +556,298 @@ function getKitchenCoordinates() {
 }
 
 function getRiderLocation(order) {
-  const directOrderPoint = normalizeLatLng(order?.riderLocation || { lat: order?.riderLat, lng: order?.riderLng });
-  if (directOrderPoint) return { ...directOrderPoint, live: true };
+  const candidates = [
+    order?.riderLocation,
+    order?.deliveryPartnerLocation,
+    { lat: order?.riderLat, lng: order?.riderLng },
+    { lat: order?.assignedRiderLat, lng: order?.assignedRiderLng }
+  ];
 
-  const orderId = cleanText(order?.id);
-  const keys = [
-    orderId ? `delivery_partner_location_${orderId}` : "",
-    orderId ? `rider_location_${orderId}` : "",
-    "delivery_partner_location",
-    "rider_location",
-    "active_rider_location",
-    "partner_location"
-  ].filter(Boolean);
-
-  for (const key of keys) {
-    const point = normalizeLatLng(parseLocalJSON(localStorage.getItem(key)) || {});
+  for (const candidate of candidates) {
+    const point = normalizeLatLng(candidate);
     if (point) return { ...point, live: true };
   }
 
   return { ...getKitchenCoordinates(), live: false };
 }
 
-function setTrackMapMessage(message, show = true) {
+function riderPhone(order) {
+  return cleanText(order?.assignedRiderPhone || order?.riderPhone || order?.deliveryPartnerPhone || order?.rider?.phone);
+}
+
+function riderName(order) {
+  return cleanText(order?.assignedRiderName || order?.riderName || order?.deliveryPartnerName || order?.rider?.name || "Delivery partner");
+}
+
+function statusCopy(status) {
+  const map = {
+    confirmed: { chip: "✅ Confirmed", title: "Your order is confirmed", sub: "Restaurant will start preparing your meal shortly.", activeIndex: 0, mapTitle: "Preparing your food", mapSub: "Rider location appears after pickup." },
+    preparing: { chip: "👨‍🍳 Preparing", title: "Your food is being prepared", sub: "Fresh food is being packed for delivery.", activeIndex: 1, mapTitle: "Food is being prepared", mapSub: "We’ll show rider live location once delivery starts." },
+    out_for_delivery: { chip: "🛵 On the way", title: "Your food is on the way", sub: "Track the rider moving towards your pinned location.", activeIndex: 2, mapTitle: "Rider is on the way", mapSub: "Live location updates while the rider app is open." },
+    delivered: { chip: "✅ Delivered", title: "Food delivered", sub: "Enjoy your fresh homemade meal.", activeIndex: 3, mapTitle: "Delivered", mapSub: "Order completed successfully." },
+    cancelled: { chip: "❌ Cancelled", title: "Order cancelled", sub: "This order was cancelled.", activeIndex: -1, mapTitle: "Order cancelled", mapSub: "No live delivery tracking available." },
+    payment_failed: { chip: "⚠️ Payment failed", title: "Payment was not completed", sub: "Your order was not confirmed. Please try again from cart.", activeIndex: -1, mapTitle: "Payment failed", mapSub: "No live delivery tracking available." }
+  };
+  return map[status] || map.confirmed;
+}
+
+function paymentText(order) {
+  if (order.paymentStatus === "paid") return { label: "Paid", className: "", chip: "💳 Paid" };
+  if (order.paymentStatus === "failed") return { label: "Failed", className: "failed", chip: "⚠️ Failed" };
+  return { label: "Pending", className: "failed", chip: "⏳ Pending" };
+}
+
+const trackMapState = {
+  map: null,
+  maplibregl: null,
+  customerMarker: null,
+  riderMarker: null,
+  kitchenMarker: null,
+  routeSourceReady: false,
+  orderId: ""
+};
+
+function resetTrackMap() {
+  if (trackMapState.map) {
+    try { trackMapState.map.remove(); } catch (_) {}
+  }
+  trackMapState.map = null;
+  trackMapState.maplibregl = null;
+  trackMapState.customerMarker = null;
+  trackMapState.riderMarker = null;
+  trackMapState.kitchenMarker = null;
+  trackMapState.routeSourceReady = false;
+  trackMapState.orderId = "";
+}
+
+function makeMarker(className, label) {
+  const el = document.createElement("div");
+  el.className = `cbe-map-marker ${className}`;
+  el.textContent = label;
+  return el;
+}
+
+function setMapMessage(message, show = true) {
   const el = document.getElementById("trackMapMessage");
   if (!el) return;
   el.textContent = message;
   el.style.display = show ? "flex" : "none";
 }
 
-function updateTrackingStrip(riderPoint) {
-  const title = document.getElementById("trackingTitle");
-  const subtitle = document.getElementById("trackingSubtitle");
-  const pill = document.getElementById("livePill");
+function setMetric(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value || "—";
+}
 
-  if (!title || !subtitle || !pill) return;
-
-  if (riderPoint?.live) {
-    title.textContent = "Delivery partner is live";
-    subtitle.textContent = "Location updates while the rider keeps delivery PWA open.";
-    pill.textContent = "LIVE";
-    pill.style.background = "rgba(8, 160, 69, 0.10)";
-    pill.style.color = "#08A045";
-  } else {
-    title.textContent = "Waiting for rider live location";
-    subtitle.textContent = "Showing kitchen to your address until rider starts delivery.";
-    pill.textContent = "WAITING";
-    pill.style.background = "rgba(136, 6, 206, 0.10)";
-    pill.style.color = "#8806CE";
+function decodePolyline(str) {
+  if (!str || typeof str !== "string") return [];
+  let index = 0, lat = 0, lng = 0, coordinates = [];
+  while (index < str.length) {
+    let b, shift = 0, result = 0;
+    do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20 && index < str.length);
+    const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lat += dlat;
+    shift = 0; result = 0;
+    do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20 && index < str.length);
+    const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lng += dlng;
+    coordinates.push([lng / 1e5, lat / 1e5]);
   }
+  return coordinates;
 }
 
-function updateRouteMetrics(route) {
-  const etaEl = document.getElementById("routeEtaValue");
-  const distanceEl = document.getElementById("routeDistanceValue");
-  if (etaEl) etaEl.textContent = route?.durationText || "—";
-  if (distanceEl) distanceEl.textContent = route?.distanceText || "—";
+function findCoordinateArray(value) {
+  if (!value) return null;
+  if (Array.isArray(value)) {
+    if (value.length >= 2 && typeof value[0] === "number" && typeof value[1] === "number") return null;
+    const maybeCoordinates = value.filter(item => Array.isArray(item) && item.length >= 2 && typeof item[0] === "number" && typeof item[1] === "number");
+    if (maybeCoordinates.length >= 2) return maybeCoordinates;
+    for (const item of value) {
+      const found = findCoordinateArray(item);
+      if (found) return found;
+    }
+  }
+  if (typeof value === "object") {
+    if (value.type === "LineString" && Array.isArray(value.coordinates)) return value.coordinates;
+    for (const item of Object.values(value)) {
+      const found = findCoordinateArray(item);
+      if (found) return found;
+    }
+  }
+  return null;
 }
 
-function updateLiveTrackingMap(order) {
-  const customerPoint = getDeliveryCoordinates(order);
-  const riderPoint = getRiderLocation(order);
-  updateTrackingStrip(riderPoint);
+function extractRouteInfo(data) {
+  const route = data?.routes?.[0] || data?.route || data?.data?.routes?.[0] || data?.result?.routes?.[0] || null;
+  const leg = route?.legs?.[0] || route?.leg || null;
 
-  if (!customerPoint || !window.CBEMapV2) return;
+  let coordinates =
+    findCoordinateArray(route?.geometry) ||
+    findCoordinateArray(route?.overview_geometry) ||
+    findCoordinateArray(route?.polyline) ||
+    findCoordinateArray(data?.geometry) ||
+    null;
 
-  window.CBEMapV2.renderRouteMap({
-    container: "trackLiveMap",
-    messageEl: "trackMapMessage",
-    customer: customerPoint,
-    rider: riderPoint,
-    riderColor: riderPoint?.live ? "#08A045" : "#E23009",
-    customerColor: "#8806CE",
-    routeColor: "#08A045",
-    autoFollow: riderPoint?.live && order?.status === "out_for_delivery",
-    fit: !(riderPoint?.live && order?.status === "out_for_delivery"),
-    onRoute: updateRouteMetrics
-  }).catch((error) => {
-    console.log("Ola live map V2 error:", error);
-    setTrackMapMessage("Ola Maps could not load. Check Netlify function and OLA_MAPS_API_KEY.");
+  const encoded =
+    route?.overview_polyline?.points ||
+    route?.overview_polyline ||
+    route?.polyline ||
+    route?.geometry;
+
+  if (!coordinates && typeof encoded === "string") {
+    coordinates = decodePolyline(encoded);
+  }
+
+  const distanceMeters =
+    Number(leg?.distance?.value || leg?.distance || route?.distance || route?.distanceMeters || data?.distance || 0);
+  const durationSeconds =
+    Number(leg?.duration?.value || leg?.duration || route?.duration || route?.durationSeconds || data?.duration || 0);
+
+  return {
+    coordinates: Array.isArray(coordinates) && coordinates.length >= 2 ? coordinates : [],
+    distanceText: leg?.distance?.text || route?.distanceText || formatDistance(distanceMeters),
+    durationText: leg?.duration?.text || route?.durationText || formatDuration(durationSeconds),
+    distanceMeters,
+    durationSeconds
+  };
+}
+
+function ensureRouteLayer(map) {
+  if (!map || !map.loaded()) return false;
+
+  if (!map.getSource("delivery-route")) {
+    map.addSource("delivery-route", {
+      type: "geojson",
+      data: { type: "Feature", geometry: { type: "LineString", coordinates: [] }, properties: {} }
+    });
+  }
+
+  if (!map.getLayer("delivery-route-shadow")) {
+    map.addLayer({
+      id: "delivery-route-shadow",
+      type: "line",
+      source: "delivery-route",
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "rgba(18,19,15,0.18)", "line-width": 8, "line-opacity": 0.55 }
+    });
+  }
+
+  if (!map.getLayer("delivery-route-line")) {
+    map.addLayer({
+      id: "delivery-route-line",
+      type: "line",
+      source: "delivery-route",
+      layout: { "line-cap": "round", "line-join": "round" },
+      paint: { "line-color": "#08A045", "line-width": 5, "line-opacity": 0.94 }
+    });
+  }
+
+  return true;
+}
+
+function setRouteLine(coordinates) {
+  const map = trackMapState.map;
+  if (!map || !ensureRouteLayer(map)) return;
+  const source = map.getSource("delivery-route");
+  if (!source) return;
+  source.setData({
+    type: "Feature",
+    geometry: { type: "LineString", coordinates: coordinates || [] },
+    properties: {}
   });
 }
 
-function initLiveTrackingMap(order) {
+function fitTrackBounds(points) {
+  const map = trackMapState.map;
+  const maplibregl = trackMapState.maplibregl;
+  if (!map || !maplibregl) return;
+  const valid = points.filter(point => point && Number.isFinite(point.lat) && Number.isFinite(point.lng));
+  if (!valid.length) return;
+  const bounds = new maplibregl.LngLatBounds([valid[0].lng, valid[0].lat], [valid[0].lng, valid[0].lat]);
+  valid.forEach(point => bounds.extend([point.lng, point.lat]));
+  map.fitBounds(bounds, { padding: { top: 68, right: 42, bottom: 152, left: 42 }, duration: 520, maxZoom: 16 });
+}
+
+async function renderTrackMap(order) {
   const customerPoint = getDeliveryCoordinates(order);
   const riderPoint = getRiderLocation(order);
-  updateTrackingStrip(riderPoint);
-
-  if (!document.getElementById("trackLiveMap")) return;
+  const startPoint = riderPoint?.live ? riderPoint : getKitchenCoordinates();
+  const copy = statusCopy(order.status);
 
   if (!customerPoint) {
-    setTrackMapMessage("Confirm delivery location from menu to show the live map.");
+    setMapMessage("Confirm your delivery location from menu to show live tracking.");
     return;
   }
 
-  updateLiveTrackingMap(order);
-  clearInterval(liveTrackingTimer);
-  liveTrackingTimer = setInterval(() => updateLiveTrackingMap(order), 5000);
+  if (!window.CBEOlaMapV4) {
+    setMapMessage("Map helper is loading. Please refresh once.");
+    return;
+  }
+
+  try {
+    if (!trackMapState.map) {
+      const created = await window.CBEOlaMapV4.createMap({
+        container: "trackLiveMap",
+        center: [customerPoint.lng, customerPoint.lat],
+        zoom: 15.5,
+        controls: true
+      });
+      trackMapState.map = created.map;
+      trackMapState.maplibregl = created.maplibregl;
+      trackMapState.map.on("load", () => renderTrackMap(order));
+      trackMapState.map.on("error", (event) => console.log("Track map error:", event?.error || event));
+    }
+
+    const map = trackMapState.map;
+    const maplibregl = trackMapState.maplibregl;
+
+    if (!trackMapState.customerMarker) {
+      trackMapState.customerMarker = new maplibregl.Marker({ element: makeMarker("customer", "⌂"), anchor: "center" }).addTo(map);
+    }
+    trackMapState.customerMarker.setLngLat([customerPoint.lng, customerPoint.lat]);
+
+    if (!trackMapState.riderMarker) {
+      trackMapState.riderMarker = new maplibregl.Marker({ element: makeMarker(riderPoint?.live ? "rider" : "kitchen", riderPoint?.live ? "↗" : "K"), anchor: "center" }).addTo(map);
+    }
+    trackMapState.riderMarker.getElement().className = `cbe-map-marker ${riderPoint?.live ? "rider" : "kitchen"}`;
+    trackMapState.riderMarker.getElement().textContent = riderPoint?.live ? "↗" : "K";
+    trackMapState.riderMarker.setLngLat([startPoint.lng, startPoint.lat]);
+
+    setMapMessage("", false);
+    document.getElementById("trackMapTopPill").textContent = riderPoint?.live ? "🟢 Live rider location" : "🟣 Route preview";
+    document.getElementById("trackMapTitle").textContent = riderPoint?.live ? copy.mapTitle : "Waiting for rider pickup";
+    document.getElementById("trackMapSubtitle").textContent = riderPoint?.live ? copy.mapSub : "Showing restaurant-to-address route until rider starts delivery.";
+    const liveChip = document.getElementById("trackLiveChip");
+    liveChip.textContent = riderPoint?.live ? "LIVE" : "WAITING";
+    liveChip.classList.toggle("is-live", !!riderPoint?.live);
+
+    try {
+      const directions = await window.CBEOlaMapV4.directions(startPoint, customerPoint);
+      const route = extractRouteInfo(directions);
+      const routeCoords = route.coordinates.length ? route.coordinates : [[startPoint.lng, startPoint.lat], [customerPoint.lng, customerPoint.lat]];
+      setRouteLine(routeCoords);
+      setMetric("routeEtaValue", route.durationText);
+      setMetric("routeDistanceValue", route.distanceText);
+    } catch (routeError) {
+      console.log("Directions fallback:", routeError);
+      setRouteLine([[startPoint.lng, startPoint.lat], [customerPoint.lng, customerPoint.lat]]);
+      setMetric("routeEtaValue", order.eta || "15 - 25 mins");
+      setMetric("routeDistanceValue", "—");
+    }
+
+    if (riderPoint?.live && order.status === "out_for_delivery") {
+      map.easeTo({ center: [riderPoint.lng, riderPoint.lat], zoom: Math.max(map.getZoom(), 15.5), duration: 650 });
+    } else {
+      fitTrackBounds([startPoint, customerPoint]);
+    }
+  } catch (error) {
+    console.log("Track Map V4 error:", error);
+    setMapMessage("Map could not load. Check Ola Maps key and Cloudflare /ola-maps function.");
+  }
 }
 
-function statusCopy(status) {
-  const map = {
-    confirmed: { chip: "✅ Confirmed", title: "Your lunch order is confirmed", sub: "Kitchen will start preparing your meal shortly.", activeIndex: 0 },
-    preparing: { chip: "👨‍🍳 Preparing", title: "Your food is being prepared", sub: "The kitchen is packing your lunch fresh and warm.", activeIndex: 1 },
-    out_for_delivery: { chip: "🛵 On the way", title: "Your lunch is moving towards you", sub: "Delivery partner is heading to your location.", activeIndex: 2 },
-    delivered: { chip: "✅ Delivered", title: "Food delivered", sub: "Enjoy your fresh homemade meal.", activeIndex: 3 },
-    payment_failed: { chip: "⚠️ Payment failed", title: "Payment was not completed", sub: "Your order was not confirmed. Please try payment again from cart.", activeIndex: -1 }
-  };
-  return map[status] || map.confirmed;
-}
-function paymentText(order) {
-  if (order.paymentStatus === "paid") return { label: "Paid", className: "", chip: "💳 Paid" };
-  if (order.paymentStatus === "failed") return { label: "Failed", className: "failed", chip: "⚠️ Failed" };
-  return { label: "Pending", className: "failed", chip: "⏳ Pending" };
-}
 function renderNoOrder() {
+  resetTrackMap();
   renderHeaderAddress();
   document.getElementById("hero-status-line").textContent = "No active order yet.";
   document.getElementById("hero-payment-line").textContent = "Add items and pay from cart to start tracking.";
@@ -501,9 +861,11 @@ function renderNoOrder() {
       <a class="primary-link" href="menu.html">Order lunch</a>
     </section>`;
 }
+
 function renderOrder(order) {
+  resetTrackMap();
   renderHeaderAddress(order);
-  const deliveryAddress = getReadableDeliveryAddress(order);
+
   const copy = statusCopy(order.status);
   const payment = paymentText(order);
   const items = order.items || [];
@@ -512,6 +874,8 @@ function renderOrder(order) {
   const timeText = createdDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const orderId = String(order.id || "");
   const paymentId = order.paymentId ? String(order.paymentId) : "Pending";
+  const phone = riderPhone(order);
+  const destination = getReadableDeliveryAddress(order);
 
   document.getElementById("hero-status-line").textContent = copy.sub;
   document.getElementById("hero-payment-line").textContent = `${payment.label} · ${order.eta || "15 - 25 mins"}`;
@@ -520,48 +884,46 @@ function renderOrder(order) {
 
   const steps = [
     { key: "confirmed", name: "Order confirmed", time: "Payment received and order placed." },
-    { key: "preparing", name: "Preparing food", time: "Kitchen is packing your lunch." },
+    { key: "preparing", name: "Preparing food", time: "Restaurant is packing your food." },
     { key: "out_for_delivery", name: "Out for delivery", time: "Delivery partner is heading to your location." },
     { key: "delivered", name: "Delivered", time: "Food delivered warm and fresh." }
   ];
+
   const activeIndex = copy.activeIndex;
   const stepHtml = steps.map((step, index) => {
     const state = activeIndex < 0 ? "" : index < activeIndex ? "done" : index === activeIndex ? "active" : "";
     const marker = activeIndex >= 0 && index < activeIndex ? "✓" : index + 1;
     return `<article class="step-card ${state}"><div class="step-dot">${marker}</div><div><div class="step-name">${step.name}</div><div class="step-time">${step.time}</div></div></article>`;
   }).join("");
-  const itemHtml = items.map(item => `<div class="order-item"><span>${item.qty} × ${item.name}</span><strong>${formatRupee(item.price * item.qty)}</strong></div>`).join("");
+
+  const itemHtml = items.map(item => `<div class="order-item"><span>${escapeHTML(item.qty)} × ${escapeHTML(item.name)}</span><strong>${formatRupee(item.price * item.qty)}</strong></div>`).join("");
 
   document.getElementById("track-content").innerHTML = `
     <section class="section">
-      <div class="status-grid">
-        <div class="info-card"><div class="info-label">ETA</div><div class="info-value green">${order.eta || "15 - 25 mins"}</div></div>
-        <div class="info-card"><div class="info-label">Order ID</div><div class="info-value">#${orderId.slice(-6)}</div></div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title green">Delivery route</div>
-        <div class="section-subtitle">Kitchen to your location.</div>
-      </div>
-      <div class="route-card">
-        <div class="route-map">
-          <div id="trackLiveMap" class="track-live-map" aria-label="Ola Maps live delivery tracking map"></div>
-          <div id="trackMapMessage" class="map-message">Loading Ola Maps...</div>
+      <div class="track-v4-card">
+        <div class="track-v4-map-wrap">
+          <div id="trackLiveMap" class="track-v4-map" aria-label="Live delivery tracking map"></div>
+          <div id="trackMapMessage" class="track-v4-map-message">Loading live map...</div>
+          <div id="trackMapTopPill" class="track-v4-top-pill">Preparing map</div>
         </div>
-        <div class="tracking-status-strip">
-          <div class="tracking-status-copy">
-            <div class="tracking-title" id="trackingTitle">Preparing tracking</div>
-            <div class="tracking-subtitle" id="trackingSubtitle">Live location appears when delivery starts.</div>
+        <div class="track-v4-bottom-sheet">
+          <div class="track-v4-head">
+            <div>
+              <div class="track-v4-kicker">Delivery tracking</div>
+              <div class="track-v4-title" id="trackMapTitle">${escapeHTML(copy.mapTitle)}</div>
+              <div class="track-v4-subtitle" id="trackMapSubtitle">${escapeHTML(copy.mapSub)}</div>
+            </div>
+            <div class="track-v4-live-chip" id="trackLiveChip">WAITING</div>
           </div>
-          <div class="live-pill" id="livePill">WAITING</div>
+          <div class="track-v4-metrics">
+            <div class="track-v4-metric"><span>ETA</span><strong id="routeEtaValue">${escapeHTML(order.eta || "15 - 25 mins")}</strong></div>
+            <div class="track-v4-metric"><span>Distance</span><strong id="routeDistanceValue">—</strong></div>
+          </div>
+          <div class="track-v4-actions">
+            ${phone ? `<a class="track-v4-action primary" href="tel:${escapeHTML(phone)}">Call rider</a>` : `<span class="track-v4-action">Rider assigning</span>`}
+            <a class="track-v4-action" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}">Open map</a>
+          </div>
         </div>
-        <div class="route-metrics">
-          <div class="route-metric"><span>ETA</span><strong id="routeEtaValue">—</strong></div>
-          <div class="route-metric"><span>Distance</span><strong id="routeDistanceValue">—</strong></div>
-        </div>
-        <div class="route-label"><span>Delivery partner</span><span>${deliveryAddress || "Your address"}</span></div>
       </div>
     </section>
 
@@ -579,9 +941,9 @@ function renderOrder(order) {
         <div class="section-subtitle">Razorpay payment reference.</div>
       </div>
       <div class="payment-card">
-        <div class="payment-status ${payment.className}">${payment.label}</div>
-        <div class="row"><span>Payment ID</span><strong>${paymentId}</strong></div>
-        <div class="row"><span>Provider</span><strong>${order.paymentProvider || "Razorpay"}</strong></div>
+        <div class="payment-status ${payment.className}">${escapeHTML(payment.label)}</div>
+        <div class="row"><span>Payment ID</span><strong>${escapeHTML(paymentId)}</strong></div>
+        <div class="row"><span>Provider</span><strong>${escapeHTML(order.paymentProvider || "Razorpay")}</strong></div>
         <div class="row"><span>Paid amount</span><strong>${formatRupee(total)}</strong></div>
       </div>
     </section>
@@ -589,17 +951,19 @@ function renderOrder(order) {
     <section class="section">
       <div class="section-header">
         <div class="section-title green">Order summary</div>
-        <div class="section-subtitle">Placed at ${timeText}</div>
+        <div class="section-subtitle">Placed at ${escapeHTML(timeText)}</div>
       </div>
       <div class="order-card">
-        <div class="row"><span>Delivery partner</span><strong id="deliveryPartnerName">Assigning soon</strong></div>
+        <div class="row"><span>Delivery partner</span><strong>${escapeHTML(riderName(order))}${phone ? `<br>${escapeHTML(phone)}` : ""}</strong></div>
+        <div class="row"><span>Deliver to</span><strong>${escapeHTML(destination)}</strong></div>
         <div class="order-items">${itemHtml}</div>
         <div class="order-total"><span>Total</span><strong>${formatRupee(total)}</strong></div>
       </div>
     </section>`;
 
-  setTimeout(() => initLiveTrackingMap(order), 0);
+  setTimeout(() => renderTrackMap(order), 0);
 }
+
 function renderTrack() {
   const order = loadOrder();
   if (!order || !order.items || order.items.length === 0) {
@@ -608,6 +972,8 @@ function renderTrack() {
   }
   renderOrder(order);
 }
+
+window.renderTrack = renderTrack;
 updateCartBadge();
 renderTrack();
 window.addEventListener("storage", () => { updateCartBadge(); renderTrack(); });
