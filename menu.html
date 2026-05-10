@@ -1317,6 +1317,8 @@ body.map-screen-open {
 
 .saved-add-group {
   width: 342px;
+  max-height: 196px;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1465,6 +1467,344 @@ body.map-screen-open {
 
 
 /* =========================
+   LOCATION ADDRESS DETAILS SCREEN
+========================= */
+.customer-map-screen.is-details-step .map-address-shell {
+  display: none;
+}
+
+.address-details-shell {
+  width: 390px;
+  max-width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
+  position: relative;
+  background: #FFFFFF;
+  overflow: hidden;
+  display: none;
+}
+
+.customer-map-screen.is-details-step .address-details-shell {
+  display: block;
+}
+
+.details-top-bar {
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  width: 390px;
+  max-width: 100vw;
+  transform: translateX(-50%);
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 4;
+}
+
+.details-back-button,
+.details-search-button,
+.details-change-button,
+.saveas-chip,
+.save-use-now-button {
+  font-family: 'General Sans', sans-serif;
+  border: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.details-back-button {
+  height: 30px;
+  padding: 0;
+  background: transparent;
+  color: #12130F;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+}
+
+.details-back-button svg {
+  width: 30px;
+  height: 30px;
+  display: block;
+}
+
+.details-search-button {
+  width: 42px;
+  height: 42px;
+  padding: 9px;
+  background: #FDFDFF;
+  border-radius: 50px;
+  box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-screen-content {
+  position: absolute;
+  left: 24px;
+  top: 94px;
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.details-map-card {
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.details-text-button-group {
+  width: 342px;
+  min-height: 24px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.details-current-title {
+  color: #12130F;
+  opacity: 0.60;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.details-change-button {
+  height: 21px;
+  padding: 0;
+  background: transparent;
+  color: #08A045;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20.80px;
+}
+
+.details-change-button svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.details-map-preview {
+  width: 342px;
+  height: 124px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(18, 19, 15, 0.12);
+  background:
+    radial-gradient(circle at 18% 26%, rgba(8, 160, 69, 0.16), transparent 26%),
+    radial-gradient(circle at 72% 60%, rgba(136, 6, 206, 0.14), transparent 24%),
+    linear-gradient(135deg, rgba(18, 19, 15, 0.03), rgba(18, 19, 15, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.details-map-grid {
+  position: absolute;
+  inset: -20px;
+  opacity: 0.42;
+  background-image:
+    linear-gradient(rgba(18, 19, 15, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 19, 15, 0.12) 1px, transparent 1px),
+    linear-gradient(35deg, transparent 45%, rgba(8, 160, 69, 0.20) 46%, rgba(8, 160, 69, 0.20) 54%, transparent 55%);
+  background-size: 38px 38px, 38px 38px, 140px 80px;
+  transform: rotate(-5deg) scale(1.08);
+}
+
+.details-map-pin {
+  position: relative;
+  z-index: 2;
+  width: 18px;
+  height: 24px;
+  filter: drop-shadow(0 8px 12px rgba(18, 19, 15, 0.24));
+}
+
+.details-preview-text {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  z-index: 3;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(253, 253, 255, 0.86);
+  color: rgba(18, 19, 15, 0.68);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.details-form-section {
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+
+.save-as-group,
+.details-input-field {
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.details-field-label,
+.details-input-field span {
+  width: 342px;
+  color: #12130F;
+  opacity: 0.60;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.saveas-chips-group {
+  width: 342px;
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.saveas-chip {
+  height: 32px;
+  padding: 6px 12px 6px 10px;
+  flex-shrink: 0;
+  background: rgba(18, 19, 15, 0.04);
+  border-radius: 8px;
+  color: #12130F;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.saveas-chip.is-selected {
+  background: rgba(136, 6, 206, 0.10);
+  color: #8806CE;
+}
+
+.details-input-field input,
+.details-input-field textarea {
+  width: 342px;
+  border: 1px solid rgba(18, 19, 15, 0.08);
+  outline: none;
+  background: rgba(18, 19, 15, 0.02);
+  border-radius: 10px;
+  padding: 14px 20px;
+  color: #12130F;
+  font-family: 'General Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.details-input-field input {
+  height: 52px;
+}
+
+.details-input-field textarea {
+  height: 76px;
+  resize: none;
+}
+
+.details-input-field input::placeholder,
+.details-input-field textarea::placeholder {
+  color: rgba(18, 19, 15, 0.30);
+}
+
+.details-input-field input:focus,
+.details-input-field textarea:focus {
+  border-color: rgba(8, 160, 69, 0.42);
+  box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.08);
+}
+
+.save-use-now-button {
+  position: absolute;
+  left: 23px;
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  width: 342px;
+  height: 55px;
+  padding: 14px 20px;
+  background: #08A045;
+  box-shadow: 0px 6px 34px rgba(8, 160, 69, 0.24);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #FDFDFF;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+.save-use-now-button.is-saving {
+  opacity: 0.82;
+}
+
+.details-back-button:active,
+.details-search-button:active,
+.details-change-button:active,
+.saveas-chip:active,
+.save-use-now-button:active {
+  transform: scale(0.97);
+}
+
+@media (max-width: 389px) {
+  .address-details-shell,
+  .details-top-bar {
+    width: 100vw;
+  }
+
+  .details-screen-content,
+  .details-map-card,
+  .details-text-button-group,
+  .details-map-preview,
+  .details-form-section,
+  .save-as-group,
+  .details-input-field,
+  .details-field-label,
+  .details-input-field span,
+  .saveas-chips-group,
+  .details-input-field input,
+  .details-input-field textarea,
+  .save-use-now-button {
+    width: calc(100vw - 48px);
+  }
+
+  .save-use-now-button {
+    left: 24px;
+  }
+}
+
+
+/* =========================
    FLOATING CART CARD
 ========================= */
 .floating-cart-card {
@@ -1571,6 +1911,13 @@ body.map-screen-open {
   .saved-add-drawer,
   .saved-address-card,
   .use-button,
+  .address-details-shell,
+  .details-search-button,
+  .details-map-preview,
+  .saveas-chip,
+  .details-input-field input,
+  .details-input-field textarea,
+  .save-use-now-button,
   .floating-cart-card,
   .floating-cart-action {
     corner-shape: squircle;
@@ -1952,7 +2299,7 @@ body.map-screen-open {
   </nav>
 </div>
 
-<div class="customer-map-screen" id="locationMapScreen" aria-hidden="true">
+<div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
   <div class="map-address-shell" id="mapAddressShell" role="dialog" aria-modal="true" aria-label="Choose delivery location">
     <div id="locationOlaMap" class="map-address-canvas" aria-label="Ola Maps delivery location map"></div>
 
@@ -2022,6 +2369,78 @@ body.map-screen-open {
       </div>
     </div>
   </div>
+
+  <div class="address-details-shell" id="locationDetailsScreen" role="dialog" aria-modal="true" aria-label="Save delivery address">
+    <div class="details-top-bar">
+      <button class="details-back-button" type="button" id="detailsBackBtn" aria-label="Back to map">
+        <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z" stroke="#12130F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872" stroke="#12130F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        back
+      </button>
+
+      <button class="details-search-button" type="button" id="detailsSearchBtn" aria-label="Search location">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697ZM20.25 11.5C20.25 6.6675 16.3325 2.75 11.5 2.75C6.6675 2.75 2.75 6.6675 2.75 11.5C2.75 16.3325 6.6675 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5ZM21.75 11.5C21.75 17.1609 17.1609 21.75 11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5Z" fill="#12130F"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="details-screen-content">
+      <div class="details-map-card">
+        <div class="details-text-button-group">
+          <div class="details-current-title">Current pinned location</div>
+          <button class="details-change-button" type="button" id="changePinnedLocationBtn">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M4.90669 18.0782C4.39836 18.0782 3.92336 17.9032 3.58169 17.5782C3.14836 17.1698 2.94003 16.5532 3.01503 15.8865L3.32336 13.1865C3.38169 12.6782 3.69003 12.0032 4.04836 11.6365L10.89 4.39482C12.5984 2.58648 14.3817 2.53648 16.19 4.24482C17.9984 5.95315 18.0484 7.73648 16.34 9.54482L9.49837 16.7865C9.14837 17.1615 8.49836 17.5115 7.99003 17.5948L5.30669 18.0532C5.16503 18.0615 5.04003 18.0782 4.90669 18.0782ZM13.565 4.23648C12.9234 4.23648 12.365 4.63648 11.7984 5.23648L4.95669 12.4865C4.79003 12.6615 4.59836 13.0782 4.56503 13.3198L4.25669 16.0198C4.22336 16.2948 4.29003 16.5198 4.44003 16.6615C4.59003 16.8032 4.81503 16.8532 5.09003 16.8115L7.77336 16.3532C8.01503 16.3115 8.41503 16.0948 8.5817 15.9198L15.4234 8.67815C16.4567 7.57815 16.8317 6.56148 15.3234 5.14482C14.6567 4.50315 14.0817 4.23648 13.565 4.23648Z" fill="#08A045"/>
+              <path d="M14.74 10.9375C14.7233 10.9375 14.6983 10.9375 14.6816 10.9375C12.0816 10.6792 9.98995 8.70421 9.58995 6.12087C9.53995 5.77921 9.77329 5.46254 10.115 5.40421C10.4566 5.35421 10.7733 5.58754 10.8316 5.92921C11.1483 7.94587 12.7816 9.49587 14.815 9.69587C15.1566 9.72921 15.4066 10.0375 15.3733 10.3792C15.3316 10.6958 15.0566 10.9375 14.74 10.9375Z" fill="#08A045"/>
+            </svg>
+            Change
+          </button>
+        </div>
+        <div class="details-map-preview" id="detailsMapPreviewCard">
+          <div class="details-map-grid" aria-hidden="true"></div>
+          <div class="details-map-pin" aria-hidden="true">
+            <svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17.5 8.45C16.45 3.83 12.42 1.75 8.87998 1.75C8.87998 1.75 8.87998 1.75 8.86998 1.75C5.33998 1.75 1.29998 3.82 0.249978 8.44C-0.920022 13.6 2.23998 17.97 5.09998 20.72C6.15998 21.74 7.51998 22.25 8.87998 22.25C10.24 22.25 11.6 21.74 12.65 20.72C15.51 17.97 18.67 13.61 17.5 8.45Z" fill="#CF9BEB"/>
+              <path d="M8.87998 13.4602C10.6197 13.4602 12.03 12.0499 12.03 10.3102C12.03 8.57046 10.6197 7.16016 8.87998 7.16016C7.14028 7.16016 5.72998 8.57046 5.72998 10.3102C5.72998 12.0499 7.14028 13.4602 8.87998 13.4602Z" fill="#8806CE"/>
+            </svg>
+          </div>
+          <div class="details-preview-text" id="detailsPreviewText">Pinned location preview</div>
+        </div>
+      </div>
+
+      <div class="details-form-section">
+        <div class="save-as-group">
+          <div class="details-field-label">Save as</div>
+          <div class="saveas-chips-group" id="saveAsChipsGroup">
+            <button class="saveas-chip is-selected" type="button" data-save-label="Home">🏠 Home</button>
+            <button class="saveas-chip" type="button" data-save-label="Office">💼 Office</button>
+            <button class="saveas-chip" type="button" data-save-label="Gym">🏋️ Gym</button>
+            <button class="saveas-chip" type="button" data-save-label="Other">Other</button>
+          </div>
+        </div>
+
+        <label class="details-input-field">
+          <span>Door.no / House</span>
+          <input id="detailsDoorInput" type="text" autocomplete="address-line1" placeholder="e.g 12/A">
+        </label>
+
+        <label class="details-input-field details-address-field">
+          <span>Address details</span>
+          <textarea id="detailsAddressInput" autocomplete="street-address" placeholder="Street, area, city"></textarea>
+        </label>
+
+        <label class="details-input-field">
+          <span>Landmark</span>
+          <input id="detailsLandmarkInput" type="text" autocomplete="off" placeholder="e.g nearby landmarks">
+        </label>
+      </div>
+    </div>
+
+    <button class="save-use-now-button" type="button" id="saveUseNowBtn">Save &amp; Use now</button>
+  </div>
 </div>
 
 <script>
@@ -2072,7 +2491,19 @@ const mapEmptyCopy = document.getElementById("mapEmptyCopy");
 const capturedDoorNoText = document.getElementById("capturedDoorNoText");
 const capturedAddressText = document.getElementById("capturedAddressText");
 const savedAddressList = document.getElementById("savedAddressList");
+const locationDetailsScreen = document.getElementById("locationDetailsScreen");
+const detailsBackBtn = document.getElementById("detailsBackBtn");
+const detailsSearchBtn = document.getElementById("detailsSearchBtn");
+const changePinnedLocationBtn = document.getElementById("changePinnedLocationBtn");
+const detailsMapPreviewCard = document.getElementById("detailsMapPreviewCard");
+const detailsPreviewText = document.getElementById("detailsPreviewText");
+const saveAsChipsGroup = document.getElementById("saveAsChipsGroup");
+const detailsDoorInput = document.getElementById("detailsDoorInput");
+const detailsAddressInput = document.getElementById("detailsAddressInput");
+const detailsLandmarkInput = document.getElementById("detailsLandmarkInput");
+const saveUseNowBtn = document.getElementById("saveUseNowBtn");
 
+let selectedSaveLabel = "Home";
 let locationOlaMapInstance = null;
 let locationReverseTimer = null;
 let locationReverseRequestId = 0;
@@ -2547,6 +2978,74 @@ function saveLocationState(locationState) {
   renderSavedAddressList();
 }
 
+function escapeHtml(value) {
+  return cleanText(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getSavedAddressesArray() {
+  const savedList =
+    parseSavedValue(localStorage.getItem("cust_saved_addresses")) ||
+    parseSavedValue(localStorage.getItem("delivery_saved_addresses")) ||
+    [];
+
+  return Array.isArray(savedList) ? savedList.filter(Boolean) : [];
+}
+
+function saveSavedAddressesArray(addresses) {
+  const safeList = Array.isArray(addresses) ? addresses.filter(Boolean) : [];
+  localStorage.setItem("cust_saved_addresses", JSON.stringify(safeList));
+  localStorage.setItem("delivery_saved_addresses", JSON.stringify(safeList));
+}
+
+function getSavedAddressKey(address) {
+  return [
+    cleanText(address.id),
+    cleanText(address.label),
+    cleanText(address.fullAddress || address.full || address.displayAddress || address.display),
+    cleanText(address.doorNo),
+    cleanText(address.lat),
+    cleanText(address.lng)
+  ].join("|").toLowerCase();
+}
+
+function rememberSavedAddress(locationState) {
+  if (!locationState) return null;
+
+  const fullAddress = cleanText(locationState.fullAddress || locationState.full || locationState.address);
+  const doorNo = cleanText(locationState.doorNo);
+  const shortAddress = compactAddress(fullAddress, doorNo);
+
+  const savedAddress = {
+    id: locationState.id || `addr_${Date.now()}`,
+    label: cleanText(locationState.label) || "Home",
+    lat: locationState.lat || "",
+    lng: locationState.lng || "",
+    accuracy: locationState.accuracy || "",
+    doorNo,
+    landmark: cleanText(locationState.landmark),
+    fullAddress,
+    displayAddress: shortAddress,
+    source: locationState.source || "saved_address_form",
+    pinnedByUser: true,
+    savedAt: locationState.savedAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  const savedList = getSavedAddressesArray();
+  const newKey = getSavedAddressKey(savedAddress);
+  const filteredList = savedList.filter(item => getSavedAddressKey(item) !== newKey && item.id !== savedAddress.id);
+
+  filteredList.unshift(savedAddress);
+  saveSavedAddressesArray(filteredList);
+
+  return savedAddress;
+}
+
 function getCachedExactGeocode(lat, lng) {
   const cached = parseSavedValue(localStorage.getItem("cust_exact_geocode_cache"));
   if (!cached || !cached.lat || !cached.lng) return null;
@@ -3007,12 +3506,10 @@ function getSavedAddressCandidates() {
     const normalized = normalizeLocationValue(rawValue);
     if (!normalized) return;
 
-    const key = [
-      normalized.label || fallbackLabel,
-      normalized.fullAddress || normalized.full || normalized.display,
-      normalized.lat || "",
-      normalized.lng || ""
-    ].join("|").toLowerCase();
+    const key = getSavedAddressKey({
+      ...normalized,
+      label: normalized.label || fallbackLabel
+    });
 
     if (seen.has(key)) return;
     seen.add(key);
@@ -3023,19 +3520,14 @@ function getSavedAddressCandidates() {
     });
   }
 
-  const savedList =
-    parseSavedValue(localStorage.getItem("cust_saved_addresses")) ||
-    parseSavedValue(localStorage.getItem("delivery_saved_addresses")) ||
-    [];
-
-  if (Array.isArray(savedList)) {
-    savedList.forEach((item, index) => addCandidate(item, item.label || `Address ${index + 1}`));
-  }
+  getSavedAddressesArray().forEach((item, index) => {
+    addCandidate(item, item.label || `Address ${index + 1}`);
+  });
 
   const currentSaved = getSavedReadableAddress() || getSavedCoordinates();
   if (currentSaved) addCandidate(currentSaved, currentSaved.label || "Home");
 
-  return results.slice(0, 3);
+  return results;
 }
 
 function makeEditIconSvg() {
@@ -3058,8 +3550,8 @@ function renderSavedAddressList() {
   }
 
   savedAddressList.innerHTML = savedAddresses.map((address, index) => {
-    const label = cleanText(address.label) || `Address ${index + 1}`;
-    const line = cleanText(address.displayAddress || address.display || address.fullAddress || address.full) || "Saved delivery address";
+    const label = escapeHtml(address.label || `Address ${index + 1}`);
+    const line = escapeHtml(address.displayAddress || address.display || address.fullAddress || address.full || "Saved delivery address");
 
     return `
       <div class="saved-address-card" data-saved-index="${index}">
@@ -3080,12 +3572,23 @@ function renderSavedAddressList() {
     `;
   }).join("");
 
-  savedAddressList.querySelectorAll("[data-saved-use], [data-saved-edit]").forEach(button => {
+  savedAddressList.querySelectorAll("[data-saved-use]").forEach(button => {
     button.addEventListener("click", event => {
       event.stopPropagation();
-      const index = Number(button.getAttribute("data-saved-use") || button.getAttribute("data-saved-edit"));
+      const index = Number(button.getAttribute("data-saved-use"));
       const selectedAddress = savedAddresses[index];
+      if (!selectedAddress) return;
 
+      saveLocationState(selectedAddress);
+      closeLocationMapScreen();
+    });
+  });
+
+  savedAddressList.querySelectorAll("[data-saved-edit]").forEach(button => {
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      const index = Number(button.getAttribute("data-saved-edit"));
+      const selectedAddress = savedAddresses[index];
       if (!selectedAddress) return;
 
       currentLocationState = selectedAddress;
@@ -3093,9 +3596,9 @@ function renderSavedAddressList() {
 
       if (selectedAddress.lat && selectedAddress.lng) {
         updateMapPreview(selectedAddress.lat, selectedAddress.lng, true);
-      } else {
-        showMapMessage("This saved address has no pin yet. Use current location or move the map.");
       }
+
+      openLocationDetailsScreen(selectedAddress);
     });
   });
 }
@@ -3106,6 +3609,7 @@ function openLocationMapScreen() {
   locationMapScreen.classList.add("is-open");
   locationMapScreen.setAttribute("aria-hidden", "false");
   document.body.classList.add("map-screen-open");
+  showLocationMapStep();
 
   renderSavedAddressList();
 
@@ -3128,6 +3632,142 @@ function closeLocationMapScreen() {
   locationMapScreen.classList.remove("is-open");
   locationMapScreen.setAttribute("aria-hidden", "true");
   document.body.classList.remove("map-screen-open");
+  showLocationMapStep();
+}
+
+function showLocationMapStep() {
+  if (!locationMapScreen) return;
+
+  locationMapScreen.classList.remove("is-details-step");
+  locationMapScreen.classList.add("is-map-step");
+
+  setTimeout(() => {
+    if (locationOlaMapInstance) locationOlaMapInstance.resize();
+  }, 80);
+}
+
+function showLocationDetailsStep() {
+  if (!locationMapScreen) return;
+
+  locationMapScreen.classList.remove("is-map-step");
+  locationMapScreen.classList.add("is-details-step");
+}
+
+function updateDetailsMapPreview(locationValue = currentLocationState) {
+  if (!detailsPreviewText) return;
+
+  const location = locationValue || {};
+  const previewText =
+    cleanText(location.displayAddress) ||
+    cleanText(location.display) ||
+    cleanText(location.fullAddress) ||
+    cleanText(location.full) ||
+    (location.lat && location.lng
+      ? `Lat: ${Number(location.lat).toFixed(5)}, Lng: ${Number(location.lng).toFixed(5)}`
+      : "Pinned location preview");
+
+  detailsPreviewText.textContent = previewText;
+
+  if (detailsMapPreviewCard && location.lat && location.lng) {
+    detailsMapPreviewCard.setAttribute(
+      "title",
+      `Pinned at ${Number(location.lat).toFixed(5)}, ${Number(location.lng).toFixed(5)}`
+    );
+  }
+}
+
+function setSelectedSaveLabel(label) {
+  selectedSaveLabel = cleanText(label) || "Home";
+
+  if (!saveAsChipsGroup) return;
+
+  saveAsChipsGroup.querySelectorAll(".saveas-chip").forEach(chip => {
+    const chipLabel = cleanText(chip.getAttribute("data-save-label"));
+    chip.classList.toggle("is-selected", chipLabel === selectedSaveLabel);
+  });
+}
+
+function openLocationDetailsScreen(locationValue = currentLocationState) {
+  const location = locationValue || currentLocationState || DEFAULT_CBE_LOCATION;
+  currentLocationState = {
+    ...(currentLocationState || {}),
+    ...location,
+    source: location.source || "customer_address_details"
+  };
+
+  if (detailsDoorInput) {
+    detailsDoorInput.value = cleanText(currentLocationState.doorNo);
+  }
+
+  if (detailsAddressInput) {
+    detailsAddressInput.value = cleanText(
+      currentLocationState.fullAddress ||
+      currentLocationState.full ||
+      currentLocationState.address ||
+      currentLocationState.displayAddress ||
+      currentLocationState.display
+    );
+  }
+
+  if (detailsLandmarkInput) {
+    detailsLandmarkInput.value = cleanText(currentLocationState.landmark);
+  }
+
+  setSelectedSaveLabel(currentLocationState.label || selectedSaveLabel || "Home");
+  updateDetailsMapPreview(currentLocationState);
+  showLocationDetailsStep();
+}
+
+function buildLocationFromDetailsForm() {
+  const doorNo = cleanText(detailsDoorInput?.value);
+  const addressDetails = cleanText(detailsAddressInput?.value);
+  const landmark = cleanText(detailsLandmarkInput?.value);
+
+  const existingAddress = cleanText(
+    currentLocationState?.fullAddress ||
+    currentLocationState?.full ||
+    currentLocationState?.address ||
+    currentLocationState?.displayAddress ||
+    currentLocationState?.display
+  );
+
+  const finalFullAddress = addressDetails || existingAddress || "Pinned delivery location";
+
+  return {
+    ...(currentLocationState || {}),
+    label: selectedSaveLabel || "Home",
+    doorNo,
+    landmark,
+    fullAddress: finalFullAddress,
+    full: finalFullAddress,
+    displayAddress: compactAddress(finalFullAddress, doorNo),
+    display: compactAddress(finalFullAddress, doorNo),
+    source: "customer_saved_address_form",
+    pinnedByUser: true,
+    savedAt: new Date().toISOString()
+  };
+}
+
+function handleSaveUseNow() {
+  const finalLocation = buildLocationFromDetailsForm();
+  const savedAddress = rememberSavedAddress(finalLocation) || finalLocation;
+
+  saveLocationState(savedAddress);
+  renderSavedAddressList();
+
+  if (saveUseNowBtn) {
+    saveUseNowBtn.classList.add("is-saving");
+    saveUseNowBtn.textContent = "Saved";
+  }
+
+  setTimeout(() => {
+    if (saveUseNowBtn) {
+      saveUseNowBtn.classList.remove("is-saving");
+      saveUseNowBtn.textContent = "Save & Use now";
+    }
+    closeLocationMapScreen();
+    showLocationMapStep();
+  }, 450);
 }
 
 async function saveCurrentBrowserLocation(position) {
@@ -3199,20 +3839,7 @@ function handleContinueLocation() {
   }
 
   savePendingLocationState(currentLocationState || DEFAULT_CBE_LOCATION);
-
-  if (continueLocationBtn) {
-    continueLocationBtn.classList.add("is-saved");
-    continueLocationBtn.textContent = "Saved";
-  }
-
-  updateCapturedAddressCard(currentLocationState, "Pin saved. Next we will create the address details screen.");
-
-  setTimeout(() => {
-    if (continueLocationBtn) {
-      continueLocationBtn.classList.remove("is-saved");
-      continueLocationBtn.textContent = "Continue";
-    }
-  }, 1400);
+  openLocationDetailsScreen(currentLocationState || DEFAULT_CBE_LOCATION);
 }
 
 async function resolveAddressFromCoordinates(locationValue, shouldUpdateCard = false) {
@@ -3326,6 +3953,33 @@ if (searchLocationBtn) {
 
 if (continueLocationBtn) {
   continueLocationBtn.addEventListener("click", handleContinueLocation);
+}
+
+if (detailsBackBtn) {
+  detailsBackBtn.addEventListener("click", showLocationMapStep);
+}
+
+if (changePinnedLocationBtn) {
+  changePinnedLocationBtn.addEventListener("click", showLocationMapStep);
+}
+
+if (detailsSearchBtn) {
+  detailsSearchBtn.addEventListener("click", () => {
+    showLocationMapStep();
+    handleSearchLocation();
+  });
+}
+
+if (saveAsChipsGroup) {
+  saveAsChipsGroup.addEventListener("click", event => {
+    const chip = event.target.closest(".saveas-chip");
+    if (!chip) return;
+    setSelectedSaveLabel(chip.getAttribute("data-save-label"));
+  });
+}
+
+if (saveUseNowBtn) {
+  saveUseNowBtn.addEventListener("click", handleSaveUseNow);
 }
 
 window.addEventListener("keydown", event => {
