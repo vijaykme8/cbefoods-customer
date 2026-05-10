@@ -1,178 +1,215 @@
-/* =========================================================
-   Ola Maps Cloudflare Pages Function proxy
-   Zero-cost MVP path: keeps OLA_MAPS_API_KEY in Cloudflare
-   Pages environment variables, not in frontend code.
+const OLA_STYLE_URL =
+  "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
 
-   Cloudflare Pages route:
-   /ola-maps?type=style
-   /ola-maps?type=reverse&lat=11.0168&lng=76.9558
-   /ola-maps?type=directions&origin=lat,lng&destination=lat,lng
-========================================================= */
-const OLA_HOSTS = new Set(["api.olamaps.io", "app.olamaps.io"]);
-const DEFAULT_STYLE = "default-light-standard";
+const OLA_REVERSE_URL =
+  "https://api.olamaps.io/places/v1/reverse-geocode";
 
-function corsHeaders(extra = {}) {
-  return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
-    ...extra
-  };
-}
+const OLA_DIRECTIONS_URL =
+  "https://api.olamaps.io/routing/v1/directions";
 
-function json(status, payload, extraHeaders = {}) {
-  return new Response(JSON.stringify(payload), {
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+function jsonResponse(data, status = 200) {
+  return new Response(JSON.stringify(data), {
     status,
-    headers: corsHeaders({
+    headers: {
+      ...CORS_HEADERS,
       "Content-Type": "application/json; charset=utf-8",
-      ...extraHeaders
-    })
+      "Cache-Control": "public, max-age=60",
+    },
   });
 }
 
-function text(status, body, contentType = "text/plain; charset=utf-8", extraHeaders = {}) {
-  return new Response(body, {
-    status,
-    headers: corsHeaders({
-      "Content-Type": contentType,
-      ...extraHeaders
-    })
-  });
+function isAllowedOlaUrl(rawUrl) {
+  try {
+    const url = new URL(rawUrl);
+    return (
+      url.protocol === "https:" &&
+      (
+        url.hostname.endsWith("olamaps.io") ||
+        url.hostname.endsWith("olakrutrim.com")
+      )
+    );
+  } catch {
+    return false;
+  }
 }
 
-function getOrigin(request) {
-  const url = new URL(request.url);
-  return `${url.protocol}//${url.host}`;
+function stripApiKey(rawUrl) {
+  try {
+    const url = new URL(rawUrl);
+    url.searchParams.delete("api_key");
+    return url.toString();
+  } catch {
+    return rawUrl;
+  }
 }
 
-function olaRequestHeaders(request, origin, extra = {}) {
-  return {
-    "Accept": request.headers.get("accept") || "application/json, text/plain, */*",
-    "Origin": origin,
-    "Referer": `${origin}/`,
-    "User-Agent": "cbefoods-cloudflare-ola-proxy/1.0",
-    ...extra
-  };
-}
-
-function assertOlaUrl(raw) {
-  const normalized = String(raw || "").replace("https://app.olamaps.io", "https://api.olamaps.io");
-  const url = new URL(normalized);
-  if (!OLA_HOSTS.has(url.hostname)) throw new Error("Only Ola Maps URLs can be proxied.");
-  return url;
-}
-
-function withApiKey(url, apiKey) {
-  url.searchParams.delete("api_key");
+function withApiKey(rawUrl, apiKey) {
+  const url = new URL(rawUrl);
   url.searchParams.set("api_key", apiKey);
-  return url;
+  return url.toString();
 }
 
-function proxyUrlFor(rawUrl, origin) {
-  const clean = String(rawUrl || "").replace("https://app.olamaps.io", "https://api.olamaps.io");
-  const encoded = encodeURIComponent(clean).replace(/%7B/g, "{").replace(/%7D/g, "}");
-  return `${origin}/ola-maps?type=proxy&url=${encoded}`;
+function proxyUrl(rawUrl, origin) {
+  const cleanUrl = stripApiKey(String(rawUrl));
+  return `${origin}/ola-maps?type=proxy&url=${encodeURIComponent(cleanUrl)}`;
 }
 
-function rewriteStyleUrls(value, origin) {
-  if (Array.isArray(value)) return value.map(item => rewriteStyleUrls(item, origin));
+function rewriteOlaUrls(value, origin) {
+  if (Array.isArray(value)) {
+    return value.map((item) => rewriteOlaUrls(item, origin));
+  }
+
   if (value && typeof value === "object") {
     const output = {};
-    for (const [key, child] of Object.entries(value)) output[key] = rewriteStyleUrls(child, origin);
+    for (const [key, item] of Object.entries(value)) {
+      output[key] = rewriteOlaUrls(item, origin);
+    }
     return output;
   }
-  if (typeof value === "string" && value.includes("olamaps.io")) {
-    return proxyUrlFor(value, origin);
+
+  if (typeof value === "string" && isAllowedOlaUrl(value)) {
+    return proxyUrl(value, origin);
   }
+
   return value;
 }
 
-async function fetchJson(url, request, origin, cacheControl = "no-store") {
-  const response = await fetch(url, {
-    headers: olaRequestHeaders(request, origin)
-  });
-  let data;
-  try {
-    data = await response.json();
-  } catch (error) {
-    data = { error: "Ola Maps returned a non-JSON response", status: response.status };
+async function fetchOla(rawUrl, apiKey, origin) {
+  if (!isAllowedOlaUrl(rawUrl)) {
+    return jsonResponse({ message: "Blocked non-Ola URL" }, 403);
   }
-  return json(response.status, data, { "Cache-Control": cacheControl });
+
+  const upstreamUrl = withApiKey(rawUrl, apiKey);
+
+  const upstream = await fetch(upstreamUrl, {
+    headers: {
+      "Accept": "*/*",
+      "Origin": origin,
+      "Referer": origin + "/",
+      "User-Agent": "CBEFoods-Cloudflare-Pages-Proxy",
+    },
+  });
+
+  const contentType = upstream.headers.get("content-type") || "";
+
+  if (
+    contentType.includes("application/json") ||
+    contentType.includes("text/json") ||
+    upstreamUrl.endsWith(".json")
+  ) {
+    const text = await upstream.text();
+
+    try {
+      const data = JSON.parse(text);
+      const rewritten = rewriteOlaUrls(data, origin);
+      return jsonResponse(rewritten, upstream.status);
+    } catch {
+      return new Response(text, {
+        status: upstream.status,
+        headers: {
+          ...CORS_HEADERS,
+          "Content-Type": contentType || "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=60",
+        },
+      });
+    }
+  }
+
+  const body = await upstream.arrayBuffer();
+
+  return new Response(body, {
+    status: upstream.status,
+    headers: {
+      ...CORS_HEADERS,
+      "Content-Type": contentType || "application/octet-stream",
+      "Cache-Control": "public, max-age=86400",
+    },
+  });
 }
 
 export async function onRequest(context) {
   const { request, env } = context;
-  if (request.method === "OPTIONS") return text(200, "ok");
-  if (request.method !== "GET") return json(405, { error: "Method not allowed" });
 
-  const apiKey = env.OLA_MAPS_API_KEY || env.OLA_API_KEY || "";
-  if (!apiKey) return json(500, { error: "Missing Cloudflare env var OLA_MAPS_API_KEY" });
+  if (request.method === "OPTIONS") {
+    return new Response(null, { headers: CORS_HEADERS });
+  }
 
-  const requestUrl = new URL(request.url);
-  const q = requestUrl.searchParams;
-  const type = q.get("type") || q.get("action") || "style";
-  const origin = getOrigin(request);
+  const apiKey = env.OLA_MAPS_API_KEY;
+
+  if (!apiKey) {
+    return jsonResponse(
+      { message: "Missing Cloudflare env var OLA_MAPS_API_KEY" },
+      500
+    );
+  }
+
+  const url = new URL(request.url);
+  const origin = url.origin;
+  const type = url.searchParams.get("type") || "style";
 
   try {
     if (type === "style") {
-      const styleName = q.get("style") || DEFAULT_STYLE;
-      const styleUrl = withApiKey(new URL(`https://api.olamaps.io/tiles/vector/v1/styles/${styleName}/style.json`), apiKey);
-      const response = await fetch(styleUrl, {
-        headers: olaRequestHeaders(request, origin)
-      });
-      let data;
-      try {
-        data = await response.json();
-      } catch (error) {
-        data = { error: "Ola Maps returned a non-JSON style response", status: response.status };
-      }
-      if (!response.ok) return json(response.status, data);
-      return json(200, rewriteStyleUrls(data, origin), { "Cache-Control": "public, max-age=3600" });
+      return await fetchOla(OLA_STYLE_URL, apiKey, origin);
     }
 
     if (type === "proxy") {
-      const target = assertOlaUrl(q.get("url"));
-      withApiKey(target, apiKey);
-      const response = await fetch(target, {
-        headers: olaRequestHeaders(request, origin, {
-          "Accept": request.headers.get("accept") || "*/*"
-        })
-      });
-      return new Response(await response.arrayBuffer(), {
-        status: response.status,
-        headers: corsHeaders({
-          "Content-Type": response.headers.get("content-type") || "application/octet-stream",
-          "Cache-Control": response.headers.get("cache-control") || "public, max-age=86400"
-        })
-      });
+      const targetUrl = url.searchParams.get("url");
+      if (!targetUrl) {
+        return jsonResponse({ message: "Missing proxy url" }, 400);
+      }
+      return await fetchOla(targetUrl, apiKey, origin);
     }
 
     if (type === "reverse") {
-      const lat = q.get("lat") || q.get("latitude");
-      const lng = q.get("lng") || q.get("lon") || q.get("longitude");
-      if (!lat || !lng) return json(400, { error: "lat and lng are required" });
-      const url = withApiKey(new URL("https://api.olamaps.io/places/v1/reverse-geocode"), apiKey);
-      url.searchParams.set("latlng", `${lat},${lng}`);
-      url.searchParams.set("language", q.get("language") || "en");
-      return fetchJson(url, request, origin, "no-store");
+      const lat = url.searchParams.get("lat");
+      const lng = url.searchParams.get("lng");
+
+      if (!lat || !lng) {
+        return jsonResponse({ message: "lat and lng are required" }, 400);
+      }
+
+      const reverseUrl =
+        `${OLA_REVERSE_URL}?latlng=${encodeURIComponent(`${lat},${lng}`)}` +
+        `&language=en`;
+
+      return await fetchOla(reverseUrl, apiKey, origin);
     }
 
     if (type === "directions") {
-      const originPoint = q.get("origin");
-      const destinationPoint = q.get("destination");
-      if (!originPoint || !destinationPoint) return json(400, { error: "origin and destination are required" });
-      const url = withApiKey(new URL("https://api.olamaps.io/routing/v1/directions"), apiKey);
-      url.searchParams.set("origin", originPoint);
-      url.searchParams.set("destination", destinationPoint);
-      url.searchParams.set("mode", q.get("mode") || "driving");
-      url.searchParams.set("alternatives", q.get("alternatives") || "false");
-      url.searchParams.set("steps", q.get("steps") || "false");
-      url.searchParams.set("overview", q.get("overview") || "full");
-      return fetchJson(url, request, origin, "no-store");
+      const originLat = url.searchParams.get("originLat");
+      const originLng = url.searchParams.get("originLng");
+      const destLat = url.searchParams.get("destLat");
+      const destLng = url.searchParams.get("destLng");
+
+      if (!originLat || !originLng || !destLat || !destLng) {
+        return jsonResponse(
+          { message: "originLat, originLng, destLat and destLng are required" },
+          400
+        );
+      }
+
+      const directionsUrl =
+        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(`${originLat},${originLng}`)}` +
+        `&destination=${encodeURIComponent(`${destLat},${destLng}`)}` +
+        `&mode=driving`;
+
+      return await fetchOla(directionsUrl, apiKey, origin);
     }
 
-    return json(400, { error: `Unsupported Ola Maps proxy type: ${type}` });
+    return jsonResponse({ message: "Unknown Ola proxy type" }, 400);
   } catch (error) {
-    return json(500, { error: error.message || "Ola Maps proxy failed" });
+    return jsonResponse(
+      {
+        message: "Ola proxy failed",
+        error: error.message || String(error),
+      },
+      500
+    );
   }
 }
