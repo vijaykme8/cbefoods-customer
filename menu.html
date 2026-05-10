@@ -986,6 +986,12 @@ img {
   padding-bottom: calc(74px + env(safe-area-inset-bottom));
 }
 
+/* When the floating cart is visible, create extra scroll space so
+   the last menu items/add buttons are never hidden behind it. */
+.app.has-floating-cart {
+  padding-bottom: calc(154px + env(safe-area-inset-bottom));
+}
+
 .bottom-nav {
   position: fixed;
   left: 50%;
@@ -4716,6 +4722,7 @@ function updateFloatingCartCard() {
 
   if (totalQty <= 0) {
     floatingCartCard.classList.remove("is-visible");
+    document.querySelector(".app")?.classList.remove("has-floating-cart");
     return;
   }
 
@@ -4732,6 +4739,7 @@ function updateFloatingCartCard() {
   }
 
   floatingCartCard.classList.add("is-visible");
+  document.querySelector(".app")?.classList.add("has-floating-cart");
 
 }
 
