@@ -1,0 +1,3507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
+<meta name="theme-color" content="#8806CE">
+<title>Coimbatore Foods</title>
+<link rel="manifest" id="pwa-manifest">
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css">
+<style>
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Italic.otf') format('opentype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-BoldItalic.otf') format('opentype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Extralight.otf') format('opentype');
+  font-weight: 200;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Light.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Chillax';
+  src: url('./fonts/Chillax/Chillax-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+html, body {
+  width: 100%;
+  min-height: 100%;
+   scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+}
+body {
+  background: #F5F5F7;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  display: flex;
+  justify-content: center;
+  padding: 0px 0;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+.app::-webkit-scrollbar {
+  display: none;
+}
+.app {
+  width: 390px;
+  background: white;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: inline-flex;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.app-inner {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: flex;
+}
+.hero {
+  align-self: stretch;
+  padding-top: 40px;
+  padding-bottom: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+  background: linear-gradient(180deg, #FDFDFF 0%, #F7F7F9 100%);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: flex;
+}
+.top-row {
+  width: 342px;
+  justify-content: space-between;
+  align-items: flex-start;
+  display: inline-flex;
+}
+.location {
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  display: flex;
+  cursor: pointer;
+  max-width: 260px;
+}
+.location-icon {
+  width: 34px;
+  height: 34px;
+  overflow: hidden;
+  border-radius: 24px;
+}
+.location-icon img,
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.location-icon-inner1 {
+  width: 34px;
+  height: 34px;
+  left: 0px;
+  top: 0px;
+  position: absolute;
+  background: black;
+}
+.location-icon-inner2 {
+  width: 25.15px;
+  height: 29.04px;
+  left: 4.42px;
+  top: 2.48px;
+  position: absolute;
+  background: #8806CE;
+}
+.location-copy {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: inline-flex;
+  min-width: 0;
+}
+.label {
+  align-self: stretch;
+  opacity: 0.50;
+  color: #12130F;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 16px;
+  word-wrap: break-word;
+}
+.address {
+  color: #12130F;
+  font-size: 18px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 24px;
+  word-wrap: break-word;
+  max-width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.avatar {
+  width: 46px;
+  height: 46px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50px;
+}
+.avatar-inner {
+  width: 46px;
+  height: 46px;
+  left: 0px;
+  top: 0px;
+  position: absolute;
+  background: #878887;
+}
+.hero-card {
+  width: 342px;
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: linear-gradient(0deg, rgba(18, 19, 15, 0.14) 0%, rgba(18, 19, 15, 0.14) 100%), #12130F;
+  border-radius: 40px;
+  background-image: url('assets/menu/img/hero card-img.png');
+  background-size: auto;
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  display: flex;
+}
+.hero-title {
+  color: #FDFDFF;
+  font-size: 24px;
+  font-family: Chillax;
+  font-weight: 700;
+  line-height: 28.80px;
+  word-wrap: break-word;
+}
+.hero-title span {
+  display: inline-block;
+}
+.hero-title .text-green {
+  color: #08A045;
+}
+.hero-title .text-purple {
+  color: #8806CE;
+}
+.hero-meta-container {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  display: flex;
+}
+.hero-meta {
+  align-self: stretch;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  color: rgba(253, 253, 255, 0.60);
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 12px;
+  word-wrap: break-word;
+}
+.badge-row {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  display: flex;
+}
+.badge-row-inner {
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  display: inline-flex;
+}
+.badge {
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  display: flex;
+}
+.badge-text {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  color: rgba(253, 253, 255, 0.60);
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 12px;
+  word-wrap: break-word;
+}
+.badge-row-single {
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: inline-flex;
+}
+.filter-row {
+  width: 342px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px;
+  display: inline-flex;
+}
+.pill {
+  flex: 1 1 0;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  background: transparent;
+  transition: 0.2s ease;
+  border-radius: 40px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: inline-flex;
+}
+.pill-active {
+  background: rgba(18, 19, 15, 0.06);
+}
+.pill img {
+  width: 51px;
+  height: 34px;
+}
+.pill img.small {
+  width: 34px;
+  height: 34px;
+}
+.pill-text {
+  color: black;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 14.40px;
+  word-wrap: break-word;
+}
+.content {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 20px;
+  display: flex;
+}
+.section {
+  width: 100%;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  display: flex;
+}
+.section-header {
+  height: 42px;
+  padding-left: 24px;
+  padding-right: 24px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+}
+.section-title {
+  align-self: stretch;
+  color: #8806CE;
+  font-size: 20px;
+  font-family: Chillax;
+  font-weight: 600;
+  line-height: 30px;
+  word-wrap: break-word;
+}
+.section-subtitle {
+  align-self: stretch;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 12px;
+  word-wrap: break-word;
+}
+.card-scroll-wrap {
+  width: 100%;
+  overflow: visible;
+}
+
+.card-grid {
+  width: 100%;
+
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  padding: 10px 24px 24px 24px;
+  scroll-padding-left: 24px;
+  scroll-padding-right: 24px;
+
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.card-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.product-card {
+  flex: 0 0 48%;
+  min-width: 0;
+  scroll-snap-align: start;
+  height: 230px;
+  padding-bottom: 6px;
+  background: white;
+  box-shadow: 2px 4px 24px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  border-radius: 20px;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  display: inline-flex;
+}
+.product-card-body {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  display: flex;
+}
+.product-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px 20px 0 0;
+  transform: none;
+  background: transparent;
+}
+.product-card-content {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  display: flex;
+}
+.product-card-header {
+  align-self: stretch;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: space-between;
+  align-items: flex-start;
+  display: inline-flex;
+}
+.product-card-title {
+  color: #12130F;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 120%;
+  word-wrap: break-word;
+}
+.product-card-meta {
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  display: inline-flex;
+}
+.product-card-meta .meta-label {
+  text-align: right;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 8px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 8px;
+  word-wrap: break-word;
+}
+.product-card-meta .meta-value {
+  text-align: right;
+  color: #08A045;
+  font-size: 10px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 10px;
+  word-wrap: break-word;
+}
+.product-card-badges {
+  align-self: stretch;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  display: inline-flex;
+}
+.chip {
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background: rgba(255, 204, 0, 0.20);
+  border-radius: 8px;
+  outline: 0.50px rgba(255, 204, 0, 0.60) solid;
+  outline-offset: -0.50px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  display: flex;
+}
+.chip-text {
+  color: #12130F;
+  font-size: 8px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 10.40px;
+  word-wrap: break-word;
+}
+.product-card-info {
+  align-self: stretch;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+.product-card-info-text {
+  flex: 1 1 0;
+  color: rgba(18, 19, 15, 0.80);
+  font-size: 8px;
+  font-family: General Sans;
+  font-weight: 400;
+  line-height: 10.40px;
+  word-wrap: break-word;
+}
+.product-card-footer {
+  align-self: stretch;
+  padding-left: 10px;
+  padding-right: 10px;
+  justify-content: space-between;
+  align-items: center;
+  display: inline-flex;
+}
+.price {
+  text-align: right;
+}
+.price .currency {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.32px;
+  word-wrap: break-word;
+}
+.price .amount {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.32px;
+  word-wrap: break-word;
+}
+.action-btn {
+  padding-left: 22px;
+  padding-right: 22px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: #08A045;
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  display: flex;
+}
+.action-btn-text {
+  color: #FDFDFF;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 14.40px;
+  word-wrap: break-word;
+}
+
+/* Quantity button state */
+.action-btn,
+.product-list-action {
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+
+.action-btn.qty-button,
+.product-list-action.qty-button {
+  box-sizing: border-box;
+  width: 68px;
+  height: 26px;
+  padding: 6px 10px;
+  background: #FDFDFF;
+  border: 1px solid #08A045;
+  border-radius: 16px;
+  justify-content: space-between;
+  align-items: center;
+  display: inline-flex;
+  gap: 10px;
+}
+
+.qty-button .qty-control {
+  border: none;
+  background: transparent;
+  color: #08A045;
+  font-family: General Sans;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 14px;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  min-width: 8px;
+}
+
+.qty-button .qty-count {
+  color: #08A045;
+  font-family: General Sans;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 14px;
+  min-width: 8px;
+  text-align: center;
+}
+
+.section-title.red {
+  color: #E23009;
+}
+.section-title.green {
+  color: #08A045;
+}
+.list-grid {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+  display: flex;
+}
+.product-list-item {
+  align-self: stretch;
+  overflow: hidden;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+  display: inline-flex;
+}
+.product-list-img {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px;
+  flex-shrink: 0;
+  transform: none;
+  background: transparent;
+}
+.product-list-copy {
+  flex: 1 1 0;
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 14px;
+  display: flex;
+}
+.product-list-content {
+  flex: 1 1 0;
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  display: inline-flex;
+}
+.product-list-title {
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: center;
+  display: inline-flex;
+}
+.product-list-title-text {
+  color: #12130F;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 16.80px;
+  word-wrap: break-word;
+}
+.product-list-row {
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  display: inline-flex;
+}
+.product-list-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.product-list-detail {
+  align-self: stretch;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+.product-list-detail-text {
+  flex: 1 1 0;
+  color: rgba(18, 19, 15, 0.80);
+  font-size: 8px;
+  font-family: General Sans;
+  font-weight: 400;
+  line-height: 10.40px;
+  word-wrap: break-word;
+}
+.product-list-meta {
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  display: inline-flex;
+}
+.product-list-meta .meta-label {
+  text-align: right;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 8px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 8px;
+  word-wrap: break-word;
+}
+.product-list-meta .meta-value {
+  text-align: right;
+  color: #08A045;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 18px;
+  word-wrap: break-word;
+}
+.product-list-price-row {
+  align-self: stretch;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-end;
+  gap: 6px;
+  display: inline-flex;
+}
+.product-list-price {
+  text-align: right;
+}
+.product-list-price .currency {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: 0.32px;
+  word-wrap: break-word;
+}
+.product-list-price .amount {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 700;
+  line-height: 24px;
+  letter-spacing: 0.32px;
+  word-wrap: break-word;
+}
+.product-list-action {
+  padding-left: 22px;
+  padding-right: 22px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  background: #08A045;
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  display: inline-flex;
+}
+.product-list-action-text {
+  color: #FDFDFF;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 14.40px;
+  word-wrap: break-word;
+}
+.bottom-nav {
+  align-self: stretch;
+  height: 64px;
+  padding-top: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+  background: white;
+  box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10);
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  display: inline-flex;
+}
+.nav-item {
+  width: 80px;
+  text-decoration: none;
+  color: inherit;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 3px;
+  display: inline-flex;
+}
+.nav-item-icon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.nav-item-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.nav-item-icon-inner {
+  width: 21.50px;
+  height: 21.50px;
+  left: 1.25px;
+  top: 1.25px;
+  position: absolute;
+  background: #B8B8B7;
+}
+.nav-item-text {
+  align-self: stretch;
+  text-align: center;
+  color: #12130F;
+  font-size: 10px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 10px;
+  word-wrap: break-word;
+}
+
+
+/* =========================
+   COMMON FIXED BOTTOM NAV
+========================= */
+.app {
+  min-height: 100dvh;
+  padding-bottom: calc(74px + env(safe-area-inset-bottom));
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 390px;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-top: 10px;
+  padding-bottom: env(safe-area-inset-bottom);
+  z-index: 2200;
+}
+
+@media (max-width: 389px) {
+  .bottom-nav {
+    width: 100vw;
+  }
+}
+
+
+/* =========================
+   LOCATION DRAWER
+========================= */
+.location-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 19, 15, 0.42);
+  display: none;
+  justify-content: center;
+  align-items: flex-end;
+  z-index: 3000;
+}
+
+.location-drawer-backdrop.is-open {
+  display: flex;
+}
+
+.location-drawer {
+  width: 390px;
+  max-width: 100%;
+  max-height: 86dvh;
+  padding: 10px 24px calc(20px + env(safe-area-inset-bottom));
+  background: #FDFDFF;
+  border-radius: 48px 48px 0 0;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18);
+  overflow-y: auto;
+  animation: drawerSlideUp 0.22s ease;
+}
+
+@keyframes drawerSlideUp {
+  from {
+    transform: translateY(18px);
+    opacity: 0.4;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.drawer-handle {
+  width: 42px;
+  height: 4px;
+  margin: 0 auto 14px;
+  background: rgba(18, 19, 15, 0.16);
+  border-radius: 1998px;
+}
+
+.drawer-header {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.drawer-title-block {
+  flex: 1;
+  min-width: 0;
+}
+
+.drawer-kicker {
+  color: #08A045;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+  margin-bottom: 4px;
+}
+
+.drawer-title {
+  color: #12130F;
+  font-family: Chillax, 'General Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 26px;
+}
+
+.drawer-subtitle {
+  color: rgba(18, 19, 15, 0.56);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  margin-top: 4px;
+}
+
+.drawer-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 24px;
+  background: rgba(18, 19, 15, 0.06);
+  color: #12130F;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 34px;
+  cursor: pointer;
+}
+
+.location-map-card {
+  width: 342px;
+  height: 178px;
+  position: relative;
+  overflow: hidden;
+  border-radius: 40px;
+  background:
+    radial-gradient(circle at 28% 30%, rgba(8, 160, 69, 0.18), transparent 30%),
+    radial-gradient(circle at 76% 68%, rgba(136, 6, 206, 0.12), transparent 28%),
+    #F5F5F7;
+  border: 1px solid rgba(18, 19, 15, 0.08);
+  margin-bottom: 12px;
+}
+
+.ola-map-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #F5F5F7;
+}
+
+.ola-map-card .maplibregl-ctrl-bottom-left,
+.ola-map-card .maplibregl-ctrl-bottom-right {
+  display: none;
+}
+
+.map-empty-state {
+  position: absolute;
+  inset: 0;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  color: rgba(18, 19, 15, 0.62);
+  font-size: 12px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.map-pin-badge {
+  width: 46px;
+  height: 46px;
+  border-radius: 32px;
+  background: #12130F;
+  color: #08A045;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 10px 26px rgba(18, 19, 15, 0.20);
+}
+
+
+.address-form {
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.address-field span {
+  color: rgba(18, 19, 15, 0.58);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 12px;
+}
+
+.address-field input,
+.address-field textarea {
+  width: 100%;
+  border: 1px solid rgba(18, 19, 15, 0.10);
+  outline: none;
+  background: #FDFDFF;
+  border-radius: 28px;
+  padding: 12px;
+  color: #12130F;
+  font-family: 'General Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 17px;
+  box-shadow: 0 4px 18px rgba(18, 19, 15, 0.04);
+}
+
+.address-field textarea {
+  min-height: 78px;
+  resize: none;
+}
+
+.address-field input:focus,
+.address-field textarea:focus {
+  border-color: rgba(8, 160, 69, 0.55);
+  box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.10);
+}
+
+.drawer-actions {
+  width: 342px;
+  display: flex;
+  gap: 10px;
+}
+
+.drawer-action-secondary,
+.drawer-action-primary {
+  height: 44px;
+  border: 0;
+  border-radius: 32px;
+  font-family: 'General Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.drawer-action-secondary {
+  flex: 0.86;
+  background: rgba(18, 19, 15, 0.06);
+  color: #12130F;
+}
+
+.drawer-action-primary {
+  flex: 1.14;
+  background: #08A045;
+  color: #FDFDFF;
+  box-shadow: 0 10px 24px rgba(8, 160, 69, 0.22);
+}
+
+.drawer-action-secondary:active,
+.drawer-action-primary:active,
+.drawer-close:active {
+  transform: scale(0.97);
+}
+
+.location-attribution {
+  width: 342px;
+  color: rgba(18, 19, 15, 0.42);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 13px;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.location-attribution a {
+  color: rgba(18, 19, 15, 0.62);
+  text-decoration: none;
+}
+
+
+/* =========================
+   FLOATING CART CARD
+========================= */
+.floating-cart-card {
+  position: fixed;
+  left: 50%;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  transform: translate(-50%, 18px);
+  width: 342px;
+  min-height: 58px;
+  padding: 12px 14px;
+  background: #8806CE;
+  border-radius: 32px;
+  box-shadow: 0 14px 34px rgba(136, 6, 206, 0.28);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  z-index: 2190;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  transition: transform 0.22s ease, opacity 0.22s ease;
+}
+
+.floating-cart-card.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+.floating-cart-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.floating-cart-title {
+  color: rgba(253, 253, 255, 0.96);
+  font-size: 13px;
+  font-family: General Sans;
+  font-weight: 700;
+  line-height: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floating-cart-subtitle {
+  color: rgba(253, 253, 255, 0.68);
+  font-size: 11px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floating-cart-action {
+  flex-shrink: 0;
+  min-width: 76px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 20px;
+  background: rgba(253, 253, 255, 0.16);
+  color: rgba(253, 253, 255, 0.94);
+  font-size: 13px;
+  font-family: General Sans;
+  font-weight: 700;
+  line-height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-cart-card:active {
+  transform: translate(-50%, 0) scale(0.98);
+}
+
+
+/* =========================
+   FIGMA-LIKE 100% CORNER SMOOTHING
+   Fallback: normal border-radius on unsupported browsers.
+========================= */
+@supports (corner-shape: squircle) {
+  .location-icon,
+  .hero-card,
+  .badge,
+  .pill,
+  .product-card,
+  .product-card img,
+  .chip,
+  .action-btn,
+  .action-btn.qty-button,
+  .product-list-img,
+  .product-list-action,
+  .product-list-action.qty-button,
+  .location-drawer,
+  .drawer-close,
+  .location-map-card,
+  .map-pin-badge,
+  .address-field input,
+  .address-field textarea,
+  .drawer-action-secondary,
+  .drawer-action-primary,
+  .floating-cart-card,
+  .floating-cart-action {
+    corner-shape: squircle;
+  }
+}
+
+</style>
+<script>
+(function () {
+  document.documentElement.style.display = 'none';
+  const auth = localStorage.getItem('cust_auth');
+  if (!auth || auth !== '1') {
+    window.location.replace('login.html');
+    return;
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.style.display = 'block';
+  });
+})();
+</script>
+</head>
+<body>
+<div class="app">
+  <div class="app-inner">
+    <div class="hero">
+      <div class="top-row">
+        <div class="location" role="button" tabindex="0" aria-label="Update delivery location">
+          <div class="location-icon">
+            <img src="assets/menu/icons/icon-location-pin.svg" alt="Location pin" />
+          </div>
+          <div class="location-copy">
+            <div class="label">Deliver to</div>
+            <div class="address">Loading location...</div>
+          </div>
+        </div>
+        <a class="avatar" href="profile.html" aria-label="Open profile"><img src="assets/menu/icons/user profile.svg" alt="User profile" /></a>
+      </div>
+      <div class="hero-card">
+        <div class="hero-title">
+          <span class="text-white">Fresh&nbsp;</span><span class="text-green">lunch,&nbsp;</span><span class="text-white"> daily&nbsp;</span><span class="text-purple">warm.</span>
+        </div>
+        <div class="hero-meta-container">
+          <div class="hero-meta">Home cooked · Coimbatore</div>
+          <div class="hero-meta">Order by 11 AM · Delivered in 15 - 25 mins</div>
+        </div>
+        <div class="badge-row">
+          <div class="badge-row-inner">
+            <div class="badge">
+              <div class="badge-text">🏠 Home Cooked</div>
+            </div>
+            <div class="badge">
+              <div class="badge-text">🛵 CBE delivery</div>
+            </div>
+          </div>
+          <div class="badge-row-single">
+            <div class="badge">
+              <div class="badge-text">✅ Secure payment</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="filter-row">
+        <div class="pill pill-active">
+          <img src="assets/menu/img/tab1-img.png" />
+          <div class="pill-text">All</div>
+        </div>
+        <div class="pill">
+          <img class="small" src="assets/menu/img/tab2-img.png" />
+          <div class="pill-text">Protein pack</div>
+        </div>
+        <div class="pill">
+          <img class="small" src="assets/menu/img/tab3-img.png" />
+          <div class="pill-text">Regular</div>
+        </div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title">Best selling</div>
+          <div class="section-subtitle">Faster selling orders.</div>
+        </div>
+        <div class="card-scroll-wrap">
+          <div class="card-grid">
+          <div class="product-card">
+            <div class="product-card-body">
+              <img src="assets/menu/img/Protein egg lunch-img.png" />
+              <div class="product-card-content">
+                <div class="product-card-header">
+                  <div class="product-card-title">Protein egg<br/>lunch</div>
+                  <div class="product-card-meta">
+                    <div class="meta-label">protein</div>
+                    <div class="meta-value">45g</div>
+                  </div>
+                </div>
+                <div class="product-card-badges">
+                  <div class="chip">
+                    <div class="chip-text">Oil used : 7ml</div>
+                  </div>
+                  <div class="chip">
+                    <div class="chip-text">No MSG/tastener</div>
+                  </div>
+                </div>
+                <div class="product-card-info">
+                  <div class="product-card-info-text">egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <div class="price"><span class="currency">₹</span><span class="amount">89</span></div>
+              <div class="action-btn" data-product-id="1">
+                <div class="action-btn-text">Add</div>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-card-body">
+              <img src="assets/menu/img/Regular meal-img.png" />
+              <div class="product-card-content">
+                <div class="product-card-header">
+                  <div class="product-card-title">Regular meal</div>
+                </div>
+                <div class="product-card-badges">
+                  <div class="chip">
+                    <div class="chip-text">Oil used : 7ml</div>
+                  </div>
+                  <div class="chip">
+                    <div class="chip-text">No MSG/tastener</div>
+                  </div>
+                </div>
+                <div class="product-card-info">
+                  <div class="product-card-info-text">rice(250g), sambar(250ml), egg(1), 2veggies(100g), pappad, pacha puli rasam</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <div class="price"><span class="currency">₹</span><span class="amount">65</span></div>
+              <div class="action-btn" data-product-id="2">
+                <div class="action-btn-text">Add</div>
+              </div>
+            </div>
+          </div>
+          <div class="product-card">
+            <div class="product-card-body">
+              <img src="assets/menu/img/Protein chicken lunch-img.png" />
+              <div class="product-card-content">
+                <div class="product-card-header">
+                  <div class="product-card-title">Protein chicken <br/>dinner</div>
+                  <div class="product-card-meta">
+                    <div class="meta-label">protein</div>
+                    <div class="meta-value">50g</div>
+                  </div>
+                </div>
+                <div class="product-card-badges">
+                  <div class="chip">
+                    <div class="chip-text">Oil used : 7ml</div>
+                  </div>
+                  <div class="chip">
+                    <div class="chip-text">No MSG/tastener</div>
+                  </div>
+                </div>
+                <div class="product-card-info">
+                  <div class="product-card-info-text">chicken(50g), rice(100g), soya chunks(20g), egg(2), veggies(50g), chappati(2)</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <div class="price"><span class="currency">₹</span><span class="amount">109</span></div>
+              <div class="action-btn" data-product-id="3">
+                <div class="action-btn-text">Add</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title red">Protein Pack</div>
+          <div class="section-subtitle">High protein · Fitness friendly</div>
+        </div>
+        <div class="list-grid">
+          <div class="product-list-item">
+            <img class="product-list-img" src="assets/menu/img/Protein egg lunch-img.png" />
+            <div class="product-list-copy">
+              <div class="product-list-content">
+                <div class="product-list-title">
+                  <div class="product-list-title-text">Protein egg lunch</div>
+                </div>
+                <div class="product-list-row">
+                  <div class="product-list-chips">
+                    <div class="chip">
+                      <div class="chip-text">Oil used : 7ml</div>
+                    </div>
+                    <div class="chip">
+                      <div class="chip-text">No MSG/tastener</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-list-detail">
+                  <div class="product-list-detail-text">egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)</div>
+                </div>
+                <div class="product-list-meta">
+                  <div class="meta-label">Protein</div>
+                  <div class="meta-label">・</div>
+                  <div class="meta-value">45g</div>
+                </div>
+              </div>
+              <div class="product-list-price-row">
+                <div class="product-list-price"><span class="currency">₹</span><span class="amount">89</span></div>
+                <div class="product-list-action" data-product-id="1">
+                  <div class="product-list-action-text">Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="product-list-item">
+            <img class="product-list-img" src="assets/menu/img/Protein chicken lunch-img.png" />
+            <div class="product-list-copy">
+              <div class="product-list-content">
+                <div class="product-list-title">
+                  <div class="product-list-title-text">Protein chicken lunch</div>
+                </div>
+                <div class="product-list-row">
+                  <div class="product-list-chips">
+                    <div class="chip">
+                      <div class="chip-text">Oil used : 7ml</div>
+                    </div>
+                    <div class="chip">
+                      <div class="chip-text">No MSG/tastener</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-list-detail">
+                  <div class="product-list-detail-text">chicken(100g), egg(3), rice(100g), veggies(50g), chappati(2), chicken gravy(100ml)</div>
+                </div>
+                <div class="product-list-meta">
+                  <div class="meta-label">Protein</div>
+                  <div class="meta-label">・</div>
+                  <div class="meta-value">50g</div>
+                </div>
+              </div>
+              <div class="product-list-price-row">
+                <div class="product-list-price"><span class="currency">₹</span><span class="amount">109</span></div>
+                <div class="product-list-action" data-product-id="3">
+                  <div class="product-list-action-text">Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <div class="section-title green">Regular packs</div>
+          <div class="section-subtitle">Classic homemade meals & tiffen</div>
+        </div>
+        <div class="list-grid">
+          <div class="product-list-item">
+            <img class="product-list-img" src="assets/menu/img/Chappati & gravy-img.png" />
+            <div class="product-list-copy">
+              <div class="product-list-content">
+                <div class="product-list-title">
+                  <div class="product-list-title-text">Chappati & gravy</div>
+                </div>
+                <div class="product-list-row">
+                  <div class="product-list-chips">
+                    <div class="chip">
+                      <div class="chip-text">Oil used : 7ml</div>
+                    </div>
+                    <div class="chip">
+                      <div class="chip-text">No MSG/tastener</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-list-detail">
+                  <div class="product-list-detail-text">egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)</div>
+                </div>
+                <div class="product-list-meta">
+                  <div class="meta-label">Protein</div>
+                  <div class="meta-label">・</div>
+                  <div class="meta-value">45g</div>
+                </div>
+              </div>
+              <div class="product-list-price-row">
+                <div class="product-list-price"><span class="currency">₹</span><span class="amount">89</span></div>
+                <div class="product-list-action" data-product-id="4">
+                  <div class="product-list-action-text">Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="product-list-item">
+            <img class="product-list-img" src="assets/menu/img/Regular meal-img.png" />
+            <div class="product-list-copy">
+              <div class="product-list-content">
+                <div class="product-list-title">
+                  <div class="product-list-title-text">Regular meal</div>
+                </div>
+                <div class="product-list-row">
+                  <div class="product-list-chips">
+                    <div class="chip">
+                      <div class="chip-text">Oil used : 7ml</div>
+                    </div>
+                    <div class="chip">
+                      <div class="chip-text">No MSG/tastener</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="product-list-detail">
+                  <div class="product-list-detail-text">rice(250g), sambar(250ml), egg(1), 2 veggies(100g), pappad, pacha puli rasam</div>
+                </div>
+              </div>
+              <div class="product-list-price-row">
+                <div class="product-list-price"><span class="currency">₹</span><span class="amount">65</span></div>
+                <div class="product-list-action" data-product-id="2">
+                  <div class="product-list-action-text">Add</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="floating-cart-card" id="floatingCartCard" role="button" tabindex="0" aria-label="Open cart">
+    <div class="floating-cart-copy">
+      <div class="floating-cart-title" id="floatingCartTitle">Item added</div>
+      <div class="floating-cart-subtitle" id="floatingCartSubtitle">Check your cart</div>
+    </div>
+    <div class="floating-cart-action">Cart &gt;</div>
+  </div>
+
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a class="nav-item active" href="menu.html">
+      <div class="nav-item-icon">
+        <img src="assets/menu/icons/search-icon.svg" alt="Menu" />
+      </div>
+      <div class="nav-item-text">Menu</div>
+    </a>
+    <a class="nav-item" href="cart.html">
+      <div class="nav-item-icon">
+        <img src="assets/menu/icons/cart-icon.svg" alt="Cart" />
+      </div>
+      <div class="nav-item-text">Cart</div>
+    </a>
+    <a class="nav-item" href="track.html">
+      <div class="nav-item-icon">
+        <img src="assets/menu/icons/track-icon.svg" alt="Track orders" />
+      </div>
+      <div class="nav-item-text">Track</div>
+    </a>
+  </nav>
+</div>
+
+<div class="location-drawer-backdrop" id="locationDrawerBackdrop" aria-hidden="true">
+  <div class="location-drawer" role="dialog" aria-modal="true" aria-labelledby="locationDrawerTitle">
+    <div class="drawer-handle"></div>
+
+    <div class="drawer-header">
+      <div class="drawer-title-block">
+        <div class="drawer-kicker">Delivery location</div>
+        <div class="drawer-title" id="locationDrawerTitle">Confirm your address</div>
+        <div class="drawer-subtitle">Check the pin, add your door number, then save the delivery address.</div>
+      </div>
+      <button class="drawer-close" type="button" id="closeLocationDrawer" aria-label="Close location drawer">×</button>
+    </div>
+
+    <div class="location-map-card ola-map-card">
+      <div id="locationOlaMap" class="ola-map-canvas" aria-label="Ola Maps delivery location map"></div>
+      <div class="map-empty-state" id="mapEmptyState">
+        <div class="map-pin-badge">📍</div>
+        <div id="mapEmptyCopy">Loading secure Ola map preview...</div>
+      </div>
+    </div>
+
+
+    <div class="address-form">
+      <label class="address-field">
+        <span>House / Flat / Door no.</span>
+        <input id="doorNoInput" type="text" autocomplete="address-line1" placeholder="Eg: 9/34, Flat 2B">
+      </label>
+
+      <label class="address-field">
+        <span>Full address</span>
+        <textarea id="fullAddressInput" autocomplete="street-address" placeholder="Street, area, city"></textarea>
+      </label>
+
+      <label class="address-field">
+        <span>Landmark</span>
+        <input id="landmarkInput" type="text" autocomplete="off" placeholder="Eg: Near temple / opposite school">
+      </label>
+    </div>
+
+    <div class="drawer-actions">
+      <button class="drawer-action-secondary" type="button" id="refreshLocationBtn">Use current location</button>
+      <button class="drawer-action-primary" type="button" id="saveLocationBtn">Save address</button>
+    </div>
+
+    <div class="location-attribution" id="olaTestHint">Ola Maps runs through a secure Netlify proxy. Move the pin to exact delivery location.</div>
+
+    <div class="location-attribution">Tip: drag the pin or tap the map to set the exact delivery point.</div>
+  </div>
+</div>
+
+<script>
+const mf = {
+  name:"Tiffin CBE",
+  short_name:"Tiffin",
+  start_url:"./",
+  display:"standalone",
+  background_color:"#0d0600",
+  theme_color:"#0d0600"
+};
+const blob = new Blob([JSON.stringify(mf)], { type:'application/json' });
+document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+</script>
+<script src="ola-map-v2.js"></script>
+<script>
+/* =========================
+   MENU PAGE LOGIC
+========================= */
+
+
+
+/*
+========================================
+0. DELIVERY LOCATION LOGIC
+========================================
+
+Behavior:
+- The top delivery location shows a short readable address.
+- Tapping the location opens a bottom drawer instead of silently capturing again.
+- The drawer shows a map preview and editable address fields.
+- GPS/reverse-geocode can only suggest; user input makes it exact.
+*/
+
+const deliveryAddressText = document.querySelector(".address");
+const deliveryLocationBox = document.querySelector(".location");
+
+const locationDrawerBackdrop = document.getElementById("locationDrawerBackdrop");
+const closeLocationDrawerBtn = document.getElementById("closeLocationDrawer");
+const refreshLocationBtn = document.getElementById("refreshLocationBtn");
+const saveLocationBtn = document.getElementById("saveLocationBtn");
+const locationOlaMapCanvas = document.getElementById("locationOlaMap");
+const mapEmptyState = document.getElementById("mapEmptyState");
+const mapEmptyCopy = document.getElementById("mapEmptyCopy");
+let locationOlaMapInstance = null;
+let locationOlaMarker = null;
+let latestOlaMapCenter = null;
+let mapLibreLoadingPromise = null;
+const detectedAddressText = document.getElementById("detectedAddressText");
+const locationAccuracyChip = document.getElementById("locationAccuracyChip");
+const locationProviderChip = document.getElementById("locationProviderChip");
+const doorNoInput = document.getElementById("doorNoInput");
+const fullAddressInput = document.getElementById("fullAddressInput");
+const landmarkInput = document.getElementById("landmarkInput");
+
+const locationAddressKeys = [
+  "cust_address",
+  "customer_address",
+  "delivery_address",
+  "deliveryAddress",
+  "selected_address",
+  "selectedAddress",
+  "user_address",
+  "address",
+  "cust_location_name",
+  "cust_location_address",
+  "current_address",
+  "currentAddress"
+];
+
+const locationObjectKeys = [
+  "cust_location_details",
+  "delivery_location_details",
+  "cust_location",
+  "customer_location",
+  "user_location",
+  "userLocation",
+  "delivery_location",
+  "deliveryLocation",
+  "current_location",
+  "currentLocation",
+  "geo_location",
+  "geoLocation",
+  "location"
+];
+
+const coordinateLatKeys = [
+  "lat",
+  "latitude",
+  "user_lat",
+  "cust_lat",
+  "delivery_lat"
+];
+
+const coordinateLngKeys = [
+  "lng",
+  "lon",
+  "long",
+  "longitude",
+  "user_lng",
+  "cust_lng",
+  "delivery_lng"
+];
+
+let isResolvingAddress = false;
+let currentLocationState = null;
+
+/*
+Ola Maps setup:
+- This customer app uses a Netlify Function proxy.
+- Keep the Ola key in Netlify env var OLA_MAPS_API_KEY.
+- Do not add the Ola API key in browser localStorage or frontend code.
+*/
+const OLA_PROXY_URL = "/.netlify/functions/ola-maps";
+
+function getOlaMapsApiKey() {
+  return "netlify_proxy";
+}
+
+function setLocationProviderStatus(label) {
+  if (locationProviderChip) {
+    locationProviderChip.textContent = label || "GPS";
+  }
+}
+
+
+function parseSavedValue(value) {
+  if (!value) return null;
+
+  if (typeof value !== "string") return value;
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) return null;
+
+  if (
+    trimmedValue.startsWith("{") ||
+    trimmedValue.startsWith("[")
+  ) {
+    try {
+      return JSON.parse(trimmedValue);
+    } catch (error) {
+      return trimmedValue;
+    }
+  }
+
+  return trimmedValue;
+}
+
+function cleanText(value) {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+}
+
+const ADDRESS_PREVIEW_LIMIT = 15;
+
+function truncateAddressPreview(value, limit = ADDRESS_PREVIEW_LIMIT) {
+  const text = cleanText(value)
+    .replace(/\s*,\s*/g, ",")
+    .replace(/\s+/g, " ");
+
+  if (!text || text.length <= limit) return text;
+
+  return `${text.slice(0, limit)}..`;
+}
+
+function isPlaceholderAddress(value) {
+  const text = cleanText(value).toLowerCase();
+
+  return (
+    !text ||
+    text === "current location captured" ||
+    text === "location captured" ||
+    text === "location saved" ||
+    text === "set delivery location" ||
+    text === "getting location..." ||
+    text === "finding your area..." ||
+    text === "finding your address..."
+  );
+}
+
+function addUniqueAddressPart(parts, value) {
+  const part = cleanText(value);
+
+  if (!part || isPlaceholderAddress(part)) return;
+
+  const alreadyExists = parts.some(
+    savedPart => savedPart.toLowerCase() === part.toLowerCase()
+  );
+
+  if (!alreadyExists) parts.push(part);
+}
+
+function compactAddress(fullAddress, doorNo = "") {
+  const parts = [];
+
+  addUniqueAddressPart(parts, doorNo);
+
+  cleanText(fullAddress)
+    .split(",")
+    .map(part => part.trim())
+    .filter(Boolean)
+    .forEach(part => addUniqueAddressPart(parts, part));
+
+  if (parts.length <= 2) {
+    return parts.join(", ") || "Set delivery location";
+  }
+
+  return parts.slice(0, doorNo ? 2 : 2).join(", ");
+}
+
+function getFirstTextValue(source, keys) {
+  if (!source || typeof source !== "object") return "";
+
+  for (const key of keys) {
+    const value = cleanText(source[key]);
+
+    if (value && !isPlaceholderAddress(value)) {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+function getCoordinateValue(source, keys) {
+  if (!source || typeof source !== "object") return "";
+
+  for (const key of keys) {
+    const value = source[key];
+
+    if (value !== null && value !== undefined && value !== "") {
+      return value;
+    }
+  }
+
+  return "";
+}
+
+function buildAddressFromParts(source) {
+  if (!source || typeof source !== "object") return "";
+
+  const parts = [];
+
+  [
+    source.doorNo,
+    source.door_no,
+    source.houseNo,
+    source.house_no,
+    source.flat,
+    source.building,
+    source.road,
+    source.street,
+    source.area,
+    source.locality,
+    source.neighbourhood,
+    source.neighborhood,
+    source.suburb,
+    source.city,
+    source.town,
+    source.village,
+    source.district,
+    source.state,
+    source.principalSubdivision,
+    source.postcode
+  ].forEach(value => addUniqueAddressPart(parts, value));
+
+  return parts.join(", ");
+}
+
+function normalizeLocationValue(value) {
+  const parsedValue = parseSavedValue(value);
+
+  if (!parsedValue) return null;
+
+  if (typeof parsedValue === "string") {
+    if (isPlaceholderAddress(parsedValue)) return null;
+
+    return {
+      display: compactAddress(parsedValue),
+      full: parsedValue,
+      lat: "",
+      lng: "",
+      doorNo: "",
+      landmark: "",
+      hasCoordinatesOnly: false
+    };
+  }
+
+  if (typeof parsedValue !== "object") return null;
+
+  const lat = getCoordinateValue(parsedValue, coordinateLatKeys);
+  const lng = getCoordinateValue(parsedValue, coordinateLngKeys);
+
+  const doorNo = getFirstTextValue(parsedValue, [
+    "doorNo",
+    "door_no",
+    "houseNo",
+    "house_no",
+    "flat",
+    "flatNo",
+    "flat_no"
+  ]);
+
+  const landmark = getFirstTextValue(parsedValue, [
+    "landmark",
+    "nearby",
+    "nearBy",
+    "instruction",
+    "instructions"
+  ]);
+
+  const directAddress = getFirstTextValue(parsedValue, [
+    "fullAddress",
+    "full_address",
+    "displayAddress",
+    "display_address",
+    "formattedAddress",
+    "formatted_address",
+    "deliveryAddress",
+    "delivery_address",
+    "addressLine",
+    "address_line",
+    "address",
+    "name",
+    "label",
+    "placeName",
+    "place_name"
+  ]);
+
+  if (directAddress) {
+    return {
+      display: compactAddress(directAddress, doorNo),
+      full: directAddress,
+      lat,
+      lng,
+      doorNo,
+      landmark,
+      hasCoordinatesOnly: false
+    };
+  }
+
+  if (parsedValue.address && typeof parsedValue.address === "object") {
+    const nestedAddress = normalizeLocationValue(parsedValue.address);
+
+    if (nestedAddress && !nestedAddress.hasCoordinatesOnly) {
+      return {
+        ...nestedAddress,
+        lat: nestedAddress.lat || lat,
+        lng: nestedAddress.lng || lng,
+        doorNo: nestedAddress.doorNo || doorNo,
+        landmark: nestedAddress.landmark || landmark
+      };
+    }
+  }
+
+  const builtAddress = buildAddressFromParts(parsedValue);
+
+  if (builtAddress) {
+    return {
+      display: compactAddress(builtAddress, doorNo),
+      full: builtAddress,
+      lat,
+      lng,
+      doorNo,
+      landmark,
+      hasCoordinatesOnly: false
+    };
+  }
+
+  if (lat && lng) {
+    return {
+      display: "Finding your address...",
+      full: `Lat: ${lat}, Lng: ${lng}`,
+      lat,
+      lng,
+      doorNo,
+      landmark,
+      hasCoordinatesOnly: true
+    };
+  }
+
+  return null;
+}
+
+function getSavedReadableAddress() {
+  for (const key of locationObjectKeys) {
+    const savedValue = localStorage.getItem(key);
+    const locationValue = normalizeLocationValue(savedValue);
+
+    if (locationValue && locationValue.display && !locationValue.hasCoordinatesOnly) {
+      return locationValue;
+    }
+  }
+
+  for (const key of locationAddressKeys) {
+    const savedValue = localStorage.getItem(key);
+    const locationValue = normalizeLocationValue(savedValue);
+
+    if (locationValue && locationValue.display && !locationValue.hasCoordinatesOnly) {
+      return locationValue;
+    }
+  }
+
+  return null;
+}
+
+function getSavedCoordinates() {
+  for (const key of locationObjectKeys) {
+    const savedValue = localStorage.getItem(key);
+    const locationValue = normalizeLocationValue(savedValue);
+
+    if (locationValue && locationValue.lat && locationValue.lng) {
+      return locationValue;
+    }
+  }
+
+  const lat =
+    localStorage.getItem("cust_lat") ||
+    localStorage.getItem("user_lat") ||
+    localStorage.getItem("delivery_lat") ||
+    localStorage.getItem("latitude");
+
+  const lng =
+    localStorage.getItem("cust_lng") ||
+    localStorage.getItem("user_lng") ||
+    localStorage.getItem("delivery_lng") ||
+    localStorage.getItem("longitude");
+
+  if (lat && lng) {
+    return {
+      display: "Finding your address...",
+      full: `Lat: ${lat}, Lng: ${lng}`,
+      lat,
+      lng,
+      hasCoordinatesOnly: true
+    };
+  }
+
+  return null;
+}
+
+function saveLocationState(locationState) {
+  if (!locationState) return;
+
+  const fullAddress = cleanText(locationState.full || locationState.fullAddress || locationState.address);
+  const doorNo = cleanText(locationState.doorNo);
+  const landmark = cleanText(locationState.landmark);
+  const shortAddress = compactAddress(fullAddress, doorNo);
+
+  const savedLocation = {
+    lat: locationState.lat || "",
+    lng: locationState.lng || "",
+    accuracy: locationState.accuracy || "",
+    doorNo,
+    landmark,
+    fullAddress,
+    displayAddress: shortAddress,
+    source: locationState.source || "user_confirmed_address",
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("cust_location_details", JSON.stringify(savedLocation));
+  localStorage.setItem("delivery_location_details", JSON.stringify(savedLocation));
+  localStorage.setItem("cust_address", shortAddress);
+  localStorage.setItem("delivery_address", shortAddress);
+  localStorage.setItem("cust_full_address", fullAddress);
+  localStorage.setItem("delivery_full_address", fullAddress);
+
+  if (savedLocation.lat && savedLocation.lng) {
+    localStorage.setItem("cust_location", JSON.stringify(savedLocation));
+    localStorage.setItem("cust_lat", String(savedLocation.lat));
+    localStorage.setItem("cust_lng", String(savedLocation.lng));
+  }
+
+  currentLocationState = savedLocation;
+  renderDeliveryLocation(false);
+}
+
+function getCachedExactGeocode(lat, lng) {
+  const cached = parseSavedValue(localStorage.getItem("cust_exact_geocode_cache"));
+
+  if (!cached || !cached.lat || !cached.lng) return null;
+
+  const sameLat = Number(cached.lat).toFixed(5) === Number(lat).toFixed(5);
+  const sameLng = Number(cached.lng).toFixed(5) === Number(lng).toFixed(5);
+
+  if (!sameLat || !sameLng) return null;
+
+  return cached;
+}
+
+function saveExactGeocodeCache(lat, lng, addressData) {
+  localStorage.setItem(
+    "cust_exact_geocode_cache",
+    JSON.stringify({
+      lat,
+      lng,
+      ...addressData,
+      cachedAt: new Date().toISOString()
+    })
+  );
+}
+
+function getOlaAddressComponent(components, typeNames) {
+  if (!Array.isArray(components)) return "";
+
+  const wanted = typeNames.map(type => String(type).toLowerCase());
+
+  const found = components.find(component => {
+    const componentTypes = component.types || component.type || component.category || [];
+    const normalizedTypes = Array.isArray(componentTypes)
+      ? componentTypes.map(type => String(type).toLowerCase())
+      : [String(componentTypes).toLowerCase()];
+
+    return normalizedTypes.some(type => wanted.includes(type));
+  });
+
+  if (!found) return "";
+
+  return cleanText(
+    found.long_name ||
+    found.short_name ||
+    found.name ||
+    found.value ||
+    found.text
+  );
+}
+
+function parseOlaAddress(data) {
+  const result =
+    data?.results?.[0] ||
+    data?.result?.[0] ||
+    data?.result ||
+    data?.places?.[0] ||
+    data?.place ||
+    data?.data?.results?.[0] ||
+    data?.data?.[0] ||
+    data;
+
+  if (!result || typeof result !== "object") {
+    return {
+      fullAddress: "",
+      shortAddress: "",
+      source: "ola_maps_reverse_geocode"
+    };
+  }
+
+  const components =
+    result.address_components ||
+    result.addressComponents ||
+    result.components ||
+    [];
+
+  const addressObject =
+    result.address ||
+    result.structured_formatting ||
+    result.structuredAddress ||
+    {};
+
+  const parts = [];
+
+  [
+    getFirstTextValue(result, ["premise", "house_number", "houseNumber", "building", "subpremise"]),
+    getOlaAddressComponent(components, ["premise", "house_number", "street_number", "subpremise"]),
+    getFirstTextValue(addressObject, ["premise", "house_number", "houseNumber", "building", "subpremise"]),
+    getFirstTextValue(result, ["route", "street", "road", "addressLine1", "address_line1"]),
+    getOlaAddressComponent(components, ["route", "street", "road", "sublocality", "sublocality_level_1"]),
+    getFirstTextValue(addressObject, ["route", "street", "road", "line1", "addressLine1", "locality"]),
+    getFirstTextValue(result, ["neighborhood", "neighbourhood", "area", "subLocality", "sublocality"]),
+    getFirstTextValue(addressObject, ["neighborhood", "neighbourhood", "area", "subLocality", "sublocality"]),
+    getFirstTextValue(result, ["city", "town", "district", "locality"]),
+    getOlaAddressComponent(components, ["locality", "administrative_area_level_3", "postal_town", "city"]),
+    getFirstTextValue(result, ["state", "administrativeArea", "administrative_area_level_1"]),
+    getOlaAddressComponent(components, ["administrative_area_level_1", "state"]),
+    getFirstTextValue(result, ["postalCode", "postal_code", "pincode"]),
+    getOlaAddressComponent(components, ["postal_code", "pincode"])
+  ].forEach(value => addUniqueAddressPart(parts, value));
+
+  const formattedAddress = getFirstTextValue(result, [
+    "formatted_address",
+    "formattedAddress",
+    "display_name",
+    "displayName",
+    "full_address",
+    "fullAddress",
+    "description",
+    "vicinity",
+    "name",
+    "address"
+  ]);
+
+  const fullAddress = formattedAddress || parts.join(", ");
+  const shortAddress = compactAddress(parts.slice(0, 3).join(", ") || fullAddress);
+
+  return {
+    fullAddress,
+    shortAddress,
+    source: "ola_maps_reverse_geocode"
+  };
+}
+
+async function reverseGeocodeWithOlaMaps(lat, lng) {
+  const url = `${OLA_PROXY_URL}?type=reverse&lat=${encodeURIComponent(lat)}&lng=${encodeURIComponent(lng)}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Ola Maps reverse geocode proxy failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  const parsed = parseOlaAddress(data);
+
+  if (!parsed.fullAddress) {
+    throw new Error("Ola Maps did not return a readable address");
+  }
+
+  return parsed;
+}
+
+function parseNominatimAddress(data) {
+  const address = data && data.address ? data.address : {};
+
+  const roadLine = [
+    address.house_number,
+    address.road || address.pedestrian || address.footway || address.residential
+  ].filter(Boolean).join(" ");
+
+  const parts = [];
+
+  [
+    roadLine,
+    address.neighbourhood,
+    address.suburb,
+    address.city_district,
+    address.city || address.town || address.village,
+    address.state,
+    address.postcode
+  ].forEach(value => addUniqueAddressPart(parts, value));
+
+  const fullAddress = cleanText(data.display_name) || parts.join(", ");
+  const shortAddress = compactAddress(parts.slice(0, 3).join(", ") || fullAddress);
+
+  return {
+    fullAddress,
+    shortAddress,
+    source: "openstreetmap_nominatim"
+  };
+}
+
+function parseBigDataCloudAddress(data) {
+  if (!data || typeof data !== "object") {
+    return {
+      fullAddress: "",
+      shortAddress: "",
+      source: "bigdatacloud"
+    };
+  }
+
+  const parts = [];
+
+  [
+    data.locality,
+    data.city,
+    data.principalSubdivision,
+    data.postcode,
+    data.countryName
+  ].forEach(value => addUniqueAddressPart(parts, value));
+
+  const fullAddress = parts.join(", ");
+
+  return {
+    fullAddress,
+    shortAddress: compactAddress(fullAddress),
+    source: "bigdatacloud"
+  };
+}
+
+async function reverseGeocodeExactAddress(lat, lng) {
+  const cached = getCachedExactGeocode(lat, lng);
+
+  if (cached && cached.fullAddress) {
+    return cached;
+  }
+
+  try {
+    const olaParsed = await reverseGeocodeWithOlaMaps(lat, lng);
+
+    if (olaParsed.fullAddress) {
+      saveExactGeocodeCache(lat, lng, olaParsed);
+      setLocationProviderStatus("Ola");
+      return olaParsed;
+    }
+  } catch (error) {
+    setLocationProviderStatus("Fallback");
+    console.log("Ola Maps reverse geocode fallback:", error);
+  }
+
+  try {
+    const nominatimUrl =
+      "https://nominatim.openstreetmap.org/reverse" +
+      "?format=jsonv2" +
+      `&lat=${encodeURIComponent(lat)}` +
+      `&lon=${encodeURIComponent(lng)}` +
+      "&zoom=18" +
+      "&addressdetails=1" +
+      "&accept-language=en";
+
+    const response = await fetch(nominatimUrl);
+
+    if (!response.ok) throw new Error("Exact reverse geocode failed");
+
+    const data = await response.json();
+    const parsed = parseNominatimAddress(data);
+
+    if (parsed.fullAddress) {
+      saveExactGeocodeCache(lat, lng, parsed);
+      setLocationProviderStatus("OSM");
+      return parsed;
+    }
+  } catch (error) {
+    console.log("Nominatim reverse geocode fallback:", error);
+  }
+
+  const bigDataUrl =
+    "https://api.bigdatacloud.net/data/reverse-geocode-client" +
+    `?latitude=${encodeURIComponent(lat)}` +
+    `&longitude=${encodeURIComponent(lng)}` +
+    "&localityLanguage=en";
+
+  const response = await fetch(bigDataUrl);
+
+  if (!response.ok) {
+    throw new Error("Reverse geocode failed");
+  }
+
+  const data = await response.json();
+  const parsed = parseBigDataCloudAddress(data);
+
+  if (parsed.fullAddress) {
+    saveExactGeocodeCache(lat, lng, parsed);
+    setLocationProviderStatus("BDC");
+  }
+
+  return parsed;
+}
+
+function getOlaStyleUrl() {
+  return `${OLA_PROXY_URL}?type=style&style=default-light-standard`;
+}
+
+function appendOlaApiKey(url) {
+  return url;
+}
+
+function loadMapLibre() {
+  if (window.maplibregl) return Promise.resolve(window.maplibregl);
+
+  if (mapLibreLoadingPromise) return mapLibreLoadingPromise;
+
+  mapLibreLoadingPromise = new Promise((resolve, reject) => {
+    const existingScript = document.querySelector('script[data-maplibre="true"]');
+
+    if (existingScript) {
+      existingScript.addEventListener("load", () => resolve(window.maplibregl));
+      existingScript.addEventListener("error", reject);
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.js";
+    script.async = true;
+    script.defer = true;
+    script.dataset.maplibre = "true";
+    script.onload = () => resolve(window.maplibregl);
+    script.onerror = () => reject(new Error("MapLibre failed to load"));
+    document.head.appendChild(script);
+  });
+
+  return mapLibreLoadingPromise;
+}
+
+function showMapMessage(message) {
+  if (mapEmptyCopy) mapEmptyCopy.textContent = message;
+  if (mapEmptyState) mapEmptyState.style.display = "flex";
+}
+
+function hideMapMessage() {
+  if (mapEmptyState) mapEmptyState.style.display = "none";
+}
+
+function syncOlaLocationMarker(maplibregl, center) {
+  if (!locationOlaMapInstance || !Array.isArray(center)) return;
+
+  latestOlaMapCenter = center;
+
+  if (locationOlaMarker) {
+    locationOlaMarker.setLngLat(center);
+    return;
+  }
+
+  locationOlaMarker = new maplibregl.Marker({ color: "#08A045", draggable: true })
+    .setLngLat(center)
+    .addTo(locationOlaMapInstance);
+
+  locationOlaMarker.on("dragend", () => {
+    const point = locationOlaMarker.getLngLat();
+    updatePinnedDeliveryPoint(point.lng, point.lat, true);
+  });
+}
+
+async function updatePinnedDeliveryPoint(lng, lat, shouldResolve = true) {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+
+  latestOlaMapCenter = [longitude, latitude];
+  currentLocationState = {
+    ...(currentLocationState || {}),
+    lat: latitude,
+    lng: longitude,
+    pinnedByUser: true,
+    source: "user_pinned_ola_map"
+  };
+
+  localStorage.setItem("cust_lat", String(latitude));
+  localStorage.setItem("cust_lng", String(longitude));
+  localStorage.setItem("cust_location", JSON.stringify(currentLocationState));
+
+  if (locationOlaMarker) locationOlaMarker.setLngLat([longitude, latitude]);
+  if (locationOlaMapInstance) locationOlaMapInstance.easeTo({ center: [longitude, latitude], zoom: 17, duration: 250 });
+
+  if (detectedAddressText) detectedAddressText.textContent = shouldResolve
+    ? "Finding exact address from pinned location..."
+    : "Pinned location updated.";
+
+  if (shouldResolve) await resolveAddressFromCoordinates(currentLocationState, true);
+}
+
+function renderOlaLocationMap(latitude, longitude) {
+  if (!locationOlaMapCanvas) return;
+
+  setLocationProviderStatus("Ola");
+  showMapMessage("Loading Ola Maps...");
+
+  loadMapLibre()
+    .then((maplibregl) => {
+      const center = [Number(longitude), Number(latitude)];
+      latestOlaMapCenter = center;
+
+      if (locationOlaMapInstance) {
+        locationOlaMapInstance.resize();
+        locationOlaMapInstance.easeTo({ center, zoom: 16, duration: 350 });
+        syncOlaLocationMarker(maplibregl, center);
+        hideMapMessage();
+        return;
+      }
+
+      locationOlaMapInstance = new maplibregl.Map({
+        container: locationOlaMapCanvas,
+        style: getOlaStyleUrl(),
+        center,
+        zoom: 16,
+        attributionControl: false,
+        transformRequest: (url) => ({ url: appendOlaApiKey(url) })
+      });
+
+      locationOlaMapInstance.addControl(
+        new maplibregl.NavigationControl({ showCompass: false }),
+        "top-right"
+      );
+
+      locationOlaMapInstance.on("load", () => {
+        syncOlaLocationMarker(maplibregl, latestOlaMapCenter || center);
+        hideMapMessage();
+      });
+
+      locationOlaMapInstance.on("click", (event) => {
+        updatePinnedDeliveryPoint(event.lngLat.lng, event.lngLat.lat, true);
+      });
+
+      locationOlaMapInstance.on("error", (event) => {
+        console.log("Ola Maps render error:", event?.error || event);
+        setLocationProviderStatus("Ola error");
+        showMapMessage("Ola Maps could not load. Check Netlify OLA_MAPS_API_KEY and function deployment.");
+      });
+    })
+    .catch((error) => {
+      console.log("Ola map loader error:", error);
+      setLocationProviderStatus("Ola error");
+      showMapMessage("Ola Maps script could not load. Check your internet connection.");
+    });
+}
+
+function updateMapPreview(lat, lng) {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+
+  if (!lat || !lng || Number.isNaN(latitude) || Number.isNaN(longitude)) {
+    showMapMessage("Location map will appear after GPS is available.");
+    return;
+  }
+
+  renderOlaLocationMap(latitude, longitude);
+}
+
+function fillDrawerFields(locationValue) {
+  const location = locationValue || getSavedReadableAddress() || getSavedCoordinates();
+
+  if (!location) {
+    if (detectedAddressText) detectedAddressText.textContent = "Location not available yet";
+    if (locationAccuracyChip) locationAccuracyChip.textContent = "Manual";
+    if (doorNoInput) doorNoInput.value = "";
+    if (fullAddressInput) fullAddressInput.value = "";
+    if (landmarkInput) landmarkInput.value = "";
+    updateMapPreview("", "");
+    return;
+  }
+
+  currentLocationState = {
+    ...(currentLocationState || {}),
+    ...location
+  };
+
+  updateMapPreview(location.lat, location.lng);
+
+  if (locationAccuracyChip) {
+    locationAccuracyChip.textContent = location.accuracy
+      ? `±${Math.round(Number(location.accuracy))}m`
+      : "GPS";
+  }
+
+  const sourceLabel = location.source === "ola_maps_reverse_geocode"
+    ? "Ola"
+    : location.source === "openstreetmap_nominatim"
+      ? "OSM"
+      : location.source === "bigdatacloud"
+        ? "BDC"
+        : getOlaMapsApiKey()
+          ? "Ola"
+          : "Test";
+
+  setLocationProviderStatus(sourceLabel);
+
+  if (detectedAddressText) {
+    detectedAddressText.textContent = location.full || location.display || "Finding your address...";
+  }
+
+  if (doorNoInput) {
+    doorNoInput.value = location.doorNo || "";
+  }
+
+  if (fullAddressInput) {
+    fullAddressInput.value = location.full && !location.hasCoordinatesOnly
+      ? location.full
+      : "";
+  }
+
+  if (landmarkInput) {
+    landmarkInput.value = location.landmark || "";
+  }
+}
+
+function openLocationDrawer() {
+  if (!locationDrawerBackdrop) return;
+
+  locationDrawerBackdrop.classList.add("is-open");
+  locationDrawerBackdrop.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+
+  const savedLocation = getSavedReadableAddress() || getSavedCoordinates();
+  fillDrawerFields(savedLocation);
+
+  if (savedLocation && savedLocation.lat && savedLocation.lng) {
+    resolveAddressFromCoordinates(savedLocation, true);
+  } else if (detectedAddressText) {
+    detectedAddressText.textContent = "Tap Use current location to detect GPS, then move the pin if needed";
+  }
+}
+
+function closeLocationDrawer() {
+  if (!locationDrawerBackdrop) return;
+
+  locationDrawerBackdrop.classList.remove("is-open");
+  locationDrawerBackdrop.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+}
+
+async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer = false) {
+  if (
+    isResolvingAddress ||
+    !locationValue ||
+    !locationValue.lat ||
+    !locationValue.lng
+  ) {
+    return;
+  }
+
+  isResolvingAddress = true;
+
+  if (deliveryAddressText && !getSavedReadableAddress()) {
+    deliveryAddressText.textContent = "Finding your address...";
+    deliveryAddressText.title = locationValue.full || "Resolving address";
+  }
+
+  if (shouldUpdateDrawer && detectedAddressText) {
+    detectedAddressText.textContent = "Finding exact address from map...";
+  }
+
+  try {
+    const geocodeData = await reverseGeocodeExactAddress(
+      locationValue.lat,
+      locationValue.lng
+    );
+
+    const fullAddress = cleanText(geocodeData.fullAddress);
+    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress);
+
+    const resolvedLocation = {
+      ...locationValue,
+      display: shortAddress,
+      full: fullAddress,
+      fullAddress,
+      source: geocodeData.source || "reverse_geocode"
+    };
+
+    currentLocationState = {
+      ...(currentLocationState || {}),
+      ...resolvedLocation
+    };
+
+    if (fullAddress) {
+      localStorage.setItem("cust_address", shortAddress);
+      localStorage.setItem("delivery_address", shortAddress);
+      localStorage.setItem("cust_full_address", fullAddress);
+      localStorage.setItem("delivery_full_address", fullAddress);
+
+      const savedLocation = parseSavedValue(localStorage.getItem("cust_location")) || {};
+      localStorage.setItem(
+        "cust_location",
+        JSON.stringify({
+          ...savedLocation,
+          ...resolvedLocation,
+          displayAddress: shortAddress,
+          fullAddress
+        })
+      );
+
+      if (deliveryAddressText) {
+        deliveryAddressText.textContent = truncateAddressPreview(shortAddress);
+        deliveryAddressText.title = fullAddress;
+      }
+
+      if (shouldUpdateDrawer) {
+        fillDrawerFields(resolvedLocation);
+      }
+    }
+
+  } catch (error) {
+    if (deliveryAddressText && !getSavedReadableAddress()) {
+      deliveryAddressText.textContent = "Set delivery location";
+      deliveryAddressText.title = "Tap to confirm your address";
+    }
+
+    if (shouldUpdateDrawer && detectedAddressText) {
+      detectedAddressText.textContent = "Could not fetch address automatically. Please enter it manually.";
+    }
+  } finally {
+    isResolvingAddress = false;
+  }
+}
+
+function renderDeliveryLocation(shouldResolveCoordinates = true) {
+  if (!deliveryAddressText) return;
+
+  const savedReadableAddress = getSavedReadableAddress();
+
+  if (savedReadableAddress && savedReadableAddress.display) {
+    currentLocationState = savedReadableAddress;
+    deliveryAddressText.textContent = truncateAddressPreview(savedReadableAddress.display);
+    deliveryAddressText.title = savedReadableAddress.full || savedReadableAddress.display;
+    return;
+  }
+
+  const savedCoordinates = getSavedCoordinates();
+
+  if (savedCoordinates && savedCoordinates.lat && savedCoordinates.lng) {
+    currentLocationState = savedCoordinates;
+    deliveryAddressText.textContent = "Finding your address...";
+    deliveryAddressText.title = savedCoordinates.full || "Location captured";
+
+    if (shouldResolveCoordinates) {
+      resolveAddressFromCoordinates(savedCoordinates, false);
+    }
+
+    return;
+  }
+
+  deliveryAddressText.textContent = "Set delivery location";
+  deliveryAddressText.title = "Tap to confirm your delivery address";
+}
+
+async function saveCurrentBrowserLocation(position) {
+  const capturedLocation = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+    accuracy: position.coords.accuracy,
+    capturedAt: new Date().toISOString(),
+    source: "browser_geolocation"
+  };
+
+  localStorage.setItem("cust_lat", String(capturedLocation.lat));
+  localStorage.setItem("cust_lng", String(capturedLocation.lng));
+  localStorage.setItem("cust_location", JSON.stringify(capturedLocation));
+
+  currentLocationState = capturedLocation;
+  fillDrawerFields(capturedLocation);
+
+  await resolveAddressFromCoordinates(capturedLocation, true);
+}
+
+function requestDeliveryLocation() {
+  if (!navigator.geolocation) {
+    if (detectedAddressText) {
+      detectedAddressText.textContent = "Location is not supported on this browser. Please enter the address manually.";
+    }
+    return;
+  }
+
+  if (detectedAddressText) {
+    detectedAddressText.textContent = "Getting GPS location...";
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    saveCurrentBrowserLocation,
+    () => {
+      if (detectedAddressText) {
+        detectedAddressText.textContent = "Location permission is blocked. Please enter your address manually.";
+      }
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 300000
+    }
+  );
+}
+
+function saveAddressFromDrawer() {
+  const existingLocation = currentLocationState || getSavedCoordinates() || {};
+  const doorNo = cleanText(doorNoInput && doorNoInput.value);
+  const fullAddress = cleanText(fullAddressInput && fullAddressInput.value);
+  const landmark = cleanText(landmarkInput && landmarkInput.value);
+
+  if (!fullAddress) {
+    if (fullAddressInput) {
+      fullAddressInput.focus();
+    }
+    if (detectedAddressText) {
+      detectedAddressText.textContent = "Please enter your full delivery address.";
+    }
+    return;
+  }
+
+  saveLocationState({
+    ...existingLocation,
+    doorNo,
+    full: fullAddress,
+    fullAddress,
+    landmark,
+    source: "user_confirmed_address"
+  });
+
+  closeLocationDrawer();
+}
+
+if (deliveryLocationBox) {
+  deliveryLocationBox.addEventListener("click", openLocationDrawer);
+
+  deliveryLocationBox.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openLocationDrawer();
+    }
+  });
+}
+
+if (locationDrawerBackdrop) {
+  locationDrawerBackdrop.addEventListener("click", event => {
+    if (event.target === locationDrawerBackdrop) {
+      closeLocationDrawer();
+    }
+  });
+}
+
+if (closeLocationDrawerBtn) {
+  closeLocationDrawerBtn.addEventListener("click", closeLocationDrawer);
+}
+
+if (refreshLocationBtn) {
+  refreshLocationBtn.addEventListener("click", requestDeliveryLocation);
+}
+
+if (saveLocationBtn) {
+  saveLocationBtn.addEventListener("click", saveAddressFromDrawer);
+}
+
+window.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    closeLocationDrawer();
+  }
+});
+
+renderDeliveryLocation();
+
+/* Customer location is now user-controlled. We do not auto-request GPS after first setup. */
+
+/*
+========================================
+1. PRODUCT DATA SOURCE
+========================================
+
+Why:
+- Right now products exist only in HTML.
+- Logic becomes hard if products are duplicated everywhere.
+- So we create ONE source of truth.
+
+How:
+- Every product gets:
+  id
+  category
+  price
+  protein
+  etc
+
+- UI reads from this data.
+*/
+
+const products = [
+
+  {
+    id: 1,
+    category: "protein",
+    name: "Protein egg lunch",
+    price: 89,
+    protein: "45g"
+  },
+
+  {
+    id: 2,
+    category: "regular",
+    name: "Regular meal",
+    price: 65
+  },
+
+  {
+    id: 3,
+    category: "protein",
+    name: "Protein chicken dinner",
+    price: 109,
+    protein: "50g"
+  },
+
+  {
+    id: 4,
+    category: "regular",
+    name: "Chappati & gravy",
+    price: 89
+  }
+
+];
+
+
+/*
+========================================
+2. FILTER PILLS LOGIC
+========================================
+
+Why:
+- Only one pill should be active.
+- Clicking a pill should:
+  - remove active state from others
+  - activate clicked pill
+  - filter sections
+
+How:
+- We loop through every .pill
+- Add click listener
+*/
+
+const pills = document.querySelectorAll(".pill");
+
+const bestSellingSection =
+  document.querySelectorAll(".section")[0];
+
+const proteinSection =
+  document.querySelectorAll(".section")[1];
+
+const regularSection =
+  document.querySelectorAll(".section")[2];
+
+pills.forEach((pill, index) => {
+
+  pill.addEventListener("click", () => {
+
+    /*
+    Remove active state from all pills
+    */
+    pills.forEach(p => {
+      p.classList.remove("pill-active");
+    });
+
+    /*
+    Activate clicked pill
+    */
+    pill.classList.add("pill-active");
+
+    /*
+    FILTERING LOGIC
+    */
+
+    /*
+    ALL
+    */
+    if (index === 0) {
+
+      bestSellingSection.style.display = "flex";
+      proteinSection.style.display = "flex";
+      regularSection.style.display = "flex";
+    }
+
+    /*
+    PROTEIN
+    */
+    else if (index === 1) {
+
+      bestSellingSection.style.display = "none";
+      proteinSection.style.display = "flex";
+      regularSection.style.display = "none";
+    }
+
+    /*
+    REGULAR
+    */
+    else if (index === 2) {
+
+      bestSellingSection.style.display = "none";
+      proteinSection.style.display = "none";
+      regularSection.style.display = "flex";
+    }
+
+  });
+
+});
+
+
+/*
+========================================
+3. ADD TO CART + QUANTITY BUTTON LOGIC
+========================================
+
+Behavior:
+- Product quantity 0 = green Add button.
+- Product quantity 1 or more = white quantity button with - qty +.
+- Same product shown in multiple places updates everywhere.
+- Cart is saved in localStorage.
+*/
+
+const addButtons = document.querySelectorAll(
+  ".action-btn, .product-list-action"
+);
+
+const floatingCartCard = document.getElementById("floatingCartCard");
+const floatingCartTitle = document.getElementById("floatingCartTitle");
+const floatingCartSubtitle = document.getElementById("floatingCartSubtitle");
+let lastAddedProductName = "";
+
+
+function loadCart() {
+
+  const savedCart = localStorage.getItem("cart");
+
+  if (!savedCart) return [];
+
+  try {
+
+    const parsedCart = JSON.parse(savedCart);
+
+    /*
+    Supports both formats:
+    - current array format
+    - older object format, if it exists from testing
+    */
+    if (Array.isArray(parsedCart)) {
+      return parsedCart;
+    }
+
+    if (parsedCart && typeof parsedCart === "object") {
+      return Object.values(parsedCart);
+    }
+
+    return [];
+
+  } catch (error) {
+
+    return [];
+
+  }
+
+}
+
+let cart = loadCart();
+
+function saveCart() {
+
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cart)
+  );
+
+}
+
+function getCartSummary() {
+
+  let totalQty = 0;
+  let totalAmount = 0;
+
+  cart.forEach(item => {
+    const qty = Number(item.qty) || 0;
+    const price = Number(item.price) || 0;
+
+    totalQty += qty;
+    totalAmount += price * qty;
+  });
+
+  return {
+    totalQty,
+    totalAmount
+  };
+
+}
+
+function updateFloatingCartCard() {
+
+  if (!floatingCartCard) return;
+
+  const { totalQty, totalAmount } = getCartSummary();
+
+  if (totalQty <= 0) {
+    floatingCartCard.classList.remove("is-visible");
+    return;
+  }
+
+  const itemLabel = totalQty === 1 ? "item" : "items";
+
+  if (floatingCartTitle) {
+    floatingCartTitle.textContent = lastAddedProductName
+      ? `${lastAddedProductName} added`
+      : `${totalQty} ${itemLabel} in cart`;
+  }
+
+  if (floatingCartSubtitle) {
+    floatingCartSubtitle.textContent = `${totalQty} ${itemLabel} · ₹${totalAmount}`;
+  }
+
+  floatingCartCard.classList.add("is-visible");
+
+}
+
+
+function findProduct(productId) {
+
+  return products.find(
+    product => product.id === productId
+  );
+
+}
+
+function findCartItem(productId) {
+
+  return cart.find(
+    item => item.id === productId
+  );
+
+}
+
+function getItemQuantity(productId) {
+
+  const item = findCartItem(productId);
+
+  return item ? item.qty : 0;
+
+}
+
+function addProductToCart(productId) {
+
+  const product = findProduct(productId);
+
+  if (!product) return;
+
+  const existingItem = findCartItem(productId);
+
+  if (existingItem) {
+
+    existingItem.qty += 1;
+
+  } else {
+
+    cart.push({
+      ...product,
+      qty: 1
+    });
+
+  }
+
+  lastAddedProductName = product.name;
+
+  saveCart();
+  renderAllCartButtons();
+  updateCartCount();
+  updateFloatingCartCard();
+
+}
+
+function increaseProductQty(productId) {
+
+  addProductToCart(productId);
+
+}
+
+function decreaseProductQty(productId) {
+
+  const existingItem = findCartItem(productId);
+
+  if (!existingItem) return;
+
+  existingItem.qty -= 1;
+
+  if (existingItem.qty <= 0) {
+
+    cart = cart.filter(
+      item => item.id !== productId
+    );
+
+  }
+
+  saveCart();
+  renderAllCartButtons();
+  updateCartCount();
+  updateFloatingCartCard();
+
+}
+
+function renderCartButton(button) {
+
+  const productId = Number(
+    button.dataset.productId
+  );
+
+  const qty = getItemQuantity(productId);
+
+  const addTextClass = button.classList.contains("product-list-action")
+    ? "product-list-action-text"
+    : "action-btn-text";
+
+  if (qty <= 0) {
+
+    button.classList.remove("qty-button");
+
+    button.innerHTML = `
+      <div class="${addTextClass}">Add</div>
+    `;
+
+    return;
+
+  }
+
+  button.classList.add("qty-button");
+
+  button.innerHTML = `
+    <button class="qty-control qty-minus" type="button" aria-label="Decrease quantity">-</button>
+    <div class="qty-count">${qty}</div>
+    <button class="qty-control qty-plus" type="button" aria-label="Increase quantity">+</button>
+  `;
+
+}
+
+function renderAllCartButtons() {
+
+  addButtons.forEach(button => {
+    renderCartButton(button);
+  });
+
+}
+
+addButtons.forEach((button) => {
+
+  button.addEventListener("click", (event) => {
+
+    const productId = Number(
+      button.dataset.productId
+    );
+
+    if (event.target.closest(".qty-minus")) {
+
+      decreaseProductQty(productId);
+      return;
+
+    }
+
+    if (event.target.closest(".qty-plus")) {
+
+      increaseProductQty(productId);
+      return;
+
+    }
+
+    /*
+    If the button is already in quantity mode,
+    clicking the number or empty gap should not add again.
+    */
+    if (button.classList.contains("qty-button")) {
+      return;
+    }
+
+    addProductToCart(productId);
+
+    /*
+    Touch feedback only for Add click.
+    */
+    button.style.transform = "scale(0.95)";
+
+    setTimeout(() => {
+      button.style.transform = "scale(1)";
+    }, 120);
+
+  });
+
+});
+
+
+/*
+========================================
+4. CART COUNT BADGE
+========================================
+
+Why:
+- User must know how many items added.
+
+How:
+- Sum all quantities in cart.
+*/
+
+function updateCartCount() {
+
+  const cartNav =
+    document.querySelectorAll(".nav-item")[1];
+
+  let totalQty = 0;
+
+  cart.forEach(item => {
+    totalQty += item.qty;
+  });
+
+  /*
+  Create badge if not exists
+  */
+  let badge =
+    cartNav.querySelector(".cart-badge");
+
+  if (!badge) {
+
+    badge = document.createElement("div");
+
+    badge.className = "cart-badge";
+
+    badge.style.position = "absolute";
+    badge.style.top = "-4px";
+    badge.style.right = "16px";
+    badge.style.minWidth = "18px";
+    badge.style.height = "18px";
+    badge.style.padding = "0 5px";
+    badge.style.borderRadius = "999px";
+    badge.style.background = "#E23009";
+    badge.style.color = "white";
+    badge.style.fontSize = "10px";
+    badge.style.fontWeight = "600";
+    badge.style.display = "flex";
+    badge.style.alignItems = "center";
+    badge.style.justifyContent = "center";
+
+    cartNav.style.position = "relative";
+
+    cartNav.appendChild(badge);
+  }
+
+  /*
+  Hide if empty
+  */
+  if (totalQty <= 0) {
+
+    badge.style.display = "none";
+
+  } else {
+
+    badge.style.display = "flex";
+    badge.textContent = totalQty;
+  }
+
+}
+
+
+if (floatingCartCard) {
+
+  floatingCartCard.addEventListener("click", () => {
+    window.location.href = "cart.html";
+  });
+
+  floatingCartCard.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      window.location.href = "cart.html";
+    }
+  });
+
+}
+
+
+/*
+========================================
+5. BUTTON ACTIVE FEEDBACK
+========================================
+
+Why:
+- UI feels responsive on mobile.
+*/
+
+const tapButtons = document.querySelectorAll(
+  ".action-btn, .product-list-action, .pill, .nav-item"
+);
+
+tapButtons.forEach(btn => {
+
+  btn.addEventListener("touchstart", () => {
+    btn.style.opacity = "0.7";
+  });
+
+  btn.addEventListener("touchend", () => {
+    btn.style.opacity = "1";
+  });
+
+});
+
+
+/*
+========================================
+6. RESTORE APP STATE
+========================================
+
+Why:
+- On refresh:
+  cart count and button quantity state should remain.
+
+How:
+- Read localStorage and render every product button.
+*/
+
+renderAllCartButtons();
+updateCartCount();
+updateFloatingCartCard();
+
+
+/* Horizontal scroll and snap are handled in CSS above. */
+
+</script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="firebase-mvp.js"></script>
+</body>
+</html>

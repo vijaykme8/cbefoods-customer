@@ -1,0 +1,1630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+/>
+
+<meta name="apple-mobile-web-app-capable" content="yes" />
+
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+/>
+
+<meta name="theme-color" content="#8806CE" />
+
+<title>Coimbatore Foods — Login</title>
+
+<style>
+
+/* =========================
+   FONTS
+========================= */
+
+@font-face{
+  font-family:'General Sans';
+  src:url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight:400;
+}
+
+@font-face{
+  font-family:'General Sans';
+  src:url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight:500;
+}
+
+@font-face{
+  font-family:'General Sans';
+  src:url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight:600;
+}
+
+@font-face{
+  font-family:'General Sans';
+  src:url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype');
+  font-weight:700;
+}
+
+@font-face{
+  font-family:'Chillax';
+  src:url('./fonts/Chillax/Chillax-Bold.otf') format('opentype');
+  font-weight:700;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
+
+:root{
+  --purple-1:#8806CE;
+  --purple-2:#6E06A6;
+  --green:#08A045;
+  --white:#FDFDFF;
+  --dark:#12130F;
+}
+
+/* =========================
+   BASE
+========================= */
+
+html,
+body{
+  width:100%;
+  height:100%;
+  overflow:hidden;
+}
+
+body{
+  font-family:'General Sans',sans-serif;
+  background:linear-gradient(
+    180deg,
+    var(--purple-1) 0%,
+    var(--purple-2) 100%
+  );
+  color:var(--white);
+}
+
+/* =========================
+   APP
+========================= */
+
+.app{
+  width:100%;
+  height:100dvh;
+
+  overflow:hidden;
+  position:relative;
+
+  display:flex;
+  flex-direction:column;
+}
+
+/* =========================
+   FRAME 17
+========================= */
+
+.frame-17{
+  width:100%;
+  height:100%;
+
+  display:flex;
+  flex-direction:column;
+
+  position:relative;
+}
+
+/* =========================
+   TOP SECTION
+========================= */
+
+.top-section{
+  flex:1;
+  position: relative;
+  display:flex;
+  flex-direction:column;
+  justify-content: flex-start;
+
+  min-height:0;
+  z-index: 1;
+
+  padding-top:max(50px, env(safe-area-inset-top));
+  padding-bottom: 20vh;
+
+  overflow:hidden;
+}
+
+.spacer{
+  height:1vh; /* 👈 fixed 10% of screen height */
+  flex-shrink:0;
+  flex: 0;
+}
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  flex: 0;
+}
+
+.hero-top{
+  padding:0 24px;
+}
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:10px 24px;
+
+  background:#12130F;
+
+  border-radius:20px;
+
+  font-size:14px;
+  font-weight:500;
+  line-height:21px;
+}
+
+.hero-content{
+  padding:0 24px;
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.subtext{
+  width:220px;
+
+  opacity:.6;
+
+  font-size:16px;
+  font-weight:500;
+  line-height:24px;
+}
+
+.brand{
+  font-family:'Chillax',sans-serif;
+  font-size:50px;
+  font-weight:700;
+  line-height:55px;
+}
+
+/* =========================
+   IMAGE STACK
+========================= */
+
+.image-stack{
+  width:100%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  flex:1;
+  padding:0 7px;
+
+  min-height:0;
+}
+
+.logo-wrap{
+  width:150px;
+  height:150px;
+
+  opacity:.8;
+
+  margin-bottom:-60px;
+
+  z-index:2;
+
+  flex-shrink:0;
+}
+
+.logo-wrap img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+.food-image{
+  width:359px;
+  max-width:92vw;
+
+  height:auto;
+  max-height:42vh;
+
+  object-fit:contain;
+
+  filter:drop-shadow(0 20px 40px rgba(0,0,0,.18));
+
+  flex-shrink:1;
+}
+
+/* =========================
+   DRAWER
+========================= */
+
+.drawer{
+  width:100%;
+
+  background:#FDFDFF;
+  color:#12130F;
+
+  border-radius:68px 68px 0 0;
+
+  padding:
+    30px
+    24px
+    calc(40px + env(safe-area-inset-bottom));
+
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+
+  box-shadow:0 -10px 40px rgba(0,0,0,.14);
+
+  transition:.28s ease;
+
+  margin-top:auto;
+
+  position:absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  z-index:10;
+
+  flex-shrink:0;
+
+  max-height:78dvh;
+
+  overflow-y:auto;
+}
+
+.error{
+  display:none;
+
+  font-size:14px;
+  font-weight:500;
+  line-height:20px;
+
+  color:#d7263d;
+}
+
+/* =========================
+   PHONE SCREEN
+========================= */
+
+.phone-screen{
+  display:flex;
+  flex-direction:column;
+  gap:24px;
+}
+
+.label{
+  opacity:.6;
+
+  font-size:16px;
+  font-weight:500;
+  line-height:24px;
+}
+
+.phone-box{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding:16px 18px;
+
+  background:rgba(18,19,15,0.02);
+
+  border-radius:20px;
+}
+
+.country{
+  font-size:18px;
+  font-weight:500;
+  line-height:26px;
+
+  color:#12130F;
+}
+
+.country.dash{
+  opacity:.12;
+}
+
+.phone-input{
+  width:100%;
+
+  border:none;
+  outline:none;
+  background:transparent;
+
+  font-size:20px;
+  font-weight:500;
+  line-height:26px;
+
+  color:#12130F;
+}
+
+.phone-input::placeholder{
+  color:rgba(18,19,15,.25);
+}
+
+.btn{
+  width:100%;
+  height:55px;
+
+  border:none;
+  outline:none;
+
+  border-radius:20px;
+
+  background:#08A045;
+
+  color:#FDFDFF;
+
+  font-size:18px;
+  font-weight:600;
+  line-height:26px;
+
+  cursor:pointer;
+
+  transition:.2s ease;
+}
+
+.btn:active{
+  transform:scale(.98);
+}
+
+.btn:disabled{
+  opacity:.7;
+}
+
+.note{
+  opacity:.6;
+
+  font-size:14px;
+  font-weight:500;
+  line-height:21px;
+}
+
+
+/* =========================
+   CUSTOMER NAME SCREEN
+========================= */
+
+.name-screen{
+  display:none;
+  flex-direction:column;
+  gap:24px;
+  width:100%;
+}
+
+.name-box{
+  width:100%;
+
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding:16px 18px;
+
+  background:rgba(18,19,15,0.02);
+
+  border-radius:20px;
+}
+
+.name-input{
+  width:100%;
+
+  border:none;
+  outline:none;
+  background:transparent;
+
+  font-size:20px;
+  font-weight:500;
+  line-height:26px;
+
+  color:#12130F;
+}
+
+.name-input::placeholder{
+  color:rgba(18,19,15,.25);
+}
+
+/* =========================
+   OTP SCREEN
+========================= */
+
+.otp-screen{
+  display:none;
+  flex-direction:column;
+  gap:20px;
+
+  width:100%;
+}
+
+.back-row{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  cursor:pointer;
+}
+
+.back-icon{
+  width:30px;
+  height:30px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.back-text{
+  font-size:18px;
+  font-weight:500;
+  line-height:27px;
+
+  color:#12130F;
+}
+
+.otp-content{
+  display:flex;
+  flex-direction:column;
+  gap:30px;
+}
+
+.otp-group{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.otp-label-group{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.otp-box{
+  width:100%;
+  cursor: text;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  position: relative;
+  padding:14px 18px;
+  gap: 10px;
+  background:rgba(18,19,15,0.02);
+
+  border-radius:20px;
+}
+
+.otp-digit{
+  width:24px;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:500;
+  border-bottom:1px solid rgba(18,19,15,0.2);
+}
+
+.otp-input{
+  width:24px;
+
+  border:none;
+  outline:none;
+  background:transparent;
+  caret-color: transparent;
+  user-select: none;
+  text-align:center;
+
+  font-size:20px;
+  font-weight:500;
+  line-height:26px;
+
+  color:#12130F;
+}
+
+.otp-divider{
+  opacity:.12;
+
+  font-size:18px;
+  font-weight:500;
+  line-height:26px;
+
+  color:#12130F;
+}
+
+.otp-info{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+}
+
+.otp-note{
+  text-align:center;
+
+  opacity:.6;
+
+  font-size:14px;
+  font-weight:500;
+  line-height:21px;
+
+  color:#12130F;
+}
+
+.resend{
+  font-size:16px;
+  font-weight:500;
+  line-height:24px;
+
+  color:rgba(18,19,15,.3);
+}
+
+.resend.active{
+  color:#8806CE;
+  cursor:pointer;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:390px){
+
+  .brand{
+    font-size:46px;
+    line-height:52px;
+  }
+
+  .top-section{
+    gap:48px;
+  }
+
+  .logo-wrap{
+    width:130px;
+    height:130px;
+  }
+
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+.otp-cursor {
+  display: inline-block;
+  width: 1px;
+  height: 22px;
+  background: #12130F;
+  animation: blink 1s step-start infinite;
+  margin: auto;
+}
+
+
+
+/* =========================
+   FIGMA-LIKE 100% CORNER SMOOTHING
+   Fallback: normal border-radius on unsupported browsers.
+========================= */
+@supports (corner-shape: squircle) {
+  * {
+    corner-shape: squircle;
+  }
+}
+
+</style>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { getDatabase }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+import {
+  getAuth,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  onAuthStateChanged,
+  signOut
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAD9wuVrTkEDB5adQc3jd_xkAYjEbgFkdw",
+  authDomain: "tiffin-manager-73e96.firebaseapp.com",
+  databaseURL: "https://tiffin-manager-73e96-default-rtdb.firebaseio.com",
+  projectId: "tiffin-manager-73e96",
+  storageBucket: "tiffin-manager-73e96.firebasestorage.app",
+  messagingSenderId: "259542418403",
+  appId: "1:259542418403:web:4747441733bedddd75d6d6"
+};
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+getDatabase(app);
+
+let confirmationResult;
+let recaptchaVerifier;
+let resendTimer = 37;
+let resendInterval;
+
+let authChecked = false;
+let pendingLoginPhone = "";
+let verifiedLoginUid = "";
+
+const CUSTOMER_PROFILE_REGISTRY_KEY = "customer_profiles_by_phone";
+
+onAuthStateChanged(auth, async (user) => {
+
+  // FIRST TIME CHECK ONLY
+  if (authChecked) return;
+
+  authChecked = true;
+
+  if (user) {
+
+    const localAuth = localStorage.getItem('cust_auth');
+
+    if (localAuth === '1') {
+
+      const phone = getVerifiedPhoneForCurrentSession(user);
+      const profile = restoreSavedCustomerProfile(phone, user.uid);
+
+      if (!profile?.name && !getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"])) {
+        showNameScreen(phone, user.uid);
+        return;
+      }
+
+      window.location.href = 'index.html';
+
+    } else {
+
+      // IMPORTANT: force logout from Firebase if local storage is gone
+      try {
+        await signOut(auth);
+      } catch (e) {}
+
+    }
+
+  }
+
+});
+
+function isLikelyIndianMobile(number){
+
+  return /^[6-9]\d{9}$/.test(number);
+
+}
+
+window.sendOTP = async () => {
+
+const phone =
+  document
+    .getElementById('phoneInput')
+    .value
+    .trim();
+
+if(!/^\d{10}$/.test(phone)){
+
+  showError(
+    'Enter a valid 10-digit mobile number'
+  );
+
+  return;
+
+}
+
+if(!isLikelyIndianMobile(phone)){
+
+  showError(
+    'Please enter a valid Indian mobile number'
+  );
+
+  return;
+
+}
+
+clearError();
+
+pendingLoginPhone = phone;
+localStorage.setItem("cust_pending_phone", phone);
+
+const btn =
+  document.getElementById('sendOtpBtn');
+
+btn.innerText = 'Sending OTP...';
+
+btn.disabled = true;
+
+try{
+
+  // CLEAR OLD RECAPTCHA
+  if(window.recaptchaVerifier){
+
+    window.recaptchaVerifier.clear();
+
+  }
+
+  let recaptchaContainer =
+    document.getElementById('recaptcha-container');
+
+  if (!recaptchaContainer) {
+    recaptchaContainer =
+      document.createElement('div');
+    recaptchaContainer.id = 'recaptcha-container';
+    recaptchaContainer.style.position = 'absolute';
+    recaptchaContainer.style.left = '-9999px';
+    recaptchaContainer.style.width = '1px';
+    recaptchaContainer.style.height = '1px';
+    recaptchaContainer.style.overflow = 'hidden';
+    document.body.appendChild(recaptchaContainer);
+  }
+
+  if (!auth.settings) {
+    auth.settings = {};
+  }
+
+  if (
+    typeof auth.settings.appVerificationDisabledForTesting ===
+    'undefined'
+  ) {
+    auth.settings.appVerificationDisabledForTesting = false;
+  }
+
+  // CREATE NEW RECAPTCHA
+  window.recaptchaVerifier = new RecaptchaVerifier(
+    auth,
+    'recaptcha-container',
+    {
+      size: 'invisible'
+    }
+  );
+
+  confirmationResult =
+    await signInWithPhoneNumber(
+      auth,
+      '+91' + phone,
+      window.recaptchaVerifier
+    );
+
+  document
+    .getElementById('phoneScreen')
+    .style.display = 'none';
+
+  document
+    .getElementById('otpScreen')
+    .style.display = 'flex';
+
+  document
+    .getElementById('otpNote')
+    .innerText =
+    `Enter the OTP sent to +91 ${phone}`;
+
+  startResendTimer();
+
+}
+
+catch(err){
+
+  console.error(err);
+
+  let message =
+    'Unable to send OTP. Please try again.';
+
+  if(err.code === 'auth/too-many-requests'){
+
+    message =
+      'Too many attempts. Please try again later.';
+
+  }
+
+  else if(
+    err.code === 'auth/invalid-phone-number'
+  ){
+
+    message =
+      'Invalid mobile number';
+
+  }
+
+  else if(
+    err.code === 'auth/quota-exceeded'
+  ){
+
+    message =
+      'OTP quota exceeded in Firebase';
+
+  }
+
+  else if(
+    err.code === 'auth/unauthorized-domain'
+  ){
+
+    message =
+      'Unauthorized domain. Add this origin to Firebase Auth authorized domains: ' +
+      window.location.origin;
+
+  }
+
+  else if(
+    err.code === 'auth/captcha-check-failed'
+  ){
+
+    message =
+      'reCAPTCHA verification failed';
+
+  }
+
+  else if(
+    err.code === 'auth/operation-not-allowed'
+  ){
+
+    message =
+      'Phone authentication is not enabled in Firebase';
+
+  }
+
+  else {
+    message =
+      (err.code ? err.code + ': ' : '') + err.message;
+  }
+
+  showError(message);
+
+}
+
+btn.innerText = 'Continue';
+
+btn.disabled = false;
+
+};
+
+window.verifyOTP = async () => {
+
+  const otp =
+    document.getElementById('otpHidden')?.value.trim() || '';
+
+  if(otp.length !== 6){
+
+    showError(
+      'Enter the complete 6-digit OTP'
+    );
+
+    return;
+
+  }
+
+  clearError();
+
+  const btn =
+    document.getElementById('verifyBtn');
+
+  btn.innerText = 'Verifying...';
+
+  btn.disabled = true;
+
+  try{
+
+    const result =
+      await confirmationResult.confirm(otp);
+
+    const verifiedPhone = getPendingLoginPhone();
+    verifiedLoginUid = result.user.uid;
+
+    saveBaseCustomerAuth(result.user.uid, verifiedPhone);
+
+    const existingProfile = restoreSavedCustomerProfile(verifiedPhone, result.user.uid);
+
+    if (existingProfile?.name) {
+      await requestPermissionsBeforeRedirect();
+      window.location.href = 'index.html';
+      return;
+    }
+
+    showNameScreen(verifiedPhone, result.user.uid);
+    return;
+
+  }
+
+ catch(err){
+
+  console.error('FIREBASE OTP ERROR:', err);
+
+  alert(
+    err.code + '\n\n' + err.message
+  );
+
+  showError(err.message);
+
+}
+
+  btn.innerText = 'Verify';
+
+  btn.disabled = false;
+
+};
+
+
+function cleanText(value) {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+}
+
+function getFirstLocalValue(keys) {
+  for (const key of keys) {
+    const value = cleanText(localStorage.getItem(key));
+    if (value) return value;
+  }
+  return "";
+}
+
+function normalizeCustomerPhone(value) {
+  const digits = cleanText(value).replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.length > 10 ? digits.slice(-10) : digits;
+}
+
+function getPendingLoginPhone() {
+  return normalizeCustomerPhone(
+    pendingLoginPhone ||
+    localStorage.getItem("cust_pending_phone") ||
+    document.getElementById("phoneInput")?.value ||
+    localStorage.getItem("cust_phone") ||
+    localStorage.getItem("cust_mobile") ||
+    ""
+  );
+}
+
+function getVerifiedPhoneForCurrentSession(user) {
+  return normalizeCustomerPhone(
+    localStorage.getItem("cust_phone") ||
+    localStorage.getItem("cust_mobile") ||
+    user?.phoneNumber ||
+    getPendingLoginPhone()
+  );
+}
+
+function readCustomerProfileRegistry() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CUSTOMER_PROFILE_REGISTRY_KEY)) || {};
+    return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function writeCustomerProfileRegistry(registry) {
+  localStorage.setItem(CUSTOMER_PROFILE_REGISTRY_KEY, JSON.stringify(registry || {}));
+}
+
+function saveBaseCustomerAuth(uid, phone) {
+  const normalizedPhone = normalizeCustomerPhone(phone);
+
+  localStorage.setItem("cust_auth", "1");
+  localStorage.setItem("cust_uid", uid || "");
+
+  if (normalizedPhone) {
+    localStorage.setItem("cust_phone", normalizedPhone);
+    localStorage.setItem("cust_mobile", normalizedPhone);
+    localStorage.setItem("customer_phone", normalizedPhone);
+    localStorage.setItem("customer_mobile", normalizedPhone);
+    localStorage.removeItem("cust_pending_phone");
+  }
+}
+
+function saveCustomerProfileLocally(profile) {
+  const name = cleanText(profile?.name);
+  const phone = normalizeCustomerPhone(profile?.phone);
+  const uid = cleanText(profile?.uid || verifiedLoginUid || localStorage.getItem("cust_uid"));
+
+  if (!name || !phone) return null;
+
+  const savedProfile = {
+    name,
+    phone,
+    uid,
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("cust_name", name);
+  localStorage.setItem("customer_name", name);
+  localStorage.setItem("user_name", name);
+  localStorage.setItem("cust_phone", phone);
+  localStorage.setItem("cust_mobile", phone);
+  localStorage.setItem("customer_phone", phone);
+  localStorage.setItem("customer_mobile", phone);
+  localStorage.setItem("cust_profile_ready", "1");
+  localStorage.setItem("customer_profile", JSON.stringify(savedProfile));
+
+  if (uid) localStorage.setItem("cust_uid", uid);
+
+  const registry = readCustomerProfileRegistry();
+  registry[phone] = savedProfile;
+  writeCustomerProfileRegistry(registry);
+
+  return savedProfile;
+}
+
+function getSavedCustomerProfile(phone) {
+  const normalizedPhone = normalizeCustomerPhone(phone);
+  if (!normalizedPhone) return null;
+
+  const registry = readCustomerProfileRegistry();
+  const profile = registry[normalizedPhone];
+
+  if (profile && cleanText(profile.name)) {
+    return {
+      ...profile,
+      phone: normalizedPhone
+    };
+  }
+
+  return null;
+}
+
+function restoreSavedCustomerProfile(phone, uid = "") {
+  const normalizedPhone = normalizeCustomerPhone(phone);
+  if (!normalizedPhone) return null;
+
+  const savedProfile = getSavedCustomerProfile(normalizedPhone);
+  if (savedProfile?.name) {
+    return saveCustomerProfileLocally({
+      ...savedProfile,
+      phone: normalizedPhone,
+      uid: uid || savedProfile.uid
+    });
+  }
+
+  const existingName = getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]);
+  if (existingName) {
+    return saveCustomerProfileLocally({
+      name: existingName,
+      phone: normalizedPhone,
+      uid
+    });
+  }
+
+  localStorage.setItem("cust_phone", normalizedPhone);
+  localStorage.setItem("cust_mobile", normalizedPhone);
+  localStorage.setItem("customer_phone", normalizedPhone);
+  localStorage.setItem("customer_mobile", normalizedPhone);
+
+  return null;
+}
+
+function showNameScreen(phone = "", uid = "") {
+  pendingLoginPhone = normalizeCustomerPhone(phone) || getPendingLoginPhone();
+  verifiedLoginUid = uid || verifiedLoginUid || localStorage.getItem("cust_uid") || "";
+
+  document.getElementById("phoneScreen").style.display = "none";
+  document.getElementById("otpScreen").style.display = "none";
+  document.getElementById("nameScreen").style.display = "flex";
+
+  const phoneCopy = document.getElementById("namePhoneCopy");
+  if (phoneCopy) {
+    phoneCopy.textContent = pendingLoginPhone ? `Mobile number: +91 ${pendingLoginPhone}` : "Mobile number verified";
+  }
+
+  setTimeout(() => document.getElementById("nameInput")?.focus(), 80);
+}
+
+window.saveCustomerNameAndContinue = async () => {
+  const nameInput = document.getElementById("nameInput");
+  const name = cleanText(nameInput?.value);
+  const phone = getPendingLoginPhone();
+  const uid = verifiedLoginUid || localStorage.getItem("cust_uid") || "";
+
+  if (name.length < 2) {
+    showError("Please enter your name");
+    nameInput?.focus();
+    return;
+  }
+
+  if (!phone) {
+    showError("Mobile number missing. Please login again.");
+    return;
+  }
+
+  clearError();
+
+  const btn = document.getElementById("saveNameBtn");
+  btn.innerText = "Saving...";
+  btn.disabled = true;
+
+  saveBaseCustomerAuth(uid, phone);
+  saveCustomerProfileLocally({ name, phone, uid });
+
+  await requestPermissionsBeforeRedirect();
+
+  window.location.href = "index.html";
+};
+
+async function requestLocationPermission(){
+  if (!navigator.geolocation) return null;
+
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      () => resolve('granted'),
+      () => resolve('denied'),
+      { timeout: 10000 }
+    );
+  });
+}
+
+async function requestNotificationPermission(){
+  if (!('Notification' in window)) return null;
+
+  if (Notification.permission === 'granted') return 'granted';
+  if (Notification.permission === 'denied') return 'denied';
+
+  try {
+    return await Notification.requestPermission();
+  } catch (e) {
+    return 'denied';
+  }
+}
+
+async function requestPermissionsBeforeRedirect(){
+  await requestLocationPermission();
+  await requestNotificationPermission();
+}
+
+window.backToPhone = () => {
+
+  clearError();
+
+  document
+    .getElementById('otpScreen')
+    .style.display = 'none';
+
+  const nameScreen = document.getElementById('nameScreen');
+  if (nameScreen) nameScreen.style.display = 'none';
+
+  document
+    .getElementById('phoneScreen')
+    .style.display = 'flex';
+
+};
+
+function showError(msg){
+
+  const el =
+    document.getElementById('error');
+
+  el.style.display = 'block';
+
+  el.innerText = msg;
+
+}
+
+function clearError(){
+
+  const el =
+    document.getElementById('error');
+
+  el.style.display = 'none';
+
+  el.innerText = '';
+
+}
+
+function startResendTimer(){
+
+  clearInterval(resendInterval);
+
+  resendTimer = 37;
+
+  const resend =
+    document.getElementById('resendBtn');
+
+  resend.classList.remove('active');
+
+  resend.innerText =
+    `Resend in ${resendTimer}s`;
+
+  resendInterval = setInterval(()=>{
+
+    resendTimer--;
+
+    if(resendTimer <= 0){
+
+      clearInterval(resendInterval);
+
+      resend.innerText = 'Resend OTP';
+
+      resend.classList.add('active');
+
+      return;
+
+    }
+
+    resend.innerText =
+      `Resend in ${resendTimer}s`;
+
+  },1000);
+
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+
+  const input = document.getElementById('otpHidden');
+
+  const boxes = [
+    document.getElementById('d0'),
+    document.getElementById('d1'),
+    document.getElementById('d2'),
+    document.getElementById('d3'),
+    document.getElementById('d4'),
+    document.getElementById('d5')
+  ];
+
+  let otpFocused = false;
+
+  function render(value = '') {
+
+    // fill digits
+    for (let i = 0; i < 6; i++) {
+      boxes[i].innerText = value[i] || '';
+    }
+
+    // clear cursor everywhere
+    boxes.forEach(b => {
+      b.innerHTML = b.innerText;
+    });
+
+    // show cursor only if focused
+    if (!otpFocused) return;
+
+    const index = value.length;
+
+    if (index < 6) {
+      boxes[index].innerHTML =
+        '<span class="otp-cursor"></span>';
+    }
+  }
+
+  input.addEventListener('input', () => {
+
+    input.value = input.value.replace(/\D/g, '').slice(0, 6);
+
+    render(input.value);
+
+  });
+
+  // focus OTP box
+  document.querySelector('.otp-box').addEventListener('click', () => {
+
+    otpFocused = true;
+
+    input.focus();
+
+    render(input.value);
+
+  });
+
+  // click outside removes cursor
+  document.addEventListener('click', (e) => {
+
+    const box = document.querySelector('.otp-box');
+
+    if (!box.contains(e.target)) {
+
+      otpFocused = false;
+
+      input.blur();
+
+      render(input.value);
+
+    }
+
+  });
+
+  // optional: backspace fix UX
+  input.addEventListener('keydown', (e) => {
+
+    if (e.key === 'Backspace' && input.value.length === 0) {
+      e.preventDefault();
+    }
+
+  });
+
+  const nameInput = document.getElementById('nameInput');
+  if (nameInput) {
+    nameInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        window.saveCustomerNameAndContinue();
+      }
+    });
+  }
+
+});
+
+</script>
+
+</head>
+
+<body>
+
+<div class="app">
+
+  <div class="frame-17">
+
+    <div class="top-section">
+
+      <div class="hero">
+
+        <div class="hero-top">
+
+          <div class="badge">
+            Eat fit, Stay Healthy
+          </div>
+
+        </div>
+
+        <div class="hero-content">
+
+          <div class="subtext">
+            Fresh, protein-packed meals delivered daily.
+          </div>
+
+          <div class="brand">
+            Coimbatore<br/>
+            Foods
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="spacer"></div>
+
+      <div class="image-stack">
+
+        <div class="logo-wrap">
+
+          <img
+            src="./assets/Logo_my res 1.png"
+            alt="logo"
+          />
+
+        </div>
+
+        <img
+          class="food-image"
+          src="./assets/food-plate-img.png"
+          alt="food"
+        />
+
+      </div>
+
+    </div>
+
+    <!-- DRAWER -->
+
+    <div class="drawer">
+
+      <div id="error" class="error"></div>
+
+      <!-- PHONE SCREEN -->
+
+      <div id="phoneScreen" class="phone-screen">
+
+        <div>
+
+          <div class="label">
+            Phone Number
+          </div>
+
+        </div>
+
+        <div class="phone-box">
+
+          <div class="country">+91</div>
+
+          <div class="country dash">-</div>
+
+          <input
+            id="phoneInput"
+            class="phone-input"
+            type="tel"
+            maxlength="10"
+            placeholder=" "
+          />
+
+        </div>
+
+        <button
+          id="sendOtpBtn"
+          class="btn"
+          onclick="sendOTP()"
+        >
+          Continue
+        </button>
+
+        <div class="note">
+          We’ll send a one-time OTP to securely sign you in.
+        </div>
+
+      </div>
+
+      <!-- OTP SCREEN -->
+
+      <div id="otpScreen" class="otp-screen">
+
+        <div
+          class="back-row"
+          onclick="backToPhone()"
+        >
+
+          <div class="back-icon">
+
+            <svg
+              width="30"
+              height="30"
+              viewBox="0 0 30 30"
+              fill="none"
+            >
+              <path
+                d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z"
+                stroke="#12130F"
+                stroke-width="1.5"
+              />
+              <path
+                d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872"
+                stroke="#12130F"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+
+          </div>
+
+          <div class="back-text">
+            back
+          </div>
+
+        </div>
+
+        <div class="otp-content">
+
+          <div class="otp-group">
+
+            <div class="otp-label-group">
+
+              <div class="label">
+                OTP
+              </div>
+
+              <div class="otp-box" onclick="document.getElementById('otpHidden').focus()">
+
+                <input
+                  id="otpHidden"
+                 type="tel"
+                   maxlength="6"
+                   inputmode="numeric"
+                   autocomplete="one-time-code"
+                   style="position:absolute; opacity:0; pointer-events:none;"
+                  />
+
+                    <div class="otp-digit" id="d0"></div>
+                   <div class="otp-digit" id="d1"></div>
+                  <div class="otp-digit" id="d2"></div>
+                  <div class="otp-digit" id="d3"></div>
+                 <div class="otp-digit" id="d4"></div>
+                 <div class="otp-digit" id="d5"></div>
+
+             </div>
+
+            </div>
+
+            <div class="otp-info">
+
+              <div
+                id="otpNote"
+                class="otp-note"
+              >
+                Enter the OTP we just sent to your phone
+              </div>
+
+              <div
+                id="resendBtn"
+                class="resend"
+              >
+                Resend in 37s
+              </div>
+
+            </div>
+
+          </div>
+
+          <button
+            id="verifyBtn"
+            class="btn"
+            onclick="verifyOTP()"
+          >
+            Verify
+          </button>
+
+        </div>
+
+      </div>
+
+      <!-- CUSTOMER NAME SCREEN -->
+
+      <div id="nameScreen" class="name-screen">
+
+        <div>
+
+          <div class="label">
+            Your name
+          </div>
+
+        </div>
+
+        <div class="name-box">
+
+          <input
+            id="nameInput"
+            class="name-input"
+            type="text"
+            autocomplete="name"
+            maxlength="40"
+            placeholder="Eg: Vijay Kumar"
+          />
+
+        </div>
+
+        <button
+          id="saveNameBtn"
+          class="btn"
+          onclick="saveCustomerNameAndContinue()"
+        >
+          Start ordering
+        </button>
+
+        <div id="namePhoneCopy" class="note">
+          Mobile number verified
+        </div>
+
+        <div class="note">
+          We’ll save this with your mobile number so your profile is ready automatically.
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
+<meta name="theme-color" content="#8806CE">
+<title>Coimbatore Foods - Profile</title>
+<link rel="manifest" id="pwa-manifest">
+<style>
+@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
+@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
+@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+
+:root {
+  --white: #FDFDFF;
+  --surface: #FFFFFF;
+  --page: #F5F5F7;
+  --ink: #12130F;
+  --muted: rgba(18, 19, 15, 0.50);
+  --body: rgba(18, 19, 15, 0.78);
+  --soft: rgba(18, 19, 15, 0.06);
+  --line: rgba(18, 19, 15, 0.08);
+  --brand: #8806CE;
+  --green: #08A045;
+  --red: #E23009;
+  --yellow: #FFCC00;
+  --shadow: 2px 4px 24px rgba(0, 0, 0, 0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; width: 0; height: 0; }
+html, body { width: 100%; min-height: 100%; }
+html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
+body { background: var(--page); font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); display: flex; justify-content: center; padding: 0; }
+a { color: inherit; text-decoration: none; }
+button, input, textarea { font-family: inherit; }
+button { border: none; background: none; cursor: pointer; }
+img { max-width: 100%; display: block; }
+.app { width: 390px; min-height: 100dvh; background: var(--surface); overflow-x: hidden; display: flex; flex-direction: column; align-items: flex-start; padding-bottom: calc(100px + env(safe-area-inset-bottom)); position: relative; }
+.hero { align-self: stretch; padding-top: calc(40px + env(safe-area-inset-top)); padding-bottom: 10px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, #FDFDFF 0%, #F7F7F9 100%); display: flex; flex-direction: column; gap: 10px; }
+.top-row { width: 342px; display: flex; justify-content: space-between; align-items: center; }
+.back-link { min-height: 38px; padding: 8px 14px; background: rgba(18, 19, 15, 0.06); color: var(--ink); border-radius: 28px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; line-height: 14px; }
+.avatar { width: 46px; height: 46px; overflow: hidden; border-radius: 50px; flex-shrink: 0; background: #F7F7F9; display: block; }
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.hero-card { width: 342px; padding: 18px 16px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.14) 0%, rgba(18, 19, 15, 0.14) 100%), #12130F; border-radius: 40px; background-image: url('assets/menu/img/hero card-img.png'); background-size: auto; background-position: right bottom; background-repeat: no-repeat; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+.hero-title { color: var(--white); font-size: 26px; font-family: 'Chillax', 'General Sans', sans-serif; font-weight: 700; line-height: 30px; letter-spacing: -0.2px; }
+.hero-title span { display: inline-block; }
+.text-green { color: var(--green); }
+.text-purple { color: var(--brand); }
+.hero-meta { max-width: 220px; color: rgba(253, 253, 255, 0.62); font-size: 12px; font-weight: 600; line-height: 16px; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge { padding: 6px 8px; background: rgba(255, 255, 255, 0.12); border-radius: 12px; color: rgba(253, 253, 255, 0.68); font-size: 12px; font-weight: 600; line-height: 12px; white-space: nowrap; }
+.content { align-self: stretch; padding: 18px 24px 0; display: flex; flex-direction: column; gap: 20px; }
+.section { width: 342px; display: flex; flex-direction: column; gap: 10px; }
+.section-header { min-height: 42px; display: flex; flex-direction: column; }
+.section-title { color: var(--brand); font-size: 20px; font-family: 'Chillax', 'General Sans', sans-serif; font-weight: 600; line-height: 30px; }
+.section-title.green { color: var(--green); }
+.section-title.red { color: var(--red); }
+.section-subtitle { color: var(--muted); font-size: 12px; font-weight: 500; line-height: 12px; }
+.card { width: 342px; padding: 14px; background: var(--surface); border-radius: 40px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.profile-head { display: flex; align-items: center; gap: 12px; padding: 12px; background: #F7F7F9; border: 1px solid var(--line); border-radius: 28px; }
+.profile-icon { width: 54px; height: 54px; border-radius: 36px; overflow: hidden; background: var(--soft); flex-shrink: 0; }
+.profile-icon img { width: 100%; height: 100%; object-fit: cover; }
+.profile-name { color: var(--ink); font-size: 18px; font-weight: 800; line-height: 22px; }
+.profile-phone { color: var(--muted); font-size: 12px; font-weight: 600; line-height: 16px; margin-top: 2px; }
+.field-grid { display: flex; flex-direction: column; gap: 10px; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field span { color: rgba(18, 19, 15, 0.58); font-size: 11px; font-weight: 700; line-height: 12px; }
+.field input, .field textarea { width: 100%; border: 1px solid rgba(18, 19, 15, 0.10); outline: none; background: #FDFDFF; border-radius: 28px; padding: 12px 14px; color: var(--ink); font-size: 13px; font-weight: 600; line-height: 17px; box-shadow: 0 4px 18px rgba(18, 19, 15, 0.04); }
+.field input[readonly] { background: rgba(18, 19, 15, 0.04); color: rgba(18, 19, 15, 0.72); cursor: not-allowed; }
+.field-note { color: var(--muted); font-size: 10px; font-weight: 600; line-height: 14px; margin-top: -2px; }
+.field textarea { min-height: 88px; resize: none; border-radius: 28px; }
+.field input:focus, .field textarea:focus { border-color: rgba(8, 160, 69, 0.55); box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.10); }
+.action-row { display: flex; gap: 10px; }
+.btn { min-height: 46px; padding: 12px 14px; border-radius: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; line-height: 14px; transition: transform 0.12s ease, opacity 0.12s ease; }
+.btn:active { transform: scale(0.98); }
+.btn.primary { flex: 1; background: var(--green); color: var(--white); box-shadow: 0 10px 24px rgba(8, 160, 69, 0.18); }
+.btn.secondary { flex: 1; background: rgba(18, 19, 15, 0.06); color: var(--ink); }
+.btn.danger { flex: 1; background: rgba(226, 48, 9, 0.10); color: var(--red); }
+.address-preview { padding: 12px; border-radius: 28px; background: #F7F7F9; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
+.preview-label { color: var(--muted); font-size: 10px; font-weight: 800; line-height: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+.preview-value { color: var(--ink); font-size: 13px; font-weight: 700; line-height: 18px; }
+.preview-mini { color: rgba(18, 19, 15, 0.62); font-size: 11px; font-weight: 600; line-height: 15px; }
+.order-list { display: flex; flex-direction: column; gap: 10px; }
+.order-card { padding: 12px; background: var(--surface); border-radius: 32px; box-shadow: var(--shadow); border: 1px solid rgba(18, 19, 15, 0.02); display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+.order-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.order-id { color: var(--ink); font-size: 13px; font-weight: 800; line-height: 16px; word-break: break-word; }
+.order-date { color: var(--muted); font-size: 10px; font-weight: 600; line-height: 13px; margin-top: 3px; }
+.order-price { color: var(--green); font-size: 16px; font-weight: 800; line-height: 20px; white-space: nowrap; }
+.status-pill { width: fit-content; padding: 6px 8px; border-radius: 999px; background: rgba(8, 160, 69, 0.10); color: var(--green); font-size: 10px; font-weight: 800; line-height: 12px; }
+.status-pill.failed { background: rgba(226, 48, 9, 0.10); color: var(--red); }
+.order-line { display: flex; justify-content: space-between; gap: 12px; color: var(--body); font-size: 11px; font-weight: 600; line-height: 15px; }
+.order-line strong { color: var(--ink); font-weight: 800; text-align: right; }
+.order-details { border-top: 1px solid var(--line); padding-top: 10px; }
+.order-details summary { list-style: none; cursor: pointer; color: var(--brand); font-size: 12px; font-weight: 800; line-height: 16px; }
+.order-details summary::-webkit-details-marker { display: none; }
+.item-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+.item-row { display: flex; justify-content: space-between; gap: 12px; color: var(--body); font-size: 11px; font-weight: 600; line-height: 15px; }
+.item-row strong { color: var(--ink); white-space: nowrap; }
+.empty-state { padding: 18px; background: #F7F7F9; border-radius: 32px; border: 1px dashed rgba(18, 19, 15, 0.16); text-align: center; color: rgba(18, 19, 15, 0.58); font-size: 12px; font-weight: 700; line-height: 17px; }
+.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-radius: 28px; background: #F7F7F9; border: 1px solid var(--line); }
+.setting-copy { min-width: 0; }
+.setting-title { color: var(--ink); font-size: 13px; font-weight: 800; line-height: 16px; }
+.setting-sub { color: var(--muted); font-size: 11px; font-weight: 600; line-height: 15px; margin-top: 2px; }
+.switch { position: relative; width: 48px; height: 30px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; inset: 0; background: rgba(18, 19, 15, 0.16); border-radius: 999px; transition: 0.2s ease; }
+.slider:before { content: ""; position: absolute; height: 24px; width: 24px; left: 3px; top: 3px; background: var(--white); border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.14); transition: 0.2s ease; }
+.switch input:checked + .slider { background: var(--green); }
+.switch input:checked + .slider:before { transform: translateX(18px); }
+.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(18px); width: calc(390px - 48px); min-height: 44px; padding: 12px 14px; border-radius: 28px; background: rgba(18, 19, 15, 0.94); color: var(--white); font-size: 12px; font-weight: 700; line-height: 16px; display: flex; align-items: center; justify-content: center; text-align: center; opacity: 0; pointer-events: none; transition: 0.2s ease; z-index: 4000; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.bottom-nav { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 390px; height: calc(64px + env(safe-area-inset-bottom)); padding-top: 10px; padding-bottom: env(safe-area-inset-bottom); background: white; box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10); z-index: 2200; display: inline-flex; justify-content: center; align-items: flex-start; gap: 40px; }
+.nav-item { width: 80px; text-decoration: none; color: inherit; display: inline-flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; }
+.nav-item-icon { width: 24px; height: 24px; position: relative; overflow: visible; }
+.nav-item-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.nav-item-text { align-self: stretch; text-align: center; color: var(--ink); font-size: 10px; font-weight: 500; line-height: 10px; }
+.cart-badge { position: absolute; top: -8px; right: -8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: white; font-size: 10px; font-weight: 700; line-height: 18px; display: none; align-items: center; justify-content: center; }
+@supports (corner-shape: squircle) {
+  .back-link, .avatar, .hero-card, .badge, .card, .profile-head, .profile-icon, .field input, .field textarea, .btn, .address-preview, .order-card, .empty-state, .setting-row, .toast, .bottom-nav { corner-shape: squircle; }
+}
+@media (max-width: 389px) {
+  .app, .bottom-nav { width: 100vw; }
+  .hero, .content { padding-left: 20px; padding-right: 20px; }
+  .top-row, .hero-card, .section, .card, .toast { width: calc(100vw - 40px); }
+}
+</style>
+<script>
+(function () {
+  document.documentElement.style.display = 'none';
+  const auth = localStorage.getItem('cust_auth');
+  if (!auth || auth !== '1') {
+    window.location.replace('login.html');
+    return;
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    document.documentElement.style.display = 'block';
+  });
+})();
+</script>
+</head>
+<body>
+<div class="app">
+  <header class="hero">
+    <div class="top-row">
+      <a class="back-link" href="menu.html" aria-label="Back to menu">‹ Menu</a>
+      <div class="avatar" aria-hidden="true"><img src="assets/menu/icons/user profile.svg" alt="User profile"></div>
+    </div>
+
+    <div class="hero-card">
+      <h1 class="hero-title"><span>Manage&nbsp;</span><span class="text-green">profile,&nbsp;</span><span>orders&nbsp;</span><span class="text-purple">easy.</span></h1>
+      <p class="hero-meta">Update details, saved address, previous orders and app settings.</p>
+      <div class="badge-row">
+        <div class="badge" id="profileNameChip">👤 Customer</div>
+        <div class="badge" id="orderCountChip">🧾 0 orders</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">Your details</div>
+        <div class="section-subtitle">Used for payment and delivery updates · phone number is locked</div>
+      </div>
+      <div class="card">
+        <div class="profile-head">
+          <div class="profile-icon"><img src="assets/menu/icons/user profile.svg" alt="User profile"></div>
+          <div>
+            <div class="profile-name" id="profileDisplayName">Customer</div>
+            <div class="profile-phone" id="profileDisplayPhone">Mobile number not added</div>
+          </div>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>Name</span>
+            <input id="nameInput" type="text" autocomplete="name" placeholder="Eg: Vijay Kumar">
+          </label>
+          <label class="field">
+            <span>Mobile number</span>
+            <input id="phoneInput" type="tel" autocomplete="tel" placeholder="Login verified number" readonly aria-readonly="true">
+            <div class="field-note">Verified through phone login. To change this number, logout and login with the new number.</div>
+          </label>
+          <label class="field">
+            <span>Email optional</span>
+            <input id="emailInput" type="email" autocomplete="email" placeholder="Eg: name@email.com">
+          </label>
+        </div>
+        <div class="action-row">
+          <button class="btn primary" id="saveProfileBtn" type="button">Save details</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title green">Saved address</div>
+        <div class="section-subtitle">Manage your default delivery address</div>
+      </div>
+      <div class="card">
+        <div class="address-preview">
+          <div class="preview-label">Current address</div>
+          <div class="preview-value" id="addressPreview">No address saved yet</div>
+          <div class="preview-mini" id="landmarkPreview">Add address from here or from menu location drawer.</div>
+        </div>
+        <div class="field-grid">
+          <label class="field">
+            <span>House / Flat / Door no.</span>
+            <input id="doorNoInput" type="text" autocomplete="address-line1" placeholder="Eg: 9/34, Flat 2B">
+          </label>
+          <label class="field">
+            <span>Full address</span>
+            <textarea id="fullAddressInput" autocomplete="street-address" placeholder="Street, area, city"></textarea>
+          </label>
+          <label class="field">
+            <span>Landmark</span>
+            <input id="landmarkInput" type="text" autocomplete="off" placeholder="Eg: Near temple / opposite school">
+          </label>
+        </div>
+        <div class="action-row">
+          <button class="btn primary" id="saveAddressBtn" type="button">Save address</button>
+          <button class="btn secondary" id="clearAddressBtn" type="button">Clear</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title red">Previous orders</div>
+        <div class="section-subtitle">Order details saved on this device</div>
+      </div>
+      <div class="order-list" id="orderList"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <div class="section-title">Settings</div>
+        <div class="section-subtitle">Local app preferences</div>
+      </div>
+      <div class="card">
+        <div class="setting-row">
+          <div class="setting-copy">
+            <div class="setting-title">Order updates</div>
+            <div class="setting-sub">Keep delivery update reminders enabled.</div>
+          </div>
+          <label class="switch"><input id="orderUpdatesToggle" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="setting-row">
+          <div class="setting-copy">
+            <div class="setting-title">Remember address</div>
+            <div class="setting-sub">Use saved address during checkout.</div>
+          </div>
+          <label class="switch"><input id="rememberAddressToggle" type="checkbox"><span class="slider"></span></label>
+        </div>
+        <div class="action-row">
+          <button class="btn secondary" id="clearHistoryBtn" type="button">Clear orders</button>
+          <button class="btn danger" id="logoutBtn" type="button">Logout</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Bottom navigation">
+    <a class="nav-item" href="menu.html">
+      <div class="nav-item-icon"><img src="assets/menu/icons/search-icon.svg" alt="Menu"></div>
+      <div class="nav-item-text">Menu</div>
+    </a>
+    <a class="nav-item" href="cart.html">
+      <div class="nav-item-icon"><img src="assets/menu/icons/cart-icon.svg" alt="Cart"><div class="cart-badge" id="cart-badge">0</div></div>
+      <div class="nav-item-text">Cart</div>
+    </a>
+    <a class="nav-item" href="track.html">
+      <div class="nav-item-icon"><img src="assets/menu/icons/track-icon.svg" alt="Track orders"></div>
+      <div class="nav-item-text">Track</div>
+    </a>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const mf = { name: "Tiffin CBE", short_name: "Tiffin", start_url: "./", display: "standalone", background_color: "#FDFDFF", theme_color: "#8806CE" };
+const blob = new Blob([JSON.stringify(mf)], { type: "application/json" });
+document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
+
+const CUSTOMER_PROFILE_REGISTRY_KEY = "customer_profiles_by_phone";
+
+function cleanText(value) {
+  if (value === null || value === undefined) return "";
+  return String(value).trim();
+}
+function parseLocalJSON(value) {
+  if (!value) return null;
+  const trimmed = String(value).trim();
+  if (!trimmed) return null;
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    try { return JSON.parse(trimmed); } catch (error) { return null; }
+  }
+  return trimmed;
+}
+function formatRupee(value) {
+  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+}
+function formatDate(value) {
+  if (!value) return "Date unavailable";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Date unavailable";
+  return date.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+function showToast(message) {
+  const toast = document.getElementById("toast");
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
+}
+function getFirstLocalValue(keys) {
+  for (const key of keys) {
+    const value = cleanText(localStorage.getItem(key));
+    if (value) return value;
+  }
+  return "";
+}
+function normalizeCustomerPhone(value) {
+  const digits = cleanText(value).replace(/\D/g, "");
+  if (!digits) return "";
+  return digits.length > 10 ? digits.slice(-10) : digits;
+}
+function getAuthenticatedCustomerPhone() {
+  const savedProfile = parseLocalJSON(localStorage.getItem("customer_profile"));
+
+  return normalizeCustomerPhone(
+    getFirstLocalValue([
+      "cust_phone",
+      "cust_mobile",
+      "customer_phone",
+      "customer_mobile"
+    ]) ||
+    savedProfile?.phone ||
+    ""
+  );
+}
+function formatCustomerPhone(phone) {
+  const cleanPhone = normalizeCustomerPhone(phone);
+  return cleanPhone ? `+91 ${cleanPhone}` : "";
+}
+function readCustomerProfileRegistry() {
+  const saved = parseLocalJSON(localStorage.getItem(CUSTOMER_PROFILE_REGISTRY_KEY));
+  return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
+}
+function writeCustomerProfileRegistry(registry) {
+  localStorage.setItem(CUSTOMER_PROFILE_REGISTRY_KEY, JSON.stringify(registry || {}));
+}
+function saveCustomerProfileSnapshot(name, phone, email = "") {
+  const cleanName = cleanText(name);
+  const cleanPhone = normalizeCustomerPhone(phone);
+  const cleanEmail = cleanText(email);
+  if (!cleanName || !cleanPhone) return null;
+
+  const profile = {
+    name: cleanName,
+    phone: cleanPhone,
+    email: cleanEmail,
+    uid: cleanText(localStorage.getItem("cust_uid")),
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("cust_name", cleanName);
+  localStorage.setItem("customer_name", cleanName);
+  localStorage.setItem("user_name", cleanName);
+  localStorage.setItem("cust_phone", cleanPhone);
+  localStorage.setItem("cust_mobile", cleanPhone);
+  localStorage.setItem("customer_phone", cleanPhone);
+  localStorage.setItem("customer_mobile", cleanPhone);
+  localStorage.setItem("cust_profile_ready", "1");
+  localStorage.setItem("customer_profile", JSON.stringify(profile));
+
+  if (cleanEmail) localStorage.setItem("cust_email", cleanEmail);
+
+  const registry = readCustomerProfileRegistry();
+  registry[cleanPhone] = profile;
+  writeCustomerProfileRegistry(registry);
+
+  return profile;
+}
+function restoreProfileSnapshot() {
+  const phone = normalizeCustomerPhone(getFirstLocalValue(["cust_mobile", "cust_phone", "customer_mobile", "customer_phone", "user_mobile", "user_phone", "phoneNumber", "phone", "mobile"]));
+  const existingName = getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]);
+
+  if (existingName && phone) {
+    saveCustomerProfileSnapshot(existingName, phone, getFirstLocalValue(["cust_email", "customer_email", "user_email", "email"]));
+    return;
+  }
+
+  if (!phone) return;
+
+  const registry = readCustomerProfileRegistry();
+  const profile = registry[phone];
+  if (!profile?.name) return;
+
+  saveCustomerProfileSnapshot(profile.name, phone, profile.email || "");
+}
+function loadCart() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("cart")) || [];
+    return Array.isArray(saved) ? saved : Object.values(saved);
+  } catch (error) {
+    return [];
+  }
+}
+function updateCartBadge() {
+  const badge = document.getElementById("cart-badge");
+  const totalQty = loadCart().reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  badge.textContent = totalQty;
+  badge.style.display = totalQty > 0 ? "flex" : "none";
+}
+function compactAddress(fullAddress, doorNo = "") {
+  const parts = [];
+  const add = value => {
+    const part = cleanText(value);
+    if (!part) return;
+    if (!parts.some(saved => saved.toLowerCase() === part.toLowerCase())) parts.push(part);
+  };
+  add(doorNo);
+  cleanText(fullAddress).split(",").map(part => part.trim()).filter(Boolean).forEach(add);
+  return parts.slice(0, 2).join(", ") || "No address saved yet";
+}
+function getSavedAddress() {
+  const detailKeys = ["cust_location_details", "delivery_location_details", "cust_location", "delivery_location", "location"];
+  for (const key of detailKeys) {
+    const data = parseLocalJSON(localStorage.getItem(key));
+    if (data && typeof data === "object") {
+      const fullAddress = cleanText(data.fullAddress || data.full || data.address || data.displayAddress || data.display);
+      if (fullAddress) {
+        return {
+          doorNo: cleanText(data.doorNo || data.door_no || data.houseNo || data.house_no),
+          fullAddress,
+          landmark: cleanText(data.landmark || data.nearby || data.instruction),
+          lat: data.lat || data.latitude || "",
+          lng: data.lng || data.lon || data.longitude || "",
+          accuracy: data.accuracy || ""
+        };
+      }
+    }
+  }
+  const fullAddress = getFirstLocalValue(["delivery_full_address", "cust_full_address", "delivery_address", "cust_address", "selected_address", "customer_address"]);
+  return fullAddress ? { doorNo: "", fullAddress, landmark: "", lat: "", lng: "", accuracy: "" } : null;
+}
+function renderProfile() {
+  restoreProfileSnapshot();
+  const name = getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]);
+  const phone = getAuthenticatedCustomerPhone();
+  const email = getFirstLocalValue(["cust_email", "customer_email", "user_email", "email"]);
+
+  document.getElementById("nameInput").value = name;
+  document.getElementById("phoneInput").value = formatCustomerPhone(phone);
+  document.getElementById("emailInput").value = email;
+  document.getElementById("profileDisplayName").textContent = name || "Customer";
+  document.getElementById("profileDisplayPhone").textContent = phone ? `${formatCustomerPhone(phone)} · Verified` : "Login mobile number missing";
+  document.getElementById("profileNameChip").textContent = name ? `👤 ${name.split(" ")[0]}` : "👤 Customer";
+}
+function saveProfile() {
+  const name = cleanText(document.getElementById("nameInput").value);
+  const phone = getAuthenticatedCustomerPhone();
+  const email = cleanText(document.getElementById("emailInput").value);
+
+  if (!name) {
+    showToast("Please add your name.");
+    return;
+  }
+
+  if (!phone) {
+    showToast("Login mobile number missing. Please logout and login again.");
+    return;
+  }
+
+  saveCustomerProfileSnapshot(name, phone, email);
+  if (!email) localStorage.removeItem("cust_email");
+
+  renderProfile();
+  showToast("Profile details saved.");
+}
+function renderAddress() {
+  const address = getSavedAddress();
+  document.getElementById("doorNoInput").value = address?.doorNo || "";
+  document.getElementById("fullAddressInput").value = address?.fullAddress || "";
+  document.getElementById("landmarkInput").value = address?.landmark || "";
+  document.getElementById("addressPreview").textContent = address ? compactAddress(address.fullAddress, address.doorNo) : "No address saved yet";
+  document.getElementById("landmarkPreview").textContent = address?.landmark ? `Landmark: ${address.landmark}` : "Add address from here or from menu location drawer.";
+}
+function saveAddress() {
+  const existing = getSavedAddress() || {};
+  const doorNo = cleanText(document.getElementById("doorNoInput").value);
+  const fullAddress = cleanText(document.getElementById("fullAddressInput").value);
+  const landmark = cleanText(document.getElementById("landmarkInput").value);
+
+  if (!fullAddress) {
+    showToast("Please add your full address.");
+    return;
+  }
+
+  const savedLocation = {
+    lat: existing.lat || "",
+    lng: existing.lng || "",
+    accuracy: existing.accuracy || "",
+    doorNo,
+    landmark,
+    fullAddress,
+    displayAddress: compactAddress(fullAddress, doorNo),
+    source: "profile_saved_address",
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("cust_location_details", JSON.stringify(savedLocation));
+  localStorage.setItem("delivery_location_details", JSON.stringify(savedLocation));
+  localStorage.setItem("cust_address", savedLocation.displayAddress);
+  localStorage.setItem("delivery_address", savedLocation.displayAddress);
+  localStorage.setItem("cust_full_address", fullAddress);
+  localStorage.setItem("delivery_full_address", fullAddress);
+  if (savedLocation.lat && savedLocation.lng) {
+    localStorage.setItem("cust_location", JSON.stringify(savedLocation));
+    localStorage.setItem("cust_lat", String(savedLocation.lat));
+    localStorage.setItem("cust_lng", String(savedLocation.lng));
+  }
+  renderAddress();
+  showToast("Delivery address saved.");
+}
+function clearAddress() {
+  ["cust_location_details", "delivery_location_details", "cust_location", "delivery_location", "cust_address", "delivery_address", "cust_full_address", "delivery_full_address", "cust_lat", "cust_lng"].forEach(key => localStorage.removeItem(key));
+  renderAddress();
+  showToast("Saved address cleared.");
+}
+function readOrderArray(key) {
+  const value = parseLocalJSON(localStorage.getItem(key));
+  if (!value) return [];
+  if (Array.isArray(value)) return value.filter(Boolean);
+  if (typeof value === "object") return Object.values(value).filter(Boolean);
+  return [];
+}
+function readOrderObject(key) {
+  const value = parseLocalJSON(localStorage.getItem(key));
+  return value && typeof value === "object" && !Array.isArray(value) ? value : null;
+}
+function mergeOrders() {
+  const orders = [];
+  ["order_history", "previous_orders", "orders", "customer_orders"].forEach(key => orders.push(...readOrderArray(key)));
+  ["current_order", "last_order", "last_failed_order"].forEach(key => {
+    const order = readOrderObject(key);
+    if (order) orders.push(order);
+  });
+
+  const map = new Map();
+  orders.forEach(order => {
+    const key = cleanText(order.id || order.receipt || order.paymentId || order.razorpayOrderId || order.createdAt || JSON.stringify(order).slice(0, 60));
+    if (!key) return;
+    map.set(key, { ...(map.get(key) || {}), ...order });
+  });
+
+  return Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
+function saveOrderHistory(orders) {
+  const cleanOrders = orders.filter(Boolean).slice(0, 20);
+  localStorage.setItem("order_history", JSON.stringify(cleanOrders));
+}
+function syncCurrentOrderToHistory() {
+  const currentOrder = readOrderObject("current_order");
+  if (!currentOrder) return;
+  saveOrderHistory(mergeOrders());
+}
+function getOrderTotal(order) {
+  return Number(order?.totals?.total ?? order?.total ?? order?.amount ?? 0);
+}
+function getOrderStatus(order) {
+  const paymentStatus = cleanText(order?.paymentStatus);
+  const status = cleanText(order?.status || "confirmed");
+  if (status.includes("failed") || paymentStatus.includes("failed")) return "Payment failed";
+  if (paymentStatus === "paid") return "Paid";
+  return status.replace(/_/g, " ") || "Confirmed";
+}
+function renderOrders() {
+  syncCurrentOrderToHistory();
+  const orders = mergeOrders();
+  const orderList = document.getElementById("orderList");
+  document.getElementById("orderCountChip").textContent = `🧾 ${orders.length} order${orders.length === 1 ? "" : "s"}`;
+
+  if (!orders.length) {
+    orderList.innerHTML = `<div class="empty-state">No previous orders yet. Once payment is successful, order details will appear here.</div>`;
+    return;
+  }
+
+  orderList.innerHTML = orders.map((order, index) => {
+    const items = Array.isArray(order.items) ? order.items : [];
+    const itemCount = items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+    const status = getOrderStatus(order);
+    const failed = status.toLowerCase().includes("failed");
+    const address = cleanText(order.address || order?.deliveryLocation?.fullAddress || order?.deliveryLocation?.displayAddress || order?.deliveryLocation?.address || "Address unavailable");
+    const paymentId = cleanText(order.paymentId || order.razorpay_payment_id || order.razorpayOrderId || "—");
+    const orderJson = encodeURIComponent(JSON.stringify(order));
+
+    return `<article class="order-card">
+      <div class="order-top">
+        <div>
+          <div class="order-id">${order.id || order.receipt || "Order"}</div>
+          <div class="order-date">${formatDate(order.createdAt)}</div>
+        </div>
+        <div class="order-price">${formatRupee(getOrderTotal(order))}</div>
+      </div>
+      <div class="status-pill ${failed ? "failed" : ""}">${status}</div>
+      <div class="order-line"><span>Items</span><strong>${itemCount || items.length || "—"}</strong></div>
+      <div class="order-line"><span>ETA</span><strong>${order.eta || "15 - 25 mins"}</strong></div>
+      <details class="order-details">
+        <summary>View order details</summary>
+        <div class="item-list">
+          ${items.length ? items.map(item => `<div class="item-row"><span>${Number(item.qty) || 1} × ${item.name || "Item"}</span><strong>${formatRupee((Number(item.price) || 0) * (Number(item.qty) || 1))}</strong></div>`).join("") : `<div class="item-row"><span>No item details saved</span><strong>—</strong></div>`}
+          <div class="item-row"><span>Delivery address</span><strong>${address}</strong></div>
+          <div class="item-row"><span>Payment ID</span><strong>${paymentId}</strong></div>
+        </div>
+      </details>
+      ${failed ? "" : `<button class="btn secondary" type="button" data-track-order="${orderJson}">Track this order</button>`}
+    </article>`;
+  }).join("");
+}
+function loadSettings() {
+  const settings = parseLocalJSON(localStorage.getItem("profile_settings")) || {};
+  document.getElementById("orderUpdatesToggle").checked = settings.orderUpdates !== false;
+  document.getElementById("rememberAddressToggle").checked = settings.rememberAddress !== false;
+}
+function saveSettings() {
+  const settings = {
+    orderUpdates: document.getElementById("orderUpdatesToggle").checked,
+    rememberAddress: document.getElementById("rememberAddressToggle").checked,
+    savedAt: new Date().toISOString()
+  };
+  localStorage.setItem("profile_settings", JSON.stringify(settings));
+}
+function clearOrderHistory() {
+  ["order_history", "previous_orders", "orders", "customer_orders", "last_failed_order"].forEach(key => localStorage.removeItem(key));
+  renderOrders();
+  showToast("Order history cleared.");
+}
+function logout() {
+  [
+    "cust_auth",
+    "cust_uid",
+    "cust_phone",
+    "cust_mobile",
+    "customer_phone",
+    "customer_mobile",
+    "cust_name",
+    "customer_name",
+    "user_name",
+    "cust_email",
+    "customer_profile",
+    "cust_profile_ready",
+    "cust_pending_phone"
+  ].forEach(key => localStorage.removeItem(key));
+  window.location.replace("login.html");
+}
+
+document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
+document.getElementById("saveAddressBtn").addEventListener("click", saveAddress);
+document.getElementById("clearAddressBtn").addEventListener("click", clearAddress);
+document.getElementById("clearHistoryBtn").addEventListener("click", clearOrderHistory);
+document.getElementById("logoutBtn").addEventListener("click", logout);
+document.getElementById("orderUpdatesToggle").addEventListener("change", saveSettings);
+document.getElementById("rememberAddressToggle").addEventListener("change", saveSettings);
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-track-order]");
+  if (!button) return;
+  const order = JSON.parse(decodeURIComponent(button.dataset.trackOrder));
+  localStorage.setItem("current_order", JSON.stringify(order));
+  window.location.href = "track.html";
+});
+
+renderProfile();
+renderAddress();
+loadSettings();
+renderOrders();
+updateCartBadge();
+window.addEventListener("storage", () => {
+  renderProfile();
+  renderAddress();
+  renderOrders();
+  updateCartBadge();
+});
+</script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="firebase-mvp.js"></script>
+</body>
+</html>

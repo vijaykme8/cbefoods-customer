@@ -1,0 +1,14 @@
+<script>
+  (function() {
+    const auth = localStorage.getItem('cust_auth');
+    const uid  = localStorage.getItem('cust_uid');
+  
+    if (!auth || !uid) {
+      window.location.replace('login.html');
+    }
+  
+    window.CUST_UID   = uid;
+    window.CUST_PHONE = localStorage.getItem('cust_phone') || '';
+    window.CUST_NAME  = localStorage.getItem('cust_name')  || '';
+  })();
+  </script>
