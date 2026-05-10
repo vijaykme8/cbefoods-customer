@@ -57,7 +57,15 @@ function withApiKey(rawUrl, apiKey) {
 
 function proxyUrl(rawUrl, origin) {
   const cleanUrl = stripApiKey(String(rawUrl));
-  return `${origin}/ola-maps?type=proxy&url=${encodeURIComponent(cleanUrl)}`;
+
+  // Important:
+  // Encode URL safely, but keep MapLibre placeholders visible.
+  // If {z}/{x}/{y} becomes %7Bz%7D, MapLibre cannot replace them.
+  const encodedUrl = encodeURIComponent(cleanUrl)
+    .replace(/%7B/gi, "{")
+    .replace(/%7D/gi, "}");
+
+  return `${origin}/ola-maps?type=proxy&url=${encodedUrl}`;
 }
 
 function rewriteOlaUrls(value, origin) {
@@ -74,7 +82,7 @@ function rewriteOlaUrls(value, origin) {
   }
 
   if (typeof value === "string" && isAllowedOlaUrl(value)) {
-    return stripApiKey(value);
+    return proxyUrl(value, origin);
   }
 
   return value;
