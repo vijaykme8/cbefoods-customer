@@ -1006,314 +1006,461 @@ img {
 
 
 /* =========================
-   LOCATION DRAWER
+   FULL SCREEN LOCATION MAP
 ========================= */
-.location-drawer-backdrop {
+body.map-screen-open {
+  overflow: hidden;
+}
+
+.customer-map-screen {
   position: fixed;
   inset: 0;
-  background: rgba(18, 19, 15, 0.42);
+  z-index: 4000;
   display: none;
   justify-content: center;
-  align-items: flex-end;
-  z-index: 3000;
+  background: rgba(18, 19, 15, 0.18);
 }
 
-.location-drawer-backdrop.is-open {
+.customer-map-screen.is-open {
   display: flex;
 }
 
-.location-drawer {
+.map-address-shell {
   width: 390px;
-  max-width: 100%;
-  max-height: 86dvh;
-  padding: 10px 24px calc(20px + env(safe-area-inset-bottom));
-  background: #FDFDFF;
-  border-radius: 48px 48px 0 0;
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.18);
-  overflow-y: auto;
-  animation: drawerSlideUp 0.22s ease;
-}
-
-@keyframes drawerSlideUp {
-  from {
-    transform: translateY(18px);
-    opacity: 0.4;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.drawer-handle {
-  width: 42px;
-  height: 4px;
-  margin: 0 auto 14px;
-  background: rgba(18, 19, 15, 0.16);
-  border-radius: 1998px;
-}
-
-.drawer-header {
-  align-self: stretch;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
-  margin-bottom: 14px;
-}
-
-.drawer-title-block {
-  flex: 1;
-  min-width: 0;
-}
-
-.drawer-kicker {
-  color: #08A045;
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 14px;
-  margin-bottom: 4px;
-}
-
-.drawer-title {
-  color: #12130F;
-  font-family: Chillax, 'General Sans', sans-serif;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 26px;
-}
-
-.drawer-subtitle {
-  color: rgba(18, 19, 15, 0.56);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-  margin-top: 4px;
-}
-
-.drawer-close {
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: 24px;
-  background: rgba(18, 19, 15, 0.06);
-  color: #12130F;
-  font-size: 22px;
-  font-weight: 500;
-  line-height: 34px;
-  cursor: pointer;
-}
-
-.location-map-card {
-  width: 342px;
-  height: 178px;
+  max-width: 100vw;
+  height: 100dvh;
+  min-height: 100dvh;
   position: relative;
+  background: #FFFFFF;
   overflow: hidden;
-  border-radius: 40px;
-  background:
-    radial-gradient(circle at 28% 30%, rgba(8, 160, 69, 0.18), transparent 30%),
-    radial-gradient(circle at 76% 68%, rgba(136, 6, 206, 0.12), transparent 28%),
-    #F5F5F7;
-  border: 1px solid rgba(18, 19, 15, 0.08);
-  margin-bottom: 12px;
 }
 
-.ola-map-canvas {
+.map-address-canvas {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  display: block;
   background: #F5F5F7;
 }
 
-.ola-map-card .maplibregl-ctrl-bottom-left,
-.ola-map-card .maplibregl-ctrl-bottom-right {
+.map-address-canvas .maplibregl-ctrl-bottom-left,
+.map-address-canvas .maplibregl-ctrl-bottom-right {
   display: none;
 }
 
-.map-empty-state {
+.map-address-empty-state {
   position: absolute;
   inset: 0;
-  padding: 18px;
+  padding: 24px;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-align: center;
-  gap: 8px;
   color: rgba(18, 19, 15, 0.62);
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 17px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.map-address-empty-state.is-hidden {
+  display: none;
+}
+
+.map-address-top-bar {
+  position: absolute;
+  width: 390px;
+  max-width: 100vw;
+  height: 188px;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+  padding: 40px 24px 100px;
+  background: linear-gradient(180deg, rgba(18, 19, 15, 0.08) 0%, rgba(18, 19, 15, 0) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 8;
   pointer-events: none;
 }
 
+.map-round-button {
+  width: 48px;
+  height: 48px;
+  padding: 12px;
+  border: 0;
+  border-radius: 50px;
+  background: #FDFDFF;
+  box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+}
 
-.map-center-pin {
+.map-round-button:active {
+  transform: scale(0.96);
+}
+
+.map-round-button svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.map-address-center-pin {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 34px;
-  height: 42px;
+  width: 42px;
+  height: 56px;
   transform: translate(-50%, -100%);
-  z-index: 4;
+  z-index: 7;
   pointer-events: none;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  filter: drop-shadow(0 8px 10px rgba(18, 19, 15, 0.20));
+  filter: drop-shadow(0 10px 14px rgba(18, 19, 15, 0.26));
+  transition: transform 0.18s ease;
 }
-.map-center-pin.is-visible {
-  display: flex;
-}
-.map-center-pin-head {
-  width: 28px;
-  height: 28px;
-  border-radius: 18px 18px 18px 4px;
-  background: #08A045;
-  color: #FDFDFF;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  line-height: 1;
-  border: 3px solid #FDFDFF;
-}
-.map-center-pin-head::before {
-  content: "";
-  width: 7px;
-  height: 7px;
-  background: #FDFDFF;
-  border-radius: 999px;
-  display: block;
-}
-.map-center-pin-head {
-  font-size: 0;
-}
-.map-center-pin-shadow {
-  position: absolute;
-  left: 50%;
-  bottom: -2px;
-  width: 18px;
-  height: 6px;
-  background: rgba(18, 19, 15, 0.18);
-  border-radius: 999px;
-  transform: translateX(-50%);
-}
-.location-map-card.is-moving .map-center-pin {
+
+.map-address-shell.is-moving .map-address-center-pin {
   transform: translate(-50%, calc(-100% - 8px));
 }
 
-.map-pin-badge {
-  width: 46px;
-  height: 46px;
-  border-radius: 32px;
-  background: #12130F;
-  color: #08A045;
+.map-address-center-pin svg {
+  width: 42px;
+  height: 56px;
+  display: block;
+}
+
+.map-address-bottom-section {
+  position: absolute;
+  left: 0;
+  bottom: calc(-162px + env(safe-area-inset-bottom));
+  width: 390px;
+  max-width: 100vw;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 10px 26px rgba(18, 19, 15, 0.20);
+  gap: 10px;
+  z-index: 9;
+  pointer-events: none;
 }
 
-
-.address-form {
+.map-address-wrap {
   width: 342px;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 10px;
-  margin-bottom: 14px;
+  pointer-events: auto;
 }
 
-.address-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.address-field span {
-  color: rgba(18, 19, 15, 0.58);
-  font-size: 11px;
-  font-weight: 600;
-  line-height: 12px;
-}
-
-.address-field input,
-.address-field textarea {
-  width: 100%;
-  border: 1px solid rgba(18, 19, 15, 0.10);
-  outline: none;
-  background: #FDFDFF;
-  border-radius: 28px;
-  padding: 12px;
-  color: #12130F;
-  font-family: 'General Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 17px;
-  box-shadow: 0 4px 18px rgba(18, 19, 15, 0.04);
-}
-
-.address-field textarea {
-  min-height: 78px;
-  resize: none;
-}
-
-.address-field input:focus,
-.address-field textarea:focus {
-  border-color: rgba(8, 160, 69, 0.55);
-  box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.10);
-}
-
-.drawer-actions {
-  width: 342px;
-  display: flex;
-  gap: 10px;
-}
-
-.drawer-action-secondary,
-.drawer-action-primary {
-  height: 44px;
+.gps-button {
+  height: 36px;
+  padding: 6px 10px 6px 8px;
   border: 0;
-  border-radius: 32px;
+  background: #FFFFFF;
+  border-radius: 30px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #08A045;
   font-family: 'General Sans', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20.80px;
+  box-shadow: 0 8px 22px rgba(18, 19, 15, 0.10);
   cursor: pointer;
 }
 
-.drawer-action-secondary {
-  flex: 0.86;
-  background: rgba(18, 19, 15, 0.06);
-  color: #12130F;
+.gps-button svg {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
-.drawer-action-primary {
-  flex: 1.14;
-  background: #08A045;
-  color: #FDFDFF;
-  box-shadow: 0 10px 24px rgba(8, 160, 69, 0.22);
-}
-
-.drawer-action-secondary:active,
-.drawer-action-primary:active,
-.drawer-close:active {
+.gps-button:active {
   transform: scale(0.97);
 }
 
-.location-attribution {
+.captured-add-wrap {
   width: 342px;
-  color: rgba(18, 19, 15, 0.42);
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 13px;
-  margin-top: 10px;
-  text-align: center;
+  min-height: 100px;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 14px;
 }
 
-.location-attribution a {
-  color: rgba(18, 19, 15, 0.62);
-  text-decoration: none;
+.captured-address {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.icon-doorno {
+  width: 100%;
+  min-height: 24px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+}
+
+.pin-icon {
+  width: 18px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.pin-icon svg {
+  width: 18px;
+  height: 24px;
+  display: block;
+}
+
+.captured-doorno {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 20.80px;
+  word-wrap: break-word;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.captured-full-address {
+  width: 100%;
+  color: #12130F;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 400;
+  line-height: 16.80px;
+  word-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.continue-button {
+  width: 342px;
+  height: 55px;
+  padding: 14px 20px;
+  border: 0;
+  background: #08A045;
+  box-shadow: 0px 6px 34px rgba(8, 160, 69, 0.24);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #FDFDFF;
+  font-size: 18px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 26px;
+  cursor: pointer;
+}
+
+.continue-button:active {
+  transform: scale(0.98);
+}
+
+.continue-button.is-saved {
+  opacity: 0.92;
+}
+
+.saved-add-drawer {
+  width: 390px;
+  max-width: 100vw;
+  height: 280px;
+  padding: 20px 24px;
+  background: #FFFFFF;
+  box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  border-radius: 34px 34px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  pointer-events: auto;
+}
+
+.drawer-handle-wide {
+  width: 60px;
+  height: 6px;
+  background: #D9D9D9;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+.saved-address-title {
+  width: 342px;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 14px;
+  word-wrap: break-word;
+}
+
+.saved-add-group {
+  width: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.saved-address-card {
+  width: 342px;
+  min-height: 60px;
+  padding: 10px 16px;
+  background: rgba(18, 19, 15, 0.04);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.saved-address-inside {
+  width: 100%;
+  min-height: 40px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+}
+
+.saved-address-left {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.saved-address-top {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.saved-address-label {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 20.80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-button {
+  height: 21px;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #08A045;
+  font-size: 16px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 20.80px;
+  cursor: pointer;
+}
+
+.edit-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.saved-address-line {
+  width: 100%;
+  color: #12130F;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 400;
+  line-height: 16.80px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.use-button {
+  width: 67px;
+  height: 34px;
+  padding: 10px 22px;
+  border: 1px solid #08A045;
+  background: #FDFDFF;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #08A045;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 14.40px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.use-button:active,
+.edit-button:active {
+  transform: scale(0.97);
+}
+
+.saved-address-empty {
+  width: 342px;
+  min-height: 60px;
+  padding: 12px 16px;
+  background: rgba(18, 19, 15, 0.04);
+  border-radius: 10px;
+  color: rgba(18, 19, 15, 0.56);
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 389px) {
+  .map-address-shell,
+  .map-address-top-bar,
+  .map-address-bottom-section,
+  .saved-add-drawer {
+    width: 100vw;
+  }
+
+  .map-address-wrap,
+  .captured-add-wrap,
+  .continue-button,
+  .saved-address-title,
+  .saved-add-group,
+  .saved-address-card,
+  .saved-address-empty {
+    width: calc(100vw - 48px);
+  }
 }
 
 
@@ -1416,14 +1563,14 @@ img {
   .product-list-img,
   .product-list-action,
   .product-list-action.qty-button,
-  .location-drawer,
-  .drawer-close,
-  .location-map-card,
-  .map-pin-badge,
-  .address-field input,
-  .address-field textarea,
-  .drawer-action-secondary,
-  .drawer-action-primary,
+  .map-address-shell,
+  .map-round-button,
+  .gps-button,
+  .captured-add-wrap,
+  .continue-button,
+  .saved-add-drawer,
+  .saved-address-card,
+  .use-button,
   .floating-cart-card,
   .floating-cart-action {
     corner-shape: squircle;
@@ -1805,57 +1952,75 @@ img {
   </nav>
 </div>
 
-<div class="location-drawer-backdrop" id="locationDrawerBackdrop" aria-hidden="true">
-  <div class="location-drawer" role="dialog" aria-modal="true" aria-labelledby="locationDrawerTitle">
-    <div class="drawer-handle"></div>
+<div class="customer-map-screen" id="locationMapScreen" aria-hidden="true">
+  <div class="map-address-shell" id="mapAddressShell" role="dialog" aria-modal="true" aria-label="Choose delivery location">
+    <div id="locationOlaMap" class="map-address-canvas" aria-label="Ola Maps delivery location map"></div>
 
-    <div class="drawer-header">
-      <div class="drawer-title-block">
-        <div class="drawer-kicker">Delivery location</div>
-        <div class="drawer-title" id="locationDrawerTitle">Confirm your address</div>
-        <div class="drawer-subtitle">Move the map so the pin sits exactly on your delivery spot, then save.</div>
+    <div class="map-address-empty-state" id="mapEmptyState">
+      <div id="mapEmptyCopy">Loading secure map view...</div>
+    </div>
+
+    <div class="map-address-top-bar">
+      <button class="map-round-button" type="button" id="closeLocationMapBtn" aria-label="Back to menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" stroke="#12130F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <button class="map-round-button" type="button" id="searchLocationBtn" aria-label="Search location">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697ZM20.25 11.5C20.25 6.6675 16.3325 2.75 11.5 2.75C6.6675 2.75 2.75 6.6675 2.75 11.5C2.75 16.3325 6.6675 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5ZM21.75 11.5C21.75 17.1609 17.1609 21.75 11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5Z" fill="#12130F"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="map-address-center-pin" id="mapCenterPin" aria-hidden="true">
+      <svg width="42" height="56" viewBox="0 0 42 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="21" cy="49" rx="10" ry="4" fill="#12130F" fill-opacity="0.18"/>
+        <path d="M36.75 19.7167C34.8056 11.1607 27.3423 7.30615 20.7857 7.30615H20.7673C14.2292 7.30615 6.74735 11.1421 4.80298 19.6982C2.63639 29.2549 8.48861 37.3486 13.7846 42.4397C15.7475 44.3286 18.2661 45.2729 20.7857 45.2729C23.3053 45.2729 25.8239 44.3286 27.7683 42.4397C33.0642 37.3486 38.9165 29.2735 36.75 19.7167Z" fill="#8806CE"/>
+        <circle cx="20.7857" cy="23.1839" r="6.33852" fill="#FDFDFF"/>
+        <circle cx="20.7857" cy="23.1839" r="2.68168" fill="#8806CE"/>
+      </svg>
+    </div>
+
+    <div class="map-address-bottom-section">
+      <div class="map-address-wrap">
+        <button class="gps-button" type="button" id="refreshLocationBtn">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 20.25C7.45 20.25 3.75 16.55 3.75 12C3.75 7.45 7.45 3.75 12 3.75C16.55 3.75 20.25 7.45 20.25 12C20.25 16.55 16.55 20.25 12 20.25ZM12 5.25C8.28 5.25 5.25 8.28 5.25 12C5.25 15.72 8.28 18.75 12 18.75C15.72 18.75 18.75 15.72 18.75 12C18.75 8.28 15.72 5.25 12 5.25Z" fill="#08A045"/>
+            <path d="M12 15.75C9.93 15.75 8.25 14.07 8.25 12C8.25 9.93 9.93 8.25 12 8.25C14.07 8.25 15.75 9.93 15.75 12C15.75 14.07 14.07 15.75 12 15.75ZM12 9.75C10.76 9.75 9.75 10.76 9.75 12C9.75 13.24 10.76 14.25 12 14.25C13.24 14.25 14.25 13.24 14.25 12C14.25 10.76 13.24 9.75 12 9.75Z" fill="#08A045"/>
+            <path d="M12 4.75C11.59 4.75 11.25 4.41 11.25 4V2C11.25 1.59 11.59 1.25 12 1.25C12.41 1.25 12.75 1.59 12.75 2V4C12.75 4.41 12.41 4.75 12 4.75Z" fill="#08A045"/>
+            <path d="M4 12.75H2C1.59 12.75 1.25 12.41 1.25 12C1.25 11.59 1.59 11.25 2 11.25H4C4.41 11.25 4.75 11.59 4.75 12C4.75 12.41 4.41 12.75 4 12.75Z" fill="#08A045"/>
+            <path d="M12 22.75C11.59 22.75 11.25 22.41 11.25 22V20C11.25 19.59 11.59 19.25 12 19.25C12.41 19.25 12.75 19.59 12.75 20V22C12.75 22.41 12.41 22.75 12 22.75Z" fill="#08A045"/>
+            <path d="M22 12.75H20C19.59 12.75 19.25 12.41 19.25 12C19.25 11.59 19.59 11.25 20 11.25H22C22.41 11.25 22.75 11.59 22.75 12C22.75 12.41 22.41 12.75 22 12.75Z" fill="#08A045"/>
+          </svg>
+          Use current location
+        </button>
+
+        <div class="captured-add-wrap">
+          <div class="captured-address">
+            <div class="icon-doorno">
+              <div class="pin-icon" aria-hidden="true">
+                <svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path opacity="0.4" d="M17.5 8.45C16.45 3.83 12.42 1.75 8.87998 1.75C8.87998 1.75 8.87998 1.75 8.86998 1.75C5.33998 1.75 1.29998 3.82 0.249978 8.44C-0.920022 13.6 2.23998 17.97 5.09998 20.72C6.15998 21.74 7.51998 22.25 8.87998 22.25C10.24 22.25 11.6 21.74 12.65 20.72C15.51 17.97 18.67 13.61 17.5 8.45Z" fill="#8806CE"/>
+                  <path d="M8.87998 13.4602C10.6197 13.4602 12.03 12.0499 12.03 10.3102C12.03 8.57046 10.6197 7.16016 8.87998 7.16016C7.14028 7.16016 5.72998 8.57046 5.72998 10.3102C5.72998 12.0499 7.14028 13.4602 8.87998 13.4602Z" fill="#8806CE"/>
+                </svg>
+              </div>
+              <div class="captured-doorno" id="capturedDoorNoText">Pinned location</div>
+            </div>
+            <div class="captured-full-address" id="capturedAddressText">Move the map so the pin sits exactly on your delivery spot.</div>
+          </div>
+        </div>
+
+        <button class="continue-button" type="button" id="continueLocationBtn">Continue</button>
       </div>
-      <button class="drawer-close" type="button" id="closeLocationDrawer" aria-label="Close location drawer">×</button>
-    </div>
 
-    <div class="location-map-card ola-map-card">
-      <div id="locationOlaMap" class="ola-map-canvas" aria-label="Ola Maps delivery location map"></div>
-      <div class="map-center-pin" id="mapCenterPin" aria-hidden="true">
-        <div class="map-center-pin-head">●</div>
-        <div class="map-center-pin-shadow"></div>
-      </div>
-      <div class="map-empty-state" id="mapEmptyState">
-        <div class="map-pin-badge">📍</div>
-        <div id="mapEmptyCopy">Loading secure Ola map preview...</div>
+      <div class="saved-add-drawer">
+        <div class="drawer-handle-wide" aria-hidden="true"></div>
+        <div class="saved-address-title">Saved Address</div>
+        <div class="saved-add-group" id="savedAddressList"></div>
       </div>
     </div>
-
-
-    <div class="address-form">
-      <label class="address-field">
-        <span>House / Flat / Door no.</span>
-        <input id="doorNoInput" type="text" autocomplete="address-line1" placeholder="Eg: 9/34, Flat 2B">
-      </label>
-
-      <label class="address-field">
-        <span>Full address</span>
-        <textarea id="fullAddressInput" autocomplete="street-address" placeholder="Street, area, city"></textarea>
-      </label>
-
-      <label class="address-field">
-        <span>Landmark</span>
-        <input id="landmarkInput" type="text" autocomplete="off" placeholder="Eg: Near temple / opposite school">
-      </label>
-    </div>
-
-    <div class="drawer-actions">
-      <button class="drawer-action-secondary" type="button" id="refreshLocationBtn">Use current location</button>
-      <button class="drawer-action-primary" type="button" id="saveLocationBtn">Save address</button>
-    </div>
-
-    <div class="location-attribution" id="olaTestHint">Move the map to place the pin exactly on your door.</div>
-
-    <div class="location-attribution">Tip: move the map under the fixed pin, just like delivery apps.</div>
   </div>
 </div>
 
@@ -1881,87 +2046,36 @@ document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
 
 /*
 ========================================
-0. DELIVERY LOCATION LOGIC
+0. DELIVERY LOCATION MAP SCREEN LOGIC
 ========================================
 
 Behavior:
-- The top delivery location shows a short readable address.
-- Tapping the location opens a bottom drawer instead of silently capturing again.
-- The drawer shows a map preview and editable address fields.
-- GPS/reverse-geocode can only suggest; user input makes it exact.
+- Tapping the top location opens a full-screen map screen.
+- The map moves/zooms under a fixed center pin.
+- "Use current location" recenters the map using GPS.
+- The captured address card updates from the center pin.
+- Continue stores the selected pin as pending data for the next address-details screen.
 */
 
 const deliveryAddressText = document.querySelector(".address");
 const deliveryLocationBox = document.querySelector(".location");
 
-const locationDrawerBackdrop = document.getElementById("locationDrawerBackdrop");
-const closeLocationDrawerBtn = document.getElementById("closeLocationDrawer");
+const locationMapScreen = document.getElementById("locationMapScreen");
+const mapAddressShell = document.getElementById("mapAddressShell");
+const closeLocationMapBtn = document.getElementById("closeLocationMapBtn");
+const searchLocationBtn = document.getElementById("searchLocationBtn");
 const refreshLocationBtn = document.getElementById("refreshLocationBtn");
-const saveLocationBtn = document.getElementById("saveLocationBtn");
+const continueLocationBtn = document.getElementById("continueLocationBtn");
 const locationOlaMapCanvas = document.getElementById("locationOlaMap");
 const mapEmptyState = document.getElementById("mapEmptyState");
 const mapEmptyCopy = document.getElementById("mapEmptyCopy");
-const mapCenterPin = document.getElementById("mapCenterPin");
+const capturedDoorNoText = document.getElementById("capturedDoorNoText");
+const capturedAddressText = document.getElementById("capturedAddressText");
+const savedAddressList = document.getElementById("savedAddressList");
+
 let locationOlaMapInstance = null;
-let locationOlaMarker = null;
-let latestOlaMapCenter = null;
-let mapLibreLoadingPromise = null;
-const detectedAddressText = document.getElementById("detectedAddressText");
-const locationAccuracyChip = document.getElementById("locationAccuracyChip");
-const locationProviderChip = document.getElementById("locationProviderChip");
-const doorNoInput = document.getElementById("doorNoInput");
-const fullAddressInput = document.getElementById("fullAddressInput");
-const landmarkInput = document.getElementById("landmarkInput");
-
-const locationAddressKeys = [
-  "cust_address",
-  "customer_address",
-  "delivery_address",
-  "deliveryAddress",
-  "selected_address",
-  "selectedAddress",
-  "user_address",
-  "address",
-  "cust_location_name",
-  "cust_location_address",
-  "current_address",
-  "currentAddress"
-];
-
-const locationObjectKeys = [
-  "cust_location_details",
-  "delivery_location_details",
-  "cust_location",
-  "customer_location",
-  "user_location",
-  "userLocation",
-  "delivery_location",
-  "deliveryLocation",
-  "current_location",
-  "currentLocation",
-  "geo_location",
-  "geoLocation",
-  "location"
-];
-
-const coordinateLatKeys = [
-  "lat",
-  "latitude",
-  "user_lat",
-  "cust_lat",
-  "delivery_lat"
-];
-
-const coordinateLngKeys = [
-  "lng",
-  "lon",
-  "long",
-  "longitude",
-  "user_lng",
-  "cust_lng",
-  "delivery_lng"
-];
-
+let locationReverseTimer = null;
+let locationReverseRequestId = 0;
 let isResolvingAddress = false;
 let currentLocationState = null;
 
@@ -1969,15 +2083,14 @@ const DEFAULT_CBE_LOCATION = {
   lat: 11.0168,
   lng: 76.9558,
   display: "Coimbatore",
-  full: "",
+  full: "Coimbatore, Tamil Nadu, India",
   source: "default_coimbatore"
 };
 
 /*
 Ola Maps V4 setup:
-- Map tiles load directly from Ola for speed.
-- Cloudflare Pages Function is used only for config, reverse geocode, and directions.
-- Keep the Ola key domain-restricted in Ola/Krutrim.
+- Map tiles/resources are proxied through Cloudflare Pages Function.
+- Reverse geocode also uses the same /ola-maps function first.
 */
 const OLA_PROXY_URL = "/ola-maps";
 
@@ -2012,33 +2125,17 @@ function cbeOlaTransformRequest(url) {
 
 window.CBE_OLA_TRANSFORM_REQUEST = window.CBE_OLA_TRANSFORM_REQUEST || cbeOlaTransformRequest;
 
-function getOlaMapsApiKey() {
-  return "netlify_proxy";
-}
-
-function setLocationProviderStatus(label) {
-  if (locationProviderChip) {
-    locationProviderChip.textContent = label || "GPS";
-  }
-}
-
-
 function parseSavedValue(value) {
   if (!value) return null;
-
   if (typeof value !== "string") return value;
 
   const trimmedValue = value.trim();
-
   if (!trimmedValue) return null;
 
-  if (
-    trimmedValue.startsWith("{") ||
-    trimmedValue.startsWith("[")
-  ) {
+  if (trimmedValue.startsWith("{") || trimmedValue.startsWith("[")) {
     try {
       return JSON.parse(trimmedValue);
-    } catch (error) {
+    } catch (_) {
       return trimmedValue;
     }
   }
@@ -2055,17 +2152,15 @@ const ADDRESS_PREVIEW_LIMIT = 15;
 
 function truncateAddressPreview(value, limit = ADDRESS_PREVIEW_LIMIT) {
   const text = cleanText(value)
-    .replace(/\s*,\s*/g, ",")
+    .replace(/\s*,\s*/g, ", ")
     .replace(/\s+/g, " ");
 
   if (!text || text.length <= limit) return text;
-
   return `${text.slice(0, limit)}..`;
 }
 
 function isPlaceholderAddress(value) {
   const text = cleanText(value).toLowerCase();
-
   return (
     !text ||
     text === "current location captured" ||
@@ -2080,13 +2175,9 @@ function isPlaceholderAddress(value) {
 
 function addUniqueAddressPart(parts, value) {
   const part = cleanText(value);
-
   if (!part || isPlaceholderAddress(part)) return;
 
-  const alreadyExists = parts.some(
-    savedPart => savedPart.toLowerCase() === part.toLowerCase()
-  );
-
+  const alreadyExists = parts.some(savedPart => savedPart.toLowerCase() === part.toLowerCase());
   if (!alreadyExists) parts.push(part);
 }
 
@@ -2101,11 +2192,8 @@ function compactAddress(fullAddress, doorNo = "") {
     .filter(Boolean)
     .forEach(part => addUniqueAddressPart(parts, part));
 
-  if (parts.length <= 2) {
-    return parts.join(", ") || "Set delivery location";
-  }
-
-  return parts.slice(0, doorNo ? 2 : 2).join(", ");
+  if (parts.length <= 2) return parts.join(", ") || "Set delivery location";
+  return parts.slice(0, 2).join(", ");
 }
 
 function getFirstTextValue(source, keys) {
@@ -2113,10 +2201,7 @@ function getFirstTextValue(source, keys) {
 
   for (const key of keys) {
     const value = cleanText(source[key]);
-
-    if (value && !isPlaceholderAddress(value)) {
-      return value;
-    }
+    if (value && !isPlaceholderAddress(value)) return value;
   }
 
   return "";
@@ -2127,14 +2212,45 @@ function getCoordinateValue(source, keys) {
 
   for (const key of keys) {
     const value = source[key];
-
-    if (value !== null && value !== undefined && value !== "") {
-      return value;
-    }
+    if (value !== null && value !== undefined && value !== "") return value;
   }
 
   return "";
 }
+
+const locationAddressKeys = [
+  "cust_address",
+  "customer_address",
+  "delivery_address",
+  "deliveryAddress",
+  "selected_address",
+  "selectedAddress",
+  "user_address",
+  "address",
+  "cust_location_name",
+  "cust_location_address",
+  "current_address",
+  "currentAddress"
+];
+
+const locationObjectKeys = [
+  "cust_location_details",
+  "delivery_location_details",
+  "cust_location",
+  "customer_location",
+  "user_location",
+  "userLocation",
+  "delivery_location",
+  "deliveryLocation",
+  "current_location",
+  "currentLocation",
+  "geo_location",
+  "geoLocation",
+  "location"
+];
+
+const coordinateLatKeys = ["lat", "latitude", "user_lat", "cust_lat", "delivery_lat"];
+const coordinateLngKeys = ["lng", "lon", "long", "longitude", "user_lng", "cust_lng", "delivery_lng"];
 
 function buildAddressFromParts(source) {
   if (!source || typeof source !== "object") return "";
@@ -2169,15 +2285,16 @@ function buildAddressFromParts(source) {
 
 function normalizeLocationValue(value) {
   const parsedValue = parseSavedValue(value);
-
   if (!parsedValue) return null;
 
   if (typeof parsedValue === "string") {
     if (isPlaceholderAddress(parsedValue)) return null;
 
     return {
+      label: "Home",
       display: compactAddress(parsedValue),
       full: parsedValue,
+      fullAddress: parsedValue,
       lat: "",
       lng: "",
       doorNo: "",
@@ -2209,6 +2326,13 @@ function normalizeLocationValue(value) {
     "instructions"
   ]);
 
+  const label = getFirstTextValue(parsedValue, [
+    "label",
+    "type",
+    "name",
+    "tag"
+  ]) || "Home";
+
   const directAddress = getFirstTextValue(parsedValue, [
     "fullAddress",
     "full_address",
@@ -2221,16 +2345,16 @@ function normalizeLocationValue(value) {
     "addressLine",
     "address_line",
     "address",
-    "name",
-    "label",
     "placeName",
     "place_name"
   ]);
 
   if (directAddress) {
     return {
+      label,
       display: compactAddress(directAddress, doorNo),
       full: directAddress,
+      fullAddress: directAddress,
       lat,
       lng,
       doorNo,
@@ -2245,6 +2369,7 @@ function normalizeLocationValue(value) {
     if (nestedAddress && !nestedAddress.hasCoordinatesOnly) {
       return {
         ...nestedAddress,
+        label: nestedAddress.label || label,
         lat: nestedAddress.lat || lat,
         lng: nestedAddress.lng || lng,
         doorNo: nestedAddress.doorNo || doorNo,
@@ -2257,8 +2382,10 @@ function normalizeLocationValue(value) {
 
   if (builtAddress) {
     return {
+      label,
       display: compactAddress(builtAddress, doorNo),
       full: builtAddress,
+      fullAddress: builtAddress,
       lat,
       lng,
       doorNo,
@@ -2269,8 +2396,10 @@ function normalizeLocationValue(value) {
 
   if (lat && lng) {
     return {
+      label,
       display: "Finding your address...",
       full: `Lat: ${lat}, Lng: ${lng}`,
+      fullAddress: "",
       lat,
       lng,
       doorNo,
@@ -2328,8 +2457,10 @@ function getSavedCoordinates() {
 
   if (lat && lng) {
     return {
+      label: "Pinned",
       display: "Finding your address...",
       full: `Lat: ${lat}, Lng: ${lng}`,
+      fullAddress: "",
       lat,
       lng,
       hasCoordinatesOnly: true
@@ -2337,6 +2468,38 @@ function getSavedCoordinates() {
   }
 
   return null;
+}
+
+function savePendingLocationState(locationState) {
+  if (!locationState) return;
+
+  const selectedLocation = {
+    lat: locationState.lat || "",
+    lng: locationState.lng || "",
+    accuracy: locationState.accuracy || "",
+    doorNo: cleanText(locationState.doorNo),
+    landmark: cleanText(locationState.landmark),
+    fullAddress: cleanText(locationState.full || locationState.fullAddress || locationState.address),
+    displayAddress: compactAddress(locationState.full || locationState.fullAddress || locationState.address, locationState.doorNo),
+    source: locationState.source || "customer_map_center_pin",
+    pinnedByUser: true,
+    savedAt: new Date().toISOString()
+  };
+
+  localStorage.setItem("cust_pending_location_details", JSON.stringify(selectedLocation));
+  localStorage.setItem("delivery_pending_location_details", JSON.stringify(selectedLocation));
+
+  if (selectedLocation.lat && selectedLocation.lng) {
+    localStorage.setItem("cust_pending_lat", String(selectedLocation.lat));
+    localStorage.setItem("cust_pending_lng", String(selectedLocation.lng));
+  }
+
+  currentLocationState = {
+    ...(currentLocationState || {}),
+    ...selectedLocation,
+    full: selectedLocation.fullAddress,
+    display: selectedLocation.displayAddress
+  };
 }
 
 function saveLocationState(locationState) {
@@ -2348,6 +2511,7 @@ function saveLocationState(locationState) {
   const shortAddress = compactAddress(fullAddress, doorNo);
 
   const savedLocation = {
+    label: locationState.label || "Home",
     lat: locationState.lat || "",
     lng: locationState.lng || "",
     accuracy: locationState.accuracy || "",
@@ -2373,20 +2537,24 @@ function saveLocationState(locationState) {
     localStorage.setItem("cust_lng", String(savedLocation.lng));
   }
 
-  currentLocationState = savedLocation;
+  currentLocationState = {
+    ...savedLocation,
+    full: fullAddress,
+    display: shortAddress
+  };
+
   renderDeliveryLocation(false);
+  renderSavedAddressList();
 }
 
 function getCachedExactGeocode(lat, lng) {
   const cached = parseSavedValue(localStorage.getItem("cust_exact_geocode_cache"));
-
   if (!cached || !cached.lat || !cached.lng) return null;
 
   const sameLat = Number(cached.lat).toFixed(5) === Number(lat).toFixed(5);
   const sameLng = Number(cached.lng).toFixed(5) === Number(lng).toFixed(5);
 
   if (!sameLat || !sameLng) return null;
-
   return cached;
 }
 
@@ -2442,6 +2610,7 @@ function parseOlaAddress(data) {
     return {
       fullAddress: "",
       shortAddress: "",
+      doorNo: "",
       source: "ola_maps_reverse_geocode"
     };
   }
@@ -2461,41 +2630,38 @@ function parseOlaAddress(data) {
   const parts = [];
 
   [
-    getFirstTextValue(result, ["premise", "house_number", "houseNumber", "building", "subpremise"]),
-    getOlaAddressComponent(components, ["premise", "house_number", "street_number", "subpremise"]),
-    getFirstTextValue(addressObject, ["premise", "house_number", "houseNumber", "building", "subpremise"]),
-    getFirstTextValue(result, ["route", "street", "road", "addressLine1", "address_line1"]),
-    getOlaAddressComponent(components, ["route", "street", "road", "sublocality", "sublocality_level_1"]),
-    getFirstTextValue(addressObject, ["route", "street", "road", "line1", "addressLine1", "locality"]),
-    getFirstTextValue(result, ["neighborhood", "neighbourhood", "area", "subLocality", "sublocality"]),
-    getFirstTextValue(addressObject, ["neighborhood", "neighbourhood", "area", "subLocality", "sublocality"]),
-    getFirstTextValue(result, ["city", "town", "district", "locality"]),
-    getOlaAddressComponent(components, ["locality", "administrative_area_level_3", "postal_town", "city"]),
-    getFirstTextValue(result, ["state", "administrativeArea", "administrative_area_level_1"]),
-    getOlaAddressComponent(components, ["administrative_area_level_1", "state"]),
-    getFirstTextValue(result, ["postalCode", "postal_code", "pincode"]),
-    getOlaAddressComponent(components, ["postal_code", "pincode"])
+    getFirstTextValue(result, ["premise", "house_number", "houseNumber", "building", "name"]),
+    getOlaAddressComponent(components, ["premise", "street_number", "house_number"]),
+    getFirstTextValue(addressObject, ["road", "street", "route", "main_text"]),
+    getOlaAddressComponent(components, ["route", "street", "road"]),
+    getFirstTextValue(addressObject, ["locality", "sublocality", "neighbourhood", "neighborhood", "secondary_text"]),
+    getOlaAddressComponent(components, ["sublocality", "neighborhood", "locality"]),
+    getFirstTextValue(addressObject, ["city", "town", "village", "district"]),
+    getOlaAddressComponent(components, ["administrative_area_level_2", "locality"]),
+    getFirstTextValue(addressObject, ["state", "principalSubdivision"]),
+    getOlaAddressComponent(components, ["administrative_area_level_1"]),
+    getFirstTextValue(addressObject, ["postcode", "postal_code", "pincode"]),
+    getOlaAddressComponent(components, ["postal_code"])
   ].forEach(value => addUniqueAddressPart(parts, value));
 
-  const formattedAddress = getFirstTextValue(result, [
-    "formatted_address",
-    "formattedAddress",
-    "display_name",
-    "displayName",
-    "full_address",
-    "fullAddress",
-    "description",
-    "vicinity",
-    "name",
-    "address"
-  ]);
+  const fullAddress =
+    getFirstTextValue(result, [
+      "formatted_address",
+      "formattedAddress",
+      "display_name",
+      "displayName",
+      "description",
+      "address"
+    ]) || parts.join(", ");
 
-  const fullAddress = formattedAddress || parts.join(", ");
-  const shortAddress = compactAddress(parts.slice(0, 3).join(", ") || fullAddress);
+  const doorNo =
+    getFirstTextValue(result, ["premise", "house_number", "houseNumber"]) ||
+    getOlaAddressComponent(components, ["premise", "street_number", "house_number"]);
 
   return {
     fullAddress,
-    shortAddress,
+    shortAddress: compactAddress(parts.slice(0, 3).join(", ") || fullAddress, doorNo),
+    doorNo,
     source: "ola_maps_reverse_geocode"
   };
 }
@@ -2539,11 +2705,12 @@ function parseNominatimAddress(data) {
   ].forEach(value => addUniqueAddressPart(parts, value));
 
   const fullAddress = cleanText(data.display_name) || parts.join(", ");
-  const shortAddress = compactAddress(parts.slice(0, 3).join(", ") || fullAddress);
+  const doorNo = cleanText(address.house_number);
 
   return {
     fullAddress,
-    shortAddress,
+    shortAddress: compactAddress(parts.slice(0, 3).join(", ") || fullAddress, doorNo),
+    doorNo,
     source: "openstreetmap_nominatim"
   };
 }
@@ -2553,6 +2720,7 @@ function parseBigDataCloudAddress(data) {
     return {
       fullAddress: "",
       shortAddress: "",
+      doorNo: "",
       source: "bigdatacloud"
     };
   }
@@ -2572,6 +2740,7 @@ function parseBigDataCloudAddress(data) {
   return {
     fullAddress,
     shortAddress: compactAddress(fullAddress),
+    doorNo: "",
     source: "bigdatacloud"
   };
 }
@@ -2588,11 +2757,9 @@ async function reverseGeocodeExactAddress(lat, lng) {
 
     if (olaParsed.fullAddress) {
       saveExactGeocodeCache(lat, lng, olaParsed);
-      setLocationProviderStatus("Ola");
       return olaParsed;
     }
   } catch (error) {
-    setLocationProviderStatus("Fallback");
     console.log("Ola Maps reverse geocode fallback:", error);
   }
 
@@ -2607,7 +2774,6 @@ async function reverseGeocodeExactAddress(lat, lng) {
       "&accept-language=en";
 
     const response = await fetch(nominatimUrl);
-
     if (!response.ok) throw new Error("Exact reverse geocode failed");
 
     const data = await response.json();
@@ -2615,7 +2781,6 @@ async function reverseGeocodeExactAddress(lat, lng) {
 
     if (parsed.fullAddress) {
       saveExactGeocodeCache(lat, lng, parsed);
-      setLocationProviderStatus("OSM");
       return parsed;
     }
   } catch (error) {
@@ -2629,35 +2794,30 @@ async function reverseGeocodeExactAddress(lat, lng) {
     "&localityLanguage=en";
 
   const response = await fetch(bigDataUrl);
-
-  if (!response.ok) {
-    throw new Error("Reverse geocode failed");
-  }
+  if (!response.ok) throw new Error("Reverse geocode failed");
 
   const data = await response.json();
   const parsed = parseBigDataCloudAddress(data);
 
   if (parsed.fullAddress) {
     saveExactGeocodeCache(lat, lng, parsed);
-    setLocationProviderStatus("BDC");
+    return parsed;
   }
 
-  return parsed;
+  throw new Error("No reverse geocode address found");
 }
 
 function showMapMessage(message) {
-  if (mapEmptyCopy) mapEmptyCopy.textContent = message;
-  if (mapEmptyState) mapEmptyState.style.display = "flex";
-  if (mapCenterPin) mapCenterPin.classList.remove("is-visible");
+  if (!mapEmptyState || !mapEmptyCopy) return;
+
+  mapEmptyCopy.textContent = message;
+  mapEmptyState.classList.remove("is-hidden");
 }
 
 function hideMapMessage() {
-  if (mapEmptyState) mapEmptyState.style.display = "none";
-  if (mapCenterPin) mapCenterPin.classList.add("is-visible");
-}
-
-function getMapCard() {
-  return locationOlaMapCanvas ? locationOlaMapCanvas.closest(".location-map-card") : null;
+  if (mapEmptyState) {
+    mapEmptyState.classList.add("is-hidden");
+  }
 }
 
 function centerToLocation(center, source = "customer_map_center_pin") {
@@ -2670,56 +2830,80 @@ function centerToLocation(center, source = "customer_map_center_pin") {
   };
 }
 
-function setDrawerAddressText(fullAddress, sourceLabel = "Move map to adjust pin") {
-  if (detectedAddressText) detectedAddressText.textContent = sourceLabel;
-  if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
+function updateCapturedAddressCard(locationValue, statusText = "") {
+  const location = locationValue || currentLocationState || {};
+
+  const doorText =
+    cleanText(location.doorNo) ||
+    cleanText(location.displayAddress) ||
+    cleanText(location.display) ||
+    "Pinned location";
+
+  const fullText =
+    statusText ||
+    cleanText(location.fullAddress) ||
+    cleanText(location.full) ||
+    cleanText(location.address) ||
+    (location.lat && location.lng
+      ? `Lat: ${Number(location.lat).toFixed(5)}, Lng: ${Number(location.lng).toFixed(5)}`
+      : "Move the map so the pin sits exactly on your delivery spot.");
+
+  if (capturedDoorNoText) {
+    capturedDoorNoText.textContent = truncateAddressPreview(doorText, 28);
+  }
+
+  if (capturedAddressText) {
+    capturedAddressText.textContent = fullText;
+  }
 }
 
-let locationReverseTimer = null;
-let locationReverseRequestId = 0;
-
 async function reverseGeocodeMapCenter(center, source = "customer_map_center_pin") {
-  if (!center || !center.lat || !center.lng) return;
+  if (!center || !center.lat || !center.lng || isResolvingAddress) return;
 
   const requestId = ++locationReverseRequestId;
+  isResolvingAddress = true;
   currentLocationState = centerToLocation(center, source);
 
-  if (detectedAddressText) {
-    detectedAddressText.textContent = "Finding address for this pin...";
-  }
+  updateCapturedAddressCard(currentLocationState, "Finding address for this pin...");
 
   try {
     const geocodeData = await reverseGeocodeExactAddress(center.lat, center.lng);
     if (requestId !== locationReverseRequestId) return;
 
     const fullAddress = cleanText(geocodeData.fullAddress);
-    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress);
+    const doorNo = cleanText(geocodeData.doorNo);
+    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress, doorNo);
 
     currentLocationState = {
       ...(currentLocationState || {}),
       lat: Number(center.lat),
       lng: Number(center.lng),
+      doorNo,
       display: shortAddress,
+      displayAddress: shortAddress,
       full: fullAddress,
       fullAddress,
       source: geocodeData.source || source,
       pinnedByUser: true
     };
 
-    if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
-    if (detectedAddressText) detectedAddressText.textContent = "Address found. Move the map if the pin is not exact.";
+    updateCapturedAddressCard(currentLocationState);
   } catch (error) {
     if (requestId !== locationReverseRequestId) return;
-    if (detectedAddressText) {
-      detectedAddressText.textContent = "Could not fetch address. Move the map or enter address manually.";
+    updateCapturedAddressCard(currentLocationState, "Could not fetch address. Move the map or use current location again.");
+  } finally {
+    if (requestId === locationReverseRequestId) {
+      isResolvingAddress = false;
     }
   }
 }
 
 function scheduleReverseForCurrentMap(source = "customer_map_center_pin") {
   if (!locationOlaMapInstance) return;
+
   const center = locationOlaMapInstance.getCenter();
   currentLocationState = centerToLocation({ lat: center.lat, lng: center.lng }, source);
+  updateCapturedAddressCard(currentLocationState, "Finding address for this pin...");
 
   clearTimeout(locationReverseTimer);
   locationReverseTimer = setTimeout(() => {
@@ -2730,9 +2914,7 @@ function scheduleReverseForCurrentMap(source = "customer_map_center_pin") {
 async function renderOlaLocationMap(latitude, longitude) {
   if (!locationOlaMapCanvas) return;
 
-  setLocationProviderStatus("Ola");
   showMapMessage("Loading map...");
-
   const center = [Number(longitude), Number(latitude)];
 
   try {
@@ -2742,9 +2924,15 @@ async function renderOlaLocationMap(latitude, longitude) {
 
     if (locationOlaMapInstance) {
       locationOlaMapInstance.resize();
-      locationOlaMapInstance.easeTo({ center, zoom: Math.max(locationOlaMapInstance.getZoom() || 17, 17), duration: 350 });
+      locationOlaMapInstance.easeTo({
+        center,
+        zoom: Math.max(locationOlaMapInstance.getZoom() || 17, 17),
+        duration: 350
+      });
       hideMapMessage();
       currentLocationState = centerToLocation({ lat: Number(latitude), lng: Number(longitude) }, "customer_saved_pin");
+      updateCapturedAddressCard(currentLocationState);
+      scheduleReverseForCurrentMap("customer_saved_pin");
       return;
     }
 
@@ -2752,7 +2940,7 @@ async function renderOlaLocationMap(latitude, longitude) {
       container: locationOlaMapCanvas,
       center,
       zoom: 17,
-      controls: true
+      controls: false
     });
 
     locationOlaMapInstance = created.map;
@@ -2760,13 +2948,16 @@ async function renderOlaLocationMap(latitude, longitude) {
     locationOlaMapInstance.on("load", () => {
       hideMapMessage();
       currentLocationState = centerToLocation({ lat: Number(latitude), lng: Number(longitude) }, "customer_map_ready");
-      setTimeout(() => locationOlaMapInstance.resize(), 100);
+      updateCapturedAddressCard(currentLocationState);
+      setTimeout(() => {
+        locationOlaMapInstance.resize();
+        scheduleReverseForCurrentMap("customer_map_ready");
+      }, 100);
     });
 
     locationOlaMapInstance.on("movestart", () => {
-      const card = getMapCard();
-      if (card) card.classList.add("is-moving");
-      if (detectedAddressText) detectedAddressText.textContent = "Move map to place the pin exactly on your door.";
+      if (mapAddressShell) mapAddressShell.classList.add("is-moving");
+      updateCapturedAddressCard(currentLocationState, "Move map to place the pin exactly on your door.");
     });
 
     locationOlaMapInstance.on("move", () => {
@@ -2775,19 +2966,16 @@ async function renderOlaLocationMap(latitude, longitude) {
     });
 
     locationOlaMapInstance.on("moveend", () => {
-      const card = getMapCard();
-      if (card) card.classList.remove("is-moving");
+      if (mapAddressShell) mapAddressShell.classList.remove("is-moving");
       scheduleReverseForCurrentMap("customer_center_pin");
     });
 
     locationOlaMapInstance.on("error", (event) => {
       console.log("Ola Maps V4 render error:", event?.error || event);
-      setLocationProviderStatus("Ola error");
-      showMapMessage("Map could not load. Check Ola allowed domains and API key.");
+      showMapMessage("Map could not load. Check Ola allowed domains and Cloudflare proxy.");
     });
   } catch (error) {
     console.log("Ola Maps V4 load error:", error);
-    setLocationProviderStatus("Ola error");
     showMapMessage("Map could not load. Check Cloudflare and Ola setup.");
   }
 }
@@ -2801,127 +2989,233 @@ function updateMapPreview(lat, lng, allowDefault = false) {
       showMapMessage("Use current location to set your delivery pin.");
       return;
     }
+
     latitude = DEFAULT_CBE_LOCATION.lat;
     longitude = DEFAULT_CBE_LOCATION.lng;
   }
 
+  currentLocationState = centerToLocation({ lat: latitude, lng: longitude }, "customer_map_preview");
+  updateCapturedAddressCard(currentLocationState);
   renderOlaLocationMap(latitude, longitude);
 }
 
-function fillDrawerFields(locationValue) {
-  const location = locationValue || getSavedReadableAddress() || getSavedCoordinates();
+function getSavedAddressCandidates() {
+  const results = [];
+  const seen = new Set();
 
-  if (!location) {
-    if (detectedAddressText) detectedAddressText.textContent = "Location not available yet";
-    if (locationAccuracyChip) locationAccuracyChip.textContent = "Manual";
-    if (doorNoInput) doorNoInput.value = "";
-    if (fullAddressInput) fullAddressInput.value = "";
-    if (landmarkInput) landmarkInput.value = "";
-    updateMapPreview("", "", true);
+  function addCandidate(rawValue, fallbackLabel = "Home") {
+    const normalized = normalizeLocationValue(rawValue);
+    if (!normalized) return;
+
+    const key = [
+      normalized.label || fallbackLabel,
+      normalized.fullAddress || normalized.full || normalized.display,
+      normalized.lat || "",
+      normalized.lng || ""
+    ].join("|").toLowerCase();
+
+    if (seen.has(key)) return;
+    seen.add(key);
+
+    results.push({
+      label: normalized.label || fallbackLabel,
+      ...normalized
+    });
+  }
+
+  const savedList =
+    parseSavedValue(localStorage.getItem("cust_saved_addresses")) ||
+    parseSavedValue(localStorage.getItem("delivery_saved_addresses")) ||
+    [];
+
+  if (Array.isArray(savedList)) {
+    savedList.forEach((item, index) => addCandidate(item, item.label || `Address ${index + 1}`));
+  }
+
+  const currentSaved = getSavedReadableAddress() || getSavedCoordinates();
+  if (currentSaved) addCandidate(currentSaved, currentSaved.label || "Home");
+
+  return results.slice(0, 3);
+}
+
+function makeEditIconSvg() {
+  return `
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M4.90669 18.0782C4.39836 18.0782 3.92336 17.9032 3.58169 17.5782C3.14836 17.1698 2.94003 16.5532 3.01503 15.8865L3.32336 13.1865C3.38169 12.6782 3.69003 12.0032 4.04836 11.6365L10.89 4.39482C12.5984 2.58648 14.3817 2.53648 16.19 4.24482C17.9984 5.95315 18.0484 7.73648 16.34 9.54482L9.49837 16.7865C9.14837 17.1615 8.49836 17.5115 7.99003 17.5948L5.30669 18.0532C5.16503 18.0615 5.04003 18.0782 4.90669 18.0782ZM13.565 4.23648C12.9234 4.23648 12.365 4.63648 11.7984 5.23648L4.95669 12.4865C4.79003 12.6615 4.59836 13.0782 4.56503 13.3198L4.25669 16.0198C4.22336 16.2948 4.29003 16.5198 4.44003 16.6615C4.59003 16.8032 4.81503 16.8532 5.09003 16.8115L7.77336 16.3532C8.01503 16.3115 8.41503 16.0948 8.5817 15.9198L15.4234 8.67815C16.4567 7.57815 16.8317 6.56148 15.3234 5.14482C14.6567 4.50315 14.0817 4.23648 13.565 4.23648Z" fill="#08A045"/>
+      <path d="M14.74 10.9375C14.7233 10.9375 14.6983 10.9375 14.6816 10.9375C12.0816 10.6792 9.98995 8.70421 9.58995 6.12087C9.53995 5.77921 9.77329 5.46254 10.115 5.40421C10.4566 5.35421 10.7733 5.58754 10.8316 5.92921C11.1483 7.94587 12.7816 9.49587 14.815 9.69587C15.1566 9.72921 15.4066 10.0375 15.3733 10.3792C15.3316 10.6958 15.0566 10.9375 14.74 10.9375Z" fill="#08A045"/>
+    </svg>
+  `;
+}
+
+function renderSavedAddressList() {
+  if (!savedAddressList) return;
+
+  const savedAddresses = getSavedAddressCandidates();
+
+  if (!savedAddresses.length) {
+    savedAddressList.innerHTML = `<div class="saved-address-empty">No saved address yet. Pin your current delivery location first.</div>`;
     return;
   }
 
-  currentLocationState = {
-    ...(currentLocationState || {}),
-    ...location
-  };
+  savedAddressList.innerHTML = savedAddresses.map((address, index) => {
+    const label = cleanText(address.label) || `Address ${index + 1}`;
+    const line = cleanText(address.displayAddress || address.display || address.fullAddress || address.full) || "Saved delivery address";
 
-  updateMapPreview(location.lat, location.lng);
+    return `
+      <div class="saved-address-card" data-saved-index="${index}">
+        <div class="saved-address-inside">
+          <div class="saved-address-left">
+            <div class="saved-address-top">
+              <div class="saved-address-label">${label}</div>
+              <button class="edit-button" type="button" data-saved-edit="${index}">
+                ${makeEditIconSvg()}
+                Edit
+              </button>
+            </div>
+            <div class="saved-address-line">${line}</div>
+          </div>
+          <button class="use-button" type="button" data-saved-use="${index}">Use</button>
+        </div>
+      </div>
+    `;
+  }).join("");
 
-  if (locationAccuracyChip) {
-    locationAccuracyChip.textContent = location.accuracy
-      ? `±${Math.round(Number(location.accuracy))}m`
-      : "GPS";
-  }
+  savedAddressList.querySelectorAll("[data-saved-use], [data-saved-edit]").forEach(button => {
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      const index = Number(button.getAttribute("data-saved-use") || button.getAttribute("data-saved-edit"));
+      const selectedAddress = savedAddresses[index];
 
-  const sourceLabel = location.source === "ola_maps_reverse_geocode"
-    ? "Ola"
-    : location.source === "openstreetmap_nominatim"
-      ? "OSM"
-      : location.source === "bigdatacloud"
-        ? "BDC"
-        : getOlaMapsApiKey()
-          ? "Ola"
-          : "Test";
+      if (!selectedAddress) return;
 
-  setLocationProviderStatus(sourceLabel);
+      currentLocationState = selectedAddress;
+      updateCapturedAddressCard(selectedAddress);
 
-  if (detectedAddressText) {
-    detectedAddressText.textContent = location.full || location.display || "Finding your address...";
-  }
-
-  if (doorNoInput) {
-    doorNoInput.value = location.doorNo || "";
-  }
-
-  if (fullAddressInput) {
-    fullAddressInput.value = location.full && !location.hasCoordinatesOnly
-      ? location.full
-      : "";
-  }
-
-  if (landmarkInput) {
-    landmarkInput.value = location.landmark || "";
-  }
+      if (selectedAddress.lat && selectedAddress.lng) {
+        updateMapPreview(selectedAddress.lat, selectedAddress.lng, true);
+      } else {
+        showMapMessage("This saved address has no pin yet. Use current location or move the map.");
+      }
+    });
+  });
 }
 
-function openLocationDrawer() {
-  if (!locationDrawerBackdrop) return;
+function openLocationMapScreen() {
+  if (!locationMapScreen) return;
 
-  locationDrawerBackdrop.classList.add("is-open");
-  locationDrawerBackdrop.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  locationMapScreen.classList.add("is-open");
+  locationMapScreen.setAttribute("aria-hidden", "false");
+  document.body.classList.add("map-screen-open");
 
-  const savedLocation = getSavedReadableAddress() || getSavedCoordinates();
+  renderSavedAddressList();
 
-  if (savedLocation && savedLocation.lat && savedLocation.lng) {
-    fillDrawerFields(savedLocation);
-    if (detectedAddressText) {
-      detectedAddressText.textContent = "Saved pinned address is ready. Move the pin only if you want to edit it.";
-    }
-  } else {
-    fillDrawerFields(null);
-
-    if (detectedAddressText) {
-      detectedAddressText.textContent = "Checking your current location permission...";
-    }
-
-    if (navigator.permissions && navigator.geolocation) {
-      navigator.permissions
-        .query({ name: "geolocation" })
-        .then(permission => {
-          if (permission.state === "granted") {
-            requestDeliveryLocation();
-          } else {
-            if (detectedAddressText) {
-              detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
-            }
-          }
-        })
-        .catch(() => {
-          if (detectedAddressText) {
-            detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
-          }
-        });
-    } else if (detectedAddressText) {
-      detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
-    }
-  }
+  const savedLocation = getSavedReadableAddress() || getSavedCoordinates() || DEFAULT_CBE_LOCATION;
+  currentLocationState = savedLocation;
+  updateCapturedAddressCard(savedLocation);
 
   setTimeout(() => {
-    if (locationOlaMapInstance) locationOlaMapInstance.resize();
-  }, 120);
+    updateMapPreview(savedLocation.lat, savedLocation.lng, true);
+
+    if (locationOlaMapInstance) {
+      locationOlaMapInstance.resize();
+    }
+  }, 80);
 }
 
-function closeLocationDrawer() {
-  if (!locationDrawerBackdrop) return;
+function closeLocationMapScreen() {
+  if (!locationMapScreen) return;
 
-  locationDrawerBackdrop.classList.remove("is-open");
-  locationDrawerBackdrop.setAttribute("aria-hidden", "true");
-  document.body.style.overflow = "";
+  locationMapScreen.classList.remove("is-open");
+  locationMapScreen.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("map-screen-open");
 }
 
-async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer = false) {
+async function saveCurrentBrowserLocation(position) {
+  const capturedLocation = {
+    lat: position.coords.latitude,
+    lng: position.coords.longitude,
+    accuracy: position.coords.accuracy,
+    capturedAt: new Date().toISOString(),
+    source: "browser_geolocation",
+    pinnedByUser: true
+  };
+
+  currentLocationState = capturedLocation;
+  updateCapturedAddressCard(capturedLocation, "Finding address for your current location...");
+  updateMapPreview(capturedLocation.lat, capturedLocation.lng, true);
+
+  if (locationOlaMapInstance) {
+    locationOlaMapInstance.easeTo({
+      center: [Number(capturedLocation.lng), Number(capturedLocation.lat)],
+      zoom: 17,
+      duration: 450
+    });
+  }
+
+  await reverseGeocodeMapCenter(capturedLocation, "browser_geolocation");
+}
+
+function requestDeliveryLocation() {
+  if (!navigator.geolocation) {
+    updateCapturedAddressCard(currentLocationState, "Location is not supported on this browser. Move the map manually.");
+    return;
+  }
+
+  updateCapturedAddressCard(currentLocationState, "Getting current location...");
+
+  navigator.geolocation.getCurrentPosition(
+    saveCurrentBrowserLocation,
+    () => {
+      updateCapturedAddressCard(currentLocationState, "Location permission is blocked. Move the map manually.");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 300000
+    }
+  );
+}
+
+function handleSearchLocation() {
+  const query = window.prompt("Search area, apartment, street or landmark");
+  const cleanedQuery = cleanText(query);
+
+  if (!cleanedQuery) return;
+
+  localStorage.setItem("cust_location_search_query", cleanedQuery);
+  updateCapturedAddressCard(currentLocationState, `Search saved: ${cleanedQuery}. Search result screen will be connected next.`);
+}
+
+function handleContinueLocation() {
+  if (locationOlaMapInstance) {
+    const center = locationOlaMapInstance.getCenter();
+    currentLocationState = {
+      ...(currentLocationState || {}),
+      lat: center.lat,
+      lng: center.lng,
+      source: "customer_continue_center_pin",
+      pinnedByUser: true
+    };
+  }
+
+  savePendingLocationState(currentLocationState || DEFAULT_CBE_LOCATION);
+
+  if (continueLocationBtn) {
+    continueLocationBtn.classList.add("is-saved");
+    continueLocationBtn.textContent = "Saved";
+  }
+
+  updateCapturedAddressCard(currentLocationState, "Pin saved. Next we will create the address details screen.");
+
+  setTimeout(() => {
+    if (continueLocationBtn) {
+      continueLocationBtn.classList.remove("is-saved");
+      continueLocationBtn.textContent = "Continue";
+    }
+  }, 1400);
+}
+
+async function resolveAddressFromCoordinates(locationValue, shouldUpdateCard = false) {
   if (
     isResolvingAddress ||
     !locationValue ||
@@ -2933,8 +3227,8 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
 
   isResolvingAddress = true;
 
-  if (shouldUpdateDrawer && detectedAddressText) {
-    detectedAddressText.textContent = "Finding exact address for this pin...";
+  if (shouldUpdateCard) {
+    updateCapturedAddressCard(locationValue, "Finding exact address for this pin...");
   }
 
   try {
@@ -2944,11 +3238,14 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
     );
 
     const fullAddress = cleanText(geocodeData.fullAddress);
-    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress);
+    const doorNo = cleanText(geocodeData.doorNo);
+    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress, doorNo);
 
     const resolvedLocation = {
       ...locationValue,
+      doorNo,
       display: shortAddress,
+      displayAddress: shortAddress,
       full: fullAddress,
       fullAddress,
       source: geocodeData.source || "reverse_geocode",
@@ -2960,14 +3257,14 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
       ...resolvedLocation
     };
 
-    if (shouldUpdateDrawer) {
-      if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
-      if (detectedAddressText) detectedAddressText.textContent = "Address found. Move the map if the pin is not exact.";
+    if (shouldUpdateCard) {
+      updateCapturedAddressCard(currentLocationState);
     }
 
+    renderDeliveryLocation(false);
   } catch (error) {
-    if (shouldUpdateDrawer && detectedAddressText) {
-      detectedAddressText.textContent = "Could not fetch address automatically. Please enter it manually.";
+    if (shouldUpdateCard) {
+      updateCapturedAddressCard(locationValue, "Could not fetch address automatically. Move the map manually.");
     }
   } finally {
     isResolvingAddress = false;
@@ -3004,139 +3301,44 @@ function renderDeliveryLocation(shouldResolveCoordinates = true) {
   deliveryAddressText.title = "Tap to confirm your delivery address";
 }
 
-async function saveCurrentBrowserLocation(position) {
-  const capturedLocation = {
-    lat: position.coords.latitude,
-    lng: position.coords.longitude,
-    accuracy: position.coords.accuracy,
-    capturedAt: new Date().toISOString(),
-    source: "browser_geolocation",
-    pinnedByUser: true
-  };
-
-  currentLocationState = capturedLocation;
-
-  if (locationAccuracyChip) {
-    locationAccuracyChip.textContent = capturedLocation.accuracy
-      ? `±${Math.round(Number(capturedLocation.accuracy))}m`
-      : "GPS";
-  }
-
-  updateMapPreview(capturedLocation.lat, capturedLocation.lng, true);
-
-  if (locationOlaMapInstance) {
-    locationOlaMapInstance.easeTo({
-      center: [Number(capturedLocation.lng), Number(capturedLocation.lat)],
-      zoom: 17,
-      duration: 450
-    });
-  }
-
-  await resolveAddressFromCoordinates(capturedLocation, true);
-}
-
-function requestDeliveryLocation() {
-  if (!navigator.geolocation) {
-    if (detectedAddressText) {
-      detectedAddressText.textContent = "Location is not supported on this browser. Please enter the address manually.";
-    }
-    return;
-  }
-
-  if (detectedAddressText) {
-    detectedAddressText.textContent = "Getting current location...";
-  }
-
-  navigator.geolocation.getCurrentPosition(
-    saveCurrentBrowserLocation,
-    () => {
-      if (detectedAddressText) {
-        detectedAddressText.textContent = "Location permission is blocked. Please enter your address manually.";
-      }
-    },
-    {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 300000
-    }
-  );
-}
-
-function saveAddressFromDrawer() {
-  const existingLocation = currentLocationState || getSavedCoordinates() || {};
-  const doorNo = cleanText(doorNoInput && doorNoInput.value);
-  const fullAddress = cleanText(fullAddressInput && fullAddressInput.value);
-  const landmark = cleanText(landmarkInput && landmarkInput.value);
-
-  if (!fullAddress) {
-    if (fullAddressInput) {
-      fullAddressInput.focus();
-    }
-    if (detectedAddressText) {
-      detectedAddressText.textContent = "Please enter your full delivery address.";
-    }
-    return;
-  }
-
-  if (locationOlaMapInstance) {
-    const center = locationOlaMapInstance.getCenter();
-    existingLocation.lat = center.lat;
-    existingLocation.lng = center.lng;
-  }
-
-  saveLocationState({
-    ...existingLocation,
-    doorNo,
-    full: fullAddress,
-    fullAddress,
-    landmark,
-    pinnedByUser: true,
-    source: "customer_saved_center_pin"
-  });
-
-  closeLocationDrawer();
-}
-
 if (deliveryLocationBox) {
-  deliveryLocationBox.addEventListener("click", openLocationDrawer);
+  deliveryLocationBox.addEventListener("click", openLocationMapScreen);
 
   deliveryLocationBox.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      openLocationDrawer();
+      openLocationMapScreen();
     }
   });
 }
 
-if (locationDrawerBackdrop) {
-  locationDrawerBackdrop.addEventListener("click", event => {
-    if (event.target === locationDrawerBackdrop) {
-      closeLocationDrawer();
-    }
-  });
-}
-
-if (closeLocationDrawerBtn) {
-  closeLocationDrawerBtn.addEventListener("click", closeLocationDrawer);
+if (closeLocationMapBtn) {
+  closeLocationMapBtn.addEventListener("click", closeLocationMapScreen);
 }
 
 if (refreshLocationBtn) {
   refreshLocationBtn.addEventListener("click", requestDeliveryLocation);
 }
 
-if (saveLocationBtn) {
-  saveLocationBtn.addEventListener("click", saveAddressFromDrawer);
+if (searchLocationBtn) {
+  searchLocationBtn.addEventListener("click", handleSearchLocation);
+}
+
+if (continueLocationBtn) {
+  continueLocationBtn.addEventListener("click", handleContinueLocation);
 }
 
 window.addEventListener("keydown", event => {
-  if (event.key === "Escape") {
-    closeLocationDrawer();
+  if (event.key === "Escape" && locationMapScreen && locationMapScreen.classList.contains("is-open")) {
+    closeLocationMapScreen();
   }
 });
 
 renderDeliveryLocation();
+renderSavedAddressList();
 
-/* Customer location is now user-controlled. We do not auto-request GPS after first setup. */
+/* Customer location is user-controlled. We do not auto-request GPS after first setup. */
+
 
 /*
 ========================================
