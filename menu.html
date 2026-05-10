@@ -1534,33 +1534,25 @@ body.map-screen-open {
 .details-change-button,
 .saveas-chip,
 .save-use-now-button {
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
-  bottom: calc(30px + env(safe-area-inset-bottom));
-  width: 342px;
-  height: 55px;
-  padding: 14px 20px;
-  background: #08A045;
-  box-shadow: 0px 6px 34px rgba(8, 160, 69, 0.24);
-  border-radius: 10px;
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  color: #FDFDFF;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 26px;
-  z-index: 6;
+  border: 0;
+  font-family: 'General Sans', sans-serif;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .details-back-button {
+  position: static;
+  width: auto;
   height: 30px;
   padding: 0;
   background: transparent;
   color: #12130F;
+  box-shadow: none;
+  border-radius: 0;
+  transform: none;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
   font-size: 18px;
   font-weight: 500;
@@ -1574,12 +1566,15 @@ body.map-screen-open {
 }
 
 .details-search-button {
+  position: static;
   width: 42px;
   height: 42px;
   padding: 9px;
   background: #FDFDFF;
+  color: #12130F;
   border-radius: 50px;
   box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.12);
+  transform: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1620,12 +1615,18 @@ body.map-screen-open {
 }
 
 .details-change-button {
+  position: static;
+  width: auto;
   height: 21px;
   padding: 0;
   background: transparent;
   color: #08A045;
+  box-shadow: none;
+  border-radius: 0;
+  transform: none;
   display: inline-flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 2px;
   font-size: 16px;
   font-weight: 500;
@@ -1730,12 +1731,16 @@ body.map-screen-open {
 }
 
 .saveas-chip {
+  position: static;
+  width: auto;
   height: 32px;
   padding: 6px 12px 6px 10px;
   flex-shrink: 0;
   background: rgba(18, 19, 15, 0.04);
   border-radius: 8px;
   color: #12130F;
+  box-shadow: none;
+  transform: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1771,7 +1776,6 @@ body.map-screen-open {
 
 .details-input-field textarea {
   min-height: 76px;
-  max-height: 190px;
   resize: none;
   overflow-y: hidden;
 }
@@ -1788,9 +1792,10 @@ body.map-screen-open {
 }
 
 .save-use-now-button {
-  position: absolute;
-  left: 23px;
+  position: fixed;
+  left: 50%;
   bottom: calc(30px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
   width: 342px;
   height: 55px;
   padding: 14px 20px;
@@ -1804,6 +1809,7 @@ body.map-screen-open {
   font-size: 18px;
   font-weight: 600;
   line-height: 26px;
+  z-index: 8;
 }
 
 .save-use-now-button.is-saving {
@@ -3755,9 +3761,9 @@ function setSelectedSaveLabel(label, shouldCheckDirty = true) {
 function autoGrowAddressTextarea() {
   if (!detailsAddressInput) return;
   detailsAddressInput.style.height = "auto";
-  const nextHeight = Math.min(detailsAddressInput.scrollHeight, 190);
-  detailsAddressInput.style.height = `${Math.max(nextHeight, 76)}px`;
-  detailsAddressInput.style.overflowY = detailsAddressInput.scrollHeight > 190 ? "auto" : "hidden";
+  const nextHeight = Math.max(detailsAddressInput.scrollHeight, 76);
+  detailsAddressInput.style.height = `${nextHeight}px`;
+  detailsAddressInput.style.overflowY = "hidden";
 }
 
 function makeDetailsComparable(location = {}) {
