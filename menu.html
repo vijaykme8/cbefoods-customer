@@ -1719,7 +1719,7 @@ img {
       <button class="drawer-action-primary" type="button" id="saveLocationBtn">Save address</button>
     </div>
 
-    <div class="location-attribution" id="olaTestHint">Ola Maps runs through a secure Netlify proxy. Move the pin to exact delivery location.</div>
+    <div class="location-attribution" id="olaTestHint">Ola Maps runs through a secure Cloudflare proxy. Move the pin to exact delivery location.</div>
 
     <div class="location-attribution">Tip: drag the pin or tap the map to set the exact delivery point.</div>
   </div>
@@ -1832,11 +1832,11 @@ let currentLocationState = null;
 
 /*
 Ola Maps setup:
-- This customer app uses a Netlify Function proxy.
-- Keep the Ola key in Netlify env var OLA_MAPS_API_KEY.
+- This customer app uses a Cloudflare Pages Function proxy.
+- Keep the Ola key in Cloudflare env var OLA_MAPS_API_KEY.
 - Do not add the Ola API key in browser localStorage or frontend code.
 */
-const OLA_PROXY_URL = "/.netlify/functions/ola-maps";
+const OLA_PROXY_URL = "/ola-maps";
 
 function getOlaMapsApiKey() {
   return "netlify_proxy";
