@@ -1145,6 +1145,12 @@ body.map-screen-open {
   gap: 10px;
   z-index: 9;
   pointer-events: none;
+  transition: bottom 0.28s ease;
+  touch-action: pan-y;
+}
+
+.map-address-bottom-section.is-expanded {
+  bottom: 0;
 }
 
 .map-address-wrap {
@@ -1295,6 +1301,23 @@ body.map-screen-open {
   align-items: center;
   gap: 12px;
   pointer-events: auto;
+  touch-action: pan-y;
+}
+
+.map-address-bottom-section.is-expanded .saved-add-drawer {
+  height: min(360px, calc(100dvh - 250px));
+  overflow: hidden;
+}
+
+.map-address-bottom-section.is-expanded .saved-add-group {
+  width: 342px;
+  max-height: 196px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .drawer-handle-wide {
@@ -1336,6 +1359,7 @@ body.map-screen-open {
   justify-content: center;
   align-items: flex-start;
   gap: 6px;
+  cursor: pointer;
 }
 
 .saved-address-inside {
@@ -1480,7 +1504,10 @@ body.map-screen-open {
   min-height: 100dvh;
   position: relative;
   background: #FFFFFF;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(110px + env(safe-area-inset-bottom));
   display: none;
 }
 
@@ -1489,13 +1516,13 @@ body.map-screen-open {
 }
 
 .details-top-bar {
-  position: absolute;
-  left: 50%;
-  top: 40px;
+  position: sticky;
+  top: 0;
   width: 390px;
   max-width: 100vw;
-  transform: translateX(-50%);
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 40px 24px 10px;
+  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.92) 72%, rgba(255,255,255,0) 100%);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1507,10 +1534,24 @@ body.map-screen-open {
 .details-change-button,
 .saveas-chip,
 .save-use-now-button {
-  font-family: 'General Sans', sans-serif;
-  border: 0;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(30px + env(safe-area-inset-bottom));
+  width: 342px;
+  height: 55px;
+  padding: 14px 20px;
+  background: #08A045;
+  box-shadow: 0px 6px 34px rgba(8, 160, 69, 0.24);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #FDFDFF;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+  z-index: 6;
 }
 
 .details-back-button {
@@ -1545,10 +1586,9 @@ body.map-screen-open {
 }
 
 .details-screen-content {
-  position: absolute;
-  left: 24px;
-  top: 94px;
+  position: relative;
   width: 342px;
+  margin: 14px auto 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1730,8 +1770,10 @@ body.map-screen-open {
 }
 
 .details-input-field textarea {
-  height: 76px;
+  min-height: 76px;
+  max-height: 190px;
   resize: none;
+  overflow-y: hidden;
 }
 
 .details-input-field input::placeholder,
@@ -1771,9 +1813,12 @@ body.map-screen-open {
 .details-back-button:active,
 .details-search-button:active,
 .details-change-button:active,
-.saveas-chip:active,
-.save-use-now-button:active {
+.saveas-chip:active {
   transform: scale(0.97);
+}
+
+.save-use-now-button:active {
+  transform: translateX(-50%) scale(0.97);
 }
 
 @media (max-width: 389px) {
@@ -1799,7 +1844,7 @@ body.map-screen-open {
   }
 
   .save-use-now-button {
-    left: 24px;
+    left: 50%;
   }
 }
 
@@ -2330,7 +2375,7 @@ body.map-screen-open {
       </svg>
     </div>
 
-    <div class="map-address-bottom-section">
+    <div class="map-address-bottom-section" id="mapAddressBottomSection">
       <div class="map-address-wrap">
         <button class="gps-button" type="button" id="refreshLocationBtn">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2502,8 +2547,15 @@ const detailsDoorInput = document.getElementById("detailsDoorInput");
 const detailsAddressInput = document.getElementById("detailsAddressInput");
 const detailsLandmarkInput = document.getElementById("detailsLandmarkInput");
 const saveUseNowBtn = document.getElementById("saveUseNowBtn");
+const mapAddressBottomSection = document.getElementById("mapAddressBottomSection");
+const savedAddDrawer = document.querySelector(".saved-add-drawer");
+const drawerHandleWide = document.querySelector(".drawer-handle-wide");
 
 let selectedSaveLabel = "Home";
+let detailsEntryMode = "new";
+let activeEditingAddressId = "";
+let detailsOriginalSnapshot = "";
+let detailsForceDirty = false;
 let locationOlaMapInstance = null;
 let locationReverseTimer = null;
 let locationReverseRequestId = 0;
@@ -2905,6 +2957,7 @@ function savePendingLocationState(locationState) {
   if (!locationState) return;
 
   const selectedLocation = {
+    id: locationState.id || "",
     lat: locationState.lat || "",
     lng: locationState.lng || "",
     accuracy: locationState.accuracy || "",
@@ -2942,6 +2995,7 @@ function saveLocationState(locationState) {
   const shortAddress = compactAddress(fullAddress, doorNo);
 
   const savedLocation = {
+    id: locationState.id || "",
     label: locationState.label || "Home",
     lat: locationState.lat || "",
     lng: locationState.lng || "",
@@ -3572,33 +3626,41 @@ function renderSavedAddressList() {
     `;
   }).join("");
 
+  function openSavedAddressForm(index) {
+    const selectedAddress = savedAddresses[index];
+    if (!selectedAddress) return;
+
+    currentLocationState = selectedAddress;
+    updateCapturedAddressCard(selectedAddress);
+
+    if (selectedAddress.lat && selectedAddress.lng) {
+      updateMapPreview(selectedAddress.lat, selectedAddress.lng, true);
+    }
+
+    openLocationDetailsScreen(selectedAddress, {
+      mode: "existing_saved",
+      addressId: selectedAddress.id || ""
+    });
+  }
+
   savedAddressList.querySelectorAll("[data-saved-use]").forEach(button => {
     button.addEventListener("click", event => {
       event.stopPropagation();
-      const index = Number(button.getAttribute("data-saved-use"));
-      const selectedAddress = savedAddresses[index];
-      if (!selectedAddress) return;
-
-      saveLocationState(selectedAddress);
-      closeLocationMapScreen();
+      openSavedAddressForm(Number(button.getAttribute("data-saved-use")));
     });
   });
 
   savedAddressList.querySelectorAll("[data-saved-edit]").forEach(button => {
     button.addEventListener("click", event => {
       event.stopPropagation();
-      const index = Number(button.getAttribute("data-saved-edit"));
-      const selectedAddress = savedAddresses[index];
-      if (!selectedAddress) return;
+      openSavedAddressForm(Number(button.getAttribute("data-saved-edit")));
+    });
+  });
 
-      currentLocationState = selectedAddress;
-      updateCapturedAddressCard(selectedAddress);
-
-      if (selectedAddress.lat && selectedAddress.lng) {
-        updateMapPreview(selectedAddress.lat, selectedAddress.lng, true);
-      }
-
-      openLocationDetailsScreen(selectedAddress);
+  savedAddressList.querySelectorAll("[data-saved-index]").forEach(card => {
+    card.addEventListener("click", event => {
+      if (event.target.closest("button")) return;
+      openSavedAddressForm(Number(card.getAttribute("data-saved-index")));
     });
   });
 }
@@ -3610,6 +3672,7 @@ function openLocationMapScreen() {
   locationMapScreen.setAttribute("aria-hidden", "false");
   document.body.classList.add("map-screen-open");
   showLocationMapStep();
+  collapseSavedAddressDrawer();
 
   renderSavedAddressList();
 
@@ -3676,22 +3739,81 @@ function updateDetailsMapPreview(locationValue = currentLocationState) {
   }
 }
 
-function setSelectedSaveLabel(label) {
+function setSelectedSaveLabel(label, shouldCheckDirty = true) {
   selectedSaveLabel = cleanText(label) || "Home";
 
-  if (!saveAsChipsGroup) return;
+  if (saveAsChipsGroup) {
+    saveAsChipsGroup.querySelectorAll(".saveas-chip").forEach(chip => {
+      const chipLabel = cleanText(chip.getAttribute("data-save-label"));
+      chip.classList.toggle("is-selected", chipLabel === selectedSaveLabel);
+    });
+  }
 
-  saveAsChipsGroup.querySelectorAll(".saveas-chip").forEach(chip => {
-    const chipLabel = cleanText(chip.getAttribute("data-save-label"));
-    chip.classList.toggle("is-selected", chipLabel === selectedSaveLabel);
+  if (shouldCheckDirty) updateDetailsActionButton();
+}
+
+function autoGrowAddressTextarea() {
+  if (!detailsAddressInput) return;
+  detailsAddressInput.style.height = "auto";
+  const nextHeight = Math.min(detailsAddressInput.scrollHeight, 190);
+  detailsAddressInput.style.height = `${Math.max(nextHeight, 76)}px`;
+  detailsAddressInput.style.overflowY = detailsAddressInput.scrollHeight > 190 ? "auto" : "hidden";
+}
+
+function makeDetailsComparable(location = {}) {
+  return JSON.stringify({
+    label: cleanText(location.label || selectedSaveLabel),
+    doorNo: cleanText(location.doorNo),
+    fullAddress: cleanText(location.fullAddress || location.full || location.address || location.displayAddress || location.display),
+    landmark: cleanText(location.landmark),
+    lat: location.lat || location.lat === 0 ? Number(location.lat).toFixed(6) : "",
+    lng: location.lng || location.lng === 0 ? Number(location.lng).toFixed(6) : ""
   });
 }
 
-function openLocationDetailsScreen(locationValue = currentLocationState) {
+function getDetailsFormComparable() {
+  return makeDetailsComparable({
+    label: selectedSaveLabel,
+    doorNo: detailsDoorInput?.value,
+    fullAddress: detailsAddressInput?.value,
+    landmark: detailsLandmarkInput?.value,
+    lat: currentLocationState?.lat,
+    lng: currentLocationState?.lng
+  });
+}
+
+function isDetailsFormChanged() {
+  if (detailsEntryMode !== "existing_saved") return true;
+  if (detailsForceDirty) return true;
+  return getDetailsFormComparable() !== detailsOriginalSnapshot;
+}
+
+function updateDetailsActionButton() {
+  if (!saveUseNowBtn) return;
+
+  const hasChanges = isDetailsFormChanged();
+  saveUseNowBtn.textContent = detailsEntryMode === "existing_saved" && !hasChanges
+    ? "Use"
+    : "Save & Use now";
+  saveUseNowBtn.classList.toggle("is-use-mode", detailsEntryMode === "existing_saved" && !hasChanges);
+}
+
+function markDetailsFormDirty() {
+  updateDetailsActionButton();
+}
+
+function openLocationDetailsScreen(locationValue = currentLocationState, options = {}) {
   const location = locationValue || currentLocationState || DEFAULT_CBE_LOCATION;
+  const requestedMode = options.mode || detailsEntryMode || "new";
+
+  detailsEntryMode = requestedMode === "existing_saved" ? "existing_saved" : "new";
+  activeEditingAddressId = cleanText(options.addressId || location.id || activeEditingAddressId);
+  detailsForceDirty = Boolean(options.forceDirty);
+
   currentLocationState = {
     ...(currentLocationState || {}),
     ...location,
+    id: activeEditingAddressId || location.id || currentLocationState?.id || "",
     source: location.source || "customer_address_details"
   };
 
@@ -3707,14 +3829,21 @@ function openLocationDetailsScreen(locationValue = currentLocationState) {
       currentLocationState.displayAddress ||
       currentLocationState.display
     );
+    autoGrowAddressTextarea();
   }
 
   if (detailsLandmarkInput) {
     detailsLandmarkInput.value = cleanText(currentLocationState.landmark);
   }
 
-  setSelectedSaveLabel(currentLocationState.label || selectedSaveLabel || "Home");
+  setSelectedSaveLabel(currentLocationState.label || selectedSaveLabel || "Home", false);
+
+  if (!options.keepOriginalSnapshot) {
+    detailsOriginalSnapshot = getDetailsFormComparable();
+  }
+
   updateDetailsMapPreview(currentLocationState);
+  updateDetailsActionButton();
   showLocationDetailsStep();
 }
 
@@ -3732,9 +3861,11 @@ function buildLocationFromDetailsForm() {
   );
 
   const finalFullAddress = addressDetails || existingAddress || "Pinned delivery location";
+  const addressId = activeEditingAddressId || currentLocationState?.id || `addr_${Date.now()}`;
 
   return {
     ...(currentLocationState || {}),
+    id: addressId,
     label: selectedSaveLabel || "Home",
     doorNo,
     landmark,
@@ -3744,30 +3875,37 @@ function buildLocationFromDetailsForm() {
     display: compactAddress(finalFullAddress, doorNo),
     source: "customer_saved_address_form",
     pinnedByUser: true,
-    savedAt: new Date().toISOString()
+    savedAt: currentLocationState?.savedAt || new Date().toISOString(),
+    updatedAt: new Date().toISOString()
   };
 }
 
 function handleSaveUseNow() {
+  const hasChanges = isDetailsFormChanged();
   const finalLocation = buildLocationFromDetailsForm();
-  const savedAddress = rememberSavedAddress(finalLocation) || finalLocation;
+  const locationToUse = detailsEntryMode === "existing_saved" && !hasChanges
+    ? finalLocation
+    : (rememberSavedAddress(finalLocation) || finalLocation);
 
-  saveLocationState(savedAddress);
+  saveLocationState(locationToUse);
   renderSavedAddressList();
 
   if (saveUseNowBtn) {
     saveUseNowBtn.classList.add("is-saving");
-    saveUseNowBtn.textContent = "Saved";
+    saveUseNowBtn.textContent = hasChanges ? "Saved" : "Using";
   }
 
   setTimeout(() => {
     if (saveUseNowBtn) {
       saveUseNowBtn.classList.remove("is-saving");
-      saveUseNowBtn.textContent = "Save & Use now";
     }
+    detailsEntryMode = "new";
+    activeEditingAddressId = "";
+    detailsOriginalSnapshot = "";
+    detailsForceDirty = false;
     closeLocationMapScreen();
     showLocationMapStep();
-  }, 450);
+  }, 350);
 }
 
 async function saveCurrentBrowserLocation(position) {
@@ -3816,6 +3954,81 @@ function requestDeliveryLocation() {
   );
 }
 
+function expandSavedAddressDrawer() {
+  if (mapAddressBottomSection) {
+    mapAddressBottomSection.classList.add("is-expanded");
+  }
+}
+
+function collapseSavedAddressDrawer() {
+  if (mapAddressBottomSection) {
+    mapAddressBottomSection.classList.remove("is-expanded");
+  }
+}
+
+function setupSavedAddressDrawerGesture() {
+  if (!mapAddressBottomSection || !savedAddDrawer) return;
+
+  let startY = 0;
+  let active = false;
+
+  function begin(y) {
+    startY = y;
+    active = true;
+  }
+
+  function move(y) {
+    if (!active) return;
+    const deltaY = y - startY;
+
+    if (deltaY < -34) {
+      expandSavedAddressDrawer();
+      active = false;
+    }
+
+    if (deltaY > 34) {
+      const scroller = savedAddressList;
+      if (!scroller || scroller.scrollTop <= 0) {
+        collapseSavedAddressDrawer();
+        active = false;
+      }
+    }
+  }
+
+  function end() {
+    active = false;
+  }
+
+  [savedAddDrawer, drawerHandleWide].filter(Boolean).forEach(target => {
+    target.addEventListener("click", event => {
+      if (event.target.closest("button")) return;
+      expandSavedAddressDrawer();
+    });
+
+    target.addEventListener("touchstart", event => {
+      begin(event.touches[0].clientY);
+    }, { passive: true });
+
+    target.addEventListener("touchmove", event => {
+      move(event.touches[0].clientY);
+    }, { passive: true });
+
+    target.addEventListener("touchend", end, { passive: true });
+
+    target.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      begin(event.clientY);
+    });
+
+    target.addEventListener("pointermove", event => {
+      move(event.clientY);
+    });
+
+    target.addEventListener("pointerup", end);
+    target.addEventListener("pointercancel", end);
+  });
+}
+
 function handleSearchLocation() {
   const query = window.prompt("Search area, apartment, street or landmark");
   const cleanedQuery = cleanText(query);
@@ -3839,7 +4052,12 @@ function handleContinueLocation() {
   }
 
   savePendingLocationState(currentLocationState || DEFAULT_CBE_LOCATION);
-  openLocationDetailsScreen(currentLocationState || DEFAULT_CBE_LOCATION);
+  openLocationDetailsScreen(currentLocationState || DEFAULT_CBE_LOCATION, {
+    mode: detailsEntryMode === "existing_saved" ? "existing_saved" : "new",
+    addressId: activeEditingAddressId,
+    keepOriginalSnapshot: detailsEntryMode === "existing_saved",
+    forceDirty: detailsEntryMode === "existing_saved"
+  });
 }
 
 async function resolveAddressFromCoordinates(locationValue, shouldUpdateCard = false) {
@@ -3981,6 +4199,23 @@ if (saveAsChipsGroup) {
 if (saveUseNowBtn) {
   saveUseNowBtn.addEventListener("click", handleSaveUseNow);
 }
+
+if (detailsDoorInput) {
+  detailsDoorInput.addEventListener("input", markDetailsFormDirty);
+}
+
+if (detailsAddressInput) {
+  detailsAddressInput.addEventListener("input", () => {
+    autoGrowAddressTextarea();
+    markDetailsFormDirty();
+  });
+}
+
+if (detailsLandmarkInput) {
+  detailsLandmarkInput.addEventListener("input", markDetailsFormDirty);
+}
+
+setupSavedAddressDrawerGesture();
 
 window.addEventListener("keydown", event => {
   if (event.key === "Escape" && locationMapScreen && locationMapScreen.classList.contains("is-open")) {
