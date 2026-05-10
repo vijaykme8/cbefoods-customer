@@ -1145,12 +1145,17 @@ body.map-screen-open {
   gap: 10px;
   z-index: 9;
   pointer-events: none;
-  transition: bottom 0.28s ease;
+  transition: bottom 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: bottom;
   touch-action: pan-y;
 }
 
 .map-address-bottom-section.is-expanded {
   bottom: 0;
+}
+
+.map-address-bottom-section.is-gesture-active {
+  transition-duration: 0.18s;
 }
 
 .map-address-wrap {
@@ -1302,18 +1307,23 @@ body.map-screen-open {
   gap: 12px;
   pointer-events: auto;
   touch-action: pan-y;
+  user-select: none;
 }
 
 .map-address-bottom-section.is-expanded .saved-add-drawer {
-  height: min(360px, calc(100dvh - 250px));
+  height: min(390px, calc(100dvh - 250px));
   overflow: hidden;
 }
 
 .map-address-bottom-section.is-expanded .saved-add-group {
   width: 342px;
-  max-height: 196px;
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
   overflow-y: auto;
+  overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1326,6 +1336,11 @@ body.map-screen-open {
   background: #D9D9D9;
   border-radius: 10px;
   flex-shrink: 0;
+  cursor: grab;
+}
+
+.drawer-handle-wide:active {
+  cursor: grabbing;
 }
 
 .saved-address-title {
@@ -3975,63 +3990,118 @@ function collapseSavedAddressDrawer() {
 function setupSavedAddressDrawerGesture() {
   if (!mapAddressBottomSection || !savedAddDrawer) return;
 
+  const SWIPE_THRESHOLD = 42;
+  const WHEEL_THRESHOLD = 18;
   let startY = 0;
   let active = false;
+  let startedOnHandle = false;
+  let wheelLock = false;
 
-  function begin(y) {
-    startY = y;
-    active = true;
+  function isExpanded() {
+    return mapAddressBottomSection.classList.contains("is-expanded");
   }
 
-  function move(y) {
+  function canCollapseFromTarget(target) {
+    if (startedOnHandle) return true;
+    if (!savedAddressList || !savedAddressList.contains(target)) return true;
+    return savedAddressList.scrollTop <= 2;
+  }
+
+  function begin(y, target) {
+    startY = y;
+    active = true;
+    startedOnHandle = Boolean(target && target.closest && target.closest(".drawer-handle-wide"));
+    mapAddressBottomSection.classList.add("is-gesture-active");
+  }
+
+  function move(y, target, event) {
     if (!active) return;
     const deltaY = y - startY;
 
-    if (deltaY < -34) {
+    // Finger drag up: reveal the saved-address drawer.
+    if (!isExpanded() && deltaY < -SWIPE_THRESHOLD) {
+      if (event && event.cancelable) event.preventDefault();
       expandSavedAddressDrawer();
       active = false;
+      return;
     }
 
-    if (deltaY > 34) {
-      const scroller = savedAddressList;
-      if (!scroller || scroller.scrollTop <= 0) {
-        collapseSavedAddressDrawer();
-        active = false;
-      }
+    // Finger drag down: hide it again. If the list is scrolled, let the list scroll first.
+    if (isExpanded() && deltaY > SWIPE_THRESHOLD && canCollapseFromTarget(target)) {
+      if (event && event.cancelable) event.preventDefault();
+      collapseSavedAddressDrawer();
+      active = false;
     }
   }
 
   function end() {
     active = false;
+    startedOnHandle = false;
+    mapAddressBottomSection.classList.remove("is-gesture-active");
+  }
+
+  function handleWheel(event) {
+    if (wheelLock) return;
+
+    const delta = event.deltaY;
+
+    // Trackpad / mouse-wheel swipe up reveals the drawer.
+    if (!isExpanded() && delta > WHEEL_THRESHOLD) {
+      event.preventDefault();
+      expandSavedAddressDrawer();
+      wheelLock = true;
+      setTimeout(() => { wheelLock = false; }, 260);
+      return;
+    }
+
+    // Trackpad / mouse-wheel swipe down hides it, but only after saved list is at top.
+    if (isExpanded() && delta < -WHEEL_THRESHOLD) {
+      const listIsAtTop = !savedAddressList || savedAddressList.scrollTop <= 2 || !savedAddressList.contains(event.target);
+
+      if (listIsAtTop || event.target.closest(".drawer-handle-wide")) {
+        event.preventDefault();
+        collapseSavedAddressDrawer();
+        wheelLock = true;
+        setTimeout(() => { wheelLock = false; }, 260);
+      }
+    }
+  }
+
+  // Click is only a convenience on the handle. Cards/buttons should keep their own actions.
+  if (drawerHandleWide) {
+    drawerHandleWide.addEventListener("click", () => {
+      if (isExpanded()) {
+        collapseSavedAddressDrawer();
+      } else {
+        expandSavedAddressDrawer();
+      }
+    });
   }
 
   [savedAddDrawer, drawerHandleWide].filter(Boolean).forEach(target => {
-    target.addEventListener("click", event => {
-      if (event.target.closest("button")) return;
-      expandSavedAddressDrawer();
-    });
-
     target.addEventListener("touchstart", event => {
-      begin(event.touches[0].clientY);
+      begin(event.touches[0].clientY, event.target);
     }, { passive: true });
 
     target.addEventListener("touchmove", event => {
-      move(event.touches[0].clientY);
-    }, { passive: true });
+      move(event.touches[0].clientY, event.target, event);
+    }, { passive: false });
 
     target.addEventListener("touchend", end, { passive: true });
+    target.addEventListener("touchcancel", end, { passive: true });
 
     target.addEventListener("pointerdown", event => {
       if (event.pointerType === "mouse" && event.button !== 0) return;
-      begin(event.clientY);
+      begin(event.clientY, event.target);
     });
 
     target.addEventListener("pointermove", event => {
-      move(event.clientY);
+      move(event.clientY, event.target, event);
     });
 
     target.addEventListener("pointerup", end);
     target.addEventListener("pointercancel", end);
+    target.addEventListener("wheel", handleWheel, { passive: false });
   });
 }
 
