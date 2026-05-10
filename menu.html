@@ -1846,6 +1846,37 @@ Ola Maps setup:
 */
 const OLA_PROXY_URL = "/ola-maps";
 
+function cbeCleanOlaTargetUrl(rawUrl) {
+  try {
+    const url = new URL(rawUrl);
+    url.searchParams.delete("api_key");
+    return url.toString();
+  } catch (_) {
+    return String(rawUrl || "");
+  }
+}
+
+function cbeIsOlaResourceUrl(rawUrl) {
+  const url = String(rawUrl || "");
+  return (
+    url.includes("olamaps.io") ||
+    url.includes("olakrutrim.com") ||
+    url.includes("api.olamaps.io") ||
+    url.includes("app.olamaps.io")
+  );
+}
+
+function cbeOlaTransformRequest(url) {
+  if (cbeIsOlaResourceUrl(url)) {
+    return {
+      url: OLA_PROXY_URL + "?type=proxy&url=" + encodeURIComponent(cbeCleanOlaTargetUrl(url))
+    };
+  }
+  return { url };
+}
+
+window.CBE_OLA_TRANSFORM_REQUEST = window.CBE_OLA_TRANSFORM_REQUEST || cbeOlaTransformRequest;
+
 function getOlaMapsApiKey() {
   return "netlify_proxy";
 }
@@ -2598,6 +2629,7 @@ function renderOlaLocationMap(latitude, longitude) {
       }
 
       locationOlaMapInstance = new maplibregl.Map({
+        transformRequest: window.CBE_OLA_TRANSFORM_REQUEST || cbeOlaTransformRequest,
         container: locationOlaMapCanvas,
         style: getOlaStyleUrl(),
         center,

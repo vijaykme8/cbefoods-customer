@@ -74,7 +74,7 @@ function rewriteOlaUrls(value, origin) {
   }
 
   if (typeof value === "string" && isAllowedOlaUrl(value)) {
-    return proxyUrl(value, origin);
+    return stripApiKey(value);
   }
 
   return value;

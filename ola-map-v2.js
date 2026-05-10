@@ -7,6 +7,35 @@
 ========================================================= */
 (function () {
   const PROXY_URL = "/ola-maps";
+
+  function cleanOlaTargetUrl(rawUrl) {
+    try {
+      const url = new URL(rawUrl);
+      url.searchParams.delete("api_key");
+      return url.toString();
+    } catch (_) {
+      return String(rawUrl || "");
+    }
+  }
+
+  function isOlaResourceUrl(rawUrl) {
+    const url = String(rawUrl || "");
+    return (
+      url.includes("olamaps.io") ||
+      url.includes("olakrutrim.com") ||
+      url.includes("api.olamaps.io") ||
+      url.includes("app.olamaps.io")
+    );
+  }
+
+  window.CBE_OLA_TRANSFORM_REQUEST = function(url) {
+    if (isOlaResourceUrl(url)) {
+      return {
+        url: PROXY_URL + "?type=proxy&url=" + encodeURIComponent(cleanOlaTargetUrl(url))
+      };
+    }
+    return { url };
+  };
   const DEFAULT_STYLE = "default-light-standard";
   const ROUTE_CACHE = new Map();
   const MAPS = new Map();
