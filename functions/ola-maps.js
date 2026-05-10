@@ -169,6 +169,10 @@ export async function onRequest(context) {
   const type = url.searchParams.get("type") || "style";
 
   try {
+    if (type === "config") {
+      return jsonResponse({ apiKey });
+    }
+
     if (type === "style") {
       return await fetchOla(OLA_STYLE_URL, apiKey, origin);
     }

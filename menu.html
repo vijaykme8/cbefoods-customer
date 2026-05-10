@@ -1098,6 +1098,63 @@ img {
   pointer-events: none;
 }
 
+
+.map-center-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 42px;
+  transform: translate(-50%, -100%);
+  z-index: 4;
+  pointer-events: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 8px 10px rgba(18, 19, 15, 0.20));
+}
+.map-center-pin.is-visible {
+  display: flex;
+}
+.map-center-pin-head {
+  width: 28px;
+  height: 28px;
+  border-radius: 18px 18px 18px 4px;
+  background: #08A045;
+  color: #FDFDFF;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  border: 3px solid #FDFDFF;
+}
+.map-center-pin-head::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: #FDFDFF;
+  border-radius: 999px;
+  display: block;
+}
+.map-center-pin-head {
+  font-size: 0;
+}
+.map-center-pin-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -2px;
+  width: 18px;
+  height: 6px;
+  background: rgba(18, 19, 15, 0.18);
+  border-radius: 999px;
+  transform: translateX(-50%);
+}
+.location-map-card.is-moving .map-center-pin {
+  transform: translate(-50%, calc(-100% - 8px));
+}
+
 .map-pin-badge {
   width: 46px;
   height: 46px;
@@ -1683,13 +1740,17 @@ img {
       <div class="drawer-title-block">
         <div class="drawer-kicker">Delivery location</div>
         <div class="drawer-title" id="locationDrawerTitle">Confirm your address</div>
-        <div class="drawer-subtitle">Check the pin, add your door number, then save the delivery address.</div>
+        <div class="drawer-subtitle">Move the map so the pin sits exactly on your delivery spot, then save.</div>
       </div>
       <button class="drawer-close" type="button" id="closeLocationDrawer" aria-label="Close location drawer">×</button>
     </div>
 
     <div class="location-map-card ola-map-card">
       <div id="locationOlaMap" class="ola-map-canvas" aria-label="Ola Maps delivery location map"></div>
+      <div class="map-center-pin" id="mapCenterPin" aria-hidden="true">
+        <div class="map-center-pin-head">●</div>
+        <div class="map-center-pin-shadow"></div>
+      </div>
       <div class="map-empty-state" id="mapEmptyState">
         <div class="map-pin-badge">📍</div>
         <div id="mapEmptyCopy">Loading secure Ola map preview...</div>
@@ -1719,9 +1780,9 @@ img {
       <button class="drawer-action-primary" type="button" id="saveLocationBtn">Save address</button>
     </div>
 
-    <div class="location-attribution" id="olaTestHint">Ola Maps runs through a secure Cloudflare proxy. Move the pin to exact delivery location.</div>
+    <div class="location-attribution" id="olaTestHint">Move the map to place the pin exactly on your door.</div>
 
-    <div class="location-attribution">Tip: drag the pin or tap the map to set the exact delivery point.</div>
+    <div class="location-attribution">Tip: move the map under the fixed pin, just like delivery apps.</div>
   </div>
 </div>
 
@@ -1737,7 +1798,7 @@ const mf = {
 const blob = new Blob([JSON.stringify(mf)], { type:'application/json' });
 document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
 </script>
-<script src="ola-map-v2.js"></script>
+<script src="ola-map-v4.js"></script>
 <script>
 /* =========================
    MENU PAGE LOGIC
@@ -1767,6 +1828,7 @@ const saveLocationBtn = document.getElementById("saveLocationBtn");
 const locationOlaMapCanvas = document.getElementById("locationOlaMap");
 const mapEmptyState = document.getElementById("mapEmptyState");
 const mapEmptyCopy = document.getElementById("mapEmptyCopy");
+const mapCenterPin = document.getElementById("mapCenterPin");
 let locationOlaMapInstance = null;
 let locationOlaMarker = null;
 let latestOlaMapCenter = null;
@@ -1839,10 +1901,10 @@ const DEFAULT_CBE_LOCATION = {
 };
 
 /*
-Ola Maps setup:
-- This customer app uses a Cloudflare Pages Function proxy.
-- Keep the Ola key in Cloudflare env var OLA_MAPS_API_KEY.
-- Do not add the Ola API key in browser localStorage or frontend code.
+Ola Maps V4 setup:
+- Map tiles load directly from Ola for speed.
+- Cloudflare Pages Function is used only for config, reverse geocode, and directions.
+- Keep the Ola key domain-restricted in Ola/Krutrim.
 */
 const OLA_PROXY_URL = "/ola-maps";
 
@@ -2221,6 +2283,7 @@ function saveLocationState(locationState) {
     fullAddress,
     displayAddress: shortAddress,
     source: locationState.source || "user_confirmed_address",
+    pinnedByUser: true,
     savedAt: new Date().toISOString()
   };
 
@@ -2509,164 +2572,151 @@ async function reverseGeocodeExactAddress(lat, lng) {
   return parsed;
 }
 
-function getOlaStyleUrl() {
-  return `${OLA_PROXY_URL}?type=style&style=default-light-standard`;
-}
-
-function appendOlaApiKey(url) {
-  return url;
-}
-
-function loadMapLibre() {
-  if (window.maplibregl) return Promise.resolve(window.maplibregl);
-
-  if (mapLibreLoadingPromise) return mapLibreLoadingPromise;
-
-  mapLibreLoadingPromise = new Promise((resolve, reject) => {
-    const existingScript = document.querySelector('script[data-maplibre="true"]');
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(window.maplibregl));
-      existingScript.addEventListener("error", reject);
-      return;
-    }
-
-    const script = document.createElement("script");
-    script.src = "https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.js";
-    script.async = true;
-    script.defer = true;
-    script.dataset.maplibre = "true";
-    script.onload = () => resolve(window.maplibregl);
-    script.onerror = () => reject(new Error("MapLibre failed to load"));
-    document.head.appendChild(script);
-  });
-
-  return mapLibreLoadingPromise;
-}
-
 function showMapMessage(message) {
   if (mapEmptyCopy) mapEmptyCopy.textContent = message;
   if (mapEmptyState) mapEmptyState.style.display = "flex";
+  if (mapCenterPin) mapCenterPin.classList.remove("is-visible");
 }
 
 function hideMapMessage() {
   if (mapEmptyState) mapEmptyState.style.display = "none";
+  if (mapCenterPin) mapCenterPin.classList.add("is-visible");
 }
 
-function getLocationObjectFromCenter(center, source = "customer_pinned_location") {
+function getMapCard() {
+  return locationOlaMapCanvas ? locationOlaMapCanvas.closest(".location-map-card") : null;
+}
+
+function centerToLocation(center, source = "customer_map_center_pin") {
   return {
     ...(currentLocationState || {}),
-    lat: Number(center[1]),
-    lng: Number(center[0]),
+    lat: Number(center.lat),
+    lng: Number(center.lng),
     source,
     pinnedByUser: true
   };
 }
 
-async function setPinnedMapCenter(center, shouldReverseGeocode = true, source = "customer_pinned_location") {
-  if (!Array.isArray(center)) return;
+function setDrawerAddressText(fullAddress, sourceLabel = "Move map to adjust pin") {
+  if (detectedAddressText) detectedAddressText.textContent = sourceLabel;
+  if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
+}
 
-  latestOlaMapCenter = [Number(center[0]), Number(center[1])];
-  currentLocationState = getLocationObjectFromCenter(latestOlaMapCenter, source);
+let locationReverseTimer = null;
+let locationReverseRequestId = 0;
 
-  if (locationOlaMarker) {
-    locationOlaMarker.setLngLat(latestOlaMapCenter);
+async function reverseGeocodeMapCenter(center, source = "customer_map_center_pin") {
+  if (!center || !center.lat || !center.lng) return;
+
+  const requestId = ++locationReverseRequestId;
+  currentLocationState = centerToLocation(center, source);
+
+  if (detectedAddressText) {
+    detectedAddressText.textContent = "Finding address for this pin...";
   }
 
-  if (locationOlaMapInstance) {
-    locationOlaMapInstance.easeTo({
-      center: latestOlaMapCenter,
-      zoom: Math.max(locationOlaMapInstance.getZoom() || 16, 16),
-      duration: 300
-    });
-  }
+  try {
+    const geocodeData = await reverseGeocodeExactAddress(center.lat, center.lng);
+    if (requestId !== locationReverseRequestId) return;
 
-  if (shouldReverseGeocode) {
-    await resolveAddressFromCoordinates(currentLocationState, true);
+    const fullAddress = cleanText(geocodeData.fullAddress);
+    const shortAddress = compactAddress(geocodeData.shortAddress || fullAddress);
+
+    currentLocationState = {
+      ...(currentLocationState || {}),
+      lat: Number(center.lat),
+      lng: Number(center.lng),
+      display: shortAddress,
+      full: fullAddress,
+      fullAddress,
+      source: geocodeData.source || source,
+      pinnedByUser: true
+    };
+
+    if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
+    if (detectedAddressText) detectedAddressText.textContent = "Address found. Move the map if the pin is not exact.";
+  } catch (error) {
+    if (requestId !== locationReverseRequestId) return;
+    if (detectedAddressText) {
+      detectedAddressText.textContent = "Could not fetch address. Move the map or enter address manually.";
+    }
   }
 }
 
-function syncOlaLocationMarker(maplibregl, center) {
-  if (!locationOlaMapInstance || !Array.isArray(center)) return;
+function scheduleReverseForCurrentMap(source = "customer_map_center_pin") {
+  if (!locationOlaMapInstance) return;
+  const center = locationOlaMapInstance.getCenter();
+  currentLocationState = centerToLocation({ lat: center.lat, lng: center.lng }, source);
 
-  latestOlaMapCenter = [Number(center[0]), Number(center[1])];
-
-  if (locationOlaMarker) {
-    locationOlaMarker.setLngLat(latestOlaMapCenter);
-    return;
-  }
-
-  locationOlaMarker = new maplibregl.Marker({
-    color: "#08A045",
-    draggable: true
-  })
-    .setLngLat(latestOlaMapCenter)
-    .addTo(locationOlaMapInstance);
-
-  locationOlaMarker.on("dragend", () => {
-    const lngLat = locationOlaMarker.getLngLat();
-    setPinnedMapCenter([lngLat.lng, lngLat.lat], true, "customer_dragged_pin");
-  });
+  clearTimeout(locationReverseTimer);
+  locationReverseTimer = setTimeout(() => {
+    reverseGeocodeMapCenter({ lat: center.lat, lng: center.lng }, source);
+  }, 450);
 }
 
-function renderOlaLocationMap(latitude, longitude) {
+async function renderOlaLocationMap(latitude, longitude) {
   if (!locationOlaMapCanvas) return;
 
   setLocationProviderStatus("Ola");
-  showMapMessage("Loading Ola Maps...");
+  showMapMessage("Loading map...");
 
-  loadMapLibre()
-    .then((maplibregl) => {
-      const center = [Number(longitude), Number(latitude)];
-      latestOlaMapCenter = center;
+  const center = [Number(longitude), Number(latitude)];
 
-      if (locationOlaMapInstance) {
-        locationOlaMapInstance.resize();
-        locationOlaMapInstance.easeTo({ center, zoom: 16, duration: 350 });
-        syncOlaLocationMarker(maplibregl, center);
-        hideMapMessage();
-        return;
-      }
+  try {
+    if (!window.CBEOlaMapV4) {
+      throw new Error("Map V4 helper missing");
+    }
 
-      locationOlaMapInstance = new maplibregl.Map({
-        transformRequest: window.CBE_OLA_TRANSFORM_REQUEST || cbeOlaTransformRequest,
-        container: locationOlaMapCanvas,
-        style: getOlaStyleUrl(),
-        center,
-        zoom: 16,
-        attributionControl: false,
-        transformRequest: (url) => ({ url: appendOlaApiKey(url) })
-      });
+    if (locationOlaMapInstance) {
+      locationOlaMapInstance.resize();
+      locationOlaMapInstance.easeTo({ center, zoom: Math.max(locationOlaMapInstance.getZoom() || 17, 17), duration: 350 });
+      hideMapMessage();
+      currentLocationState = centerToLocation({ lat: Number(latitude), lng: Number(longitude) }, "customer_saved_pin");
+      return;
+    }
 
-      locationOlaMapInstance.addControl(
-        new maplibregl.NavigationControl({ showCompass: false }),
-        "top-right"
-      );
-
-      locationOlaMapInstance.on("click", (event) => {
-        setPinnedMapCenter([event.lngLat.lng, event.lngLat.lat], true, "customer_tapped_map");
-      });
-
-      locationOlaMapInstance.on("load", () => {
-        syncOlaLocationMarker(maplibregl, latestOlaMapCenter || center);
-        hideMapMessage();
-      });
-
-      locationOlaMapInstance.on("click", (event) => {
-        updatePinnedDeliveryPoint(event.lngLat.lng, event.lngLat.lat, true);
-      });
-
-      locationOlaMapInstance.on("error", (event) => {
-        console.log("Ola Maps render error:", event?.error || event);
-        setLocationProviderStatus("Ola error");
-        showMapMessage("Ola Maps could not load. Check Netlify OLA_MAPS_API_KEY and function deployment.");
-      });
-    })
-    .catch((error) => {
-      console.log("Ola map loader error:", error);
-      setLocationProviderStatus("Ola error");
-      showMapMessage("Ola Maps script could not load. Check your internet connection.");
+    const created = await window.CBEOlaMapV4.createMap({
+      container: locationOlaMapCanvas,
+      center,
+      zoom: 17,
+      controls: true
     });
+
+    locationOlaMapInstance = created.map;
+
+    locationOlaMapInstance.on("load", () => {
+      hideMapMessage();
+      currentLocationState = centerToLocation({ lat: Number(latitude), lng: Number(longitude) }, "customer_map_ready");
+      setTimeout(() => locationOlaMapInstance.resize(), 100);
+    });
+
+    locationOlaMapInstance.on("movestart", () => {
+      const card = getMapCard();
+      if (card) card.classList.add("is-moving");
+      if (detectedAddressText) detectedAddressText.textContent = "Move map to place the pin exactly on your door.";
+    });
+
+    locationOlaMapInstance.on("move", () => {
+      const center = locationOlaMapInstance.getCenter();
+      currentLocationState = centerToLocation({ lat: center.lat, lng: center.lng }, "customer_map_moving");
+    });
+
+    locationOlaMapInstance.on("moveend", () => {
+      const card = getMapCard();
+      if (card) card.classList.remove("is-moving");
+      scheduleReverseForCurrentMap("customer_center_pin");
+    });
+
+    locationOlaMapInstance.on("error", (event) => {
+      console.log("Ola Maps V4 render error:", event?.error || event);
+      setLocationProviderStatus("Ola error");
+      showMapMessage("Map could not load. Check Ola allowed domains and API key.");
+    });
+  } catch (error) {
+    console.log("Ola Maps V4 load error:", error);
+    setLocationProviderStatus("Ola error");
+    showMapMessage("Map could not load. Check Cloudflare and Ola setup.");
+  }
 }
 
 function updateMapPreview(lat, lng, allowDefault = false) {
@@ -2678,7 +2728,6 @@ function updateMapPreview(lat, lng, allowDefault = false) {
       showMapMessage("Use current location to set your delivery pin.");
       return;
     }
-
     latitude = DEFAULT_CBE_LOCATION.lat;
     longitude = DEFAULT_CBE_LOCATION.lng;
   }
@@ -2811,13 +2860,8 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
 
   isResolvingAddress = true;
 
-  if (deliveryAddressText && !getSavedReadableAddress()) {
-    deliveryAddressText.textContent = "Finding your address...";
-    deliveryAddressText.title = locationValue.full || "Resolving address";
-  }
-
   if (shouldUpdateDrawer && detectedAddressText) {
-    detectedAddressText.textContent = "Finding exact address from map...";
+    detectedAddressText.textContent = "Finding exact address for this pin...";
   }
 
   try {
@@ -2834,7 +2878,8 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
       display: shortAddress,
       full: fullAddress,
       fullAddress,
-      source: geocodeData.source || "reverse_geocode"
+      source: geocodeData.source || "reverse_geocode",
+      pinnedByUser: true
     };
 
     currentLocationState = {
@@ -2842,39 +2887,12 @@ async function resolveAddressFromCoordinates(locationValue, shouldUpdateDrawer =
       ...resolvedLocation
     };
 
-    if (fullAddress) {
-      localStorage.setItem("cust_address", shortAddress);
-      localStorage.setItem("delivery_address", shortAddress);
-      localStorage.setItem("cust_full_address", fullAddress);
-      localStorage.setItem("delivery_full_address", fullAddress);
-
-      const savedLocation = parseSavedValue(localStorage.getItem("cust_location")) || {};
-      localStorage.setItem(
-        "cust_location",
-        JSON.stringify({
-          ...savedLocation,
-          ...resolvedLocation,
-          displayAddress: shortAddress,
-          fullAddress
-        })
-      );
-
-      if (deliveryAddressText) {
-        deliveryAddressText.textContent = truncateAddressPreview(shortAddress);
-        deliveryAddressText.title = fullAddress;
-      }
-
-      if (shouldUpdateDrawer) {
-        fillDrawerFields(resolvedLocation);
-      }
+    if (shouldUpdateDrawer) {
+      if (fullAddressInput && fullAddress) fullAddressInput.value = fullAddress;
+      if (detectedAddressText) detectedAddressText.textContent = "Address found. Move the map if the pin is not exact.";
     }
 
   } catch (error) {
-    if (deliveryAddressText && !getSavedReadableAddress()) {
-      deliveryAddressText.textContent = "Set delivery location";
-      deliveryAddressText.title = "Tap to confirm your address";
-    }
-
     if (shouldUpdateDrawer && detectedAddressText) {
       detectedAddressText.textContent = "Could not fetch address automatically. Please enter it manually.";
     }
@@ -2919,15 +2937,27 @@ async function saveCurrentBrowserLocation(position) {
     lng: position.coords.longitude,
     accuracy: position.coords.accuracy,
     capturedAt: new Date().toISOString(),
-    source: "browser_geolocation"
+    source: "browser_geolocation",
+    pinnedByUser: true
   };
 
-  localStorage.setItem("cust_lat", String(capturedLocation.lat));
-  localStorage.setItem("cust_lng", String(capturedLocation.lng));
-  localStorage.setItem("cust_location", JSON.stringify(capturedLocation));
-
   currentLocationState = capturedLocation;
-  fillDrawerFields(capturedLocation);
+
+  if (locationAccuracyChip) {
+    locationAccuracyChip.textContent = capturedLocation.accuracy
+      ? `±${Math.round(Number(capturedLocation.accuracy))}m`
+      : "GPS";
+  }
+
+  updateMapPreview(capturedLocation.lat, capturedLocation.lng, true);
+
+  if (locationOlaMapInstance) {
+    locationOlaMapInstance.easeTo({
+      center: [Number(capturedLocation.lng), Number(capturedLocation.lat)],
+      zoom: 17,
+      duration: 450
+    });
+  }
 
   await resolveAddressFromCoordinates(capturedLocation, true);
 }
@@ -2975,13 +3005,20 @@ function saveAddressFromDrawer() {
     return;
   }
 
+  if (locationOlaMapInstance) {
+    const center = locationOlaMapInstance.getCenter();
+    existingLocation.lat = center.lat;
+    existingLocation.lng = center.lng;
+  }
+
   saveLocationState({
     ...existingLocation,
     doorNo,
     full: fullAddress,
     fullAddress,
     landmark,
-    source: "user_confirmed_address"
+    pinnedByUser: true,
+    source: "customer_saved_center_pin"
   });
 
   closeLocationDrawer();
