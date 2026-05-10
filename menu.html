@@ -189,67 +189,115 @@ img {
   display: inline-flex;
 }
 .location {
+  width: 191px;
+  height: 45px;
   justify-content: flex-start;
   align-items: flex-start;
   gap: 4px;
-  display: flex;
+  display: inline-flex;
   cursor: pointer;
-  max-width: 260px;
+  flex: none;
+  flex-grow: 0;
 }
 .location-icon {
   width: 34px;
   height: 34px;
-  overflow: hidden;
-  border-radius: 24px;
+  position: relative;
+  flex: none;
+  flex-grow: 0;
 }
-.location-icon img,
+.location-icon svg {
+  width: 34px;
+  height: 34px;
+  display: block;
+}
 .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
-.location-icon-inner1 {
-  width: 34px;
-  height: 34px;
-  left: 0px;
-  top: 0px;
-  position: absolute;
-  background: black;
-}
-.location-icon-inner2 {
-  width: 25.15px;
-  height: 29.04px;
-  left: 4.42px;
-  top: 2.48px;
-  position: absolute;
-  background: #8806CE;
-}
 .location-copy {
+  width: 153px;
+  height: 45px;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   display: inline-flex;
+  flex: none;
+  flex-grow: 0;
   min-width: 0;
 }
-.label {
+.location-label-row {
+  width: 153px;
+  height: 20px;
   align-self: stretch;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+  display: inline-flex;
+  flex: none;
+  flex-grow: 0;
+  margin: -2px 0px;
+}
+.label {
+  width: 53px;
+  height: 18px;
   opacity: 0.50;
   color: #12130F;
   font-size: 12px;
   font-family: General Sans;
   font-weight: 500;
-  line-height: 16px;
+  line-height: 18px;
   word-wrap: break-word;
+  flex: none;
+  flex-grow: 0;
+}
+.change-button {
+  width: 73px;
+  height: 20px;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  display: flex;
+  flex: none;
+  flex-grow: 0;
+}
+.pen-icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+  flex: none;
+  flex-grow: 0;
+}
+.pen-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+.change-text {
+  width: 51px;
+  height: 20px;
+  color: #08A045;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 19.60px;
+  word-wrap: break-word;
+  flex: none;
+  flex-grow: 0;
 }
 .address {
+  width: 153px;
+  height: 27px;
   color: #12130F;
   font-size: 18px;
   font-family: General Sans;
   font-weight: 500;
-  line-height: 24px;
+  line-height: 27px;
   word-wrap: break-word;
-  max-width: 250px;
+  flex: none;
+  flex-grow: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1403,11 +1451,36 @@ img {
     <div class="hero">
       <div class="top-row">
         <div class="location" role="button" tabindex="0" aria-label="Update delivery location">
-          <div class="location-icon">
-            <img src="assets/menu/icons/icon-location-pin.svg" alt="Location pin" />
+          <div class="location-icon" aria-hidden="true">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <g clip-path="url(#clip0_116_313)">
+                <mask id="mask0_116_313" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="34" height="34">
+                  <path d="M34 0H0V34H34V0Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask0_116_313)">
+                  <path d="M29.2118 11.9709C27.7243 5.42591 22.0151 2.47925 17.0001 2.47925C17.0001 2.47925 17.0001 2.47925 16.986 2.47925C11.9851 2.47925 6.26181 5.41175 4.77431 11.9567C3.11681 19.2667 7.59348 25.4576 11.6451 29.3534C13.1468 30.7984 15.0735 31.5209 17.0001 31.5209C18.9268 31.5209 20.8535 30.7984 22.341 29.3534C26.3926 25.4576 30.8693 19.2809 29.2118 11.9709ZM17.0001 19.0684C14.5351 19.0684 12.5376 17.0709 12.5376 14.6059C12.5376 12.1409 14.5351 10.1434 17.0001 10.1434C19.4651 10.1434 21.4626 12.1409 21.4626 14.6059C21.4626 17.0709 19.4651 19.0684 17.0001 19.0684Z" fill="#8806CE"/>
+                </g>
+              </g>
+              <defs>
+                <clipPath id="clip0_116_313">
+                  <rect width="34" height="34" fill="white"/>
+                </clipPath>
+              </defs>
+            </svg>
           </div>
           <div class="location-copy">
-            <div class="label">Deliver to</div>
+            <div class="location-label-row">
+              <div class="label">Deliver to</div>
+              <div class="change-button" aria-hidden="true">
+                <div class="pen-icon">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4.90669 18.0782C4.39836 18.0782 3.92336 17.9032 3.58169 17.5782C3.14836 17.1698 2.94003 16.5532 3.01503 15.8865L3.32336 13.1865C3.38169 12.6782 3.69003 12.0032 4.04836 11.6365L10.89 4.39482C12.5984 2.58648 14.3817 2.53648 16.19 4.24482C17.9984 5.95315 18.0484 7.73648 16.34 9.54482L9.49837 16.7865C9.14837 17.1615 8.49836 17.5115 7.99003 17.5948L5.30669 18.0532C5.16503 18.0615 5.04003 18.0782 4.90669 18.0782ZM13.565 4.23648C12.9234 4.23648 12.365 4.63648 11.7984 5.23648L4.95669 12.4865C4.79003 12.6615 4.59836 13.0782 4.56503 13.3198L4.25669 16.0198C4.22336 16.2948 4.29003 16.5198 4.44003 16.6615C4.59003 16.8032 4.81503 16.8532 5.09003 16.8115L7.77336 16.3532C8.01503 16.3115 8.41503 16.0948 8.5817 15.9198L15.4234 8.67815C16.4567 7.57815 16.8317 6.56148 15.3234 5.14482C14.6567 4.50315 14.0817 4.23648 13.565 4.23648Z" fill="#08A045"/>
+                    <path d="M14.74 10.9375C14.7233 10.9375 14.6983 10.9375 14.6816 10.9375C12.0816 10.6792 9.98995 8.70421 9.58995 6.12087C9.53995 5.77921 9.77329 5.46254 10.115 5.40421C10.4566 5.35421 10.7733 5.58754 10.8316 5.92921C11.1483 7.94587 12.7816 9.49587 14.815 9.69587C15.1566 9.72921 15.4066 10.0375 15.3733 10.3792C15.3316 10.6958 15.0566 10.9375 14.74 10.9375Z" fill="#08A045"/>
+                  </svg>
+                </div>
+                <div class="change-text">Change</div>
+              </div>
+            </div>
             <div class="address">Loading location...</div>
           </div>
         </div>
