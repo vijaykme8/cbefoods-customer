@@ -1113,7 +1113,7 @@ body.map-screen-open {
 .map-address-center-pin {
   position: absolute;
   left: 50%;
-  top: 50%;
+  top: 44%;
   width: 42px;
   height: 56px;
   transform: translate(-50%, -100%);
@@ -1197,7 +1197,7 @@ body.map-screen-open {
 
 .captured-add-wrap {
   width: 342px;
-  min-height: 100px;
+  min-height: 112px;
   padding: 20px 24px;
   background: #FFFFFF;
   box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
@@ -1260,7 +1260,7 @@ body.map-screen-open {
   line-height: 16.80px;
   word-wrap: break-word;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1762,6 +1762,7 @@ body.map-screen-open {
   flex-direction: column;
   align-items: flex-start;
   gap: 13px;
+  padding-bottom: 12px;
 }
 
 .save-as-group,
@@ -1838,9 +1839,10 @@ body.map-screen-open {
 }
 
 .details-input-field textarea {
-  min-height: 76px;
+  min-height: 118px;
   resize: none;
   overflow-y: hidden;
+  white-space: pre-wrap;
 }
 
 .details-input-field input::placeholder,
@@ -3520,16 +3522,82 @@ async function reverseGeocodeMapCenter(center, source = "customer_map_center_pin
   }
 }
 
+function getMapPinPointOffset() {
+  if (!locationOlaMapCanvas || !mapCenterPin) return [0, 0];
+
+  try {
+    const canvasRect = locationOlaMapCanvas.getBoundingClientRect();
+    const pinRect = mapCenterPin.getBoundingClientRect();
+
+    if (!canvasRect.width || !canvasRect.height) return [0, 0];
+
+    const pinPointX = pinRect.left + (pinRect.width / 2) - canvasRect.left;
+    const pinPointY = pinRect.bottom - 8 - canvasRect.top;
+
+    return [
+      pinPointX - (canvasRect.width / 2),
+      pinPointY - (canvasRect.height / 2)
+    ];
+  } catch (_) {
+    return [0, 0];
+  }
+}
+
+function getVisualPinCoordinates() {
+  if (!locationOlaMapInstance) return null;
+
+  try {
+    const canvasRect = locationOlaMapCanvas?.getBoundingClientRect();
+    const pinRect = mapCenterPin?.getBoundingClientRect();
+
+    if (
+      canvasRect &&
+      pinRect &&
+      canvasRect.width &&
+      canvasRect.height &&
+      typeof locationOlaMapInstance.unproject === "function"
+    ) {
+      const pinPointX = pinRect.left + (pinRect.width / 2) - canvasRect.left;
+      const pinPointY = pinRect.bottom - 8 - canvasRect.top;
+      const lngLat = locationOlaMapInstance.unproject([pinPointX, pinPointY]);
+
+      return {
+        lat: Number(lngLat.lat),
+        lng: Number(lngLat.lng)
+      };
+    }
+  } catch (_) {}
+
+  const center = locationOlaMapInstance.getCenter();
+  return {
+    lat: Number(center.lat),
+    lng: Number(center.lng)
+  };
+}
+
+function easeMapToPin(latitude, longitude, options = {}) {
+  if (!locationOlaMapInstance) return;
+
+  locationOlaMapInstance.easeTo({
+    center: [Number(longitude), Number(latitude)],
+    zoom: options.zoom || 17,
+    duration: options.duration ?? 450,
+    offset: getMapPinPointOffset()
+  });
+}
+
 function scheduleReverseForCurrentMap(source = "customer_map_center_pin") {
   if (!locationOlaMapInstance) return;
 
-  const center = locationOlaMapInstance.getCenter();
-  currentLocationState = centerToLocation({ lat: center.lat, lng: center.lng }, source);
+  const pinLocation = getVisualPinCoordinates();
+  if (!pinLocation) return;
+
+  currentLocationState = centerToLocation(pinLocation, source);
   updateCapturedAddressCard(currentLocationState, "Finding address for this pin...");
 
   clearTimeout(locationReverseTimer);
   locationReverseTimer = setTimeout(() => {
-    reverseGeocodeMapCenter({ lat: center.lat, lng: center.lng }, source);
+    reverseGeocodeMapCenter(pinLocation, source);
   }, 450);
 }
 
@@ -3546,8 +3614,7 @@ async function renderOlaLocationMap(latitude, longitude) {
 
     if (locationOlaMapInstance) {
       locationOlaMapInstance.resize();
-      locationOlaMapInstance.easeTo({
-        center,
+      easeMapToPin(Number(latitude), Number(longitude), {
         zoom: Math.max(locationOlaMapInstance.getZoom() || 17, 17),
         duration: 350
       });
@@ -3573,8 +3640,9 @@ async function renderOlaLocationMap(latitude, longitude) {
       updateCapturedAddressCard(currentLocationState);
       setTimeout(() => {
         locationOlaMapInstance.resize();
+        easeMapToPin(Number(latitude), Number(longitude), { zoom: 17, duration: 0 });
         scheduleReverseForCurrentMap("customer_map_ready");
-      }, 100);
+      }, 120);
     });
 
     locationOlaMapInstance.on("movestart", () => {
@@ -3583,8 +3651,10 @@ async function renderOlaLocationMap(latitude, longitude) {
     });
 
     locationOlaMapInstance.on("move", () => {
-      const center = locationOlaMapInstance.getCenter();
-      currentLocationState = centerToLocation({ lat: center.lat, lng: center.lng }, "customer_map_moving");
+      const pinLocation = getVisualPinCoordinates();
+      if (pinLocation) {
+        currentLocationState = centerToLocation(pinLocation, "customer_map_moving");
+      }
     });
 
     locationOlaMapInstance.on("moveend", () => {
@@ -3828,8 +3898,14 @@ function setSelectedSaveLabel(label, shouldCheckDirty = true) {
 
 function autoGrowAddressTextarea() {
   if (!detailsAddressInput) return;
+
+  if (detailsAddressInput.offsetParent === null) {
+    requestAnimationFrame(autoGrowAddressTextarea);
+    return;
+  }
+
   detailsAddressInput.style.height = "auto";
-  const nextHeight = Math.max(detailsAddressInput.scrollHeight, 76);
+  const nextHeight = Math.max(detailsAddressInput.scrollHeight, 118);
   detailsAddressInput.style.height = `${nextHeight}px`;
   detailsAddressInput.style.overflowY = "hidden";
 }
@@ -3919,6 +3995,10 @@ function openLocationDetailsScreen(locationValue = currentLocationState, options
   updateDetailsMapPreview(currentLocationState);
   updateDetailsActionButton();
   showLocationDetailsStep();
+
+  requestAnimationFrame(() => {
+    autoGrowAddressTextarea();
+  });
 }
 
 function buildLocationFromDetailsForm() {
@@ -3997,8 +4077,7 @@ async function saveCurrentBrowserLocation(position) {
   updateMapPreview(capturedLocation.lat, capturedLocation.lng, true);
 
   if (locationOlaMapInstance) {
-    locationOlaMapInstance.easeTo({
-      center: [Number(capturedLocation.lng), Number(capturedLocation.lat)],
+    easeMapToPin(capturedLocation.lat, capturedLocation.lng, {
       zoom: 17,
       duration: 450
     });
@@ -4214,14 +4293,16 @@ function handleSearchLocation() {
 
 function handleContinueLocation() {
   if (locationOlaMapInstance) {
-    const center = locationOlaMapInstance.getCenter();
-    currentLocationState = {
-      ...(currentLocationState || {}),
-      lat: center.lat,
-      lng: center.lng,
-      source: "customer_continue_center_pin",
-      pinnedByUser: true
-    };
+    const pinLocation = getVisualPinCoordinates();
+    if (pinLocation) {
+      currentLocationState = {
+        ...(currentLocationState || {}),
+        lat: pinLocation.lat,
+        lng: pinLocation.lng,
+        source: "customer_continue_visual_pin",
+        pinnedByUser: true
+      };
+    }
   }
 
   savePendingLocationState(currentLocationState || DEFAULT_CBE_LOCATION);
