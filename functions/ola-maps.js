@@ -55,12 +55,19 @@ function withApiKey(rawUrl, apiKey) {
   return url.toString();
 }
 
-function proxyUrl(rawUrl, origin) {
-  const cleanUrl = stripApiKey(String(rawUrl));
+function normalizeMapLibrePlaceholders(rawUrl) {
+  return String(rawUrl || "")
+    .replace(/%257B/gi, "{")
+    .replace(/%257D/gi, "}")
+    .replace(/%7B/gi, "{")
+    .replace(/%7D/gi, "}");
+}
 
-  // Important:
-  // Encode URL safely, but keep MapLibre placeholders visible.
-  // If {z}/{x}/{y} becomes %7Bz%7D, MapLibre cannot replace them.
+function proxyUrl(rawUrl, origin) {
+  const cleanUrl = normalizeMapLibrePlaceholders(stripApiKey(String(rawUrl)));
+
+  // Keep MapLibre placeholders readable:
+  // {z}, {x}, {y}, {fontstack}, {range}
   const encodedUrl = encodeURIComponent(cleanUrl)
     .replace(/%7B/gi, "{")
     .replace(/%7D/gi, "}");
