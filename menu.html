@@ -1830,6 +1830,14 @@ const coordinateLngKeys = [
 let isResolvingAddress = false;
 let currentLocationState = null;
 
+const DEFAULT_CBE_LOCATION = {
+  lat: 11.0168,
+  lng: 76.9558,
+  display: "Coimbatore",
+  full: "",
+  source: "default_coimbatore"
+};
+
 /*
 Ola Maps setup:
 - This customer app uses a Cloudflare Pages Function proxy.
@@ -2514,52 +2522,60 @@ function hideMapMessage() {
   if (mapEmptyState) mapEmptyState.style.display = "none";
 }
 
+function getLocationObjectFromCenter(center, source = "customer_pinned_location") {
+  return {
+    ...(currentLocationState || {}),
+    lat: Number(center[1]),
+    lng: Number(center[0]),
+    source,
+    pinnedByUser: true
+  };
+}
+
+async function setPinnedMapCenter(center, shouldReverseGeocode = true, source = "customer_pinned_location") {
+  if (!Array.isArray(center)) return;
+
+  latestOlaMapCenter = [Number(center[0]), Number(center[1])];
+  currentLocationState = getLocationObjectFromCenter(latestOlaMapCenter, source);
+
+  if (locationOlaMarker) {
+    locationOlaMarker.setLngLat(latestOlaMapCenter);
+  }
+
+  if (locationOlaMapInstance) {
+    locationOlaMapInstance.easeTo({
+      center: latestOlaMapCenter,
+      zoom: Math.max(locationOlaMapInstance.getZoom() || 16, 16),
+      duration: 300
+    });
+  }
+
+  if (shouldReverseGeocode) {
+    await resolveAddressFromCoordinates(currentLocationState, true);
+  }
+}
+
 function syncOlaLocationMarker(maplibregl, center) {
   if (!locationOlaMapInstance || !Array.isArray(center)) return;
 
-  latestOlaMapCenter = center;
+  latestOlaMapCenter = [Number(center[0]), Number(center[1])];
 
   if (locationOlaMarker) {
-    locationOlaMarker.setLngLat(center);
+    locationOlaMarker.setLngLat(latestOlaMapCenter);
     return;
   }
 
-  locationOlaMarker = new maplibregl.Marker({ color: "#08A045", draggable: true })
-    .setLngLat(center)
+  locationOlaMarker = new maplibregl.Marker({
+    color: "#08A045",
+    draggable: true
+  })
+    .setLngLat(latestOlaMapCenter)
     .addTo(locationOlaMapInstance);
 
   locationOlaMarker.on("dragend", () => {
-    const point = locationOlaMarker.getLngLat();
-    updatePinnedDeliveryPoint(point.lng, point.lat, true);
+    const lngLat = locationOlaMarker.getLngLat();
+    setPinnedMapCenter([lngLat.lng, lngLat.lat], true, "customer_dragged_pin");
   });
-}
-
-async function updatePinnedDeliveryPoint(lng, lat, shouldResolve = true) {
-  const latitude = Number(lat);
-  const longitude = Number(lng);
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
-
-  latestOlaMapCenter = [longitude, latitude];
-  currentLocationState = {
-    ...(currentLocationState || {}),
-    lat: latitude,
-    lng: longitude,
-    pinnedByUser: true,
-    source: "user_pinned_ola_map"
-  };
-
-  localStorage.setItem("cust_lat", String(latitude));
-  localStorage.setItem("cust_lng", String(longitude));
-  localStorage.setItem("cust_location", JSON.stringify(currentLocationState));
-
-  if (locationOlaMarker) locationOlaMarker.setLngLat([longitude, latitude]);
-  if (locationOlaMapInstance) locationOlaMapInstance.easeTo({ center: [longitude, latitude], zoom: 17, duration: 250 });
-
-  if (detectedAddressText) detectedAddressText.textContent = shouldResolve
-    ? "Finding exact address from pinned location..."
-    : "Pinned location updated.";
-
-  if (shouldResolve) await resolveAddressFromCoordinates(currentLocationState, true);
 }
 
 function renderOlaLocationMap(latitude, longitude) {
@@ -2595,6 +2611,10 @@ function renderOlaLocationMap(latitude, longitude) {
         "top-right"
       );
 
+      locationOlaMapInstance.on("click", (event) => {
+        setPinnedMapCenter([event.lngLat.lng, event.lngLat.lat], true, "customer_tapped_map");
+      });
+
       locationOlaMapInstance.on("load", () => {
         syncOlaLocationMarker(maplibregl, latestOlaMapCenter || center);
         hideMapMessage();
@@ -2617,13 +2637,18 @@ function renderOlaLocationMap(latitude, longitude) {
     });
 }
 
-function updateMapPreview(lat, lng) {
-  const latitude = Number(lat);
-  const longitude = Number(lng);
+function updateMapPreview(lat, lng, allowDefault = false) {
+  let latitude = Number(lat);
+  let longitude = Number(lng);
 
   if (!lat || !lng || Number.isNaN(latitude) || Number.isNaN(longitude)) {
-    showMapMessage("Location map will appear after GPS is available.");
-    return;
+    if (!allowDefault) {
+      showMapMessage("Use current location to set your delivery pin.");
+      return;
+    }
+
+    latitude = DEFAULT_CBE_LOCATION.lat;
+    longitude = DEFAULT_CBE_LOCATION.lng;
   }
 
   renderOlaLocationMap(latitude, longitude);
@@ -2638,7 +2663,7 @@ function fillDrawerFields(locationValue) {
     if (doorNoInput) doorNoInput.value = "";
     if (fullAddressInput) fullAddressInput.value = "";
     if (landmarkInput) landmarkInput.value = "";
-    updateMapPreview("", "");
+    updateMapPreview("", "", true);
     return;
   }
 
@@ -2694,13 +2719,44 @@ function openLocationDrawer() {
   document.body.style.overflow = "hidden";
 
   const savedLocation = getSavedReadableAddress() || getSavedCoordinates();
-  fillDrawerFields(savedLocation);
 
   if (savedLocation && savedLocation.lat && savedLocation.lng) {
-    resolveAddressFromCoordinates(savedLocation, true);
-  } else if (detectedAddressText) {
-    detectedAddressText.textContent = "Tap Use current location to detect GPS, then move the pin if needed";
+    fillDrawerFields(savedLocation);
+    if (detectedAddressText) {
+      detectedAddressText.textContent = "Saved pinned address is ready. Move the pin only if you want to edit it.";
+    }
+  } else {
+    fillDrawerFields(null);
+
+    if (detectedAddressText) {
+      detectedAddressText.textContent = "Checking your current location permission...";
+    }
+
+    if (navigator.permissions && navigator.geolocation) {
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then(permission => {
+          if (permission.state === "granted") {
+            requestDeliveryLocation();
+          } else {
+            if (detectedAddressText) {
+              detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
+            }
+          }
+        })
+        .catch(() => {
+          if (detectedAddressText) {
+            detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
+          }
+        });
+    } else if (detectedAddressText) {
+      detectedAddressText.textContent = "Tap Use current location to set your delivery pin.";
+    }
   }
+
+  setTimeout(() => {
+    if (locationOlaMapInstance) locationOlaMapInstance.resize();
+  }, 120);
 }
 
 function closeLocationDrawer() {
@@ -2853,7 +2909,7 @@ function requestDeliveryLocation() {
   }
 
   if (detectedAddressText) {
-    detectedAddressText.textContent = "Getting GPS location...";
+    detectedAddressText.textContent = "Getting current location...";
   }
 
   navigator.geolocation.getCurrentPosition(
