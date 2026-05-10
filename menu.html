@@ -1393,7 +1393,7 @@ body.map-screen-open {
 
 .saved-address-card {
   width: 342px;
-  min-height: 60px;
+  height: 60px;
   padding: 10px 16px;
   background: rgba(18, 19, 15, 0.04);
   border-radius: 10px;
@@ -1403,6 +1403,7 @@ body.map-screen-open {
   align-items: flex-start;
   gap: 6px;
   cursor: pointer;
+  flex: 0 0 60px;
 }
 
 .saved-address-card:active {
@@ -1415,8 +1416,8 @@ body.map-screen-open {
 }
 
 .saved-address-inside {
-  width: 100%;
-  min-height: 40px;
+  width: 310px;
+  height: 40px;
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
@@ -1425,7 +1426,9 @@ body.map-screen-open {
 
 .saved-address-left {
   flex: 1 1 0;
+  width: 242px;
   min-width: 0;
+  height: 40px;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1484,29 +1487,35 @@ body.map-screen-open {
 }
 
 .saved-address-edit-button {
-  min-width: 76px;
-  height: 34px;
-  padding: 7px 12px;
-  border: 1px solid #08A045;
-  background: #FDFDFF;
-  border-radius: 8px;
-  justify-content: center;
+  width: 52px;
+  height: 21px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  justify-content: flex-start;
   color: #08A045;
-  font-size: 13px;
+  font-size: 16px;
   font-family: General Sans;
-  font-weight: 600;
-  line-height: 14.40px;
+  font-weight: 500;
+  line-height: 20.80px;
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .saved-address-edit-button svg {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
 }
 
 .edit-button:active {
   transform: scale(0.97);
+}
+
+.saved-address-edit-button:focus-visible {
+  outline: 2px solid rgba(8, 160, 69, 0.28);
+  outline-offset: 3px;
+  border-radius: 6px;
 }
 
 .saved-address-empty {
@@ -3671,9 +3680,7 @@ function renderSavedAddressList() {
       <div class="saved-address-card" data-saved-index="${index}" role="button" tabindex="0" aria-label="Use ${label} address">
         <div class="saved-address-inside">
           <div class="saved-address-left">
-            <div class="saved-address-top">
-              <div class="saved-address-label">${label}</div>
-            </div>
+            <div class="saved-address-label">${label}</div>
             <div class="saved-address-line">${line}</div>
           </div>
           <button class="edit-button saved-address-edit-button" type="button" data-saved-edit="${index}" aria-label="Edit ${label} address">
