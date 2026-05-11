@@ -3791,6 +3791,9 @@ function renderSavedAddressList() {
 
     saveLocationState(selectedAddress);
     renderSavedAddressList();
+
+    if (completeLocationReturnIfNeeded()) return;
+
     closeLocationMapScreen();
   }
 
@@ -3813,6 +3816,37 @@ function renderSavedAddressList() {
       useSavedAddress(Number(card.getAttribute("data-saved-index")));
     });
   });
+}
+
+
+function getLocationReturnTarget() {
+  const params = new URLSearchParams(window.location.search);
+  const queryReturn = params.get("returnTo");
+  const savedReturn = sessionStorage.getItem("cbe_location_return_to");
+
+  if (savedReturn === "cart.html" || queryReturn === "cart") {
+    return "cart.html";
+  }
+
+  return "";
+}
+
+function completeLocationReturnIfNeeded() {
+  const target = getLocationReturnTarget();
+  if (!target) return false;
+
+  sessionStorage.removeItem("cbe_open_location_map");
+  sessionStorage.removeItem("cbe_location_return_to");
+  window.location.href = target;
+  return true;
+}
+
+function shouldAutoOpenLocationMap() {
+  const params = new URLSearchParams(window.location.search);
+  return (
+    params.get("openLocation") === "1" ||
+    sessionStorage.getItem("cbe_open_location_map") === "1"
+  );
 }
 
 function openLocationMapScreen() {
@@ -4063,6 +4097,9 @@ function handleSaveUseNow() {
     activeEditingAddressId = "";
     detailsOriginalSnapshot = "";
     detailsForceDirty = false;
+
+    if (completeLocationReturnIfNeeded()) return;
+
     closeLocationMapScreen();
     showLocationMapStep();
   }, 350);
@@ -5044,6 +5081,13 @@ How:
 renderAllCartButtons();
 updateCartCount();
 updateFloatingCartCard();
+
+if (shouldAutoOpenLocationMap()) {
+  sessionStorage.removeItem("cbe_open_location_map");
+  setTimeout(() => {
+    openLocationMapScreen();
+  }, 120);
+}
 
 
 /* Horizontal scroll and snap are handled in CSS above. */
