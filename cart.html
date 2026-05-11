@@ -920,6 +920,37 @@ button {
     return text.length > max ? `${text.slice(0, max - 2)}..` : text;
   }
 
+  function isUsableDeliveryAddress(value) {
+    const text = String(value || '').trim();
+    if (!text) return false;
+
+    const normalized = text.toLowerCase();
+
+    const blockedValues = new Set([
+      'set location',
+      'set delivery location',
+      'loading location...',
+      'loading location',
+      'getting location...',
+      'getting location',
+      'current location captured',
+      'location captured',
+      'location saved',
+      'pinned location',
+      'pinned location preview'
+    ]);
+
+    if (blockedValues.has(normalized)) return false;
+
+    /*
+      Do not allow coordinate-only values as a delivery address.
+      Place order must force the user to save/select a readable address first.
+    */
+    if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(normalized)) return false;
+
+    return text.length >= 5;
+  }
+
   function extractAddressFromValue(value) {
     if (!value) return '';
 
@@ -930,7 +961,7 @@ button {
       try {
         const parsed = JSON.parse(trimmed);
         const extracted = extractAddressFromValue(parsed);
-        if (extracted) return extracted;
+        if (isUsableDeliveryAddress(extracted)) return extracted;
       } catch {
         return trimmed;
       }
@@ -1012,19 +1043,14 @@ button {
     for (const key of objectKeys) {
       const raw = localStorage.getItem(key);
       const extracted = extractAddressFromValue(raw);
-      if (extracted) return extracted;
+      if (isUsableDeliveryAddress(extracted)) return extracted;
     }
 
     for (const key of addressKeys) {
       const raw = localStorage.getItem(key);
       const extracted = extractAddressFromValue(raw);
-      if (extracted) return extracted;
+      if (isUsableDeliveryAddress(extracted)) return extracted;
     }
-
-    const lat = localStorage.getItem('lat') || localStorage.getItem('latitude') || localStorage.getItem('user_lat') || localStorage.getItem('cust_lat') || localStorage.getItem('delivery_lat');
-    const lng = localStorage.getItem('lng') || localStorage.getItem('lon') || localStorage.getItem('long') || localStorage.getItem('longitude') || localStorage.getItem('user_lng') || localStorage.getItem('cust_lng') || localStorage.getItem('delivery_lng');
-
-    if (lat && lng) return 'Current location captured';
 
     return '';
   }
@@ -1073,7 +1099,7 @@ button {
 
     cartShell.classList.toggle('is-empty', cart.length === 0);
     itemsCountEl.textContent = totals.qtyTotal === 1 ? '1 item' : `${totals.qtyTotal} items`;
-    deliveryAddressEl.textContent = truncateAddress(address, 24);
+    deliveryAddressEl.textContent = isUsableDeliveryAddress(address) ? truncateAddress(address, 24) : 'Set location';
 
     itemCardsEl.innerHTML = cart.map(renderItem).join('');
 
@@ -1132,13 +1158,13 @@ button {
     if (returnMode === 'payment') {
       sessionStorage.setItem('cbe_checkout_after_address', '1');
       sessionStorage.setItem('cbe_location_return_to', 'cart-payment');
-      window.location.href = 'menu.html?openLocation=1&returnTo=cart-payment';
+      window.location.href = 'menu.html?openLocation=1&forceLocation=1&returnTo=cart-payment';
       return;
     }
 
     sessionStorage.removeItem('cbe_checkout_after_address');
     sessionStorage.setItem('cbe_location_return_to', 'cart');
-    window.location.href = 'menu.html?openLocation=1&returnTo=cart';
+    window.location.href = 'menu.html?openLocation=1&forceLocation=1&returnTo=cart';
   }
 
   function buildCheckoutSnapshot(cart, address) {
@@ -1287,7 +1313,7 @@ button {
     }
 
     const address = getDeliveryAddress();
-    if (!address) {
+    if (!isUsableDeliveryAddress(address)) {
       showToast('Select delivery address to continue payment.');
       openLocationFlow('payment');
       return;
@@ -1317,7 +1343,7 @@ button {
       if (!cart.length) return;
 
       const address = getDeliveryAddress();
-      if (!address) return;
+      if (!isUsableDeliveryAddress(address)) return;
 
       const snapshot = buildCheckoutSnapshot(cart, address);
       openRazorpayPayment(snapshot);

@@ -3834,6 +3834,7 @@ function shouldAutoOpenLocationMap() {
   const params = new URLSearchParams(window.location.search);
   return (
     params.get("openLocation") === "1" ||
+    params.get("forceLocation") === "1" ||
     sessionStorage.getItem("cbe_open_location_map") === "1"
   );
 }
@@ -5077,9 +5078,17 @@ updateFloatingCartCard();
 
 if (shouldAutoOpenLocationMap()) {
   sessionStorage.removeItem("cbe_open_location_map");
-  setTimeout(() => {
-    openLocationMapScreen();
-  }, 120);
+
+  /*
+    Open from cart checkout must be reliable.
+    Retry a few times because maps/scripts/layout can finish slightly after page load.
+  */
+  [80, 250, 700].forEach(delay => {
+    setTimeout(() => {
+      if (!locationMapScreen || locationMapScreen.classList.contains("is-open")) return;
+      openLocationMapScreen();
+    }, delay);
+  });
 }
 
 
