@@ -5100,6 +5100,48 @@ if (shouldAutoOpenLocationMap()) {
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
 <script src="firebase-mvp.js"></script>
+
+<script>
+(function forceOpenMapAddressFromCart() {
+  function shouldOpenMapAddress() {
+    const params = new URLSearchParams(window.location.search);
+    return (
+      params.get("openLocation") === "1" ||
+      params.get("forceLocation") === "1" ||
+      sessionStorage.getItem("cbe_open_location_map") === "1"
+    );
+  }
+
+  function openMapAddressScreenDirectly() {
+    if (!shouldOpenMapAddress()) return false;
+
+    const screen = document.getElementById("locationMapScreen");
+    if (!screen) return false;
+
+    screen.classList.add("is-open");
+    screen.classList.add("is-map-step");
+    screen.classList.remove("is-details-step");
+    screen.setAttribute("aria-hidden", "false");
+    document.body.classList.add("map-screen-open");
+    sessionStorage.removeItem("cbe_open_location_map");
+
+    return true;
+  }
+
+  if (!shouldOpenMapAddress()) return;
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", openMapAddressScreenDirectly);
+  } else {
+    openMapAddressScreenDirectly();
+  }
+
+  [80, 250, 700, 1200].forEach(delay => {
+    window.setTimeout(openMapAddressScreenDirectly, delay);
+  });
+})();
+</script>
+
 <div id="bottomNavMount"></div>
 <script src="components/bottom-nav.js?v=20260511_nav2"></script>
 </body>
