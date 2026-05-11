@@ -9,31 +9,45 @@
 <meta name="theme-color" content="#8806CE">
 <title>Coimbatore Foods - Cart</title>
 <link rel="manifest" id="pwa-manifest">
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <style>
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
 
 :root {
   --white: #FDFDFF;
   --surface: #FFFFFF;
-  --page: #F5F5F7;
   --ink: #12130F;
   --muted: rgba(18, 19, 15, 0.50);
-  --body: rgba(18, 19, 15, 0.80);
-  --soft: rgba(18, 19, 15, 0.06);
+  --soft: rgba(18, 19, 15, 0.04);
+  --soft-2: rgba(18, 19, 15, 0.02);
+  --line: rgba(18, 19, 15, 0.08);
   --brand: #8806CE;
   --green: #08A045;
-  --red: #E23009;
-  --yellow: #FFCC00;
-  --shadow: 2px 4px 24px rgba(0, 0, 0, 0.08);
+  --grey-icon: #B8B8B7;
 }
+
 * {
   margin: 0;
   padding: 0;
@@ -44,9 +58,8 @@
 }
 *::-webkit-scrollbar { display: none; width: 0; height: 0; }
 html, body { width: 100%; min-height: 100%; }
-html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
 body {
-  background: var(--page);
+  background: #F5F5F7;
   font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--ink);
   display: flex;
@@ -54,185 +67,153 @@ body {
   padding: 0;
 }
 a { color: inherit; text-decoration: none; }
-button { font-family: inherit; border: none; background: none; cursor: pointer; }
+button { border: 0; background: transparent; font-family: inherit; cursor: pointer; }
 img { max-width: 100%; display: block; }
+
 .app {
   width: 390px;
   min-height: 100dvh;
-  background: var(--surface);
-  overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  padding-bottom: calc(100px + env(safe-area-inset-bottom));
   position: relative;
+  background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF;
+  overflow-x: hidden;
+  padding-bottom: calc(94px + env(safe-area-inset-bottom));
 }
-.hero {
-  align-self: stretch;
-  padding-top: calc(40px + env(safe-area-inset-top));
-  padding-bottom: 10px;
-  padding-left: 24px;
-  padding-right: 24px;
-  background: linear-gradient(180deg, #FDFDFF 0%, #F7F7F9 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.top-row {
-  width: 342px;
+
+/* =========================
+   TOP BAR
+========================= */
+.top-bar {
+  width: 390px;
+  padding: 40px 24px 20px;
+  background: #FFFFFF;
   display: inline-flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 30px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
 }
-.location {
-  display: flex;
+.left-group {
+  flex: 1 1 0;
+  display: inline-flex;
+  flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   gap: 4px;
 }
-.location-icon {
-  width: 34px;
-  height: 34px;
-  overflow: hidden;
-  border-radius: 24px;
-  flex-shrink: 0;
-}
-.location-icon img,
-.avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.location-copy {
+.title-group {
   display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+}
+.title-icon {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.page-title {
+  color: #12130F;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.page-subtitle {
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14.4px;
+}
+
+/* =========================
+   EMPTY CART
+========================= */
+.empty-cart-content {
+  width: 342px;
+  margin: 20px 24px 0;
+  min-height: calc(100dvh - 210px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  padding-top: 0;
+}
+.dish-img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+}
+.info-cta-group {
+  align-self: stretch;
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  gap: 12px;
 }
-.label {
-  opacity: 0.50;
-  color: var(--ink);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 18px;
-}
-.address {
-  color: var(--ink);
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 27px;
-  max-width: 240px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.avatar {
-  width: 46px;
-  height: 46px;
-  overflow: hidden;
-  border-radius: 50px;
-  flex-shrink: 0;
-}
-.hero-card {
-  width: 342px;
-  padding: 14px 16px;
-  background: linear-gradient(0deg, rgba(18, 19, 15, 0.14) 0%, rgba(18, 19, 15, 0.14) 100%), #12130F;
-  border-radius: 40px;
-  background-image: url('assets/menu/img/hero card-img.png');
-  background-size: auto;
-  background-position: right bottom;
-  background-repeat: no-repeat;
+.info-group {
+  align-self: stretch;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  overflow: hidden;
-}
-.hero-title {
-  color: var(--white);
-  font-size: 24px;
-  font-family: 'Chillax';
-  font-weight: 700;
-  line-height: 28.8px;
-}
-.hero-title span { display: inline-block; }
-.hero-title .text-green { color: var(--green); }
-.hero-title .text-purple { color: var(--brand); }
-.hero-meta-container {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.hero-meta {
-  color: rgba(253, 253, 255, 0.60);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 12px;
-}
-.badge-row {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-.badge-row-inner {
-  display: inline-flex;
-  gap: 6px;
-}
-.badge {
-  padding: 6px 8px;
-  background: rgba(255, 255, 255, 0.12);
-  border-radius: 12px;
-  display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 }
-.badge-text {
-  color: rgba(253, 253, 255, 0.60);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 12px;
-  white-space: nowrap;
-}
-.content {
+.empty-title {
   align-self: stretch;
-  padding: 18px 24px 0;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+  text-align: center;
+  color: #12130F;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 33.6px;
+  letter-spacing: -0.02em;
 }
-.section {
+.empty-copy {
+  align-self: stretch;
+  text-align: center;
+  color: #12130F;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 21px;
+}
+.browse-menu-button {
   width: 342px;
-  display: flex;
-  flex-direction: column;
+  height: 55px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 1px solid #08A045;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
 }
-.section-header {
-  min-height: 42px;
+.browse-menu-button span {
+  color: #08A045;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+
+/* =========================
+   CART WITH ORDERS
+========================= */
+.cart-content {
+  width: 342px;
+  margin: 20px 24px 0;
   display: flex;
   flex-direction: column;
+  gap: 14px;
+  padding-bottom: 96px;
 }
-.section-title {
-  color: var(--brand);
-  font-size: 20px;
-  font-family: 'Chillax';
-  font-weight: 600;
-  line-height: 30px;
-}
-.section-subtitle {
-  color: var(--muted);
-  font-size: 12px;
+.cart-section-label {
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 14px;
   font-weight: 500;
-  line-height: 12px;
-}
-.item-count-pill {
-  width: fit-content;
-  padding: 6px 8px;
-  background: rgba(8, 160, 69, 0.10);
-  color: var(--green);
-  border-radius: 1998px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 12px;
+  line-height: 14px;
 }
 .cart-list {
   display: flex;
@@ -241,389 +222,279 @@ img { max-width: 100%; display: block; }
 }
 .cart-item {
   width: 342px;
-  background: var(--surface);
-  border-radius: 36px;
-  box-shadow: var(--shadow);
+  min-height: 96px;
   padding: 10px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.07);
   display: flex;
+  align-items: center;
   gap: 12px;
-  overflow: hidden;
 }
-.cart-img {
-  width: 90px;
-  height: 90px;
+.cart-item-img {
+  width: 76px;
+  height: 76px;
+  border-radius: 14px;
   object-fit: cover;
-  border-radius: 20px;
-  background: #F7F7F9;
   flex-shrink: 0;
+  background: rgba(18, 19, 15, 0.04);
 }
-.cart-copy {
-  flex: 1;
+.cart-item-copy {
   min-width: 0;
+  flex: 1 1 0;
   display: flex;
   flex-direction: column;
-  gap: 6px;
-}
-.cart-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   gap: 8px;
 }
-.item-name {
-  color: var(--ink);
-  font-size: 14px;
+.cart-item-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+.cart-item-name {
+  min-width: 0;
+  color: #12130F;
+  font-size: 15px;
   font-weight: 600;
-  line-height: 16.8px;
+  line-height: 18px;
 }
-.item-desc {
-  margin-top: 3px;
-  color: var(--body);
-  font-size: 8px;
-  font-weight: 400;
-  line-height: 10.4px;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-.item-price {
-  color: var(--ink);
-  font-size: 14px;
+.cart-item-total {
+  flex-shrink: 0;
+  color: #12130F;
+  font-size: 15px;
   font-weight: 700;
   line-height: 18px;
-  white-space: nowrap;
 }
-.chip-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-}
-.chip {
-  padding: 2px 6px;
-  background: rgba(255, 204, 0, 0.20);
-  border-radius: 8px;
-  outline: 0.5px rgba(255, 204, 0, 0.60) solid;
-  outline-offset: -0.5px;
-  color: var(--ink);
-  font-size: 8px;
+.cart-item-meta {
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 12px;
   font-weight: 500;
-  line-height: 10.4px;
+  line-height: 14px;
 }
-.cart-bottom {
-  margin-top: auto;
+.cart-item-bottom {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
-.line-total {
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 16px;
-}
-.qty-button {
-  box-sizing: border-box;
-  width: 68px;
-  height: 26px;
-  padding: 6px 10px;
-  background: var(--white);
-  border: 1px solid var(--green);
+.qty-control-wrap {
+  width: 78px;
+  height: 30px;
+  background: #FDFDFF;
+  border: 1px solid #08A045;
   border-radius: 16px;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
+  padding: 0 10px;
 }
-.qty-control {
-  border: none;
-  background: transparent;
-  color: var(--green);
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 14px;
-  padding: 0;
-  min-width: 8px;
+.qty-btn {
+  color: #08A045;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  width: 14px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .qty-count {
-  color: var(--green);
+  color: #08A045;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 14px;
-  min-width: 8px;
+  min-width: 12px;
   text-align: center;
 }
-.summary-card {
+.remove-btn {
+  color: rgba(18, 19, 15, 0.44);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14px;
+}
+.summary-card,
+.address-card {
   width: 342px;
-  padding: 14px;
-  background: var(--surface);
-  border-radius: 40px;
-  box-shadow: var(--shadow);
+  padding: 16px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.06);
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+.summary-title,
+.address-title {
+  color: #12130F;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20.8px;
 }
 .summary-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: var(--body);
-  font-size: 13px;
+  color: rgba(18, 19, 15, 0.72);
+  font-size: 14px;
   font-weight: 500;
   line-height: 18px;
 }
-.summary-row strong {
-  color: var(--ink);
-  font-size: 14px;
-  font-weight: 700;
-}
-.summary-divider {
-  height: 1px;
-  background: rgba(18, 19, 15, 0.08);
-}
 .summary-row.total {
-  color: var(--ink);
-  font-size: 15px;
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(18, 19, 15, 0.08);
+  color: #12130F;
+  font-size: 17px;
   font-weight: 700;
+  line-height: 22px;
 }
-.summary-row.total strong {
-  color: var(--green);
-  font-size: 20px;
-  line-height: 24px;
-}
-.payment-actions {
+.address-card-top {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pay-btn {
-  width: 100%;
-  height: 46px;
-  border-radius: 28px;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 16px;
-  display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 6px;
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  gap: 12px;
 }
-.pay-btn {
-  background: var(--green);
-  color: var(--white);
-}
-.pay-btn:active { transform: scale(0.98); }
-.pay-btn[disabled] { opacity: 0.55; pointer-events: none; }
-.payment-waiting-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(18, 19, 15, 0.42);
-  z-index: 9998;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.payment-waiting-overlay.is-open {
-  display: flex;
-}
-.payment-waiting-card {
-  width: min(318px, calc(100vw - 48px));
-  padding: 22px 18px;
-  border-radius: 44px;
-  background: var(--surface);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
-}
-.payment-loader {
-  width: 48px;
-  height: 48px;
-  border-radius: 1998px;
-  border: 4px solid rgba(8, 160, 69, 0.14);
-  border-top-color: var(--green);
-  animation: paymentSpin 0.8s linear infinite;
-}
-.payment-waiting-title {
-  color: var(--ink);
-  font-family: 'Chillax';
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 26px;
-}
-.payment-waiting-copy {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 17px;
-  max-width: 240px;
-}
-@keyframes paymentSpin {
-  to { transform: rotate(360deg); }
-}
-.secure-note {
-  color: var(--muted);
-  font-size: 10px;
-  font-weight: 500;
-  line-height: 14px;
-  text-align: center;
-}
-.empty-card {
-  width: 342px;
-  min-height: 260px;
-  border-radius: 40px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  padding: 24px 18px;
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 10px;
-}
-.empty-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 44px;
-  background: rgba(8, 160, 69, 0.10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 28px;
-}
-.empty-title {
-  color: var(--ink);
-  font-family: 'Chillax';
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 26px;
-}
-.empty-copy {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 16px;
-}
-.primary-link {
-  margin-top: 6px;
-  padding: 11px 16px;
-  border-radius: 24px;
-  background: var(--green);
-  color: var(--white);
+.address-change-link {
+  color: #08A045;
   font-size: 13px;
-  font-weight: 700;
-}
-.toast {
-  position: fixed;
-  left: 50%;
-  bottom: calc(84px + env(safe-area-inset-bottom));
-  transform: translateX(-50%) translateY(20px);
-  width: min(342px, calc(100vw - 48px));
-  padding: 12px 14px;
-  border-radius: 28px;
-  background: #12130F;
-  color: var(--white);
-  font-size: 12px;
   font-weight: 600;
   line-height: 16px;
-  opacity: 0;
-  pointer-events: none;
-  transition: 0.2s ease;
-  z-index: 2000;
-  text-align: center;
+  white-space: nowrap;
 }
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+.address-copy {
+  color: rgba(18, 19, 15, 0.72);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 17px;
 }
-.bottom-nav {
+.checkout-bar {
   position: fixed;
+  left: 50%;
+  bottom: calc(74px + env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  width: 390px;
+  padding: 10px 24px 12px;
+  background: linear-gradient(180deg, rgba(253, 253, 255, 0) 0%, #FDFDFF 28%, #FDFDFF 100%);
+  z-index: 40;
+  display: none;
+}
+.checkout-button {
+  width: 342px;
+  height: 55px;
+  padding: 14px 20px;
+  background: #08A045;
+  box-shadow: 0px 6px 34px rgba(8, 160, 69, 0.24);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #FDFDFF;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+}
+.checkout-button:active,
+.browse-menu-button:active,
+.qty-btn:active,
+.remove-btn:active,
+.nav-item:active {
+  transform: scale(0.98);
+}
+
+/* =========================
+   BOTTOM NAV
+========================= */
+.bottom-nav-bar {
+  width: 390px;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding-top: 10px;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: env(safe-area-inset-bottom);
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: 390px;
-  max-width: 100vw;
-  height: calc(64px + env(safe-area-inset-bottom));
-  padding: 10px 24px env(safe-area-inset-bottom);
+  position: fixed;
   background: white;
   box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10);
-  display: inline-flex;
   justify-content: center;
   align-items: flex-start;
   gap: 40px;
-  z-index: 1200;
+  display: inline-flex;
+  z-index: 50;
 }
 .nav-item {
   width: 80px;
-  display: inline-flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   gap: 3px;
-  color: var(--ink);
-}
-.nav-item-icon {
-  width: 24px;
-  height: 24px;
+  display: inline-flex;
   position: relative;
 }
-.nav-item-icon img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+.nav-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
-.nav-item-text {
+.nav-text {
   align-self: stretch;
   text-align: center;
-  color: var(--ink);
+  color: #12130F;
   font-size: 10px;
   font-weight: 500;
   line-height: 10px;
 }
-.nav-item.active .nav-item-text {
-  color: var(--brand);
-  font-weight: 700;
-}
 .cart-badge {
   position: absolute;
-  top: -7px;
-  right: -8px;
+  top: -6px;
+  right: 18px;
   min-width: 18px;
   height: 18px;
   padding: 0 5px;
-  border-radius: 1998px;
-  background: var(--red);
-  color: white;
+  border-radius: 999px;
+  background: #E23009;
+  color: #FFFFFF;
   font-size: 10px;
   font-weight: 700;
-  line-height: 18px;
   display: none;
   align-items: center;
   justify-content: center;
 }
+
+.is-hidden { display: none !important; }
+
 @media (max-width: 389px) {
-  .app, .bottom-nav { width: 100vw; }
-  .hero, .content { padding-left: 20px; padding-right: 20px; }
-  .top-row, .hero-card, .section, .cart-item, .summary-card, .empty-card { width: calc(100vw - 40px); }
+  .app,
+  .top-bar,
+  .bottom-nav-bar,
+  .checkout-bar { width: 100vw; }
+  .empty-cart-content,
+  .cart-content,
+  .browse-menu-button,
+  .cart-item,
+  .summary-card,
+  .address-card,
+  .checkout-button { width: calc(100vw - 48px); }
 }
 
-
-/* =========================
-   FIGMA-LIKE 100% CORNER SMOOTHING
-   Fallback: normal border-radius on unsupported browsers.
-========================= */
 @supports (corner-shape: squircle) {
-  * {
+  .browse-menu-button,
+  .cart-item,
+  .cart-item-img,
+  .qty-control-wrap,
+  .summary-card,
+  .address-card,
+  .checkout-button {
     corner-shape: squircle;
   }
 }
-
 </style>
 <script>
 (function () {
@@ -641,92 +512,95 @@ img { max-width: 100%; display: block; }
 </head>
 <body>
 <div class="app">
-  <header class="hero">
-    <div class="top-row delivery-only-row">
-      <div class="location delivery-text-only">
-        <div class="location-copy">
-          <div class="label">Deliver to</div>
-          <div class="address" id="delivery-address">Loading location...</div>
+  <header class="top-bar">
+    <div class="left-group">
+      <div class="title-group">
+        <div class="title-icon" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g opacity="0.5">
+              <path d="M18.19 17.75H7.54C6.55 17.75 5.6 17.33 4.93 16.6C4.26 15.87 3.92 14.89 4 13.9L4.83 3.94C4.86 3.63 4.75 3.33 4.54 3.1C4.33 2.87 4.04 2.75 3.73 2.75H2C1.59 2.75 1.25 2.41 1.25 2C1.25 1.59 1.59 1.25 2 1.25H3.74C4.47 1.25 5.16 1.56 5.65 2.09C5.92 2.39 6.12 2.74 6.23 3.13H18.72C19.73 3.13 20.66 3.53 21.34 4.25C22.01 4.98 22.35 5.93 22.27 6.94L21.73 14.44C21.62 16.27 20.02 17.75 18.19 17.75ZM6.28 4.62L5.5 14.02C5.45 14.6 5.64 15.15 6.03 15.58C6.42 16.01 6.96 16.24 7.54 16.24H18.19C19.23 16.24 20.17 15.36 20.25 14.32L20.79 6.82C20.83 6.23 20.64 5.67 20.25 5.26C19.86 4.84 19.32 4.61 18.73 4.61H6.28V4.62Z" fill="#12130F"/>
+              <path d="M16.25 22.75C15.15 22.75 14.25 21.85 14.25 20.75C14.25 19.65 15.15 18.75 16.25 18.75C17.35 18.75 18.25 19.65 18.25 20.75C18.25 21.85 17.35 22.75 16.25 22.75ZM16.25 20.25C15.97 20.25 15.75 20.47 15.75 20.75C15.75 21.03 15.97 21.25 16.25 21.25C16.53 21.25 16.75 21.03 16.75 20.75C16.75 20.47 16.53 20.25 16.25 20.25Z" fill="#12130F"/>
+              <path d="M8.25 22.75C7.15 22.75 6.25 21.85 6.25 20.75C6.25 19.65 7.15 18.75 8.25 18.75C9.35 18.75 10.25 19.65 10.25 20.75C10.25 21.85 9.35 22.75 8.25 22.75ZM8.25 20.25C7.97 20.25 7.75 20.47 7.75 20.75C7.75 21.03 7.97 21.25 8.25 21.25C8.53 21.25 8.75 21.03 8.75 20.75C8.75 20.47 8.53 20.25 8.25 20.25Z" fill="#12130F"/>
+              <path d="M21 8.75H9C8.59 8.75 8.25 8.41 8.25 8C8.25 7.59 8.59 7.25 9 7.25H21C21.41 7.25 21.75 7.59 21.75 8C21.75 8.41 21.41 8.75 21 8.75Z" fill="#12130F"/>
+            </g>
+          </svg>
         </div>
+        <div class="page-title">Cart</div>
       </div>
-    </div>
-
-    <div class="hero-card">
-      <div class="hero-title">
-        <span>Review&nbsp;</span><span class="text-green">cart,&nbsp;</span><span>pay&nbsp;</span><span class="text-purple">safe.</span>
-      </div>
-      <div class="hero-meta-container">
-        <div class="hero-meta">Fresh homemade meals · Coimbatore</div>
-        <div class="hero-meta">Razorpay Checkout · EMI and Pay Later hidden</div>
-      </div>
-      <div class="badge-row">
-        <div class="badge-row-inner">
-          <div class="badge"><div class="badge-text">✅ Secure payment</div></div>
-          <div class="badge"><div class="badge-text">🛵 CBE delivery</div></div>
-        </div>
-      </div>
+      <div class="page-subtitle">Check your order before payment.</div>
     </div>
   </header>
 
-  <main class="content">
-    <section class="section" id="cart-section">
-      <div class="section-header">
-        <div class="section-title">Your cart</div>
-        <div class="section-subtitle">Check your lunch before payment.</div>
-      </div>
-      <div class="item-count-pill" id="item-count-pill">0 items</div>
-      <div class="cart-list" id="cart-items"></div>
-    </section>
-
-    <section class="section" id="summary-section">
-      <div class="section-header">
-        <div class="section-title">Payment</div>
-        <div class="section-subtitle">Complete your order through Razorpay.</div>
-      </div>
-      <div class="summary-card">
-        <div class="summary-row"><span>Items total</span><strong id="subtotal">₹0</strong></div>
-        <div class="summary-row"><span>Delivery fee</span><strong id="delivery-fee">Free</strong></div>
-        <div class="summary-divider"></div>
-        <div class="summary-row total"><span>To pay</span><strong id="summary-total">₹0</strong></div>
-        <div class="payment-actions">
-          <button class="pay-btn" id="pay-btn" type="button">Continue to Razorpay <span id="pay-total">₹0</span></button>
+  <main>
+    <section class="empty-cart-content" id="emptyCartScreen">
+      <img class="dish-img" src="assets/food-plate-img.png" alt="Empty cart dish">
+      <div class="info-cta-group">
+        <div class="info-group">
+          <div class="empty-title">Your cart is empty</div>
+          <div class="empty-copy">Add items from the menu and come back here to place order.</div>
         </div>
-        <div class="secure-note">
-          Razorpay Checkout opens with online methods only. EMI and Pay Later are hidden in the checkout configuration. Cash on Delivery can appear inside Razorpay only after Magic Checkout + COD is enabled on your Razorpay account.
-        </div>
+        <a class="browse-menu-button" href="menu.html"><span>Browse menu</span></a>
       </div>
     </section>
 
-    <section class="empty-card" id="empty-card">
-      <div class="empty-icon">🛒</div>
-      <div class="empty-title">Your cart is empty</div>
-      <div class="empty-copy">Add lunch items from the menu and come back here to complete payment.</div>
-      <a class="primary-link" href="menu.html">Go to menu</a>
+    <section class="cart-content is-hidden" id="cartWithOrdersScreen">
+      <div class="cart-section-label" id="cartItemsLabel">Items added</div>
+      <div class="cart-list" id="cartItemsList"></div>
+
+      <section class="address-card">
+        <div class="address-card-top">
+          <div class="address-title">Deliver to</div>
+          <a class="address-change-link" href="menu.html">Change</a>
+        </div>
+        <div class="address-copy" id="deliveryAddressText">Set delivery location from menu.</div>
+      </section>
+
+      <section class="summary-card">
+        <div class="summary-title">Bill summary</div>
+        <div class="summary-row"><span>Item total</span><span id="subtotalValue">₹0</span></div>
+        <div class="summary-row"><span>Delivery fee</span><span id="deliveryValue">₹0</span></div>
+        <div class="summary-row total"><span>Total</span><span id="totalValue">₹0</span></div>
+      </section>
     </section>
   </main>
 
-  <nav class="bottom-nav" aria-label="Bottom navigation">
-    <a class="nav-item" href="menu.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/search-icon.svg" alt="Menu"></div>
-      <div class="nav-item-text">Menu</div>
+  <div class="checkout-bar" id="checkoutBar">
+    <button class="checkout-button" type="button" id="checkoutButton">Continue <span id="checkoutTotal">₹0</span></button>
+  </div>
+
+  <nav class="bottom-nav-bar" aria-label="Bottom navigation">
+    <a class="nav-item" href="menu.html" aria-label="Open menu">
+      <div class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697ZM20.25 11.5C20.25 6.6675 16.3325 2.75 11.5 2.75C6.6675 2.75 2.75 6.6675 2.75 11.5C2.75 16.3325 6.6675 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5ZM21.75 11.5C21.75 17.1609 17.1609 21.75 11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5Z" fill="#B8B8B7"/>
+        </svg>
+      </div>
+      <div class="nav-text">Search</div>
     </a>
-    <a class="nav-item active" href="cart.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/cart-icon.svg" alt="Cart"><div class="cart-badge" id="cart-badge">0</div></div>
-      <div class="nav-item-text">Cart</div>
+
+    <a class="nav-item active" href="cart.html" aria-label="Open cart">
+      <div class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3.74023 1.25C4.92941 1.2501 5.91577 2.0507 6.22949 3.12012H18.7305C20.8331 3.12037 22.4394 4.83711 22.2881 6.93359L21.748 14.4336V14.4375C21.6083 16.2543 20.0259 17.74 18.1904 17.7402H7.54004C5.46307 17.7402 3.8251 15.966 4.00293 13.8955L4.83301 3.9375L4.83594 3.81934C4.82188 3.23655 4.34003 2.75012 3.74023 2.75H2C1.58579 2.75 1.25 2.41421 1.25 2C1.25 1.58579 1.58579 1.25 2 1.25H3.74023ZM5.49707 14.0225V14.0244C5.39505 15.2138 6.3371 16.2402 7.54004 16.2402H18.1904C19.2346 16.24 20.1717 15.3652 20.252 14.3223L20.792 6.82617C20.8804 5.60318 19.9672 4.62037 18.7305 4.62012H6.28027L5.49707 14.0225Z" fill="#8806CE"/>
+          <path d="M16.75 20.75C16.75 20.4738 16.5262 20.25 16.25 20.25C15.9738 20.25 15.75 20.4738 15.75 20.75C15.75 21.0262 15.9738 21.25 16.25 21.25C16.5262 21.25 16.75 21.0262 16.75 20.75ZM18.25 20.75C18.25 21.8546 17.3546 22.75 16.25 22.75C15.1454 22.75 14.25 21.8546 14.25 20.75C14.25 19.6454 15.1454 18.75 16.25 18.75C17.3546 18.75 18.25 19.6454 18.25 20.75Z" fill="#8806CE"/>
+          <path d="M8.75 20.75C8.75 20.4738 8.52616 20.25 8.25 20.25C7.97384 20.25 7.75 20.4738 7.75 20.75C7.75 21.0262 7.97384 21.25 8.25 21.25C8.52616 21.25 8.75 21.0262 8.75 20.75ZM10.25 20.75C10.25 21.8546 9.35456 22.75 8.25 22.75C7.14544 22.75 6.25 21.8546 6.25 20.75C6.25 19.6454 7.14544 18.75 8.25 18.75C9.35456 18.75 10.25 19.6454 10.25 20.75Z" fill="#8806CE"/>
+          <path d="M21 7.25C21.4142 7.25 21.75 7.58579 21.75 8C21.75 8.41421 21.4142 8.75 21 8.75H9C8.58579 8.75 8.25 8.41421 8.25 8C8.25 7.58579 8.58579 7.25 9 7.25H21Z" fill="#8806CE"/>
+        </svg>
+        <div class="cart-badge" id="cartBadge">0</div>
+      </div>
+      <div class="nav-text">Cart</div>
     </a>
-    <a class="nav-item" href="track.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/track-icon.svg" alt="Track orders"></div>
-      <div class="nav-item-text">Track</div>
+
+    <a class="nav-item" href="track.html" aria-label="Track orders">
+      <div class="nav-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M13 14.75H2C1.59 14.75 1.25 14.41 1.25 14V6C1.25 3.38 3.38 1.25 6 1.25H15C15.41 1.25 15.75 1.59 15.75 2V12C15.75 13.52 14.52 14.75 13 14.75ZM2.75 13.25H13C13.69 13.25 14.25 12.69 14.25 12V2.75H6C4.21 2.75 2.75 4.21 2.75 6V13.25Z" fill="#B8B8B7"/>
+          <path d="M19 20.75H18C17.59 20.75 17.25 20.41 17.25 20C17.25 19.31 16.69 18.75 16 18.75C15.31 18.75 14.75 19.31 14.75 20C14.75 20.41 14.41 20.75 14 20.75H10C9.59 20.75 9.25 20.41 9.25 20C9.25 19.31 8.69 18.75 8 18.75C7.31 18.75 6.75 19.31 6.75 20C6.75 20.41 6.41 20.75 6 20.75H5C2.93 20.75 1.25 19.07 1.25 17V14C1.25 13.59 1.59 13.25 2 13.25H13C13.69 13.25 14.25 12.69 14.25 12V5C14.25 4.59 14.59 4.25 15 4.25H16.84C17.83 4.25 18.74 4.78 19.23 5.64L20.94 8.63C21.07 8.86 21.07 9.15 20.94 9.38C20.81 9.61 20.56 9.75 20.29 9.75H19C18.86 9.75 18.75 9.86 18.75 10V13C18.75 13.14 18.86 13.25 19 13.25H22C22.41 13.25 22.75 13.59 22.75 14V17C22.75 19.07 21.07 20.75 19 20.75Z" fill="#B8B8B7"/>
+        </svg>
+      </div>
+      <div class="nav-text">Track orders</div>
     </a>
   </nav>
-</div>
-<div class="toast" id="toast"></div>
-<div class="payment-waiting-overlay" id="payment-waiting-overlay" aria-hidden="true">
-  <div class="payment-waiting-card" role="status" aria-live="polite">
-    <div class="payment-loader" aria-hidden="true"></div>
-    <div class="payment-waiting-title">Waiting for payment</div>
-    <div class="payment-waiting-copy">Complete the payment in Razorpay. Please don’t close this page.</div>
-  </div>
 </div>
 
 <script>
@@ -735,93 +609,45 @@ const mf = {
   short_name: "Tiffin",
   start_url: "./",
   display: "standalone",
-  background_color: "#FDFDFF",
-  theme_color: "#8806CE"
+  background_color: "#0d0600",
+  theme_color: "#0d0600"
 };
 const blob = new Blob([JSON.stringify(mf)], { type: "application/json" });
 document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
+</script>
 
-const RAZORPAY_KEY_ID = "rzp_test_SlnSuWTnjTqSQI";
+<script>
 const DELIVERY_FEE = 0;
 
-const productMeta = {
-  1: {
-    id: 1,
-    category: "protein",
-    name: "Protein egg lunch",
-    price: 89,
-    protein: "45g",
-    image: "assets/menu/img/Protein egg lunch-img.png",
-    desc: "egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)",
-    chips: ["Oil used : 7ml", "No MSG/tastener"]
-  },
-  2: {
-    id: 2,
-    category: "regular",
-    name: "Regular meal",
-    price: 65,
-    image: "assets/menu/img/Regular meal-img.png",
-    desc: "rice(250g), sambar(250ml), egg(1), 2 veggies(100g), pappad, pacha puli rasam",
-    chips: ["Oil used : 7ml", "No MSG/tastener"]
-  },
-  3: {
-    id: 3,
-    category: "protein",
-    name: "Protein chicken lunch",
-    price: 109,
-    protein: "50g",
-    image: "assets/menu/img/Protein chicken lunch-img.png",
-    desc: "chicken(100g), egg(3), rice(100g), veggies(50g), chappati(2), chicken gravy(100ml)",
-    chips: ["Oil used : 7ml", "No MSG/tastener"]
-  },
-  4: {
-    id: 4,
-    category: "regular",
-    name: "Chappati & gravy",
-    price: 89,
-    image: "assets/menu/img/Chappati & gravy-img.png",
-    desc: "soft chappati with homemade gravy, simple and filling",
-    chips: ["Oil used : 7ml", "No MSG/tastener"]
-  }
+const productImageMap = {
+  1: "assets/menu/img/Protein egg lunch-img.png",
+  2: "assets/menu/img/Regular meal-img.png",
+  3: "assets/menu/img/Protein chicken lunch-img.png",
+  4: "assets/menu/img/Chappati & gravy-img.png"
 };
 
+const emptyCartScreen = document.getElementById("emptyCartScreen");
+const cartWithOrdersScreen = document.getElementById("cartWithOrdersScreen");
+const cartItemsList = document.getElementById("cartItemsList");
+const cartItemsLabel = document.getElementById("cartItemsLabel");
+const subtotalValue = document.getElementById("subtotalValue");
+const deliveryValue = document.getElementById("deliveryValue");
+const totalValue = document.getElementById("totalValue");
+const checkoutTotal = document.getElementById("checkoutTotal");
+const checkoutBar = document.getElementById("checkoutBar");
+const checkoutButton = document.getElementById("checkoutButton");
+const cartBadge = document.getElementById("cartBadge");
+const deliveryAddressText = document.getElementById("deliveryAddressText");
+
 let cart = loadCart();
-let isPaymentOpening = false;
 
-function loadCart() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("cart")) || [];
-    const items = Array.isArray(saved) ? saved : Object.values(saved);
-    return items
-      .map(item => {
-        const id = Number(item.id);
-        const meta = productMeta[id] || {};
-        return {
-          ...meta,
-          ...item,
-          id,
-          price: Number(item.price || meta.price || 0),
-          qty: Math.max(0, Number(item.qty) || 0)
-        };
-      })
-      .filter(item => item.id && item.qty > 0);
-  } catch (error) {
-    return [];
-  }
-}
-function saveCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
-function formatRupee(value) {
-  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
-}
-
-function parseLocalJSON(value) {
+function parseSavedValue(value) {
   if (!value) return null;
-  const trimmed = String(value).trim();
+  if (typeof value !== "string") return value;
+  const trimmed = value.trim();
   if (!trimmed) return null;
   if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try { return JSON.parse(trimmed); } catch (error) { return trimmed; }
+    try { return JSON.parse(trimmed); } catch (_) { return trimmed; }
   }
   return trimmed;
 }
@@ -831,391 +657,188 @@ function cleanText(value) {
   return String(value).trim();
 }
 
-function getReadableDeliveryAddress() {
-  const textKeys = [
-    "delivery_full_address",
-    "cust_full_address",
-    "delivery_address",
-    "cust_address",
-    "selected_address",
-    "customer_address"
-  ];
+function loadCart() {
+  const savedCart = localStorage.getItem("cart");
+  if (!savedCart) return [];
 
-  for (const key of textKeys) {
-    const value = cleanText(localStorage.getItem(key));
-    if (value) return value;
+  try {
+    const parsed = JSON.parse(savedCart);
+    if (Array.isArray(parsed)) return normalizeCart(parsed);
+    if (parsed && typeof parsed === "object") return normalizeCart(Object.values(parsed));
+    return [];
+  } catch (_) {
+    return [];
   }
-
-  const objectKeys = [
-    "cust_location_details",
-    "delivery_location_details",
-    "cust_location",
-    "delivery_location",
-    "current_location",
-    "user_location"
-  ];
-
-  for (const key of objectKeys) {
-    const value = parseLocalJSON(localStorage.getItem(key));
-
-    if (value && typeof value === "object") {
-      const address = cleanText(
-        value.confirmedAddress ||
-        value.fullAddress ||
-        value.full ||
-        value.displayAddress ||
-        value.deliveryAddress ||
-        value.address ||
-        value.display
-      );
-
-      if (address) return address;
-    }
-  }
-
-  return "Confirm delivery address";
 }
 
-function getDeliveryLocationDetails() {
-  const saved = parseLocalJSON(localStorage.getItem("cust_location_details")) ||
-    parseLocalJSON(localStorage.getItem("delivery_location_details")) ||
-    parseLocalJSON(localStorage.getItem("cust_location")) ||
-    {};
-
-  return {
-    ...saved,
-    address: getReadableDeliveryAddress(),
-    lat: saved.lat || localStorage.getItem("cust_lat") || "",
-    lng: saved.lng || localStorage.getItem("cust_lng") || ""
-  };
+function normalizeCart(items) {
+  return items
+    .map(item => ({
+      id: Number(item.id),
+      name: cleanText(item.name) || "Food item",
+      price: Number(item.price) || 0,
+      qty: Math.max(0, Number(item.qty) || 0),
+      image: cleanText(item.image) || productImageMap[Number(item.id)] || "assets/food-plate-img.png",
+      protein: cleanText(item.protein),
+      category: cleanText(item.category)
+    }))
+    .filter(item => item.id && item.qty > 0);
 }
 
-function renderSavedDeliveryAddress() {
-  const addressEl = document.getElementById("delivery-address");
-  if (!addressEl) return;
-
-  const address = getReadableDeliveryAddress();
-  addressEl.textContent = address.length > 26 ? `${address.slice(0, 26)}..` : address;
-  addressEl.title = address;
+function saveCart() {
+  cart = normalizeCart(cart);
+  localStorage.setItem("cart", JSON.stringify(cart));
 }
-function getTotals() {
+
+function formatRupee(value) {
+  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+}
+
+function getCartTotals() {
   const totalQty = cart.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
-  const subtotal = cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
-  const total = subtotal + (cart.length ? DELIVERY_FEE : 0);
-  return { totalQty, subtotal, delivery: cart.length ? DELIVERY_FEE : 0, total };
-}
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 2600);
+  const subtotal = cart.reduce((sum, item) => sum + ((Number(item.price) || 0) * (Number(item.qty) || 0)), 0);
+  const delivery = totalQty > 0 ? DELIVERY_FEE : 0;
+  const total = subtotal + delivery;
+  return { totalQty, subtotal, delivery, total };
 }
 
-function showPaymentWaiting() {
-  const overlay = document.getElementById("payment-waiting-overlay");
-  if (!overlay) return;
-  overlay.classList.add("is-open");
-  overlay.setAttribute("aria-hidden", "false");
-}
-
-function hidePaymentWaiting() {
-  const overlay = document.getElementById("payment-waiting-overlay");
-  if (!overlay) return;
-  overlay.classList.remove("is-open");
-  overlay.setAttribute("aria-hidden", "true");
-}
-function updateCartBadge(totalQty) {
-  const badge = document.getElementById("cart-badge");
-  badge.textContent = totalQty;
-  badge.style.display = totalQty > 0 ? "flex" : "none";
-}
-function changeQty(productId, delta) {
+function updateItemQty(productId, change) {
   const item = cart.find(cartItem => Number(cartItem.id) === Number(productId));
   if (!item) return;
-  item.qty += delta;
+  item.qty = (Number(item.qty) || 0) + change;
   if (item.qty <= 0) {
     cart = cart.filter(cartItem => Number(cartItem.id) !== Number(productId));
   }
   saveCart();
   renderCart();
 }
-function renderCart() {
-  cart = loadCart();
-  const cartSection = document.getElementById("cart-section");
-  const summarySection = document.getElementById("summary-section");
-  const emptyCard = document.getElementById("empty-card");
-  const cartItems = document.getElementById("cart-items");
-  const totals = getTotals();
 
-  updateCartBadge(totals.totalQty);
-  document.getElementById("item-count-pill").textContent = `${totals.totalQty} item${totals.totalQty === 1 ? "" : "s"}`;
-  document.getElementById("subtotal").textContent = formatRupee(totals.subtotal);
-  document.getElementById("delivery-fee").textContent = totals.delivery > 0 ? formatRupee(totals.delivery) : "Free";
-  document.getElementById("summary-total").textContent = formatRupee(totals.total);
-  document.getElementById("pay-total").textContent = formatRupee(totals.total);
+function removeItem(productId) {
+  cart = cart.filter(cartItem => Number(cartItem.id) !== Number(productId));
+  saveCart();
+  renderCart();
+}
 
-  if (cart.length === 0) {
-    cartSection.style.display = "none";
-    summarySection.style.display = "none";
-    emptyCard.style.display = "flex";
-    cartItems.innerHTML = "";
-    return;
+function getDeliveryAddress() {
+  const locationDetails =
+    parseSavedValue(localStorage.getItem("cust_location_details")) ||
+    parseSavedValue(localStorage.getItem("delivery_location_details"));
+
+  if (locationDetails && typeof locationDetails === "object") {
+    const doorNo = cleanText(locationDetails.doorNo);
+    const fullAddress = cleanText(locationDetails.fullAddress || locationDetails.address || locationDetails.displayAddress);
+    const landmark = cleanText(locationDetails.landmark);
+    const parts = [];
+    if (doorNo) parts.push(doorNo);
+    if (fullAddress) parts.push(fullAddress);
+    if (landmark) parts.push(`Landmark: ${landmark}`);
+    if (parts.length) return parts.join(", ");
   }
 
-  cartSection.style.display = "flex";
-  summarySection.style.display = "flex";
-  emptyCard.style.display = "none";
+  return (
+    cleanText(localStorage.getItem("delivery_full_address")) ||
+    cleanText(localStorage.getItem("cust_full_address")) ||
+    cleanText(localStorage.getItem("delivery_address")) ||
+    cleanText(localStorage.getItem("cust_address")) ||
+    "Set delivery location from menu."
+  );
+}
 
-  cartItems.innerHTML = cart.map(item => {
-    const chips = (item.chips || []).map(chip => `<span class="chip">${chip}</span>`).join("");
+function renderCartItems() {
+  cartItemsList.innerHTML = cart.map(item => {
+    const lineTotal = (Number(item.price) || 0) * (Number(item.qty) || 0);
+    const meta = item.protein ? `${item.protein} protein` : item.category ? item.category : "Home cooked meal";
+
     return `
-      <article class="cart-item">
-        <img class="cart-img" src="${item.image || ""}" alt="${item.name || "Food item"}">
-        <div class="cart-copy">
-          <div class="cart-top">
-            <div>
-              <div class="item-name">${item.name || "Food item"}</div>
-              <div class="item-desc">${item.desc || "Fresh homemade meal"}</div>
-            </div>
-            <div class="item-price">${formatRupee(item.price)}</div>
+      <article class="cart-item" data-product-id="${item.id}">
+        <img class="cart-item-img" src="${item.image}" alt="${item.name}">
+        <div class="cart-item-copy">
+          <div class="cart-item-top">
+            <div class="cart-item-name">${item.name}</div>
+            <div class="cart-item-total">${formatRupee(lineTotal)}</div>
           </div>
-          <div class="chip-row">${chips}</div>
-          <div class="cart-bottom">
-            <div class="line-total">${formatRupee(item.price * item.qty)}</div>
-            <div class="qty-button" data-product-id="${item.id}">
-              <button class="qty-control qty-minus" type="button" aria-label="Decrease quantity">-</button>
+          <div class="cart-item-meta">${formatRupee(item.price)} each · ${meta}</div>
+          <div class="cart-item-bottom">
+            <div class="qty-control-wrap" aria-label="Quantity control for ${item.name}">
+              <button class="qty-btn qty-minus" type="button" data-product-id="${item.id}" aria-label="Decrease quantity">−</button>
               <div class="qty-count">${item.qty}</div>
-              <button class="qty-control qty-plus" type="button" aria-label="Increase quantity">+</button>
+              <button class="qty-btn qty-plus" type="button" data-product-id="${item.id}" aria-label="Increase quantity">+</button>
             </div>
+            <button class="remove-btn" type="button" data-product-id="${item.id}">Remove</button>
           </div>
         </div>
-      </article>`;
+      </article>
+    `;
   }).join("");
 }
-function buildLocalOrder(paymentResponse, paymentStatus, paymentProvider = "razorpay") {
-  const totals = getTotals();
-  return {
-    id: `CBE${Date.now()}`,
-    receipt: `receipt_${Date.now()}`,
-    status: "confirmed",
-    paymentStatus,
-    paymentProvider,
-    paymentId: paymentResponse?.razorpay_payment_id || null,
-    razorpayOrderId: paymentResponse?.razorpay_order_id || null,
-    razorpaySignature: paymentResponse?.razorpay_signature || null,
-    createdAt: new Date().toISOString(),
-    eta: "15 - 25 mins",
-    address: getReadableDeliveryAddress(),
-    deliveryLocation: getDeliveryLocationDetails(),
-    customer: getCustomerPrefill(),
-    items: cart,
-    totals
-  };
-}
 
-function cleanPhoneNumber(value) {
-  if (!value) return "";
-
-  const cleaned = String(value)
-    .trim()
-    .replace(/[\s\-()]/g, "");
-
-  /*
-  Razorpay accepts contact as a string.
-  Keep +91 if your login stores it, otherwise pass the 10-digit mobile.
-  */
-  return cleaned;
-}
-
-function getFirstLocalValue(keys) {
-  for (const key of keys) {
-    const value = localStorage.getItem(key);
-    if (value && String(value).trim()) return String(value).trim();
+function updateCartBadge(totalQty) {
+  if (!cartBadge) return;
+  if (totalQty <= 0) {
+    cartBadge.style.display = "none";
+    return;
   }
-  return "";
+  cartBadge.style.display = "flex";
+  cartBadge.textContent = totalQty;
 }
 
-function getCustomerPrefill() {
-  const name = getFirstLocalValue([
-    "cust_name",
-    "customer_name",
-    "user_name",
-    "name"
-  ]);
-
-  const email = getFirstLocalValue([
-    "cust_email",
-    "customer_email",
-    "user_email",
-    "email"
-  ]);
-
-  const contact = cleanPhoneNumber(getFirstLocalValue([
-    "cust_mobile",
-    "cust_phone",
-    "customer_mobile",
-    "customer_phone",
-    "user_mobile",
-    "user_phone",
-    "phoneNumber",
-    "phone",
-    "mobile"
-  ]));
-
-  return { name, email, contact };
-}
-
-
-
-
-function saveOrderToHistory(order) {
-  if (!order) return;
-
-  let history = [];
-  try {
-    const saved = JSON.parse(localStorage.getItem("order_history")) || [];
-    history = Array.isArray(saved) ? saved : Object.values(saved);
-  } catch (error) {
-    history = [];
-  }
-
-  const orderKey = String(order.id || order.paymentId || order.receipt || order.createdAt || "");
-  history = history.filter(savedOrder => {
-    const savedKey = String(savedOrder?.id || savedOrder?.paymentId || savedOrder?.receipt || savedOrder?.createdAt || "");
-    return savedKey !== orderKey;
-  });
-
-  history.unshift(order);
-  localStorage.setItem("order_history", JSON.stringify(history.slice(0, 20)));
-}
-
-function openRazorpayCheckout() {
+function renderCart() {
   cart = loadCart();
-  const totals = getTotals();
+  const totals = getCartTotals();
 
-  if (cart.length === 0) {
-    showToast("Your cart is empty.");
+  updateCartBadge(totals.totalQty);
+
+  if (totals.totalQty <= 0) {
+    emptyCartScreen.classList.remove("is-hidden");
+    cartWithOrdersScreen.classList.add("is-hidden");
+    checkoutBar.style.display = "none";
     return;
   }
 
-  const deliveryAddress = getReadableDeliveryAddress();
-  if (!deliveryAddress || deliveryAddress === "Confirm delivery address") {
-    showToast("Please confirm your delivery address from the menu first.");
-    return;
-  }
+  emptyCartScreen.classList.add("is-hidden");
+  cartWithOrdersScreen.classList.remove("is-hidden");
+  checkoutBar.style.display = "block";
 
-  if (!window.Razorpay) {
-    showToast("Payment service is not loaded. Check your internet and try again.");
-    return;
-  }
+  const itemLabel = totals.totalQty === 1 ? "item" : "items";
+  cartItemsLabel.textContent = `${totals.totalQty} ${itemLabel} added`;
+  renderCartItems();
 
-  if (isPaymentOpening) return;
-  isPaymentOpening = true;
-
-  const payBtn = document.getElementById("pay-btn");
-  payBtn.disabled = true;
-  payBtn.textContent = "Waiting for payment...";
-
-  const amountInPaise = Math.round(totals.total * 100);
-  const orderReceipt = `CBE_${Date.now()}`;
-
-  const options = {
-    key: RAZORPAY_KEY_ID,
-    amount: amountInPaise,
-    currency: "INR",
-    name: "Tiffin CBE",
-    description: `${totals.totalQty} lunch item${totals.totalQty === 1 ? "" : "s"}`,
-    notes: {
-      receipt: orderReceipt,
-      source: "customer_pwa",
-      items: cart.map(item => `${item.qty}x ${item.name}`).join(", "),
-      delivery_address: deliveryAddress
-    },
-    /*
-    Prefills mobile number in Razorpay Checkout.
-    Make sure login stores the mobile in localStorage as cust_mobile.
-    Fallback keys are also supported by getCustomerPrefill().
-    */
-    prefill: getCustomerPrefill(),
-    theme: {
-      color: "#8806CE"
-    },
-    /*
-    Hide EMI / Cardless EMI / Pay Later from Razorpay Checkout.
-    COD cannot be added to Standard Checkout from this static file.
-    COD inside Razorpay requires Magic Checkout + COD account enablement + server-side order/shipping APIs.
-    */
-    display: {
-      emi: false,
-      cardlessEmi: false,
-      paylater: false,
-      offers: false,
-      hide: [
-        { method: "emi" },
-        { method: "paylater" },
-        { method: "cardless_emi" }
-      ]
-    },
-    modal: {
-      ondismiss: function () {
-        hidePaymentWaiting();
-        isPaymentOpening = false;
-        payBtn.disabled = false;
-        payBtn.innerHTML = `Continue to Razorpay <span id="pay-total">${formatRupee(totals.total)}</span>`;
-        showToast("Payment cancelled. Your cart is still saved.");
-      }
-    },
-    handler: function (response) {
-      const order = buildLocalOrder(response, "paid");
-      saveOrderToHistory(order);
-      localStorage.setItem("current_order", JSON.stringify(order));
-      localStorage.removeItem("cart");
-      localStorage.setItem("last_order_success_at", new Date().toISOString());
-      window.location.href = "order_placed.html";
-    }
-  };
-
-  const razorpay = new Razorpay(options);
-
-  razorpay.on("payment.failed", function (response) {
-    const failedOrder = buildLocalOrder({
-      razorpay_payment_id: response?.error?.metadata?.payment_id || null,
-      razorpay_order_id: response?.error?.metadata?.order_id || null
-    }, "failed");
-    failedOrder.status = "payment_failed";
-    failedOrder.paymentError = response?.error?.description || "Payment failed";
-    localStorage.setItem("last_failed_order", JSON.stringify(failedOrder));
-    hidePaymentWaiting();
-    isPaymentOpening = false;
-    payBtn.disabled = false;
-    payBtn.innerHTML = `Continue to Razorpay <span id="pay-total">${formatRupee(totals.total)}</span>`;
-    showToast(response?.error?.description || "Payment failed. Please try again.");
-  });
-
-  showPaymentWaiting();
-  razorpay.open();
+  subtotalValue.textContent = formatRupee(totals.subtotal);
+  deliveryValue.textContent = totals.delivery === 0 ? "Free" : formatRupee(totals.delivery);
+  totalValue.textContent = formatRupee(totals.total);
+  checkoutTotal.textContent = formatRupee(totals.total);
+  deliveryAddressText.textContent = getDeliveryAddress();
 }
 
-document.addEventListener("click", (event) => {
-  const qtyBox = event.target.closest(".qty-button");
-  if (!qtyBox) return;
-  const productId = Number(qtyBox.dataset.productId);
-  if (event.target.closest(".qty-minus")) changeQty(productId, -1);
-  if (event.target.closest(".qty-plus")) changeQty(productId, 1);
+cartItemsList.addEventListener("click", (event) => {
+  const minus = event.target.closest(".qty-minus");
+  const plus = event.target.closest(".qty-plus");
+  const remove = event.target.closest(".remove-btn");
+
+  if (minus) updateItemQty(minus.dataset.productId, -1);
+  if (plus) updateItemQty(plus.dataset.productId, 1);
+  if (remove) removeItem(remove.dataset.productId);
 });
-document.getElementById("pay-btn").addEventListener("click", openRazorpayCheckout);
-renderSavedDeliveryAddress();
+
+checkoutButton.addEventListener("click", () => {
+  const totals = getCartTotals();
+  if (totals.totalQty <= 0) return;
+
+  localStorage.setItem("checkout_cart_snapshot", JSON.stringify({
+    items: cart,
+    totals,
+    deliveryAddress: getDeliveryAddress(),
+    createdAt: new Date().toISOString()
+  }));
+
+  alert("Payment flow is next. Cart is saved safely.");
+});
+
+window.addEventListener("storage", (event) => {
+  if (event.key === "cart") renderCart();
+});
+
 renderCart();
-window.addEventListener("storage", () => {
-  renderSavedDeliveryAddress();
-  renderCart();
-});
 </script>
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
-<script src="firebase-mvp.js"></script>
 </body>
 </html>
