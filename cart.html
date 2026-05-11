@@ -793,7 +793,44 @@ button {
   }
 
   function getItemImage(item) {
-    return item.image ?? item.img ?? item.imageUrl ?? item.photo ?? item.thumbnail ?? item.asset ?? '';
+    const directImage = item.image ?? item.img ?? item.imageUrl ?? item.photo ?? item.thumbnail ?? item.asset;
+
+    if (directImage) {
+      return directImage;
+    }
+
+    /*
+    Existing cart items saved before this fix may not have an image key.
+    So cart uses id/name fallback mapping to render the same menu image.
+    */
+    const fallbackById = {
+      "1": "assets/menu/img/Protein egg lunch-img.png",
+      "2": "assets/menu/img/Regular meal-img.png",
+      "3": "assets/menu/img/Protein chicken lunch-img.png",
+      "4": "assets/menu/img/Chappati & gravy-img.png"
+    };
+
+    const id = String(item.id ?? item.productId ?? item.menuId ?? item.itemId ?? '').trim();
+
+    if (fallbackById[id]) {
+      return fallbackById[id];
+    }
+
+    const normalizedName = String(item.name ?? item.title ?? item.itemName ?? item.productName ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, ' ');
+
+    const fallbackByName = {
+      "protein egg lunch": "assets/menu/img/Protein egg lunch-img.png",
+      "regular meal": "assets/menu/img/Regular meal-img.png",
+      "protein chicken lunch": "assets/menu/img/Protein chicken lunch-img.png",
+      "protein chicken dinner": "assets/menu/img/Protein chicken lunch-img.png",
+      "chappati & gravy": "assets/menu/img/Chappati & gravy-img.png",
+      "chappati and gravy": "assets/menu/img/Chappati & gravy-img.png"
+    };
+
+    return fallbackByName[normalizedName] || '';
   }
 
   function getProteinText(item) {
