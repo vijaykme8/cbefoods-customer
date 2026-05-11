@@ -542,32 +542,78 @@ button {
   margin-bottom: 22px;
 }
 
+.info-cta-group {
+  width: 342px;
+  max-width: 100%;
+  height: 143px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+  align-self: stretch;
+}
+
+.info-group {
+  width: 342px;
+  max-width: 100%;
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  align-self: stretch;
+}
+
 .empty-title {
-  margin: 0 0 8px;
+  width: 342px;
+  max-width: 100%;
+  height: 34px;
+  margin: 0;
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
   font-weight: 600;
-  font-size: 22px;
-  line-height: 120%;
-  color: var(--black);
+  font-size: 24px;
+  line-height: 140%;
+  letter-spacing: -0.02em;
+  text-align: center;
 }
 
 .empty-copy {
-  max-width: 280px;
-  margin: 0 0 24px;
+  width: 342px;
+  max-width: 100%;
+  height: 42px;
+  margin: 0;
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
   font-weight: 400;
   font-size: 14px;
-  line-height: 145%;
-  color: var(--black-50);
+  line-height: 150%;
+  text-align: center;
 }
 
 .browse-menu-button {
-  height: 48px;
-  padding: 12px 28px;
+  box-sizing: border-box;
+  width: 196px;
+  height: 55px;
+  padding: 14px 40px;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #08A045;
   border-radius: 10px;
-  background: var(--green);
-  color: var(--white);
+  background: transparent;
+  color: #08A045;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
   font-weight: 600;
-  font-size: 16px;
-  line-height: 24px;
+  font-size: 18px;
+  line-height: 26px;
   text-decoration: none;
 }
 
@@ -695,9 +741,13 @@ button {
 
   <section class="empty-state" aria-live="polite">
     <img class="empty-img" src="assets/cart/dish-img.png" alt="" onerror="this.style.display='none'" />
-    <h1 class="empty-title">Your cart is empty</h1>
-    <p class="empty-copy">Add items from the menu and come back here to place order.</p>
-    <a class="browse-menu-button" href="menu.html">Browse menu</a>
+    <div class="info-cta-group">
+      <div class="info-group">
+        <h1 class="empty-title">Your cart is empty</h1>
+        <p class="empty-copy">Add items from the menu and come back here to place order.</p>
+      </div>
+      <a class="browse-menu-button" href="menu.html">Browse menu</a>
+    </div>
   </section>
 
   <section class="placeorder-section">
