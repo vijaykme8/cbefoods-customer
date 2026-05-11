@@ -16,15 +16,16 @@ body.has-bottom-nav {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  width: 100%;
-  max-width: 390px;
-  height: var(--cf-bottom-nav-height);
+  width: 390px;
+  max-width: 100%;
+  height: 64px;
   padding: 10px 24px 0;
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: flex-start;
   gap: 40px;
-  background: var(--cf-bottom-nav-bg);
+  background: #FFFFFF;
   box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.10);
   font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
@@ -43,30 +44,49 @@ body.has-bottom-nav {
   justify-content: center;
   align-items: center;
   gap: 3px;
-  color: var(--cf-bottom-nav-black);
+  padding: 0;
+  color: #12130F;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
+
+  /* inactive SVG color */
+  --fillg: #B8B8B7;
 }
 
-.cf-bottom-nav__item svg {
+.cf-bottom-nav__item.is-active {
+  /* active SVG color */
+  --fillg: #8806CE;
+}
+
+.cf-bottom-nav__icon {
   width: 24px;
   height: 24px;
-  color: var(--cf-bottom-nav-muted);
-  flex: 0 0 auto;
+  display: block;
+  flex: none;
+  overflow: hidden;
 }
 
-.cf-bottom-nav__item.is-active svg {
-  color: var(--cf-bottom-nav-active);
+.cf-bottom-nav__icon svg {
+  width: 24px;
+  height: 24px;
+  display: block;
 }
 
 .cf-bottom-nav__label {
   width: 80px;
-  text-align: center;
-  color: var(--cf-bottom-nav-black);
+  height: 10px;
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
   font-weight: 500;
   font-size: 10px;
   line-height: 100%;
+  text-align: center;
   white-space: nowrap;
+}
+
+.cf-bottom-nav__item--track .cf-bottom-nav__label {
+  width: 59px;
 }
 
 .cf-bottom-nav[hidden] {
@@ -75,7 +95,6 @@ body.has-bottom-nav {
 
 @media (max-width: 360px) {
   .cf-bottom-nav {
-    max-width: 100%;
     gap: 26px;
   }
 }

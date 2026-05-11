@@ -516,55 +516,6 @@ button {
   line-height: 24px;
 }
 
-.bottom-nav-bar {
-  position: fixed;
-  z-index: 70;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 390px;
-  height: 64px;
-  padding: 10px 24px 0;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  background: var(--pure-white);
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.10);
-}
-
-.nav-item {
-  width: 80px;
-  height: 37px;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 3px;
-  text-decoration: none;
-  color: var(--black);
-}
-
-.nav-item svg {
-  width: 24px;
-  height: 24px;
-  color: var(--muted);
-}
-
-.nav-item.active svg {
-  color: var(--violet);
-}
-
-.nav-label {
-  width: 80px;
-  text-align: center;
-  font-weight: 500;
-  font-size: 10px;
-  line-height: 100%;
-  color: var(--black);
-}
-
 .empty-state {
   position: fixed;
   top: 105px;
@@ -657,8 +608,7 @@ button {
   .top-bar,
   .cart-content,
   .placeorder-section,
-  .bottom-nav-bar,
-  .empty-state {
+.empty-state {
     max-width: 100%;
   }
 
@@ -669,12 +619,7 @@ button {
   .deliver-address {
     max-width: 110px;
   }
-
-  .bottom-nav-bar {
-    gap: 26px;
-  }
-
-  .price-add-item {
+.price-add-item {
     width: 112px;
   }
 
@@ -762,32 +707,11 @@ button {
     </div>
     <button class="placeorder-button" id="placeOrderBtn" type="button">Place order</button>
   </section>
-
-  <nav class="bottom-nav-bar" aria-label="Bottom navigation">
-    <a class="nav-item" href="menu.html" aria-label="Search menu">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M10.8 3a7.8 7.8 0 0 1 6.16 12.58l3.23 3.23a.98.98 0 0 1-1.38 1.38l-3.23-3.23A7.8 7.8 0 1 1 10.8 3Zm0 1.95a5.85 5.85 0 1 0 0 11.7 5.85 5.85 0 0 0 0-11.7Z" fill="currentColor"/>
-      </svg>
-      <span class="nav-label">Search</span>
-    </a>
-
-    <a class="nav-item active" href="cart.html" aria-current="page" aria-label="Cart">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M6.35 6.75h14.2c.7 0 1.22.65 1.07 1.33l-1.18 5.31a2.75 2.75 0 0 1-2.68 2.15H9.1a2.75 2.75 0 0 1-2.7-2.22L4.8 4.95H2.75a1 1 0 0 1 0-2h2.88c.48 0 .9.34.99.81l.73 2.99Zm2.2 2 1 4.18c.06.36.38.62.75.62h7.46c.36 0 .68-.25.76-.6l.93-4.2H8.55ZM9.4 21.05a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Zm8.25 0a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Z" fill="currentColor"/>
-      </svg>
-      <span class="nav-label">Cart</span>
-    </a>
-
-    <a class="nav-item" href="track.html" aria-label="Track orders">
-      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M12 2.75a8.5 8.5 0 0 1 8.5 8.5c0 5.6-6.64 10.23-7.7 10.92a1.5 1.5 0 0 1-1.6 0c-1.06-.69-7.7-5.32-7.7-10.92A8.5 8.5 0 0 1 12 2.75Zm0 2a6.5 6.5 0 0 0-6.5 6.5c0 3.88 4.4 7.56 6.5 9.02 2.1-1.46 6.5-5.14 6.5-9.02A6.5 6.5 0 0 0 12 4.75Zm0 3.25a3.25 3.25 0 1 1 0 6.5 3.25 3.25 0 0 1 0-6.5Zm0 2a1.25 1.25 0 1 0 0 2.5A1.25 1.25 0 0 0 12 10Z" fill="currentColor"/>
-      </svg>
-      <span class="nav-label">Track orders</span>
-    </a>
-  </nav>
-
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
+
+<div id="bottomNavMount"></div>
+<script src="components/bottom-nav.js"></script>
 
 <script>
 (() => {
