@@ -2,8 +2,6 @@
   --cf-bottom-nav-height: 64px;
   --cf-bottom-nav-bg: #FFFFFF;
   --cf-bottom-nav-black: #12130F;
-  --cf-bottom-nav-muted: #B8B8B7;
-  --cf-bottom-nav-active: #8806CE;
 }
 
 body.has-bottom-nav {
@@ -48,14 +46,6 @@ body.has-bottom-nav {
   color: #12130F;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-
-  /* inactive SVG color */
-  --fillg: #B8B8B7;
-}
-
-.cf-bottom-nav__item.is-active {
-  /* active SVG color */
-  --fillg: #8806CE;
 }
 
 .cf-bottom-nav__icon {

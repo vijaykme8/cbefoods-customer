@@ -2398,27 +2398,6 @@ body.map-screen-open {
     </div>
     <div class="floating-cart-action">Cart &gt;</div>
   </div>
-
-  <nav class="bottom-nav" aria-label="Bottom navigation">
-    <a class="nav-item active" href="menu.html">
-      <div class="nav-item-icon">
-        <img src="assets/menu/icons/search-icon.svg" alt="Menu" />
-      </div>
-      <div class="nav-item-text">Menu</div>
-    </a>
-    <a class="nav-item" href="cart.html">
-      <div class="nav-item-icon">
-        <img src="assets/menu/icons/cart-icon.svg" alt="Cart" />
-      </div>
-      <div class="nav-item-text">Cart</div>
-    </a>
-    <a class="nav-item" href="track.html">
-      <div class="nav-item-icon">
-        <img src="assets/menu/icons/track-icon.svg" alt="Track orders" />
-      </div>
-      <div class="nav-item-text">Track</div>
-    </a>
-  </nav>
 </div>
 
 <div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
@@ -5098,5 +5077,7 @@ if (shouldAutoOpenLocationMap()) {
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
 <script src="firebase-mvp.js"></script>
+<div id="bottomNavMount"></div>
+<script src="components/bottom-nav.js?v=20260511_nav2"></script>
 </body>
 </html>
