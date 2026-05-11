@@ -516,6 +516,11 @@ button {
   line-height: 24px;
 }
 
+.placeorder-button.is-loading {
+  opacity: 0.72;
+  pointer-events: none;
+}
+
 .empty-state {
   position: fixed;
   top: 105px;
@@ -761,6 +766,12 @@ button {
   </section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="firebase-mvp.js"></script>
 <script>
 (() => {
   const CART_KEY = 'cart';
@@ -1098,8 +1109,174 @@ button {
     }, 2200);
   }
 
-  function openLocationFlow() {
+  function getRazorpayKeyId() {
+    return (
+      window.TIFFIN_RAZORPAY_KEY_ID ||
+      localStorage.getItem('TIFFIN_RAZORPAY_KEY_ID') ||
+      localStorage.getItem('razorpay_key_id') ||
+      ''
+    ).trim();
+  }
+
+  function setPlaceOrderLoading(isLoading, label = 'Place order') {
+    const button = document.getElementById('placeOrderBtn');
+    if (!button) return;
+
+    button.classList.toggle('is-loading', Boolean(isLoading));
+    button.textContent = isLoading ? label : 'Place order';
+  }
+
+  function openLocationFlow(returnMode = 'cart') {
+    sessionStorage.setItem('cbe_open_location_map', '1');
+
+    if (returnMode === 'payment') {
+      sessionStorage.setItem('cbe_checkout_after_address', '1');
+      sessionStorage.setItem('cbe_location_return_to', 'cart-payment');
+      window.location.href = 'menu.html?openLocation=1&returnTo=cart-payment';
+      return;
+    }
+
+    sessionStorage.removeItem('cbe_checkout_after_address');
+    sessionStorage.setItem('cbe_location_return_to', 'cart');
     window.location.href = 'menu.html?openLocation=1&returnTo=cart';
+  }
+
+  function buildCheckoutSnapshot(cart, address) {
+    const totals = getTotals(cart);
+    const items = cart.map(({ _cartIndex, ...item }) => item);
+    const totalQty = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+    const customerName = localStorage.getItem('cust_name') || localStorage.getItem('customer_name') || '';
+    const customerPhone = localStorage.getItem('cust_phone') || localStorage.getItem('cust_mobile') || localStorage.getItem('customer_phone') || '';
+    const customerEmail = localStorage.getItem('cust_email') || '';
+
+    return {
+      id: `CBE-${Date.now()}`,
+      receipt: `receipt_${Date.now()}`,
+      status: 'checkout_ready',
+      items,
+      itemTotal: Math.round(totals.itemTotal),
+      deliveryFee: Math.round(totals.deliveryFee),
+      tax: 0,
+      total: Math.round(totals.total),
+      totalQty,
+      deliveryAddress: address,
+      deliveryLocation: {
+        fullAddress: address,
+        displayAddress: address
+      },
+      address,
+      customer: {
+        name: customerName,
+        phone: customerPhone,
+        contact: customerPhone,
+        email: customerEmail
+      },
+      totals: {
+        subtotal: Math.round(totals.itemTotal),
+        delivery: Math.round(totals.deliveryFee),
+        tax: 0,
+        total: Math.round(totals.total),
+        totalQty
+      },
+      eta: '15 - 25 mins',
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  function saveConfirmedOrder(snapshot, paymentResponse = {}) {
+    const order = {
+      ...snapshot,
+      status: 'confirmed',
+      paymentStatus: 'paid',
+      paymentProvider: 'Razorpay',
+      paymentId: paymentResponse.razorpay_payment_id || `dev_payment_${Date.now()}`,
+      razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
+      razorpayOrderId: paymentResponse.razorpay_order_id || '',
+      razorpaySignature: paymentResponse.razorpay_signature || '',
+      paidAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('current_order', JSON.stringify(order));
+
+    try {
+      const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+      const safeHistory = Array.isArray(history) ? history : Object.values(history || {});
+      const orderKey = String(order.id || order.paymentId || order.createdAt);
+      const withoutDuplicate = safeHistory.filter(savedOrder => {
+        const savedKey = String(savedOrder?.id || savedOrder?.paymentId || savedOrder?.createdAt || '');
+        return savedKey !== orderKey;
+      });
+      withoutDuplicate.unshift(order);
+      localStorage.setItem('order_history', JSON.stringify(withoutDuplicate.slice(0, 20)));
+    } catch {
+      localStorage.setItem('order_history', JSON.stringify([order]));
+    }
+
+    if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+      window.TiffinMVP.saveOrderToCloud(order).catch(error => console.warn('Order cloud sync failed', error));
+    }
+
+    localStorage.removeItem(CART_KEY);
+    localStorage.removeItem('checkout_snapshot');
+    localStorage.removeItem('pending_order');
+    sessionStorage.removeItem('cbe_checkout_after_address');
+    renderCart();
+
+    window.location.href = 'order_placed.html';
+  }
+
+  function openRazorpayPayment(snapshot) {
+    const key = getRazorpayKeyId();
+
+    localStorage.setItem('checkout_snapshot', JSON.stringify(snapshot));
+    localStorage.setItem('pending_order', JSON.stringify(snapshot));
+
+    if (!key) {
+      setPlaceOrderLoading(false);
+      showToast('Razorpay key is missing. Add your Razorpay key before testing payment.');
+      return;
+    }
+
+    if (!window.Razorpay) {
+      setPlaceOrderLoading(false);
+      showToast('Razorpay checkout did not load. Check internet and try again.');
+      return;
+    }
+
+    const options = {
+      key,
+      amount: Math.max(1, Math.round(snapshot.total * 100)),
+      currency: 'INR',
+      name: 'Tiffin CBE',
+      description: 'Food order payment',
+      image: 'assets/icons/icon-192.png',
+      prefill: {
+        name: snapshot.customer.name || '',
+        contact: snapshot.customer.phone || '',
+        email: snapshot.customer.email || ''
+      },
+      notes: {
+        order_id: snapshot.id,
+        address: snapshot.deliveryAddress
+      },
+      theme: {
+        color: '#8806CE'
+      },
+      handler(response) {
+        saveConfirmedOrder(snapshot, response);
+      },
+      modal: {
+        ondismiss() {
+          setPlaceOrderLoading(false);
+          showToast('Payment was closed. Your order is not placed yet.');
+        }
+      }
+    };
+
+    setPlaceOrderLoading(true, 'Opening payment');
+    const razorpay = new window.Razorpay(options);
+    razorpay.open();
   }
 
   function handlePlaceOrder() {
@@ -1111,31 +1288,40 @@ button {
 
     const address = getDeliveryAddress();
     if (!address) {
-      openLocationFlow();
+      showToast('Select delivery address to continue payment.');
+      openLocationFlow('payment');
       return;
     }
 
-    const totals = getTotals(cart);
-    const snapshot = {
-      id: `CBE-${Date.now()}`,
-      status: 'checkout_ready',
-      items: cart.map(({ _cartIndex, ...item }) => item),
-      itemTotal: Math.round(totals.itemTotal),
-      deliveryFee: Math.round(totals.deliveryFee),
-      tax: 0,
-      total: Math.round(totals.total),
-      deliveryAddress: address,
-      customer: {
-        name: localStorage.getItem('cust_name') || '',
-        phone: localStorage.getItem('cust_phone') || localStorage.getItem('cust_mobile') || ''
-      },
-      createdAt: new Date().toISOString()
-    };
+    const snapshot = buildCheckoutSnapshot(cart, address);
+    openRazorpayPayment(snapshot);
+  }
 
-    localStorage.setItem('checkout_snapshot', JSON.stringify(snapshot));
-    localStorage.setItem('pending_order', JSON.stringify(snapshot));
+  function continuePaymentFromAddressIfNeeded() {
+    const params = new URLSearchParams(window.location.search);
+    const shouldStartPayment =
+      params.get('startPayment') === '1' ||
+      sessionStorage.getItem('cbe_checkout_after_address') === '1';
 
-    showToast('Checkout saved. Payment/order confirmation can be connected next.');
+    if (!shouldStartPayment) return;
+
+    sessionStorage.removeItem('cbe_checkout_after_address');
+
+    if (params.get('startPayment') === '1') {
+      const cleanUrl = `${window.location.pathname}${window.location.hash || ''}`;
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+
+    window.setTimeout(() => {
+      const cart = loadCartRaw();
+      if (!cart.length) return;
+
+      const address = getDeliveryAddress();
+      if (!address) return;
+
+      const snapshot = buildCheckoutSnapshot(cart, address);
+      openRazorpayPayment(snapshot);
+    }, 350);
   }
 
   document.getElementById('changeLocationBtn').addEventListener('click', openLocationFlow);
@@ -1159,6 +1345,7 @@ button {
   });
 
   renderCart();
+  continuePaymentFromAddressIfNeeded();
 })();
 </script>
 <div id="bottomNavMount"></div>

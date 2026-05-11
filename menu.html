@@ -3802,8 +3802,13 @@ function getLocationReturnTarget() {
   const params = new URLSearchParams(window.location.search);
   const queryReturn = params.get("returnTo");
   const savedReturn = sessionStorage.getItem("cbe_location_return_to");
+  const checkoutAfterAddress = sessionStorage.getItem("cbe_checkout_after_address") === "1";
 
-  if (savedReturn === "cart.html" || queryReturn === "cart") {
+  if (checkoutAfterAddress || savedReturn === "cart-payment" || queryReturn === "cart-payment") {
+    return "cart.html?startPayment=1";
+  }
+
+  if (savedReturn === "cart" || savedReturn === "cart.html" || queryReturn === "cart") {
     return "cart.html";
   }
 
@@ -3816,6 +3821,11 @@ function completeLocationReturnIfNeeded() {
 
   sessionStorage.removeItem("cbe_open_location_map");
   sessionStorage.removeItem("cbe_location_return_to");
+
+  if (!target.includes("startPayment=1")) {
+    sessionStorage.removeItem("cbe_checkout_after_address");
+  }
+
   window.location.href = target;
   return true;
 }
