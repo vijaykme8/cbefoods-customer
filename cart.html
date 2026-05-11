@@ -163,19 +163,23 @@ img { max-width: 100%; display: block; }
   font-weight: 500;
   line-height: 14.4px;
   white-space: nowrap;
-  flex-shrink: 0;
+  flex: 0 0 auto;
 }
 .deliverto-value {
   color: #12130F;
   font-size: 12px;
   font-weight: 500;
   line-height: 14.4px;
-  width: 135px;
-  text-align: right;
+  max-width: 135px;
+  width: auto;
+  min-width: 0;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 0 1 auto;
 }
+
 .topbar-change-button {
   padding: 2px 0;
   border-radius: 10px;
