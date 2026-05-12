@@ -623,6 +623,107 @@ button {
     return `₹${Math.round(Number(value || 0))}`;
   }
 
+  function getOrderDateSource(order) {
+    return (
+      order?.placedAt ||
+      order?.paidAt ||
+      order?.createdAt ||
+      order?.created_at ||
+      order?.orderDate ||
+      order?.orderedAt ||
+      order?.dateTime ||
+      order?.date ||
+      order?.timestamp ||
+      order?.updatedAt ||
+      order?.updated_at ||
+      ''
+    );
+  }
+
+  function toDate(value) {
+    if (!value) return null;
+
+    if (value instanceof Date && !Number.isNaN(value.getTime())) {
+      return value;
+    }
+
+    if (typeof value === 'number') {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    if (typeof value === 'string') {
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+
+    if (typeof value === 'object') {
+      const seconds = value.seconds ?? value._seconds;
+      if (typeof seconds === 'number') {
+        const date = new Date(seconds * 1000);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+    }
+
+    return null;
+  }
+
+  function formatOrderDateTime(order) {
+    const date = toDate(getOrderDateSource(order)) || new Date();
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = date.toLocaleString('en-IN', { month: 'short' });
+    const year = date.getFullYear();
+    let hours = date.getHours();
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const suffix = hours >= 12 ? 'pm' : 'am';
+
+    hours = hours % 12;
+    if (hours === 0) hours = 12;
+
+    return `${day} ${month} ${year}, ${hours}:${minutes}${suffix}`;
+  }
+
+  function getOrderStatusText(order) {
+    const status = String(order?.status || 'confirmed').toLowerCase();
+
+    if (status === 'picked_up' || status === 'out_for_delivery') return 'Out for delivery';
+    if (status === 'delivered') return 'Delivered';
+    if (status === 'preparing') return 'Preparing';
+
+    return 'Preparing';
+  }
+
+  function renderActiveOrderItems(order) {
+    const items = getItems(order);
+
+    if (!items.length) {
+      return `
+        <div style="align-self: stretch; display: flex; flex-wrap: wrap; gap: 4px 14px;">
+          <div style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order item</div>
+            <div style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div style="align-self: stretch; display: flex; flex-wrap: wrap; gap: 4px 14px;">
+        ${items.map((item, index) => `
+          <div style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">${getItemName(item)}</div>
+            <div style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">${getItemQty(item)}</div>
+            </div>
+            ${index < items.length - 1 ? '<div style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">,</div>' : ''}
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
   function setFirstTextMatching(root, matcher, value) {
     if (!root || !value) return;
     const nodes = Array.from(root.querySelectorAll('div, span'));
@@ -643,10 +744,43 @@ button {
   function updateAdded(order) {
     const root = document.getElementById('trackAddedRaw');
     if (!root || !order) return;
+
     const id = getOrderId(order).replace(/^CBE-/, '');
+    const total = money(getTotal(order));
+    const placedTime = formatOrderDateTime(order);
+    const statusText = getOrderStatusText(order);
+
+    /*
+      Sync these from placed order:
+      - Order ID
+      - order items and quantity
+      - order date and time
+      - total amount
+    */
     setFirstTextMatching(root, text => text.startsWith('Order ID #'), `Order ID #${id}`);
-    setFirstTextMatching(root, text => text.startsWith('Total value:'), `Total value: ${money(getTotal(order))}`);
-    setFirstTextMatching(root, text => text.startsWith('Est time:'), `Est time: ${getEta(order)}`);
+    setFirstTextMatching(root, text => ['Preparing', 'Out for delivery', 'Delivered'].includes(text), statusText);
+
+    const itemList = root.querySelector('[data-layer="item-list"]');
+    if (itemList) {
+      itemList.innerHTML = renderActiveOrderItems(order);
+      itemList.style.height = 'auto';
+      itemList.style.minHeight = '42px';
+      itemList.style.flexWrap = 'wrap';
+    }
+
+    const timeValue = root.querySelector('[data-layer="time & value"]');
+    if (timeValue) {
+      timeValue.innerHTML = `
+        <div data-layer="Order placed: ${placedTime}" style="justify-content: center; display: flex; flex-direction: column; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order placed: ${placedTime}</div>
+        <div data-layer="Total value: ${total}" style="text-align: right; justify-content: center; display: flex; flex-direction: column">
+          <span style="color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Total value: </span>
+          <span style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 600; line-height: 12px; word-wrap: break-word">${total}</span>
+        </div>
+      `;
+    } else {
+      setFirstTextMatching(root, text => text.startsWith('Total value:'), `Total value: ${total}`);
+      setFirstTextMatching(root, text => text.startsWith('Order placed:'), `Order placed: ${placedTime}`);
+    }
   }
 
   function renderSummary(order) {
