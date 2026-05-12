@@ -778,7 +778,9 @@ button {
 <script>
 (() => {
   const CART_KEY = 'cart';
-  const DELIVERY_FEE = 20;
+  const BASE_DELIVERY_FEE = 10;
+  const FREE_DISTANCE_KM = 10;
+  const EXTRA_KM_DELIVERY_FEE = 2;
 
   const cartShell = document.getElementById('cartShell');
   const itemsCountEl = document.getElementById('itemsCount');
@@ -821,6 +823,182 @@ button {
     } catch {
       return null;
     }
+  }
+
+
+  function getNumberValue(value) {
+    if (value === null || value === undefined || value === '') return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getCoordsFromObject(source) {
+    if (!source || typeof source !== 'object') return null;
+
+    const lat = getNumberValue(
+      source.lat ??
+      source.latitude ??
+      source.customerLat ??
+      source.customer_lat ??
+      source.deliveryLat ??
+      source.delivery_lat ??
+      source.restaurantLat ??
+      source.restaurant_lat ??
+      source.adminLat ??
+      source.admin_lat
+    );
+
+    const lng = getNumberValue(
+      source.lng ??
+      source.lon ??
+      source.long ??
+      source.longitude ??
+      source.customerLng ??
+      source.customer_lng ??
+      source.deliveryLng ??
+      source.delivery_lng ??
+      source.restaurantLng ??
+      source.restaurant_lng ??
+      source.adminLng ??
+      source.admin_lng
+    );
+
+    if (lat === null || lng === null) return null;
+    return { lat, lng };
+  }
+
+  function getCoordsFromLocalStorageObject(keys) {
+    for (const key of keys) {
+      const value = readJSON(key);
+      const coords = getCoordsFromObject(value);
+      if (coords) return { ...coords, source: key };
+    }
+
+    return null;
+  }
+
+  function getCustomerCoordsForDeliveryFee() {
+    const fromObject = getCoordsFromLocalStorageObject([
+      'active_delivery_location',
+      'activeDeliveryLocation',
+      'selectedDeliveryLocation',
+      'selected_delivery_location',
+      'cust_location_details',
+      'delivery_location_details',
+      'cust_location',
+      'customer_location',
+      'user_location',
+      'delivery_location',
+      'deliveryLocation',
+      'current_location',
+      'currentLocation',
+      'location'
+    ]);
+
+    if (fromObject) return fromObject;
+
+    const lat = getNumberValue(
+      localStorage.getItem('cust_lat') ||
+      localStorage.getItem('user_lat') ||
+      localStorage.getItem('delivery_lat') ||
+      localStorage.getItem('latitude')
+    );
+
+    const lng = getNumberValue(
+      localStorage.getItem('cust_lng') ||
+      localStorage.getItem('user_lng') ||
+      localStorage.getItem('delivery_lng') ||
+      localStorage.getItem('longitude')
+    );
+
+    if (lat === null || lng === null) return null;
+    return { lat, lng, source: 'customer_lat_lng_keys' };
+  }
+
+  function getRestaurantCoordsForDeliveryFee() {
+    const fromObject = getCoordsFromLocalStorageObject([
+      'CBE_RESTAURANT_LOCATION',
+      'cbe_restaurant_location',
+      'restaurant_location',
+      'restaurantLocation',
+      'admin_location',
+      'adminLocation',
+      'store_location',
+      'storeLocation'
+    ]);
+
+    if (fromObject) return fromObject;
+
+    const lat = getNumberValue(
+      localStorage.getItem('CBE_RESTAURANT_LAT') ||
+      localStorage.getItem('cbe_restaurant_lat') ||
+      localStorage.getItem('restaurant_lat') ||
+      localStorage.getItem('admin_lat') ||
+      localStorage.getItem('store_lat')
+    );
+
+    const lng = getNumberValue(
+      localStorage.getItem('CBE_RESTAURANT_LNG') ||
+      localStorage.getItem('cbe_restaurant_lng') ||
+      localStorage.getItem('restaurant_lng') ||
+      localStorage.getItem('admin_lng') ||
+      localStorage.getItem('store_lng')
+    );
+
+    if (lat === null || lng === null) return null;
+    return { lat, lng, source: 'restaurant_lat_lng_keys' };
+  }
+
+  function distanceKmBetween(a, b) {
+    if (!a || !b) return null;
+
+    const earthRadiusKm = 6371;
+    const toRad = (degree) => degree * Math.PI / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+
+    const haversine =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+
+    return 2 * earthRadiusKm * Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine));
+  }
+
+  function calculateDeliveryFeeInfo() {
+    const restaurant = getRestaurantCoordsForDeliveryFee();
+    const customer = getCustomerCoordsForDeliveryFee();
+    const distanceKm = distanceKmBetween(restaurant, customer);
+
+    if (distanceKm === null) {
+      return {
+        deliveryFee: BASE_DELIVERY_FEE,
+        distanceKm: null,
+        baseKm: FREE_DISTANCE_KM,
+        baseFee: BASE_DELIVERY_FEE,
+        extraKm: 0,
+        extraPerKm: EXTRA_KM_DELIVERY_FEE,
+        restaurantLocation: restaurant,
+        customerLocation: customer,
+        reason: 'missing_coordinates_base_fee'
+      };
+    }
+
+    const extraKm = Math.max(0, Math.ceil(distanceKm - FREE_DISTANCE_KM));
+    const deliveryFee = BASE_DELIVERY_FEE + (extraKm * EXTRA_KM_DELIVERY_FEE);
+
+    return {
+      deliveryFee,
+      distanceKm: Number(distanceKm.toFixed(2)),
+      baseKm: FREE_DISTANCE_KM,
+      baseFee: BASE_DELIVERY_FEE,
+      extraKm,
+      extraPerKm: EXTRA_KM_DELIVERY_FEE,
+      restaurantLocation: restaurant,
+      customerLocation: customer,
+      reason: extraKm > 0 ? 'base_fee_plus_extra_km' : 'base_fee_within_10km'
+    };
   }
 
   function normalizeCartStorage(parsed) {
@@ -909,12 +1087,23 @@ button {
 
   function getTotals(cart) {
     const itemTotal = cart.reduce((sum, item) => sum + (getItemPrice(item) * Number(item.qty || 0)), 0);
-    const deliveryFee = cart.length ? DELIVERY_FEE : 0;
+    const deliveryFeeInfo = cart.length ? calculateDeliveryFeeInfo() : {
+      deliveryFee: 0,
+      distanceKm: null,
+      baseKm: FREE_DISTANCE_KM,
+      baseFee: BASE_DELIVERY_FEE,
+      extraKm: 0,
+      extraPerKm: EXTRA_KM_DELIVERY_FEE,
+      restaurantLocation: getRestaurantCoordsForDeliveryFee(),
+      customerLocation: getCustomerCoordsForDeliveryFee(),
+      reason: 'empty_cart'
+    };
+    const deliveryFee = deliveryFeeInfo.deliveryFee;
     const tax = 0;
     const total = itemTotal + deliveryFee + tax;
     const qtyTotal = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
 
-    return { itemTotal, deliveryFee, tax, total, qtyTotal };
+    return { itemTotal, deliveryFee, tax, total, qtyTotal, deliveryFeeInfo };
   }
 
   function truncateAddress(value, max = 24) {
@@ -1185,6 +1374,10 @@ button {
       items,
       itemTotal: Math.round(totals.itemTotal),
       deliveryFee: Math.round(totals.deliveryFee),
+      deliveryDistanceKm: totals.deliveryFeeInfo.distanceKm,
+      deliveryFeeRule: totals.deliveryFeeInfo,
+      restaurantLocation: totals.deliveryFeeInfo.restaurantLocation,
+      customerLocation: totals.deliveryFeeInfo.customerLocation,
       tax: 0,
       total: Math.round(totals.total),
       totalQty,
@@ -1203,6 +1396,8 @@ button {
       totals: {
         subtotal: Math.round(totals.itemTotal),
         delivery: Math.round(totals.deliveryFee),
+        deliveryDistanceKm: totals.deliveryFeeInfo.distanceKm,
+        deliveryFeeRule: totals.deliveryFeeInfo,
         tax: 0,
         total: Math.round(totals.total),
         totalQty

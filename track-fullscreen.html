@@ -379,6 +379,123 @@ button {
     if (element) element.textContent = value;
   }
 
+
+  function getNumberValue(value) {
+    if (value === null || value === undefined || value === '') return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getCoordsFromObject(source) {
+    if (!source || typeof source !== 'object') return null;
+
+    const lat = getNumberValue(
+      source.lat ?? source.latitude ?? source.customerLat ?? source.customer_lat ?? source.deliveryLat ?? source.delivery_lat ?? source.restaurantLat ?? source.restaurant_lat ?? source.adminLat ?? source.admin_lat
+    );
+    const lng = getNumberValue(
+      source.lng ?? source.lon ?? source.long ?? source.longitude ?? source.customerLng ?? source.customer_lng ?? source.deliveryLng ?? source.delivery_lng ?? source.restaurantLng ?? source.restaurant_lng ?? source.adminLng ?? source.admin_lng
+    );
+
+    if (lat === null || lng === null) return null;
+    return { lat, lng };
+  }
+
+  function getCoordsFromLocalStorageObject(keys) {
+    for (const key of keys) {
+      const value = readJSON(key);
+      const coords = getCoordsFromObject(value);
+      if (coords) return { ...coords, source: key };
+    }
+    return null;
+  }
+
+  function getCustomerCoordsForDeliveryFee(order) {
+    const fromOrder = getCoordsFromObject(order?.customerLocation) ||
+      getCoordsFromObject(order?.deliveryLocation) ||
+      getCoordsFromObject(order?.location) ||
+      getCoordsFromObject(order?.addressLocation);
+    if (fromOrder) return { ...fromOrder, source: 'order' };
+
+    const fromObject = getCoordsFromLocalStorageObject([
+      'active_delivery_location', 'activeDeliveryLocation', 'selectedDeliveryLocation', 'selected_delivery_location',
+      'cust_location_details', 'delivery_location_details', 'cust_location', 'customer_location', 'user_location',
+      'delivery_location', 'deliveryLocation', 'current_location', 'currentLocation', 'location'
+    ]);
+    if (fromObject) return fromObject;
+
+    const lat = getNumberValue(localStorage.getItem('cust_lat') || localStorage.getItem('user_lat') || localStorage.getItem('delivery_lat') || localStorage.getItem('latitude'));
+    const lng = getNumberValue(localStorage.getItem('cust_lng') || localStorage.getItem('user_lng') || localStorage.getItem('delivery_lng') || localStorage.getItem('longitude'));
+    if (lat === null || lng === null) return null;
+    return { lat, lng, source: 'customer_lat_lng_keys' };
+  }
+
+  function getRestaurantCoordsForDeliveryFee(order) {
+    const fromOrder = getCoordsFromObject(order?.restaurantLocation) ||
+      getCoordsFromObject(order?.adminLocation) ||
+      getCoordsFromObject(order?.storeLocation) ||
+      getCoordsFromObject(order?.restaurant);
+    if (fromOrder) return { ...fromOrder, source: 'order' };
+
+    const fromObject = getCoordsFromLocalStorageObject([
+      'CBE_RESTAURANT_LOCATION', 'cbe_restaurant_location', 'restaurant_location', 'restaurantLocation',
+      'admin_location', 'adminLocation', 'store_location', 'storeLocation'
+    ]);
+    if (fromObject) return fromObject;
+
+    const lat = getNumberValue(localStorage.getItem('CBE_RESTAURANT_LAT') || localStorage.getItem('cbe_restaurant_lat') || localStorage.getItem('restaurant_lat') || localStorage.getItem('admin_lat') || localStorage.getItem('store_lat'));
+    const lng = getNumberValue(localStorage.getItem('CBE_RESTAURANT_LNG') || localStorage.getItem('cbe_restaurant_lng') || localStorage.getItem('restaurant_lng') || localStorage.getItem('admin_lng') || localStorage.getItem('store_lng'));
+    if (lat === null || lng === null) return null;
+    return { lat, lng, source: 'restaurant_lat_lng_keys' };
+  }
+
+  function distanceKmBetween(a, b) {
+    if (!a || !b) return null;
+    const R = 6371;
+    const toRad = (degree) => degree * Math.PI / 180;
+    const dLat = toRad(b.lat - a.lat);
+    const dLng = toRad(b.lng - a.lng);
+    const lat1 = toRad(a.lat);
+    const lat2 = toRad(b.lat);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
+  }
+
+  function calculateDeliveryFeeInfo(order) {
+    const savedFee = getNumberValue(order?.deliveryFee ?? order?.totals?.delivery);
+    const savedDistance = getNumberValue(order?.deliveryDistanceKm ?? order?.totals?.deliveryDistanceKm ?? order?.deliveryFeeRule?.distanceKm);
+    const restaurant = getRestaurantCoordsForDeliveryFee(order);
+    const customer = getCustomerCoordsForDeliveryFee(order);
+    const distanceKm = distanceKmBetween(restaurant, customer) ?? savedDistance;
+    const baseFee = 10;
+    const baseKm = 10;
+    const extraPerKm = 2;
+
+    if (distanceKm === null) {
+      return {
+        deliveryFee: savedFee ?? baseFee,
+        distanceKm: null,
+        baseFee,
+        baseKm,
+        extraKm: 0,
+        extraPerKm,
+        reason: savedFee !== null ? 'saved_fee_no_coordinates' : 'missing_coordinates_base_fee'
+      };
+    }
+
+    const extraKm = Math.max(0, Math.ceil(distanceKm - baseKm));
+    const deliveryFee = baseFee + (extraKm * extraPerKm);
+
+    return {
+      deliveryFee,
+      distanceKm: Number(distanceKm.toFixed(2)),
+      baseFee,
+      baseKm,
+      extraKm,
+      extraPerKm,
+      reason: extraKm > 0 ? 'base_fee_plus_extra_km' : 'base_fee_within_10km'
+    };
+  }
+
   function renderSummary(order) {
     const itemsEl = document.getElementById('trackPaymentInformations');
     const totalEl = document.getElementById('trackTotalPay');
@@ -386,9 +503,10 @@ button {
 
     const items = getItems(order);
     const itemTotal = items.reduce((sum, item) => sum + getItemPrice(item) * getItemQty(item), 0);
-    const deliveryFee = Number(order.deliveryFee ?? order.totals?.delivery ?? 0) || 0;
+    const feeInfo = calculateDeliveryFeeInfo(order);
+    const deliveryFee = feeInfo.deliveryFee;
     const tax = Number(order.tax ?? order.totals?.tax ?? 0) || 0;
-    const total = Number(order.total ?? order.totals?.total ?? (itemTotal + deliveryFee + tax)) || 0;
+    const total = itemTotal + deliveryFee + tax;
 
     const rows = [];
 
@@ -416,9 +534,13 @@ button {
       </div>
     `);
 
+    const feeLabel = feeInfo.distanceKm === null
+      ? 'Delivery fee'
+      : `Delivery fee (${feeInfo.distanceKm}km)`;
+
     rows.push(`
       <div data-layer="fee-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-        <div style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">Delivery fee</div>
+        <div style="width: 180px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">${feeLabel}</div>
         <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${money(deliveryFee)}</div>
       </div>
     `);
