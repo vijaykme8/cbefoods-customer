@@ -1,21 +1,20 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
-<meta name="theme-color" content="#8806CE" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
+<meta content="#8806CE" name="theme-color"/>
 <title>Track Order - Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest" />
-
+<link id="pwa-manifest" rel="manifest"/>
 <script>
   if (!localStorage.getItem('cust_auth')) {
     window.location.replace('login.html');
   }
 </script>
-
 <style>
 @font-face {
   font-family: 'General Sans';
@@ -111,7 +110,7 @@ button {
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-  <div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
@@ -123,7 +122,7 @@ button {
 </div>
 <div class="DeliverTo" data-layer="deliver-to" style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
 <div class="DeliverTo" data-layer="Deliver to:" style="color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Deliver to:</div>
-<div class="34IndiraNagarPeriyarNagar2ndStreetKalapattiCoimbato" data-layer="9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato.." style="align-self: stretch; text-align: right; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato..</div>
+<div class="34IndiraNagarPeriyarNagar2ndStreetKalapattiCoimbato" data-layer="9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato.." id="trackFullDeliveryAddress" style="align-self: stretch; text-align: right; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato..</div>
 </div>
 </div>
 <div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
@@ -161,13 +160,13 @@ button {
 <div class="EtaContent" data-layer="eta-content" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: inline-flex">
 <div class="CoimbatoreFoods" data-layer="Coimbatore Foods" style="color: #12130F; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 20.80px; word-wrap: break-word">Coimbatore Foods</div>
 <div class="EtaTime" data-layer="eta-time" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: #12130F; border-radius: 6px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="35mins" data-layer="25 - 35mins" style="color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">25 - 35mins</div>
+<div class="35mins" data-layer="25 - 35mins" id="trackFullEta" style="color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">25 - 35mins</div>
 </div>
 </div>
 <div class="RiderContent" data-layer="rider-content" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
 <div class="RiderInfoGroup" data-layer="rider-info-group" style="align-self: stretch; justify-content: flex-end; align-items: flex-start; gap: 4px; display: inline-flex">
 <div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
-<div class="AssigningRider" data-layer="Assigning Rider." style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
+<div class="AssigningRider" data-layer="Assigning Rider." id="trackFullAssigningRider" style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
 </div>
 </div>
 </div>
@@ -188,7 +187,7 @@ button {
 </defs>
 </svg>
 </div>
-<div class="AshokKumar" data-layer="Ashok Kumar" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Ashok Kumar</div>
+<div class="AshokKumar" data-layer="Ashok Kumar" id="trackFullRiderName" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Ashok Kumar</div>
 </div>
 <div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
 <div class="Frame78" data-layer="Frame 78" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
@@ -262,7 +261,6 @@ button {
 </div>
 </div>
 </main>
-
 <script>
 (function setupTrackFullscreen() {
   function readJSON(key) {
@@ -294,20 +292,29 @@ button {
     return order.eta || order.estimatedDeliveryTime || order.deliveryEta || order.deliveryTime || order.timing || '25 - 35mins';
   }
 
-  function setFirstTextMatching(matcher, value) {
+  function setTextById(id, value) {
     if (!value) return;
-    const nodes = Array.from(document.querySelectorAll('div, span'));
-    const found = nodes.find(node => matcher((node.textContent || '').trim(), node));
-    if (found) found.textContent = value;
+    const element = document.getElementById(id);
+    if (element) element.textContent = value;
   }
 
   function hydrate() {
     const order = getSelectedOrder();
     const address = getAddress(order);
-    if (address) setFirstTextMatching(text => text.includes('indira nagar') || text.includes('coimbato'), address);
-    setFirstTextMatching(text => text === '25 - 35mins' || text === '25-35 mins', getEta(order));
+    const eta = getEta(order);
     const rider = order.riderName || order.partnerName || order.deliveryPartner || '';
-    if (rider) setFirstTextMatching(text => text === 'Ashok Kumar' || text === 'Assigning Rider.', rider);
+
+    /*
+      Important:
+      Update only exact fields inside:
+      map-wrap-v1 > map-section-v1 > top-bar > deliver-to > address
+      Do not search all parent divs by text, because that can replace the whole screen
+      with just the address.
+    */
+    setTextById('trackFullDeliveryAddress', address);
+    setTextById('trackFullEta', eta);
+    setTextById('trackFullAssigningRider', rider);
+    setTextById('trackFullRiderName', rider);
   }
 
   document.addEventListener('click', function(event) {
@@ -319,6 +326,6 @@ button {
   hydrate();
 })();
 </script>
-<script src="pwa-speed.js?v=20260512_speed1" defer></script>
+<script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
