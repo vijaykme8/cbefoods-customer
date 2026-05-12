@@ -1,332 +1,472 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
-<meta name="theme-color" content="#8806CE">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
+<meta name="theme-color" content="#8806CE" />
 <title>Order Placed - Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" id="pwa-manifest" />
+
+<script>
+  if (!localStorage.getItem('cust_auth')) {
+    window.location.replace('login.html');
+  }
+</script>
+
 <style>
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
+  --black: #12130F;
+  --black-50: rgba(18, 19, 15, 0.50);
   --white: #FDFDFF;
-  --surface: #FFFFFF;
-  --page: #F5F5F7;
-  --ink: #12130F;
-  --muted: rgba(18, 19, 15, 0.50);
-  --body: rgba(18, 19, 15, 0.78);
-  --soft: rgba(18, 19, 15, 0.06);
-  --brand: #8806CE;
   --green: #08A045;
-  --red: #E23009;
-  --yellow: #FFCC00;
-  --shadow: 2px 4px 24px rgba(0, 0, 0, 0.08);
+  --violet: #8806CE;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; -ms-overflow-style: none; }
-*::-webkit-scrollbar { display: none; width: 0; height: 0; }
-html, body { width: 100%; min-height: 100%; }
-body { background: var(--page); font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); display: flex; justify-content: center; }
-a { color: inherit; text-decoration: none; }
-button { font-family: inherit; border: none; background: none; cursor: pointer; }
 
-.app {
-  width: 390px;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #F4F4F6;
+  color: var(--black);
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.order-placed-screen {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
   min-height: 100dvh;
-  background: var(--surface);
+  height: 844px;
+  margin: 0 auto;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
+  background: #FDFDFF;
 }
-.success-wrap {
-  width: 100%;
-  min-height: 100dvh;
-  padding: calc(54px + env(safe-area-inset-top)) 24px calc(32px + env(safe-area-inset-bottom));
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 18px;
-  background:
-    radial-gradient(circle at 50% 18%, rgba(8, 160, 69, 0.12), transparent 30%),
-    linear-gradient(180deg, #FDFDFF 0%, #F7F7F9 100%);
-}
-.success-card {
-  width: 342px;
-  min-height: 430px;
-  padding: 28px 20px 22px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-  border-radius: 56px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 18px;
-}
-.check-shell {
-  width: 112px;
-  height: 112px;
-  border-radius: 1998px;
-  background: rgba(8, 160, 69, 0.10);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  margin-top: 4px;
-}
-.check-shell::before {
-  content: "";
+
+.tick-illus {
   position: absolute;
-  inset: 8px;
-  border-radius: 1998px;
-  border: 2px solid rgba(8, 160, 69, 0.24);
-  animation: pulseRing 1.5s ease-out infinite;
+  left: 50%;
+  top: 160px;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: rgba(136, 6, 206, 0.20);
+  border-radius: 100px;
+  overflow: hidden;
 }
-.check-icon {
-  width: 74px;
-  height: 74px;
-  border-radius: 1998px;
-  background: var(--green);
-  color: var(--white);
-  display: flex;
+
+.tick-icon {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  flex: none;
+}
+
+.tick-icon svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+.close-button {
+  position: absolute;
+  right: 24px;
+  top: 40px;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  font-weight: 800;
-  box-shadow: 0 18px 32px rgba(8, 160, 69, 0.25);
-  position: relative;
-  z-index: 1;
+  overflow: hidden;
+  color: rgba(18, 19, 15, 0.50);
 }
-.success-kicker {
-  color: var(--green);
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 14px;
+
+.close-button svg {
+  width: 34px;
+  height: 34px;
+  display: block;
 }
+
+.first-content {
+  position: absolute;
+  left: 50%;
+  top: 320px;
+  transform: translateX(-50%);
+  width: 342px;
+  height: 147px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
 .success-title {
-  color: var(--ink);
-  font-family: 'Chillax', 'General Sans', sans-serif;
-  font-size: 30px;
-  font-weight: 700;
-  line-height: 34px;
-  letter-spacing: -0.6px;
-}
-.success-copy {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 18px;
-  max-width: 270px;
-}
-.order-mini {
-  width: 100%;
-  padding: 14px;
-  border-radius: 36px;
-  background: #F7F7F9;
-  border: 1px solid rgba(18, 19, 15, 0.06);
+  width: 342px;
+  height: 93px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  text-align: left;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
 }
-.order-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  color: var(--muted);
-  font-size: 12px;
+
+.payment-successful {
+  width: 342px;
+  height: 17px;
+  color: #8806CE;
+  font-style: normal;
   font-weight: 600;
-  line-height: 16px;
-}
-.order-row strong {
-  color: var(--ink);
-  font-size: 13px;
-  font-weight: 800;
-  text-align: right;
-  word-break: break-word;
-}
-.redirect-line {
-  color: var(--body);
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 18px;
-}
-.redirect-line strong { color: var(--brand); font-weight: 800; }
-.track-now {
-  width: 100%;
-  min-height: 48px;
-  border-radius: 28px;
-  background: var(--green);
-  color: var(--white);
-  font-size: 15px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 14px 28px rgba(8, 160, 69, 0.20);
-}
-.track-now:active { transform: scale(0.98); }
-.secondary-link {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  line-height: 120%;
   text-align: center;
 }
-@keyframes pulseRing {
-  0% { transform: scale(0.92); opacity: 1; }
-  100% { transform: scale(1.18); opacity: 0; }
+
+.order-title {
+  width: 342px;
+  height: 72px;
+  margin: 0;
+  color: #12130F;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 30px;
+  line-height: 120%;
+  text-align: center;
 }
+
+.order-copy {
+  width: 342px;
+  height: 34px;
+  margin: 0;
+  color: rgba(18, 19, 15, 0.50);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 120%;
+  text-align: center;
+}
+
+.second-content {
+  position: absolute;
+  left: 24px;
+  top: 487px;
+  width: 342px;
+  height: 211px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.all-info-card {
+  width: 342px;
+  height: 99px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  background: rgba(18, 19, 15, 0.04);
+  border-radius: 14px;
+  align-self: stretch;
+}
+
+.info-row {
+  width: 310px;
+  height: 17px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: stretch;
+}
+
+.info-label {
+  color: rgba(18, 19, 15, 0.50);
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 120%;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.info-value {
+  color: #12130F;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 120%;
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;
+}
+
+.cta-back {
+  width: 342px;
+  height: 92px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  align-self: stretch;
+}
+
+.track-order-button {
+  width: 342px;
+  height: 55px;
+  padding: 14px 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: #08A045;
+  border-radius: 10px;
+  color: #FDFDFF;
+  text-decoration: none;
+}
+
+.track-order-button span {
+  color: #FDFDFF;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 26px;
+  white-space: nowrap;
+}
+
+.back-to-menu {
+  width: 342px;
+  height: 17px;
+  color: #12130F;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 120%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.track-order-button:active {
+  transform: scale(0.98);
+}
+
+.back-to-menu:active,
+.close-button:active {
+  opacity: 0.72;
+}
+
 @media (max-width: 389px) {
-  .app { width: 100vw; }
-  .success-wrap { padding-left: 20px; padding-right: 20px; }
-  .success-card { width: calc(100vw - 40px); }
-}
+  .order-placed-screen {
+    max-width: 100%;
+  }
 
+  .first-content,
+  .success-title,
+  .payment-successful,
+  .order-title,
+  .order-copy,
+  .second-content,
+  .all-info-card,
+  .cta-back,
+  .track-order-button,
+  .back-to-menu {
+    width: calc(100vw - 48px);
+  }
 
-/* =========================
-   FIGMA-LIKE 100% CORNER SMOOTHING
-   Fallback: normal border-radius on unsupported browsers.
-========================= */
-@supports (corner-shape: squircle) {
-  * {
-    corner-shape: squircle;
+  .second-content {
+    left: 24px;
+  }
+
+  .info-row {
+    width: 100%;
   }
 }
-
 </style>
+</head>
+
+<body class="no-bottom-nav" data-bottom-nav="off">
+  <main class="order-placed-screen" aria-label="Order placed">
+    <div class="tick-illus" aria-hidden="true">
+      <div class="tick-icon">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="50" fill="#8806CE"/>
+          <path d="M42.2 62.9L28.6 49.3C26.9 47.6 24.1 47.6 22.4 49.3C20.7 51 20.7 53.8 22.4 55.5L39 72.1C40.7 73.8 43.5 73.8 45.2 72.1L77.6 39.7C79.3 38 79.3 35.2 77.6 33.5C75.9 31.8 73.1 31.8 71.4 33.5L42.2 62.9Z" fill="#FDFDFF"/>
+        </svg>
+      </div>
+    </div>
+
+    <button class="close-button" id="closeButton" type="button" aria-label="Back to menu">
+      <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M8.5 8.5L25.5 25.5M25.5 8.5L8.5 25.5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <section class="first-content">
+      <div class="success-title">
+        <div class="payment-successful">Payment Successful</div>
+        <h1 class="order-title">Your order has been placed</h1>
+      </div>
+      <p class="order-copy">We’ve received your food order. You can now track the delivery status live.</p>
+    </section>
+
+    <section class="second-content">
+      <div class="all-info-card">
+        <div class="info-row">
+          <div class="info-label">Order ID</div>
+          <div class="info-value" id="orderId">CBE-17785098765</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Total paid</div>
+          <div class="info-value" id="totalPaid">₹109</div>
+        </div>
+        <div class="info-row">
+          <div class="info-label">Est. Delivery time</div>
+          <div class="info-value" id="estTime">25-35 mins</div>
+        </div>
+      </div>
+
+      <div class="cta-back">
+        <a class="track-order-button" href="track.html" id="trackOrderButton">
+          <span>Track order now</span>
+        </a>
+        <a class="back-to-menu" href="menu.html">back to menu</a>
+      </div>
+    </section>
+  </main>
+
 <script>
-(function () {
-  document.documentElement.style.display = 'none';
-  const auth = localStorage.getItem('cust_auth');
-  if (!auth || auth !== '1') {
-    window.location.replace('login.html');
-    return;
+(function setupOrderPlacedScreen() {
+  function readJSON(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
   }
-  window.addEventListener('DOMContentLoaded', () => {
-    document.documentElement.style.display = 'block';
+
+  function firstUsableOrder() {
+    const currentOrder = readJSON('current_order');
+    if (currentOrder && typeof currentOrder === 'object') return currentOrder;
+
+    const orderHistory = readJSON('order_history');
+    if (Array.isArray(orderHistory) && orderHistory[0]) return orderHistory[0];
+
+    const pendingOrder = readJSON('pending_order');
+    if (pendingOrder && typeof pendingOrder === 'object') return pendingOrder;
+
+    const checkoutSnapshot = readJSON('checkout_snapshot');
+    if (checkoutSnapshot && typeof checkoutSnapshot === 'object') return checkoutSnapshot;
+
+    if (orderHistory && typeof orderHistory === 'object') {
+      const values = Object.values(orderHistory);
+      if (values[0]) return values[0];
+    }
+
+    return {};
+  }
+
+  function money(value) {
+    const amount = Number(value || 0);
+    if (!Number.isFinite(amount) || amount <= 0) return '₹0';
+    return `₹${Math.round(amount)}`;
+  }
+
+  function getTotal(order) {
+    return (
+      order.total ??
+      order.amount ??
+      order.paidAmount ??
+      order.totalPaid ??
+      order.totals?.total ??
+      order.payment?.amount ??
+      0
+    );
+  }
+
+  function getEta(order) {
+    return (
+      order.eta ||
+      order.estimatedDeliveryTime ||
+      order.deliveryEta ||
+      order.deliveryTime ||
+      order.timing ||
+      '25-35 mins'
+    );
+  }
+
+  function getOrderId(order) {
+    return (
+      order.id ||
+      order.orderId ||
+      order.order_id ||
+      order.receipt ||
+      order.razorpayOrderId ||
+      'CBE-17785098765'
+    );
+  }
+
+  const order = firstUsableOrder();
+
+  document.getElementById('orderId').textContent = getOrderId(order);
+  document.getElementById('totalPaid').textContent = money(getTotal(order));
+  document.getElementById('estTime').textContent = getEta(order);
+
+  document.getElementById('closeButton').addEventListener('click', () => {
+    window.location.href = 'menu.html';
   });
 })();
 </script>
-</head>
-<body>
-<div class="app">
-  <main class="success-wrap">
-    <section class="success-card">
-      <div class="check-shell">
-        <div class="check-icon">✓</div>
-      </div>
-
-      <div>
-        <div class="success-kicker">Payment successful</div>
-        <h1 class="success-title">Your order has been placed</h1>
-      </div>
-
-      <p class="success-copy">
-        We’ve received your lunch order. You can now track the delivery status live.
-      </p>
-
-      <div class="order-mini" id="orderMini">
-        <div class="order-row">
-          <span>Order ID</span>
-          <strong id="orderId">Preparing...</strong>
-        </div>
-        <div class="order-row">
-          <span>Total paid</span>
-          <strong id="orderTotal">₹0</strong>
-        </div>
-        <div class="order-row">
-          <span>ETA</span>
-          <strong id="orderEta">15 - 25 mins</strong>
-        </div>
-      </div>
-
-      <div class="redirect-line">
-        Tap below whenever you want to view live delivery status.
-      </div>
-
-      <a class="track-now" href="track.html">Track order now</a>
-      <a class="secondary-link" href="menu.html">Back to menu</a>
-    </section>
-  </main>
-</div>
-
-<script>
-const mf = {
-  name: "Tiffin CBE",
-  short_name: "Tiffin",
-  start_url: "./",
-  display: "standalone",
-  background_color: "#FDFDFF",
-  theme_color: "#8806CE"
-};
-const blob = new Blob([JSON.stringify(mf)], { type: "application/json" });
-document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
-
-function formatRupee(value) {
-  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
-}
-
-function readCurrentOrder() {
-  try {
-    return JSON.parse(localStorage.getItem("current_order")) || null;
-  } catch (error) {
-    return null;
-  }
-}
-
-function saveOrderToHistory(order) {
-  if (!order) return;
-
-  let history = [];
-  try {
-    const saved = JSON.parse(localStorage.getItem("order_history")) || [];
-    history = Array.isArray(saved) ? saved : Object.values(saved);
-  } catch (error) {
-    history = [];
-  }
-
-  const orderKey = String(order.id || order.paymentId || order.receipt || order.createdAt || "");
-  history = history.filter(savedOrder => {
-    const savedKey = String(savedOrder?.id || savedOrder?.paymentId || savedOrder?.receipt || savedOrder?.createdAt || "");
-    return savedKey !== orderKey;
-  });
-
-  history.unshift(order);
-  localStorage.setItem("order_history", JSON.stringify(history.slice(0, 20)));
-}
-
-const order = readCurrentOrder();
-saveOrderToHistory(order);
-
-if (order) {
-  document.getElementById("orderId").textContent = order.id || "Order confirmed";
-  document.getElementById("orderTotal").textContent = formatRupee(order?.totals?.total || 0);
-  document.getElementById("orderEta").textContent = order.eta || "15 - 25 mins";
-} else {
-  document.querySelector(".success-kicker").textContent = "No active order found";
-  document.querySelector(".success-title").textContent = "Order details unavailable";
-  document.querySelector(".success-copy").textContent = "We could not find a recent order on this device. You can return to the menu or track page.";
-  document.getElementById("orderId").textContent = "Not found";
-  document.getElementById("orderTotal").textContent = "—";
-  document.getElementById("orderEta").textContent = "—";
-}
-
-</script>
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
-<script src="firebase-mvp.js"></script>
+<script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
