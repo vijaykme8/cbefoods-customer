@@ -554,10 +554,16 @@ button {
     const orders = [];
     const current = readJSON('current_order');
     const history = normalizeOrders(readJSON('order_history'));
+    const previousOrders = normalizeOrders(readJSON('previous_orders'));
+    const ordersList = normalizeOrders(readJSON('orders'));
+    const customerOrders = normalizeOrders(readJSON('customer_orders'));
     const pending = readJSON('pending_order');
 
     if (current && typeof current === 'object') orders.push(current);
     history.forEach(order => orders.push(order));
+    previousOrders.forEach(order => orders.push(order));
+    ordersList.forEach(order => orders.push(order));
+    customerOrders.forEach(order => orders.push(order));
     if (pending && typeof pending === 'object') orders.push(pending);
 
     const seen = new Set();
@@ -752,12 +758,47 @@ button {
   }, true);
 
   window.addEventListener('storage', event => {
-    if (['current_order', 'order_history', 'pending_order'].includes(event.key)) render();
+    if ([
+      'current_order',
+      'order_history',
+      'previous_orders',
+      'orders',
+      'customer_orders',
+      'pending_order'
+    ].includes(event.key)) render();
   });
+
+  window.renderTrack = render;
+  window.renderOrders = render;
+  let lastTrackOrderSnapshot = '';
+
+  function pollOrderSyncFallback() {
+    const snapshot = [
+      localStorage.getItem('current_order') || '',
+      localStorage.getItem('order_history') || '',
+      localStorage.getItem('previous_orders') || '',
+      localStorage.getItem('orders') || '',
+      localStorage.getItem('customer_orders') || '',
+      localStorage.getItem('pending_order') || ''
+    ].join('|');
+
+    if (snapshot !== lastTrackOrderSnapshot) {
+      lastTrackOrderSnapshot = snapshot;
+      render();
+    }
+  }
+
+  window.trackRenderPollTimer = window.setInterval(pollOrderSyncFallback, 1500);
+  pollOrderSyncFallback();
 
   render();
 })();
 </script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="firebase-mvp.js"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
