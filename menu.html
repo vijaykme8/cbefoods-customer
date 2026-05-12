@@ -1927,23 +1927,26 @@ body.map-screen-open {
 
 
 /* =========================
-   FLOATING CART CARD
+   FLOATING ADDED CARD
 ========================= */
-.floating-cart-card {
+.floating-cart-card,
+.floating-added-card {
   position: fixed;
   left: 50%;
   bottom: calc(76px + env(safe-area-inset-bottom));
   transform: translate(-50%, 18px);
   width: 342px;
-  min-height: 58px;
-  padding: 12px 14px;
-  background: #8806CE;
-  border-radius: 32px;
-  box-shadow: 0 14px 34px rgba(136, 6, 206, 0.28);
-  display: flex;
-  align-items: center;
+  max-width: calc(100vw - 48px);
+  height: 52px;
+  padding: 16px 20px;
+  background: linear-gradient(90deg, #08A045 0%, #8806CE 100%);
+  box-shadow: 0px 0px 4px #089E44;
+  border-radius: 10px;
+  display: inline-flex;
+  flex-direction: row;
   justify-content: space-between;
-  gap: 14px;
+  align-items: center;
+  gap: 51px;
   z-index: 2190;
   opacity: 0;
   pointer-events: none;
@@ -1951,59 +1954,70 @@ body.map-screen-open {
   transition: transform 0.22s ease, opacity 0.22s ease;
 }
 
-.floating-cart-card.is-visible {
+.floating-cart-card.is-visible,
+.floating-added-card.is-visible {
   opacity: 1;
   pointer-events: auto;
   transform: translate(-50%, 0);
 }
 
-.floating-cart-copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
+.items-added,
 .floating-cart-title {
-  color: rgba(253, 253, 255, 0.96);
-  font-size: 13px;
-  font-family: General Sans;
-  font-weight: 700;
-  line-height: 16px;
+  margin: 0;
+  min-width: 108px;
+  height: 19px;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 120%;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.floating-cart-subtitle {
-  color: rgba(253, 253, 255, 0.68);
-  font-size: 11px;
-  font-family: General Sans;
-  font-weight: 500;
-  line-height: 14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+.cart-button,
 .floating-cart-action {
-  flex-shrink: 0;
-  min-width: 76px;
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 20px;
-  background: rgba(253, 253, 255, 0.16);
-  color: rgba(253, 253, 255, 0.94);
-  font-size: 13px;
-  font-family: General Sans;
-  font-weight: 700;
-  line-height: 14px;
+  flex: none;
+  width: 55px;
+  height: 20px;
+  padding: 0;
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  background: transparent;
+  border-radius: 0;
+  color: #FDFDFF;
 }
 
-.floating-cart-card:active {
+.cart-button-text {
+  width: 35px;
+  height: 19px;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 120%;
+  white-space: nowrap;
+}
+
+.arrow-right-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: block;
+  overflow: hidden;
+}
+
+.arrow-right-icon svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.floating-cart-card:active,
+.floating-added-card:active {
   transform: translate(-50%, 0) scale(0.98);
 }
 
@@ -2406,12 +2420,16 @@ body.map-screen-open {
     </div>
   </div>
 
-  <div class="floating-cart-card" id="floatingCartCard" role="button" tabindex="0" aria-label="Open cart">
-    <div class="floating-cart-copy">
-      <div class="floating-cart-title" id="floatingCartTitle">Item added</div>
-      <div class="floating-cart-subtitle" id="floatingCartSubtitle">Check your cart</div>
+  <div class="floating-cart-card floating-added-card" id="floatingCartCard" role="button" tabindex="0" aria-label="Open cart">
+    <div class="items-added floating-cart-title" id="floatingCartTitle">0 items added</div>
+    <div class="cart-button" aria-hidden="true">
+      <div class="cart-button-text">Cart</div>
+      <div class="arrow-right-icon">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.425 3.575C7.65833 3.34167 8.025 3.34167 8.25833 3.575L14.2583 9.575C14.4917 9.80833 14.4917 10.175 14.2583 10.4083L8.25833 16.4083C8.025 16.6417 7.65833 16.6417 7.425 16.4083C7.19167 16.175 7.19167 15.8083 7.425 15.575L13.0083 9.99167L7.425 4.40833C7.2 4.175 7.2 3.80833 7.425 3.575Z" fill="#FDFDFF"/>
+        </svg>
+      </div>
     </div>
-    <div class="floating-cart-action">Cart &gt;</div>
   </div>
 </div>
 
@@ -4692,7 +4710,6 @@ const addButtons = document.querySelectorAll(
 
 const floatingCartCard = document.getElementById("floatingCartCard");
 const floatingCartTitle = document.getElementById("floatingCartTitle");
-const floatingCartSubtitle = document.getElementById("floatingCartSubtitle");
 let lastAddedProductName = "";
 
 
@@ -4775,13 +4792,7 @@ function updateFloatingCartCard() {
   const itemLabel = totalQty === 1 ? "item" : "items";
 
   if (floatingCartTitle) {
-    floatingCartTitle.textContent = lastAddedProductName
-      ? `${lastAddedProductName} added`
-      : `${totalQty} ${itemLabel} in cart`;
-  }
-
-  if (floatingCartSubtitle) {
-    floatingCartSubtitle.textContent = `${totalQty} ${itemLabel} · ₹${totalAmount}`;
+    floatingCartTitle.textContent = `${totalQty} ${itemLabel} added`;
   }
 
   floatingCartCard.classList.add("is-visible");
