@@ -16,8 +16,6 @@
   }
 </script>
 
-<script src="https://cdn.tailwindcss.com"></script>
-
 <style>
 @font-face {
   font-family: 'General Sans';
@@ -112,6 +110,112 @@ button {
   opacity: 0.82;
 }
 
+
+/* Local utility CSS for uploaded 1.3 fullscreen Tailwind-style export.
+   This avoids CDN/cache issues and makes /track?full=1 render reliably. */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.flex-col { flex-direction: column; }
+.justify-start { justify-content: flex-start; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.items-start { align-items: flex-start; }
+.items-center { align-items: center; }
+.items-end { align-items: flex-end; }
+.self-stretch { align-self: stretch; }
+.flex-1 { flex: 1 1 0%; }
+.overflow-hidden { overflow: hidden; }
+
+.w-96 { width: 24rem; }
+.w-80 { width: 20rem; }
+.w-72 { width: 18rem; }
+.w-60 { width: 15rem; }
+.w-64 { width: 16rem; }
+.w-56 { width: 14rem; }
+.w-14 { width: 3.5rem; }
+.w-4 { width: 1rem; }
+.h-80 { height: 20rem; }
+.h-32 { height: 8rem; }
+.h-0 { height: 0; }
+.h-14 { height: 3.5rem; }
+
+.p-3 { padding: 0.75rem; }
+.p-2\.5 { padding: 0.625rem; }
+.px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+.px-4 { padding-left: 1rem; padding-right: 1rem; }
+.px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+.py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+.py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+.pt-10 { padding-top: 2.5rem; }
+.pb-5 { padding-bottom: 1.25rem; }
+.pb-4 { padding-bottom: 1rem; }
+
+.gap-5 { gap: 1.25rem; }
+.gap-4 { gap: 1rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-2\.5 { gap: 0.625rem; }
+.gap-1\.5 { gap: 0.375rem; }
+.gap-1 { gap: 0.25rem; }
+.gap-0\.5 { gap: 0.125rem; }
+
+.bg-white { background: #FFFFFF; }
+.bg-\[\#fdfdff\] { background: #FDFDFF; }
+.bg-\[\#8806ce\] { background: #8806CE; }
+.bg-\[\#08a045\] { background: #08A045; }
+.bg-\[\#12130f\] { background: #12130F; }
+.bg-\[\#12130f\]\/0 { background: rgba(18, 19, 15, 0); }
+.bg-\[\#12130f\]\/5 { background: rgba(18, 19, 15, 0.05); }
+
+.rounded-2xl { border-radius: 1rem; }
+.rounded-\[40px\] { border-radius: 40px; }
+.rounded-\[50px\] { border-radius: 50px; }
+.rounded-md { border-radius: 0.375rem; }
+
+.shadow-\[0px_4px_8px_0px_rgba\(0\,0\,0\,0\.10\)\] { box-shadow: 0px 4px 8px 0px rgba(0,0,0,0.10); }
+.shadow-\[2px_3px_14px_0px_rgba\(0\,0\,0\,0\.16\)\] { box-shadow: 2px 3px 14px 0px rgba(0,0,0,0.16); }
+
+.text-black { color: #000000; }
+.text-\[\#12130f\] { color: #12130F; }
+.text-\[\#12130f\]\/50 { color: rgba(18, 19, 15, 0.50); }
+.text-\[\#fdfdff\] { color: #FDFDFF; }
+.text-xs { font-size: 12px; }
+.text-sm { font-size: 14px; }
+.text-base { font-size: 16px; }
+.text-lg { font-size: 18px; }
+.text-\[10px\] { font-size: 10px; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-\[\'General_Sans\'\] { font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.leading-3 { line-height: 12px; }
+.leading-4 { line-height: 16px; }
+.leading-5 { line-height: 20px; }
+.leading-7 { line-height: 28px; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+.left-0 { left: 0; }
+.top-0 { top: 0; }
+.left-\[46px\] { left: 46px; }
+.left-\[55\.50px\] { left: 55.5px; }
+.left-\[241px\] { left: 241px; }
+.top-\[40px\] { top: 40px; }
+.top-\[42\.54px\] { top: 42.54px; }
+.top-\[97px\] { top: 97px; }
+
+.outline { outline-style: solid; }
+.outline-1 { outline-width: 1px; }
+.outline-2 { outline-width: 2px; }
+.outline-offset-\[-1px\] { outline-offset: -1px; }
+.outline-\[\#12130f\] { outline-color: #12130F; }
+.outline-\[\#08a045\] { outline-color: #08A045; }
+
+.size- { width: auto; height: auto; }
+.size-full { width: 100%; height: 100%; }
+
 #trackFullscreenRaw {
   width: 390px !important;
   height: 1045px !important;
@@ -123,6 +227,9 @@ button {
 #trackFullscreenRaw .Frame88 {
   width: 390px !important;
   min-height: 992px !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
 }
 
 #trackFullscreenRaw .Frame87 {
@@ -130,6 +237,7 @@ button {
   height: 354px !important;
   background-size: cover !important;
   background-position: center !important;
+  background-color: #EEF0F2 !important;
 }
 
 #trackFullscreenRaw .Frame86 {
@@ -155,14 +263,35 @@ button {
 #trackFullscreenRaw .TrafckMapPreviewPins {
   width: 342px !important;
   height: 136px !important;
+  position: relative !important;
+}
+
+#trackFullscreenRaw .FullScreenButton {
+  width: 48px !important;
+  height: 48px !important;
 }
 
 #trackFullscreenRaw .MainContent {
   width: 390px !important;
   min-height: 618px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
 }
 
-#trackFullscreenRaw .OrderStatusCardV1,
+#trackFullscreenRaw .OrderStatusCardV1 {
+  width: 342px !important;
+  min-height: 194px !important;
+}
+
+#trackFullscreenRaw .StatusIconsSet {
+  width: 294px !important;
+}
+
+#trackFullscreenRaw .EtaPartnerContent {
+  width: 342px !important;
+  min-height: 71px !important;
+}
+
 #trackFullscreenRaw .Line4,
 #trackFullscreenRaw .Frame77,
 #trackFullscreenRaw .Frame79,
@@ -173,9 +302,6 @@ button {
   max-width: 342px !important;
 }
 
-#trackFullscreenRaw .StatusIconsSet {
-  width: 294px !important;
-}
 
 @media (max-width: 389px) {
   #trackScreenMount,
