@@ -10,58 +10,591 @@
 <title>Track Orders - Coimbatore Foods</title>
 <link rel="manifest" id="pwa-manifest" />
 <script>
-  if (!localStorage.getItem('cust_auth')) window.location.replace('login.html');
+  if (!localStorage.getItem('cust_auth')) {
+    window.location.replace('login.html');
+  }
 </script>
 <style>
-@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
-@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap}
-@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');font-weight:600;font-style:normal;font-display:swap}
-:root{--black:#12130F;--black-50:rgba(18,19,15,.5);--line:rgba(18,19,15,.12);--soft:rgba(18,19,15,.04);--soft6:rgba(18,19,15,.06);--white:#FDFDFF;--green:#08A045;--violet:#8806CE;--muted:#B8B8B7}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{width:100%;min-height:100%;margin:0;background:#F4F4F6;color:var(--black);font-family:'General Sans',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:pointer}a{color:inherit;text-decoration:none}
-.track-shell{position:relative;width:100%;max-width:390px;min-height:100dvh;height:844px;margin:0 auto;overflow:hidden;background:linear-gradient(0deg,rgba(18,19,15,.02),rgba(18,19,15,.02)),#FDFDFF}.track-shell.is-fullscreen{height:1008px;min-height:1008px;overflow-y:auto;-webkit-overflow-scrolling:touch}.screen{display:none}.screen.is-active{display:block}
-.track-top-bar{position:absolute;top:0;left:0;width:390px;height:84px;padding:40px 24px 20px;display:inline-flex;align-items:center;gap:20px;background:#fff;z-index:20}.track-title-row{width:342px;height:24px;flex:1 1 0;display:flex;justify-content:space-between;align-items:center;gap:4px}.track-title-group{display:flex;align-items:center;gap:6px}.track-title-icon,.track-search-icon{width:24px;height:24px;color:#888987;flex:none}.track-title-text{color:#12130F;font-weight:600;font-size:20px;line-height:120%}.track-section-label{width:342px;height:14px;display:flex;align-items:center;color:#12130F;font-weight:500;font-size:12px;line-height:120%}
-/* 1.1 track-empty */.track-empty-content{position:absolute;top:104px;left:24px;width:342px;height:397px;display:inline-flex;flex-direction:column;align-items:center;gap:40px}.track-empty-body{width:342px;height:343px;display:flex;flex-direction:column;align-items:center;gap:20px}.track-img{width:180px;height:180px;flex:none;display:flex;align-items:center;justify-content:center}.track-img svg{width:180px;height:180px;display:block}.info-cta-group{width:342px;height:143px;display:flex;flex-direction:column;align-items:center;gap:12px}.info-group{width:342px;height:76px;display:flex;flex-direction:column;align-items:center}.empty-title{width:342px;height:34px;margin:0;color:#12130F;font-weight:600;font-size:24px;line-height:140%;letter-spacing:-.02em;text-align:center}.empty-copy{width:342px;height:42px;margin:0;color:#12130F;font-weight:400;font-size:14px;line-height:150%;text-align:center}.browse-menu-button{width:196px;height:55px;padding:14px 40px;display:inline-flex;justify-content:center;align-items:center;border:1px solid #08A045;border-radius:10px;color:#08A045;font-weight:600;font-size:18px;line-height:26px;white-space:nowrap}
-/* 1.2 track-added-orders */.track-added-content{position:absolute;top:104px;left:24px;width:342px;min-height:430px;display:inline-flex;flex-direction:column;align-items:center;gap:12px}.order-cards-wrap{width:342px;display:flex;flex-direction:column;gap:12px}.order-cards{width:342px;padding:4px;display:flex;flex-direction:column;align-items:center;gap:10px;background:#FDFDFF;border:1px solid var(--line);box-shadow:0 2px 6px rgba(0,0,0,.06);border-radius:14px}.order-card-header{width:334px;height:54px;padding:12px;display:inline-flex;align-items:flex-start;gap:12px;background:rgba(18,19,15,.04);border-radius:10px 10px 0 0}.order-left-content{flex:1 1 0;height:30px;display:flex;align-items:center;gap:8px}.order-shop-img{width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,rgba(136,6,206,.14),rgba(8,160,69,.14)),#F0EEF4;display:flex;align-items:center;justify-content:center;flex:none}.order-shop-img svg{width:18px;height:18px}.order-title-mini{flex:1 1 0;height:30px;display:inline-flex;flex-direction:column;justify-content:space-between;align-items:flex-start}.restaurant-name{color:#12130F;font-weight:600;font-size:12px;line-height:120%}.order-id-mini{color:rgba(18,19,15,.5);font-weight:500;font-size:12px;line-height:120%}.order-status-mini{height:30px;display:flex;align-items:center;gap:6px}.order-status-text{color:#08A045;font-weight:500;font-size:12px;line-height:120%;letter-spacing:.02em;text-align:right}.order-status-icon{width:28px;height:28px;padding:6px;display:flex;align-items:center;justify-content:center;background:#08A045;border-radius:40px;color:#FDFDFF}.order-status-icon svg{width:16px;height:16px}.order-items-list{width:334px;padding:0 12px;display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px 14px}.order-item-chip{height:20px;display:inline-flex;align-items:center;gap:2px}.order-item-name{display:flex;align-items:center;color:#000;font-weight:500;font-size:10px;line-height:120%;white-space:nowrap}.order-item-count{width:20px;height:20px;padding:4px;display:inline-flex;align-items:center;justify-content:center;background:rgba(18,19,15,.06);border-radius:30px;color:#000;font-weight:500;font-size:12px;line-height:100%}.order-divider{width:334px;height:1px;background:rgba(18,19,15,.12)}.order-cta-time{width:334px;height:73px;padding:0 12px 4px;display:flex;flex-direction:column;align-items:center}.track-order-button{width:310px;height:45px;padding:10px 20px;display:inline-flex;align-items:center;justify-content:center;background:#08A045;border-radius:10px;color:#FDFDFF;font-weight:600;font-size:16px;line-height:24px}.track-est-total{width:310px;min-height:24px;display:inline-flex;align-items:center;justify-content:space-between}.est-time-small,.total-value-small{color:rgba(18,19,15,.5);font-weight:500;font-size:10px;line-height:120%}.est-time-small strong,.total-value-small strong{color:#12130F;font-weight:600}
-/* 1.3 track-fullscreen */.track-fullscreen-content{position:relative;width:390px;min-height:1008px;background:linear-gradient(0deg,rgba(18,19,15,.02),rgba(18,19,15,.02)),#FDFDFF}.track-map-preview{position:absolute;top:0;left:0;width:390px;height:340px;overflow:hidden;background:radial-gradient(circle at 22% 32%,rgba(8,160,69,.13) 0 12%,transparent 13%),radial-gradient(circle at 72% 20%,rgba(136,6,206,.12) 0 16%,transparent 17%),linear-gradient(135deg,#EEEFF2 0%,#FBFBFD 48%,#E9F6EE 100%)}.map-road{position:absolute;inset:0;opacity:.72;background-image:linear-gradient(28deg,transparent 38%,rgba(18,19,15,.16) 39%,rgba(18,19,15,.16) 40%,transparent 41%),linear-gradient(145deg,transparent 48%,rgba(18,19,15,.12) 49%,rgba(18,19,15,.12) 50%,transparent 51%),linear-gradient(88deg,transparent 56%,rgba(18,19,15,.10) 57%,rgba(18,19,15,.10) 58%,transparent 59%)}.track-map-pins{position:absolute;width:251px;height:136px;left:81px;top:156px}.connector-line{position:absolute;left:9px;top:42px;width:214px;height:80px;border-top:1px dashed #12130F;border-right:1px dashed #12130F;border-radius:0 40px 0 0;transform:rotate(-20deg);transform-origin:left center}.customer-pin{position:absolute;left:0;top:97px;width:18px;display:inline-flex;flex-direction:column;align-items:flex-start;gap:2px}.pin-label{color:#000;font-weight:500;font-size:10px;line-height:130%}.cbefoods-pin{position:absolute;left:195px;top:0;width:56px;display:inline-flex;flex-direction:column;align-items:center;gap:2px}.cbefoods-pin .pin-label{width:56px;text-align:center}.pin-icon{width:24px;height:24px;color:#8806CE}.pin-icon.user{width:18px;height:24px}.delivery-address-card{position:absolute;top:40px;left:24px;width:342px;min-height:70px;padding:10px 16px;display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;background:#fff;border-radius:14px;z-index:2}.delivery-address-label{color:rgba(18,19,15,.5);font-weight:500;font-size:12px;line-height:120%}.delivery-address-text{width:310px;color:#12130F;font-weight:500;font-size:12px;line-height:130%}.fullscreen-main-content{position:absolute;top:360px;left:24px;width:342px;display:inline-flex;flex-direction:column;align-items:flex-start;gap:16px;padding-bottom:96px}.order-status-card{width:342px;min-height:194px;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;gap:12px;background:#fff;border-radius:14px;overflow:hidden}.highlight-info{width:342px;height:37px;padding:8px 16px;display:inline-flex;align-items:center;gap:10px;background:#8806CE}.highlight-info span{color:#FDFDFF;font-weight:600;font-size:16px;line-height:130%}.status-progress-bar{width:342px;padding:0 16px;display:flex;flex-direction:column;gap:4px}.status-progress-text{color:#12130F;font-weight:500;font-size:14px;line-height:140%}.status-icons-set{width:294px;height:38px;display:inline-flex;justify-content:space-between;align-items:center}.status-icon{width:38px;height:38px;padding:10px;display:flex;align-items:center;justify-content:center;border-radius:40px;background:linear-gradient(0deg,rgba(18,19,15,.06),rgba(18,19,15,.06)),#fff;color:#08A045}.status-icon.is-done{background:#08A045;color:#FDFDFF}.status-icon svg{width:18px;height:18px}.status-line{flex:1 1 0;height:0;border-top:2px dashed #12130F}.status-line.is-done{border-top-style:solid;border-top-color:#08A045}.eta-partner-content{width:342px;min-height:83px;padding:0 16px 16px;display:inline-flex;align-items:center;gap:24px}.eta-box,.partner-box{flex:1 1 0;display:flex;flex-direction:column;gap:4px}.eta-label,.partner-label{color:rgba(18,19,15,.5);font-weight:500;font-size:12px;line-height:120%}.eta-value,.partner-value{color:#12130F;font-weight:600;font-size:16px;line-height:130%}.fullscreen-order-card{width:342px;padding:14px 16px;background:#fff;border-radius:14px;border:1px solid rgba(18,19,15,.08);display:flex;flex-direction:column;gap:10px}.fullscreen-card-title{color:#12130F;font-weight:600;font-size:14px;line-height:120%}.fullscreen-items{display:flex;flex-wrap:wrap;gap:6px}.fullscreen-item-pill{min-height:26px;padding:6px 9px;display:inline-flex;align-items:center;gap:6px;background:rgba(18,19,15,.04);border-radius:999px;color:#12130F;font-weight:500;font-size:11px;line-height:120%}.fullscreen-item-pill b{min-width:18px;height:18px;padding:3px 5px;display:inline-flex;align-items:center;justify-content:center;background:rgba(18,19,15,.06);border-radius:999px;font-weight:600}.back-to-orders{width:342px;height:48px;border:1px solid #08A045;border-radius:10px;color:#08A045;font-weight:600;font-size:16px;line-height:120%}
-@media(max-width:389px){.track-shell,.track-shell.is-fullscreen,.track-top-bar,.track-fullscreen-content,.track-map-preview{width:100%;max-width:100%}.track-title-row,.track-empty-content,.track-added-content,.track-section-label,.track-empty-body,.info-cta-group,.info-group,.empty-title,.empty-copy,.delivery-address-card,.fullscreen-main-content,.order-status-card,.highlight-info,.status-progress-bar,.eta-partner-content,.fullscreen-order-card,.back-to-orders{width:calc(100vw - 48px)}.order-cards,.order-card-header,.order-divider,.order-cta-time,.track-order-button,.track-est-total,.order-items-list{width:100%}.order-card-header,.order-items-list,.order-divider,.order-cta-time{max-width:334px}.status-icons-set{width:100%}.delivery-address-text{width:100%}}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #F4F4F6;
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.track-root {
+  width: 100%;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  background: #F4F4F6;
+}
+.track-screen-state {
+  display: none;
+  width: 390px;
+  max-width: 100%;
+}
+.track-screen-state.is-active {
+  display: block;
+}
+.track-screen-state > div {
+  margin: 0 auto;
+}
+button, a { font: inherit; }
+button { border: 0; background: transparent; padding: 0; cursor: pointer; }
+[data-layer="nav-search"], [data-layer="nav-cart"], [data-layer="nav-track"], [data-layer="track order-button"], [data-layer="browsemenu-button"] {
+  cursor: pointer;
+}
+[data-layer="nav-search"]:active, [data-layer="nav-cart"]:active, [data-layer="nav-track"]:active, [data-layer="track order-button"]:active, [data-layer="browsemenu-button"]:active {
+  opacity: 0.78;
+}
+@media (max-width: 389px) {
+  .track-screen-state { width: 100%; }
+  .track-screen-state > div { max-width: 100%; }
+}
 </style>
 </head>
 <body>
-<div class="track-shell" id="trackShell">
-<header class="track-top-bar" id="trackTopBar"><div class="track-title-row"><div class="track-title-group"><svg class="track-title-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 14.75H2C1.59 14.75 1.25 14.41 1.25 14V6C1.25 3.38 3.38 1.25 6 1.25H15C15.41 1.25 15.75 1.59 15.75 2V12C15.75 13.52 14.52 14.75 13 14.75Z" fill="currentColor"/><path d="M19 20.75H18C17.59 20.75 17.25 20.41 17.25 20C17.25 19.31 16.69 18.75 16 18.75C15.31 18.75 14.75 19.31 14.75 20C14.75 20.41 14.41 20.75 14 20.75H10C9.59 20.75 9.25 20.41 9.25 20C9.25 19.31 8.69 18.75 8 18.75C7.31 18.75 6.75 19.31 6.75 20C6.75 20.41 6.41 20.75 6 20.75H5C2.93 20.75 1.25 19.07 1.25 17V14C1.25 13.59 1.59 13.25 2 13.25H13C13.69 13.25 14.25 12.69 14.25 12V5C14.25 4.59 14.59 4.25 15 4.25H16.84C17.83 4.25 18.74 4.78 19.23 5.64L20.94 8.63C21.07 8.86 21.07 9.15 20.94 9.38C20.81 9.61 20.56 9.75 20.29 9.75H19C18.86 9.75 18.75 9.86 18.75 10V13C18.75 13.14 18.86 13.25 19 13.25H22C22.41 13.25 22.75 13.59 22.75 14V17C22.75 19.07 21.07 20.75 19 20.75Z" fill="currentColor"/></svg><div class="track-title-text">Track your orders</div></div><svg class="track-search-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M11.5 21.75C5.85 21.75 1.25 17.15 1.25 11.5C1.25 5.85 5.85 1.25 11.5 1.25C17.15 1.25 21.75 5.85 21.75 11.5C21.75 17.15 17.15 21.75 11.5 21.75Z" fill="currentColor"/><path d="M22 22.75C21.81 22.75 21.62 22.68 21.47 22.53L19.47 20.53C19.18 20.24 19.18 19.76 19.47 19.47C19.76 19.18 20.24 19.18 20.53 19.47L22.53 21.47C22.82 21.76 22.82 22.24 22.53 22.53C22.38 22.68 22.19 22.75 22 22.75Z" fill="currentColor"/></svg></div></header>
-<section class="screen" id="trackEmptyScreen" aria-label="No active orders"><div class="track-empty-content"><div class="track-section-label">Active orders</div><div class="track-empty-body"><div class="track-img" aria-hidden="true"><svg viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="90" cy="90" r="78" fill="rgba(136,6,206,0.08)"/><rect x="39" y="75" width="68" height="34" rx="10" fill="#8806CE"/><path d="M107 86H124L139 101V109H107V86Z" fill="#08A045"/><circle cx="62" cy="114" r="10" fill="#12130F"/><circle cx="120" cy="114" r="10" fill="#12130F"/><circle cx="62" cy="114" r="4" fill="#FDFDFF"/><circle cx="120" cy="114" r="4" fill="#FDFDFF"/><path d="M54 64H101" stroke="#08A045" stroke-width="6" stroke-linecap="round"/><path d="M50 92H96" stroke="#FDFDFF" stroke-width="5" stroke-linecap="round"/></svg></div><div class="info-cta-group"><div class="info-group"><h1 class="empty-title">No active order</h1><p class="empty-copy">Once you complete payment, your order status and delivery updates will appear here.</p></div><a class="browse-menu-button" href="menu.html">Browse menu</a></div></div></div></section>
-<section class="screen" id="trackAddedScreen" aria-label="Active orders"><div class="track-added-content"><div class="track-section-label">Active orders</div><div class="order-cards-wrap" id="activeOrderCards"></div></div></section>
-<section class="screen" id="trackFullscreenScreen" aria-label="Track order fullscreen"><div class="track-fullscreen-content"><div class="track-map-preview"><div class="map-road"></div><div class="track-map-pins"><div class="connector-line"></div><div class="customer-pin"><div class="pin-label">You</div><svg class="pin-icon user" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 1.75C4.4 1.75.7 5.45.7 10.05c0 6.23 8.3 12.2 8.3 12.2s8.3-5.97 8.3-12.2C17.3 5.45 13.6 1.75 9 1.75Z" fill="#8806CE"/><circle cx="9" cy="9.4" r="3.15" fill="#FDFDFF"/></svg></div><div class="cbefoods-pin"><div class="pin-label">Coimbatore<br/>Foods</div><svg class="pin-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.2 4.2h17.6l-1.4 7.3H4.6L3.2 4.2Z" fill="#8806CE"/><path d="M5.2 11.3h13.6v10.2H5.2V11.3Z" fill="#08A045"/><path d="M9.2 16.2h5.6v5.3H9.2v-5.3Z" fill="#12130F"/></svg></div></div></div><div class="delivery-address-card"><div class="delivery-address-label">Deliver to:</div><div class="delivery-address-text" id="deliveryAddressText">9/34, indira nagar, periyar nagar, kalapatti, coimbatore, 641048.</div></div><div class="fullscreen-main-content"><div class="order-status-card"><div class="highlight-info"><span id="fullscreenStatusTitle">Order received</span></div><div class="status-progress-bar"><div class="status-progress-text" id="fullscreenStatusCopy">We have received your order</div><div class="status-icons-set" id="statusProgressSet"></div></div><div class="eta-partner-content"><div class="eta-box"><div class="eta-label">Estimated time</div><div class="eta-value" id="fullscreenEta">25-35 mins</div></div><div class="partner-box"><div class="partner-label">Delivery partner</div><div class="partner-value" id="partnerName">Assigning soon</div></div></div></div><div class="fullscreen-order-card"><div class="fullscreen-card-title" id="fullscreenOrderId">Order ID #1238</div><div class="fullscreen-items" id="fullscreenItems"></div></div><button class="back-to-orders" type="button" id="backToOrdersBtn">Back to orders</button></div></div></section>
+<div class="track-root">
+  <section id="trackEmptyScreen" class="track-screen-state" aria-label="Track empty">
+<div data-layer="1.1 track-empty" class="1TrackEmpty" style="width: 390px; height: 844px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+  <div data-layer="bottom nav bar" class="BottomNavBar" style="width: 390px; height: 64px; padding-top: 10px; padding-left: 24px; padding-right: 24px; left: 0px; top: 780px; position: absolute; background: white; box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10); justify-content: center; align-items: flex-start; gap: 40px; display: inline-flex">
+    <div data-layer="nav-search" class="NavSearch" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="search-icon" class="SearchIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="search-vector" class="SearchVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Search" class="Search" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Search</div>
+    </div>
+    <div data-layer="nav-cart" class="NavCart" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="cart-icon" class="CartIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="cart-Vector" class="CartVector" style="width: 21.05px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Cart" class="Cart" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Cart</div>
+    </div>
+    <div data-layer="nav-track" class="NavTrack" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="track-icon" class="TrackIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="track-Vector" class="TrackVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #8806CE"></div>
+      </div>
+      <div data-layer="Track orders" class="TrackOrders" style="text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Track orders</div>
+    </div>
+  </div>
+  <div data-layer="empty-tract-content" class="EmptyTractContent" style="width: 342px; left: 24px; top: 104px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 40px; display: inline-flex">
+    <div data-layer="Active orders" class="ActiveOrders" style="align-self: stretch; height: 14px; justify-content: center; display: flex; flex-direction: column; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Active orders</div>
+    <div data-layer="illus-info-group" class="IllusInfoGroup" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: flex">
+      <img data-layer="track-img" class="TrackImg" style="width: 180px; height: 180px" src="https://placehold.co/180x180" />
+      <div data-layer="info-cta-group" class="InfoCtaGroup" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: center; gap: 12px; display: flex">
+        <div data-layer="info-group" class="InfoGroup" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: center; display: flex">
+          <div data-layer="No active order" class="NoActiveOrder" style="align-self: stretch; text-align: center; color: #12130F; font-size: 24px; font-family: General Sans; font-weight: 600; line-height: 33.60px; word-wrap: break-word">No active order</div>
+          <div data-layer="Once you complete payment, your order status and delivery updates will appear here." class="OnceYouCompletePaymentYourOrderStatusAndDeliveryUpdatesWillAppearHere" style="align-self: stretch; text-align: center; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 21px; word-wrap: break-word">Once you complete payment, your order status and delivery updates will appear here.</div>
+        </div>
+        <div data-layer="browsemenu-button" class="BrowsemenuButton" style="height: 55px; padding-left: 40px; padding-right: 40px; padding-top: 14px; padding-bottom: 14px; border-radius: 10px; outline: 1px #08A045 solid; outline-offset: -1px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+          <div data-layer="Browse menu" class="BrowseMenu" style="color: #08A045; font-size: 18px; font-family: General Sans; font-weight: 600; line-height: 26px; word-wrap: break-word">Browse menu</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-layer="top-bar" class="TopBar" style="width: 390px; padding-top: 40px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; left: 0px; top: 0px; position: absolute; background: white; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
+    <div data-layer="left-group" class="LeftGroup" style="flex: 1 1 0; justify-content: space-between; align-items: center; display: flex">
+      <div data-layer="title-group" class="TitleGroup" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+        <div data-layer="track-icon" class="TrackIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+          <div data-layer="track-Vector" class="TrackVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #888987"></div>
+        </div>
+        <div data-layer="Track your orders" class="TrackYourOrders" style="color: #12130F; font-size: 20px; font-family: General Sans; font-weight: 600; line-height: 24px; word-wrap: break-word">Track your orders</div>
+      </div>
+      <div data-layer="search-icon" class="SearchIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="search-vector" class="SearchVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #888987"></div>
+      </div>
+    </div>
+  </div>
 </div>
-<div id="bottomNavMount"></div><script src="components/bottom-nav.js?v=20260511_nav2"></script>
+  </section>
+  <section id="trackAddedScreen" class="track-screen-state" aria-label="Track added orders">
+<div data-layer="1.2 track-added-orders" class="2TrackAddedOrders" style="width: 390px; height: 844px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+  <div data-layer="bottom nav bar" class="BottomNavBar" style="width: 390px; height: 64px; padding-top: 10px; padding-left: 24px; padding-right: 24px; left: 0px; top: 780px; position: absolute; background: white; box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10); justify-content: center; align-items: flex-start; gap: 40px; display: inline-flex">
+    <div data-layer="nav-search" class="NavSearch" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="search-icon" class="SearchIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="search-vector" class="SearchVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Search" class="Search" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Search</div>
+    </div>
+    <div data-layer="nav-cart" class="NavCart" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="cart-icon" class="CartIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="cart-Vector" class="CartVector" style="width: 21.05px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Cart" class="Cart" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Cart</div>
+    </div>
+    <div data-layer="nav-track" class="NavTrack" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="track-icon" class="TrackIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="track-Vector" class="TrackVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #8806CE"></div>
+      </div>
+      <div data-layer="Track orders" class="TrackOrders" style="text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Track orders</div>
+    </div>
+  </div>
+  <div data-layer="empty-tract-content" class="EmptyTractContent" style="width: 342px; left: 24px; top: 104px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 12px; display: inline-flex">
+    <div data-layer="Active orders" class="ActiveOrders" style="align-self: stretch; height: 14px; justify-content: center; display: flex; flex-direction: column; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Active orders</div>
+    <div data-layer="item-cards" class="ItemCards" style="align-self: stretch; padding: 4px; background: #FDFDFF; box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06); border-radius: 14px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+      <div data-layer="card 1" class="Card1" style="align-self: stretch; padding: 12px; background: rgba(18, 19, 15, 0.04); overflow: hidden; border-top-left-radius: 10px; border-top-right-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
+        <div data-layer="left-content" class="LeftContent" style="flex: 1 1 0; align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: flex">
+          <img data-layer="item-img" class="ItemImg" style="width: 30px; height: 30px; border-radius: 10px" src="https://placehold.co/30x30" />
+          <div data-layer="item title" class="ItemTitle" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 600; line-height: 14.40px; word-wrap: break-word">Coimbatore Foods</div>
+            <div data-layer="Order ID #1238" class="OrderId1238" style="color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Order ID #1238</div>
+          </div>
+        </div>
+        <div data-layer="order-status-preparing" class="OrderStatusPreparing" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+          <div data-layer="Preparing" class="Preparing" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Preparing</div>
+          <div data-layer="status-preparing" class="StatusPreparing" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-preparing-icon" class="StatusPreparingIcon" style="width: 16px; height: 16px; position: relative; overflow: hidden">
+              <div data-layer="dish-Vector" class="DishVector" style="width: 14.33px; height: 14.33px; left: 0.81px; top: 0.83px; position: absolute; background: #FDFDFF"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="item-list" class="ItemList" style="align-self: stretch; padding-left: 12px; padding-right: 12px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 2px; display: flex">
+        <div data-layer="list-row-1" class="ListRow1" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 14px; display: inline-flex">
+          <div data-layer="item-1" class="Item1" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Regular meal" class="RegularMeal" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Regular meal</div>
+            <div data-layer="item-1-count" class="Item1Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="1" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+            <div data-layer="," style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">,</div>
+          </div>
+          <div data-layer="item-2" class="Item2" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Protein egg lunch" class="ProteinEggLunch" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Protein egg lunch</div>
+            <div data-layer="item-2-count" class="Item2Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="1" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+            <div data-layer="," style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">,</div>
+          </div>
+        </div>
+        <div data-layer="list-row-2" class="ListRow2" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 14px; display: inline-flex">
+          <div data-layer="item-3" class="Item3" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Protein Chicken lunch" class="ProteinChickenLunch" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Protein Chicken lunch</div>
+            <div data-layer="item-3-count" class="Item3Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="2" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">2</div>
+            </div>
+            <div data-layer="," style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">,</div>
+          </div>
+          <div data-layer="item-4" class="Item4" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Chappati & Curry" class="ChappatiCurry" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Chappati & Curry</div>
+            <div data-layer="item-4-count" class="Item4Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="1" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="divider" class="Divider" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
+      <div data-layer="cta & time-info" class="CtaTimeInfo" style="align-self: stretch; padding-left: 12px; padding-right: 12px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex">
+        <div data-layer="track order-button" class="TrackOrderButton" style="align-self: stretch; padding: 10px; background: #08A045; border-radius: 10px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+          <div data-layer="Track order" class="TrackOrder" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; word-wrap: break-word">Track order</div>
+        </div>
+        <div data-layer="time & value" class="TimeValue" style="align-self: stretch; padding-top: 12px; padding-bottom: 12px; justify-content: space-between; align-items: flex-start; display: inline-flex">
+          <div data-layer="Order placed: 12 May 2026, 10:32am" class="OrderPlaced12May20261032am" style="justify-content: center; display: flex; flex-direction: column; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order placed: 12 May 2026, 10:32am</div>
+          <div data-layer="Total value: ₹466" class="TotalValue466" style="text-align: right; justify-content: center; display: flex; flex-direction: column"><span style="color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Total value: </span><span style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 600; line-height: 12px; word-wrap: break-word">₹466</span></div>
+        </div>
+      </div>
+    </div>
+    <div data-layer="item-cards" class="ItemCards" style="align-self: stretch; padding: 4px; background: #FDFDFF; box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06); border-radius: 14px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+      <div data-layer="card 1" class="Card1" style="align-self: stretch; padding: 12px; background: rgba(18, 19, 15, 0.04); overflow: hidden; border-top-left-radius: 10px; border-top-right-radius: 10px; justify-content: flex-start; align-items: flex-start; gap: 12px; display: inline-flex">
+        <div data-layer="left-content" class="LeftContent" style="flex: 1 1 0; align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: flex">
+          <img data-layer="item-img" class="ItemImg" style="width: 30px; height: 30px; border-radius: 10px" src="https://placehold.co/30x30" />
+          <div data-layer="item title" class="ItemTitle" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 600; line-height: 14.40px; word-wrap: break-word">Coimbatore Foods</div>
+            <div data-layer="Order ID #1234" class="OrderId1234" style="color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Order ID #1234</div>
+          </div>
+        </div>
+        <div data-layer="order-status-outfodelivery" class="OrderStatusOutfodelivery" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+          <div data-layer="Out for delivery" class="OutForDelivery" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Out for delivery</div>
+          <div data-layer="status-outfordelivery" class="StatusOutfordelivery" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-outfordelivery-icon" class="StatusOutfordeliveryIcon" style="width: 16px; height: 16px; position: relative; overflow: hidden">
+              <div data-layer="pin-tick-Vector" class="PinTickVector" style="width: 12.51px; height: 14.34px; left: 1.75px; top: 0.83px; position: absolute; background: #FDFDFF"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="item-list" class="ItemList" style="align-self: stretch; padding-left: 12px; padding-right: 12px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 2px; display: flex">
+        <div data-layer="list-row-1" class="ListRow1" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 14px; display: inline-flex">
+          <div data-layer="item-1" class="Item1" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Regular meal" class="RegularMeal" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Regular meal</div>
+            <div data-layer="item-1-count" class="Item1Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="1" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+            <div data-layer="," style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">,</div>
+          </div>
+          <div data-layer="item-2" class="Item2" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
+            <div data-layer="Chappati & Curry" class="ChappatiCurry" style="justify-content: center; display: flex; flex-direction: column; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Chappati & Curry</div>
+            <div data-layer="item-1-count" class="Item1Count" style="width: 20px; height: 20px; padding: 4px; background: rgba(18, 19, 15, 0.06); border-radius: 30px; flex-direction: column; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+              <div data-layer="1" style="text-align: right; justify-content: center; display: flex; flex-direction: column; color: black; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">1</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="divider" class="Divider" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
+      <div data-layer="cta & time-info" class="CtaTimeInfo" style="align-self: stretch; padding-left: 12px; padding-right: 12px; flex-direction: column; justify-content: flex-start; align-items: center; display: flex">
+        <div data-layer="track order-button" class="TrackOrderButton" style="align-self: stretch; padding: 10px; background: #08A045; border-radius: 10px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+          <div data-layer="Track order" class="TrackOrder" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; word-wrap: break-word">Track order</div>
+        </div>
+        <div data-layer="time & value" class="TimeValue" style="align-self: stretch; padding-top: 12px; padding-bottom: 12px; justify-content: space-between; align-items: flex-start; display: inline-flex">
+          <div data-layer="Order placed: 12 May 2026, 10:32am" class="OrderPlaced12May20261032am" style="justify-content: center; display: flex; flex-direction: column; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order placed: 12 May 2026, 10:32am</div>
+          <div data-layer="Total value: ₹154" class="TotalValue154" style="text-align: right; justify-content: center; display: flex; flex-direction: column"><span style="color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Total value: </span><span style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 600; line-height: 12px; word-wrap: break-word">₹154</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-layer="top-bar" class="TopBar" style="width: 390px; padding-top: 40px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; left: 0px; top: 0px; position: absolute; background: white; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
+    <div data-layer="left-group" class="LeftGroup" style="flex: 1 1 0; justify-content: space-between; align-items: center; display: flex">
+      <div data-layer="title-group" class="TitleGroup" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+        <div data-layer="track-icon" class="TrackIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+          <div data-layer="track-Vector" class="TrackVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #888987"></div>
+        </div>
+        <div data-layer="Track your orders" class="TrackYourOrders" style="color: #12130F; font-size: 20px; font-family: General Sans; font-weight: 600; line-height: 24px; word-wrap: break-word">Track your orders</div>
+      </div>
+      <div data-layer="search-icon" class="SearchIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="search-vector" class="SearchVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #888987"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  </section>
+  <section id="trackFullscreenScreen" class="track-screen-state" aria-label="Track fullscreen">
+<div data-layer="1.3 track-fullscreen" class="3TrackFullscreen" style="width: 390px; height: 1008px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+  <div data-layer="trafck-map-preview" class="TrafckMapPreview" style="width: 390px; height: 340px; left: 0px; top: 0px; position: absolute; overflow: hidden; background-image: url(https://placehold.co/390x340)">
+    <div data-layer="trafck-map-preview-pins" class="TrafckMapPreviewPins" style="width: 251px; height: 136px; left: 81px; top: 156px; position: absolute">
+      <div data-layer="connector-line-vector" class="ConnectorLineVector" style="width: 213.50px; height: 79.96px; left: 9.50px; top: 42.54px; position: absolute; outline: 1px #12130F solid; outline-offset: -0.50px"></div>
+      <div data-layer="customer-pin" class="CustomerPin" style="width: 18px; left: 0px; top: 97px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 2px; display: inline-flex">
+        <div data-layer="You" class="You" style="align-self: stretch; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 13px; word-wrap: break-word">You</div>
+        <div data-layer="usser-pin-icon" class="UsserPinIcon" style="width: 18px; height: 24px; position: relative; overflow: hidden">
+          <div data-layer="user-pin-Vector-2" class="UserPinVector2" style="width: 17.75px; height: 20.50px; left: 0px; top: 1.75px; position: absolute; background: #8806CE"></div>
+          <div data-layer="user-pin-Vector-1" class="UserPinVector1" style="width: 6.30px; height: 6.30px; left: 5.73px; top: 7.16px; position: absolute; background: #FDFDFF"></div>
+        </div>
+      </div>
+      <div data-layer="cbefoods-pin" class="CbefoodsPin" style="width: 56px; left: 195px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 2px; display: inline-flex">
+        <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="align-self: stretch; text-align: center; color: black; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 13px; word-wrap: break-word">Coimbatore<br/>Foods</div>
+        <div data-layer="shop-icon" class="ShopIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+          <div data-layer="shop-Vector-3" class="ShopVector3" style="width: 20.81px; height: 11.50px; left: 1.57px; top: 1.25px; position: absolute; background: #8806CE"></div>
+          <div data-layer="shop-Vector-2" class="ShopVector2" style="width: 5.75px; height: 5.76px; left: 9.12px; top: 16.63px; position: absolute; background: #12130F"></div>
+          <div data-layer="shop-Vector-1" class="ShopVector1" style="width: 18.74px; height: 9.80px; left: 2.63px; top: 12.58px; position: absolute; background: #08A045"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-layer="bottom nav bar" class="BottomNavBar" style="width: 390px; height: 64px; padding-top: 10px; padding-left: 24px; padding-right: 24px; left: 0px; top: 944px; position: absolute; background: white; box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10); justify-content: center; align-items: flex-start; gap: 40px; display: inline-flex">
+    <div data-layer="nav-search" class="NavSearch" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="search-icon" class="SearchIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="search-vector" class="SearchVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Search" class="Search" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Search</div>
+    </div>
+    <div data-layer="nav-cart" class="NavCart" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="cart-icon" class="CartIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="cart-Vector" class="CartVector" style="width: 21.05px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+      </div>
+      <div data-layer="Cart" class="Cart" style="align-self: stretch; text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Cart</div>
+    </div>
+    <div data-layer="nav-track" class="NavTrack" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex">
+      <div data-layer="track-icon" class="TrackIcon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
+        <div data-layer="track-Vector" class="TrackVector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #8806CE"></div>
+      </div>
+      <div data-layer="Track orders" class="TrackOrders" style="text-align: center; color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 10px; word-wrap: break-word">Track orders</div>
+    </div>
+  </div>
+  <div data-layer="top-bar" class="TopBar" style="width: 342px; padding-left: 16px; padding-right: 16px; padding-top: 10px; padding-bottom: 10px; left: 24px; top: 40px; position: absolute; background: white; border-radius: 14px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 4px; display: inline-flex">
+    <div data-layer="Deliver to:" class="DeliverTo" style="color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Deliver to:</div>
+    <div data-layer="9/34, indira nagar, periyar nagar, kalapatti, coimbatore, 641048." class="34IndiraNagarPeriyarNagarKalapattiCoimbatore641048" style="align-self: stretch; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">9/34, indira nagar, periyar nagar, kalapatti, coimbatore, 641048.</div>
+  </div>
+  <div data-layer="main-content" class="MainContent" style="width: 342px; left: 24px; top: 360px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: inline-flex">
+    <div data-layer="order-status-card-v1" class="OrderStatusCardV1" style="width: 342px; background: white; overflow: hidden; border-radius: 14px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 12px; display: flex">
+      <div data-layer="Highlight-info" class="HighlightInfo" style="align-self: stretch; padding-left: 16px; padding-right: 16px; padding-top: 8px; padding-bottom: 8px; background: #8806CE; overflow: hidden; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
+        <div data-layer="Order received" class="OrderReceived" style="color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 20.80px; word-wrap: break-word">Order received</div>
+      </div>
+      <div data-layer="status-progress-bar-v1" class="StatusProgressBarV1" style="align-self: stretch; padding-left: 16px; padding-right: 16px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex">
+        <div data-layer="We have received your order" class="WeHaveReceivedYourOrder" style="color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">We have received your order</div>
+        <div data-layer="status-icons-set" class="StatusIconsSet" style="width: 294px; justify-content: space-between; align-items: center; display: inline-flex">
+          <div data-layer="status-order-received" class="StatusOrderReceived" style="padding: 10px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-order-received-icon" class="StatusOrderReceivedIcon" style="width: 18px; height: 18px; position: relative; overflow: hidden">
+              <div data-layer="shop-Vector" class="ShopVector" style="width: 15.61px; height: 16.13px; left: 1.18px; top: 0.94px; position: absolute; background: #FDFDFF"></div>
+            </div>
+          </div>
+          <div data-layer="connectore-line-1" class="ConnectoreLine1" style="flex: 1 1 0; height: 0px; outline: 2px #08A045 solid; outline-offset: -1px"></div>
+          <div data-layer="status-preparing" class="StatusPreparing" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-preparing-icon" class="StatusPreparingIcon" style="width: 18px; height: 18px; position: relative; overflow: hidden">
+              <div data-layer="dish-Vector" class="DishVector" style="width: 16.13px; height: 16.13px; left: 0.91px; top: 0.94px; position: absolute; background: #08A045"></div>
+            </div>
+          </div>
+          <div data-layer="connectore-line-2" class="ConnectoreLine2" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
+          <div data-layer="status-outfordelivery" class="StatusOutfordelivery" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-outfordelivery-icon" class="StatusOutfordeliveryIcon" style="width: 18px; height: 18px; position: relative; overflow: hidden">
+              <div data-layer="pin-tick-Vector" class="PinTickVector" style="width: 14.07px; height: 16.13px; left: 1.97px; top: 0.94px; position: absolute; background: #08A045"></div>
+            </div>
+          </div>
+          <div data-layer="connectore-line-3" class="ConnectoreLine3" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
+          <div data-layer="status-delivered" class="StatusDelivered" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-layer="status-delivered-icon" class="StatusDeliveredIcon" style="width: 18px; height: 18px; position: relative; overflow: hidden">
+              <div data-layer="delivered-Vector" class="DeliveredVector" style="width: 11.50px; height: 15.98px; left: 3.31px; top: 0.94px; position: absolute; background: #08A045"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="eta&partner-content" class="EtaPartnerContent" style="align-self: stretch; padding-bottom: 16px; padding-left: 16px; padding-right: 16px; justify-content: flex-start; align-items: center; gap: 24px; display: inline-flex">
+        <div data-layer="eta-content" class="EtaContent" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: inline-flex">
+          <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="color: #12130F; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 20.80px; word-wrap: break-word">Coimbatore Foods</div>
+          <div data-layer="eta-time" class="EtaTime" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: #12130F; border-radius: 6px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+            <div data-layer="25 - 35mins" class="35mins" style="color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">25 - 35mins</div>
+          </div>
+        </div>
+        <div data-layer="rider-content" class="RiderContent" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
+          <div data-layer="rider-info-group" class="RiderInfoGroup" style="align-self: stretch; justify-content: flex-end; align-items: flex-start; gap: 4px; display: inline-flex">
+            <div data-layer="clock-icon" class="ClockIcon" style="width: 16px; height: 16px; position: relative; overflow: hidden">
+              <div data-layer="clock-Vector" class="ClockVector" style="width: 14.33px; height: 14.33px; left: 0.83px; top: 0.83px; position: absolute; background: rgba(18, 19, 15, 0.50)"></div>
+            </div>
+            <div data-layer="Assigning Rider." class="AssigningRider" style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-layer="Line 4" class="Line4" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
+    <div data-layer="Frame 77" class="Frame77" style="align-self: stretch; height: 58px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
+      <div data-layer="Rider" class="Rider" style="align-self: stretch; flex: 1 1 0; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Rider</div>
+      <div data-layer="Frame 76" class="Frame76" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
+        <div data-layer="rider-details" class="RiderDetails" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+          <img data-layer="rider-profile-picture" class="RiderProfilePicture" style="width: 34px; height: 34px; border-radius: 9999px" src="https://placehold.co/34x34" />
+          <div data-layer="Ashok Kumar" class="AshokKumar" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Ashok Kumar</div>
+        </div>
+        <div data-layer="Frame 80" class="Frame80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
+          <div data-layer="Frame 78" class="Frame78" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+            <div data-layer="status-preparing" class="StatusPreparing" style="padding: 8px; background: #8806CE; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+              <div data-layer="Frame" class="Frame" style="width: 20px; height: 20px; position: relative; overflow: hidden">
+                <div data-layer="Vector" class="Vector" style="width: 20px; height: 20px; left: 0px; top: 0px; position: absolute; background: black"></div>
+                <div data-layer="Vector" class="Vector" style="width: 17.88px; height: 17.92px; left: 1.04px; top: 1.04px; position: absolute; background: #FDFDFF"></div>
+                <div data-layer="Vector" class="Vector" style="width: 5.25px; height: 5.25px; left: 12.04px; top: 2.71px; position: absolute; background: #FDFDFF"></div>
+              </div>
+            </div>
+            <div data-layer="Call" class="Call" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Call</div>
+          </div>
+          <div data-layer="Frame 79" class="Frame79" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
+            <div data-layer="status-preparing" class="StatusPreparing" style="padding: 8px; background: #12130F; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+              <div data-layer="Frame" class="Frame" style="width: 20px; height: 20px; position: relative; overflow: hidden">
+                <div data-layer="Vector" class="Vector" style="width: 20px; height: 20px; left: 0px; top: 0px; position: absolute; background: black"></div>
+                <div data-layer="Vector" class="Vector" style="width: 17.92px; height: 15.42px; left: 1.04px; top: 2.29px; position: absolute; background: #FDFDFF"></div>
+                <div data-layer="Vector" class="Vector" style="width: 9.58px; height: 3.85px; left: 5.21px; top: 6.87px; position: absolute; background: #FDFDFF"></div>
+                <div data-layer="Vector" class="Vector" style="width: 6.94px; height: 6.94px; left: 12.02px; top: 11.21px; position: absolute; background: #FDFDFF"></div>
+                <div data-layer="Vector" class="Vector" style="width: 3.10px; height: 3.11px; left: 14.96px; top: 12.10px; position: absolute; background: #FDFDFF"></div>
+              </div>
+            </div>
+            <div data-layer="Text" class="Text" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Text</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div data-layer="Line 3" class="Line3" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
+    <div data-layer="payment-details-group" class="PaymentDetailsGroup" style="align-self: stretch; height: 231px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
+      <div data-layer="Order summary" class="OrderSummary" style="align-self: stretch; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Order summary</div>
+      <div data-layer="payment-info-card" class="PaymentInfoCard" style="align-self: stretch; padding: 12px; background: #FDFDFF; border-radius: 10px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
+        <div data-layer="payment-informations" class="PaymentInformations" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: flex">
+          <div data-layer="bill-info-1" class="BillInfo1" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="menu-item-1" class="MenuItem1" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+              <div data-layer="1x" class="X" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
+              <div data-layer="Regular meal" class="RegularMeal" style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Regular meal</div>
+            </div>
+            <div data-layer="₹65" class="65" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹65</div>
+          </div>
+          <div data-layer="bill-info-3" class="BillInfo3" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="menu-item-2" class="MenuItem2" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+              <div data-layer="1x" class="X" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
+              <div data-layer="Protein egg lunch" class="ProteinEggLunch" style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Protein egg lunch</div>
+            </div>
+            <div data-layer="₹89" class="89" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹89</div>
+          </div>
+          <div data-layer="bill-info-4" class="BillInfo4" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="menu-item-3" class="MenuItem3" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+              <div data-layer="2x" class="X" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">2x</div>
+              <div data-layer="Protein Chicken lunch" class="ProteinChickenLunch" style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Protein Chicken lunch</div>
+            </div>
+            <div data-layer="₹218" class="218" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹218</div>
+          </div>
+          <div data-layer="bill-info-5" class="BillInfo5" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="menu-item-4" class="MenuItem4" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+              <div data-layer="1x" class="X" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
+              <div data-layer="Chappati & Curry" class="ChappatiCurry" style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Chappati & Curry</div>
+            </div>
+            <div data-layer="₹59" class="59" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹59</div>
+          </div>
+          <div data-layer="tax-info-6" class="TaxInfo6" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="Tax & charges" class="TaxCharges" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">Tax & charges</div>
+            <div data-layer="₹23" class="23" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹23</div>
+          </div>
+          <div data-layer="fee-info-7" class="FeeInfo7" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div data-layer="Delivery fee" class="DeliveryFee" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">Delivery fee</div>
+            <div data-layer="₹12" class="12" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹12</div>
+          </div>
+        </div>
+        <div data-layer="divider" class="Divider" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
+        <div data-layer="payment-topay-info" class="PaymentTopayInfo" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+          <div data-layer="To pay" class="ToPay" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">To pay</div>
+          <div data-layer="₹466" class="466" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹466</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+  </section>
+</div>
 <script>
-(function(){
- const shell=document.getElementById('trackShell'),topbar=document.getElementById('trackTopBar'),empty=document.getElementById('trackEmptyScreen'),added=document.getElementById('trackAddedScreen'),full=document.getElementById('trackFullscreenScreen'),cards=document.getElementById('activeOrderCards');
- const status={received:['Order received','We have received your order','Preparing',1],confirmed:['Order received','We have received your order','Preparing',1],checkout_ready:['Order received','We have received your order','Preparing',1],preparing:['Preparing','Your food is being prepared','Preparing',2],picked_up:['Out for delivery','Your order is on the way','On the way',3],out_for_delivery:['Out for delivery','Your order is on the way','On the way',3],delivered:['Delivered','Your order has been delivered','Delivered',4]};
- function rj(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch{return null}}
- function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
- function money(v){return '₹'+Math.round(Number(v||0))}
- function norm(v){if(!v)return[]; if(Array.isArray(v))return v.filter(Boolean); if(typeof v==='object')return Object.values(v).filter(Boolean); return[]}
- function id(o){return String(o.id||o.orderId||o.order_id||o.receipt||o.razorpayOrderId||'CBE-'+Date.now())}
- function items(o){const x=o.items||o.cartItems||o.orderItems||[];return Array.isArray(x)?x.filter(Boolean):norm(x)}
- function nm(i){return i.name||i.title||i.itemName||i.productName||'Item'} function qty(i){return Number(i.qty??i.quantity??i.count??1)||1}
- function total(o){return o.total??o.amount??o.paidAmount??o.totalPaid??o.totals?.total??o.payment?.amount??0} function eta(o){return o.eta||o.estimatedDeliveryTime||o.deliveryEta||o.deliveryTime||o.timing||'25-35 mins'}
- function addr(o){return o.deliveryAddress||o.address||o.deliveryLocation?.fullAddress||o.deliveryLocation?.displayAddress||o.delivery_address||'9/34, indira nagar, periyar nagar, kalapatti, coimbatore, 641048.'}
- function info(o){return status[String(o.status||'confirmed').toLowerCase()]||status.confirmed}
- function orders(){const a=[]; const cur=rj('current_order'),hist=norm(rj('order_history')),pend=rj('pending_order'); if(cur&&typeof cur==='object')a.push(cur); hist.forEach(o=>a.push(o)); if(pend&&typeof pend==='object')a.push(pend); const seen=new Set(); return a.filter(o=>o&&typeof o==='object').filter(o=>!['delivered','cancelled'].includes(String(o.status||'').toLowerCase())).filter(o=>{const k=id(o); if(seen.has(k))return false; seen.add(k); return true})}
- function shopIcon(){return '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3.2 4.2h17.6l-1.4 7.3H4.6L3.2 4.2Z" fill="#8806CE"/><path d="M5.2 11.3h13.6v10.2H5.2V11.3Z" fill="#08A045"/><path d="M9.2 16.2h5.6v5.3H9.2v-5.3Z" fill="#12130F"/></svg>'}
- function dishIcon(){return '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2.25 9.2a6.75 6.75 0 0 1 13.5 0H2.25Z" fill="currentColor"/><path d="M1.7 10.1h14.6v1.5H1.7v-1.5Z" fill="currentColor"/><path d="M4.2 13.1h9.6v1.6H4.2v-1.6Z" fill="currentColor"/></svg>'}
- function pinIcon(){return '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 1.2c-3 0-5.4 2.4-5.4 5.4 0 4.05 5.4 10.2 5.4 10.2s5.4-6.15 5.4-10.2c0-3-2.4-5.4-5.4-5.4Z" fill="currentColor"/><path d="M7.2 6.6l1.2 1.2 2.6-2.6 1 1-3.6 3.6-2.2-2.2 1-1Z" fill="#FDFDFF"/></svg>'}
- function doneIcon(){return '<svg viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M9 1.4a7.6 7.6 0 1 0 0 15.2A7.6 7.6 0 0 0 9 1.4Zm-1 10.5L4.9 8.8l1.05-1.05L8 9.8l4.05-4.05L13.1 6.8 8 11.9Z" fill="currentColor"/></svg>'}
- function badgeIcon(s){if(s[3]>=4)return doneIcon(); if(s[3]>=3)return pinIcon(); if(s[3]>=2)return dishIcon(); return shopIcon()}
- function itemChips(ar,limit=4){ar=ar.slice(0,limit); if(!ar.length)return '<div class="order-item-chip"><span class="order-item-name">Order item</span><span class="order-item-count">1</span></div>'; return ar.map(i=>`<div class="order-item-chip"><span class="order-item-name">${esc(nm(i))}</span><span class="order-item-count">${qty(i)}</span></div>`).join('')}
- function card(o,idx){const s=info(o),oid=id(o),ar=items(o);return `<div class="order-cards" data-order-card="${idx}"><div class="order-card-header"><div class="order-left-content"><div class="order-shop-img">${shopIcon()}</div><div class="order-title-mini"><div class="restaurant-name">Coimbatore Foods</div><div class="order-id-mini">Order ID #${esc(oid.replace(/^CBE-/,''))}</div></div></div><div class="order-status-mini"><div class="order-status-text">${esc(s[2])}</div><div class="order-status-icon">${badgeIcon(s)}</div></div></div><div class="order-items-list">${itemChips(ar,4)}</div><div class="order-divider"></div><div class="order-cta-time"><button class="track-order-button" type="button" data-track-order="${esc(oid)}">Track order</button><div class="track-est-total"><div class="est-time-small">Est time: <strong>${esc(eta(o))}</strong></div><div class="total-value-small">Total value: <strong>${esc(money(total(o)))}</strong></div></div></div></div>`}
- function statusSet(s){const icons=[shopIcon(),dishIcon(),pinIcon(),doneIcon()];return icons.map((ic,i)=>`<div class="status-icon ${i+1<=s[3]?'is-done':''}">${ic}</div>${i<3?`<div class="status-line ${i+1<s[3]?'is-done':''}"></div>`:''}`).join('')}
- function renderFull(o){const s=info(o),ar=items(o),oid=id(o);document.getElementById('deliveryAddressText').textContent=addr(o);document.getElementById('fullscreenStatusTitle').textContent=s[0];document.getElementById('fullscreenStatusCopy').textContent=s[1];document.getElementById('fullscreenEta').textContent=eta(o);document.getElementById('partnerName').textContent=o.riderName||o.partnerName||o.deliveryPartner||'Assigning soon';document.getElementById('fullscreenOrderId').textContent='Order ID #'+oid.replace(/^CBE-/,'');document.getElementById('statusProgressSet').innerHTML=statusSet(s);document.getElementById('fullscreenItems').innerHTML=ar.length?ar.map(i=>`<div class="fullscreen-item-pill"><span>${esc(nm(i))}</span><b>${qty(i)}</b></div>`).join(''):'<div class="fullscreen-item-pill"><span>Order item</span><b>1</b></div>'}
- function show(name){empty.classList.toggle('is-active',name==='empty');added.classList.toggle('is-active',name==='added');full.classList.toggle('is-active',name==='fullscreen');shell.classList.toggle('is-fullscreen',name==='fullscreen');topbar.style.display=name==='fullscreen'?'none':'inline-flex'}
- function openFull(o){renderFull(o);show('fullscreen');history.replaceState({},'','track.html?full=1');window.scrollTo(0,0)}
- function render(){const os=orders(); if(!os.length){show('empty');history.replaceState({},'','track.html');return} cards.innerHTML=os.map(card).join('');show('added'); if(new URLSearchParams(location.search).get('full')==='1')openFull(os[0]);cards.querySelectorAll('[data-track-order]').forEach(b=>b.addEventListener('click',()=>openFull(os.find(o=>id(o)===b.dataset.trackOrder)||os[0])))}
- document.getElementById('backToOrdersBtn').addEventListener('click',()=>{history.replaceState({},'','track.html');render()});window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order'].includes(e.key))render()});render();
+(function trackScreenController() {
+  const emptyScreen = document.getElementById('trackEmptyScreen');
+  const addedScreen = document.getElementById('trackAddedScreen');
+  const fullscreenScreen = document.getElementById('trackFullscreenScreen');
+
+  function readJSON(key) {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function normalizeOrders(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'object') return Object.values(value).filter(Boolean);
+    return [];
+  }
+
+  function getOrders() {
+    const orders = [];
+    const current = readJSON('current_order');
+    const history = normalizeOrders(readJSON('order_history'));
+    const pending = readJSON('pending_order');
+
+    if (current && typeof current === 'object') orders.push(current);
+    history.forEach(order => orders.push(order));
+    if (pending && typeof pending === 'object') orders.push(pending);
+
+    const seen = new Set();
+    return orders.filter(order => {
+      const status = String(order.status || '').toLowerCase();
+      if (status === 'delivered' || status === 'cancelled') return false;
+      const id = getOrderId(order);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+  }
+
+  function getOrderId(order) {
+    return String(order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || '1238');
+  }
+
+  function money(value) {
+    const n = Number(value || 0);
+    return Number.isFinite(n) && n > 0 ? `₹${Math.round(n)}` : '₹154';
+  }
+
+  function getTotal(order) {
+    return order?.total ?? order?.amount ?? order?.paidAmount ?? order?.totalPaid ?? order?.totals?.total ?? 0;
+  }
+
+  function getAddress(order) {
+    return order?.deliveryAddress || order?.address || order?.deliveryLocation?.fullAddress || order?.deliveryLocation?.displayAddress || '';
+  }
+
+  function setTextByLayer(container, layer, text, occurrence = 0) {
+    const nodes = Array.from(container.querySelectorAll(`[data-layer="${layer}"]`));
+    if (nodes[occurrence]) nodes[occurrence].textContent = text;
+  }
+
+  function patchOrderData(order) {
+    if (!order) return;
+    const id = getOrderId(order);
+    const shortId = id.replace(/^CBE-/, '');
+    const total = money(getTotal(order));
+    const address = getAddress(order);
+
+    setTextByLayer(addedScreen, 'Order ID #1238', `Order ID #${shortId}`, 0);
+    setTextByLayer(addedScreen, 'Total value: ₹154', `Total value: ${total}`, 0);
+
+    if (address) {
+      setTextByLayer(fullscreenScreen, '9/34, indira nagar, periyar nagar, kalapatti, coimbatore, 641048.', address, 0);
+    }
+
+    // Keep Figma layout exact, only update obvious order value text.
+    setTextByLayer(fullscreenScreen, '₹466', total, 0);
+  }
+
+  function showScreen(name) {
+    emptyScreen.classList.toggle('is-active', name === 'empty');
+    addedScreen.classList.toggle('is-active', name === 'added');
+    fullscreenScreen.classList.toggle('is-active', name === 'fullscreen');
+    document.body.style.minHeight = name === 'fullscreen' ? '1008px' : '844px';
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+
+  function initialRender() {
+    const orders = getOrders();
+    if (!orders.length) {
+      showScreen('empty');
+      return;
+    }
+
+    patchOrderData(orders[0]);
+    const params = new URLSearchParams(window.location.search);
+    showScreen(params.get('full') === '1' ? 'fullscreen' : 'added');
+  }
+
+  document.addEventListener('click', (event) => {
+    const navSearch = event.target.closest('[data-layer="nav-search"]');
+    const navCart = event.target.closest('[data-layer="nav-cart"]');
+    const navTrack = event.target.closest('[data-layer="nav-track"]');
+    const browseMenu = event.target.closest('[data-layer="browsemenu-button"]');
+    const trackOrder = event.target.closest('[data-layer="track order-button"]');
+
+    if (navSearch || browseMenu) {
+      window.location.href = 'menu.html';
+      return;
+    }
+    if (navCart) {
+      window.location.href = 'cart.html';
+      return;
+    }
+    if (navTrack) {
+      window.location.href = 'track.html';
+      return;
+    }
+    if (trackOrder) {
+      history.replaceState({}, '', 'track.html?full=1');
+      showScreen('fullscreen');
+    }
+  });
+
+  window.addEventListener('storage', (event) => {
+    if (['current_order', 'order_history', 'pending_order'].includes(event.key)) initialRender();
+  });
+
+  initialRender();
 })();
 </script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
