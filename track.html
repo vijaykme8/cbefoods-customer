@@ -571,8 +571,16 @@ button {
     return orders
       .filter(order => order && typeof order === 'object')
       .filter(order => {
-        const status = String(order.status || '').toLowerCase();
-        return status !== 'delivered' && status !== 'cancelled';
+        const status = String(
+          order?.adminStatus ||
+          order?.orderStatus ||
+          order?.deliveryStatus ||
+          order?.riderStatus ||
+          order?.status ||
+          ''
+        ).toLowerCase().trim();
+
+        return status !== 'delivered' && status !== 'completed' && status !== 'cancelled' && status !== 'canceled';
       })
       .filter(order => {
         const id = getOrderId(order);
@@ -683,12 +691,63 @@ button {
     return `${day} ${month} ${year}, ${hours}:${minutes}${suffix}`;
   }
 
-  function getOrderStatusText(order) {
-    const status = String(order?.status || 'confirmed').toLowerCase();
+  function getAdminOrderStatus(order) {
+    return String(
+      order?.adminStatus ||
+      order?.orderStatus ||
+      order?.deliveryStatus ||
+      order?.riderStatus ||
+      order?.status ||
+      'confirmed'
+    ).toLowerCase().trim();
+  }
 
-    if (status === 'picked_up' || status === 'out_for_delivery') return 'Out for delivery';
-    if (status === 'delivered') return 'Delivered';
-    if (status === 'preparing') return 'Preparing';
+  function getOrderStatusText(order) {
+    const status = getAdminOrderStatus(order);
+
+    if (
+      status === 'received' ||
+      status === 'confirmed' ||
+      status === 'checkout_ready' ||
+      status === 'placed' ||
+      status === 'order_placed' ||
+      status === 'accepted'
+    ) {
+      return 'Preparing';
+    }
+
+    if (
+      status === 'preparing' ||
+      status === 'food_preparing' ||
+      status === 'being_prepared'
+    ) {
+      return 'Preparing';
+    }
+
+    if (
+      status === 'assigned' ||
+      status === 'rider_assigned'
+    ) {
+      return 'Assigned';
+    }
+
+    if (
+      status === 'picked_up' ||
+      status === 'pickup_done' ||
+      status === 'out_for_delivery' ||
+      status === 'on_the_way' ||
+      status === 'on way'
+    ) {
+      return 'Out for delivery';
+    }
+
+    if (status === 'delivered' || status === 'completed') {
+      return 'Delivered';
+    }
+
+    if (status === 'cancelled' || status === 'canceled') {
+      return 'Cancelled';
+    }
 
     return 'Preparing';
   }
@@ -758,7 +817,17 @@ button {
       - total amount
     */
     setFirstTextMatching(root, text => text.startsWith('Order ID #'), `Order ID #${id}`);
-    setFirstTextMatching(root, text => ['Preparing', 'Out for delivery', 'Delivered'].includes(text), statusText);
+    const statusTextEl =
+      root.querySelector('[data-layer="Preparing"]') ||
+      root.querySelector('[data-layer="Out for delivery"]') ||
+      root.querySelector('[data-layer="Delivered"]') ||
+      root.querySelector('[class*="Preparing"]');
+
+    if (statusTextEl) {
+      statusTextEl.textContent = statusText;
+    } else {
+      setFirstTextMatching(root, text => ['Preparing', 'Assigned', 'Out for delivery', 'Delivered', 'Cancelled'].includes(text), statusText);
+    }
 
     const itemList = root.querySelector('[data-layer="item-list"]');
     if (itemList) {
@@ -772,9 +841,8 @@ button {
     if (timeValue) {
       timeValue.innerHTML = `
         <div data-layer="Order placed: ${placedTime}" style="justify-content: center; display: flex; flex-direction: column; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order placed: ${placedTime}</div>
-        <div data-layer="Total value: ${total}" style="text-align: right; justify-content: center; display: flex; flex-direction: column">
-          <span style="color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Total value: </span>
-          <span style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 600; line-height: 12px; word-wrap: break-word">${total}</span>
+        <div data-layer="Total value: ${total}" style="text-align: right; justify-content: center; display: flex; flex-direction: row; align-items: center; gap: 2px; white-space: nowrap; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: normal">
+          <span>Total value:</span><strong style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 600; line-height: 12px; white-space: nowrap">${total}</strong>
         </div>
       `;
     } else {
@@ -898,7 +966,11 @@ button {
       'previous_orders',
       'orders',
       'customer_orders',
-      'pending_order'
+      'pending_order',
+      'adminStatus',
+      'orderStatus',
+      'deliveryStatus',
+      'riderStatus'
     ].includes(event.key)) render();
   });
 
