@@ -4986,18 +4986,25 @@ How:
 
 function updateCartCount() {
 
-  const cartNav =
-    document.querySelectorAll(".nav-item")[1];
-
   let totalQty = 0;
 
   cart.forEach(item => {
-    totalQty += item.qty;
+    totalQty += Number(item.qty) || 0;
   });
 
   /*
-  Create badge if not exists
+    Old bottom nav used .nav-item.
+    Shared global bottom nav uses .cf-bottom-nav__item--cart.
+    This function must never stop cart/floating-card logic if the nav is not mounted yet.
   */
+  const cartNav =
+    document.querySelector(".cf-bottom-nav__item--cart") ||
+    document.querySelectorAll(".nav-item")[1];
+
+  if (!cartNav) {
+    return;
+  }
+
   let badge =
     cartNav.querySelector(".cart-badge");
 
@@ -5018,18 +5025,17 @@ function updateCartCount() {
     badge.style.color = "white";
     badge.style.fontSize = "10px";
     badge.style.fontWeight = "600";
+    badge.style.lineHeight = "18px";
     badge.style.display = "flex";
     badge.style.alignItems = "center";
     badge.style.justifyContent = "center";
+    badge.style.pointerEvents = "none";
 
     cartNav.style.position = "relative";
 
     cartNav.appendChild(badge);
   }
 
-  /*
-  Hide if empty
-  */
   if (totalQty <= 0) {
 
     badge.style.display = "none";
@@ -5101,6 +5107,9 @@ How:
 renderAllCartButtons();
 updateCartCount();
 updateFloatingCartCard();
+
+window.setTimeout(updateCartCount, 250);
+window.setTimeout(updateCartCount, 900);
 
 if (shouldAutoOpenLocationMap()) {
   sessionStorage.removeItem("cbe_open_location_map");
