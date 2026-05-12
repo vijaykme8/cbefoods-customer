@@ -1,21 +1,23 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
-<meta content="#8806CE" name="theme-color"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
+<meta name="theme-color" content="#8806CE" />
 <title>Track Order - Coimbatore Foods</title>
-<link id="pwa-manifest" rel="manifest"/>
+<link rel="manifest" id="pwa-manifest" />
+
 <script>
   if (!localStorage.getItem('cust_auth')) {
     window.location.replace('login.html');
   }
 </script>
+
 <style>
+
 @font-face {
   font-family: 'General Sans';
   src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
@@ -86,6 +88,25 @@ button {
   object-fit: contain;
 }
 
+#trackFullscreenRoot [data-layer="map-section-v1"] {
+  background-image:
+    radial-gradient(circle at 22% 36%, rgba(8, 160, 69, 0.16), transparent 18%),
+    radial-gradient(circle at 72% 25%, rgba(136, 6, 206, 0.16), transparent 20%),
+    linear-gradient(135deg, #E8EBEF 0%, #FDFDFF 55%, #E9F7EF 100%) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+#trackFullDeliveryAddress {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+}
+
 [data-layer="back-button"],
 [data-layer="back to orders-button"],
 [data-layer="full screen-button"] {
@@ -107,30 +128,18 @@ button {
   }
 }
 
-/* Track fullscreen address: max 2 lines with ellipsis */
-#trackFullDeliveryAddress {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: normal !important;
-  max-height: 31.2px !important;
-}
-
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+  <div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex">
 <div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; background: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex">
 <div class="BackButton" data-layer="back-button" style="border-radius: 14px; justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 <div class="Back" data-layer="back" style="color: #12130F; font-size: 18px; font-family: General Sans; font-weight: 500; line-height: 27px; word-wrap: break-word">back</div>
 </div>
 <div class="DeliverTo" data-layer="deliver-to" style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
@@ -139,7 +148,7 @@ button {
 </div>
 </div>
 <div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="FullScreenIcons" data-layer="full screen-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/full screen-icons.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="FullScreenIcons" data-layer="full screen-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 </div>
 </div>
@@ -153,19 +162,19 @@ button {
 <div class="WeHaveReceivedYourOrder" data-layer="We have received your order" style="color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">We have received your order</div>
 <div class="StatusIconsSet" data-layer="status-icons-set" style="width: 294px; justify-content: space-between; align-items: center; display: inline-flex">
 <div class="StatusOrderReceived" data-layer="status-order-received" style="padding: 10px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOrderReceivedIcon" data-layer="status-order-received-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-order-received-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusOrderReceivedIcon" data-layer="status-order-received-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-order-received-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 <div class="ConnectoreLine1" data-layer="connectore-line-1" style="flex: 1 1 0; height: 0px; outline: 2px #08A045 solid; outline-offset: -1px"></div>
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusPreparingIcon" data-layer="status-preparing-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-preparing-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusPreparingIcon" data-layer="status-preparing-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-preparing-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 <div class="ConnectoreLine2" data-layer="connectore-line-2" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
 <div class="StatusOutfordelivery" data-layer="status-outfordelivery" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOutfordeliveryIcon" data-layer="status-outfordelivery-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-outfordelivery-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusOutfordeliveryIcon" data-layer="status-outfordelivery-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-outfordelivery-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 <div class="ConnectoreLine3" data-layer="connectore-line-3" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
 <div class="StatusDelivered" data-layer="status-delivered" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusDeliveredIcon" data-layer="status-delivered-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-delivered-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusDeliveredIcon" data-layer="status-delivered-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-delivered-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 </div>
 </div>
@@ -178,7 +187,7 @@ button {
 </div>
 <div class="RiderContent" data-layer="rider-content" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
 <div class="RiderInfoGroup" data-layer="rider-info-group" style="align-self: stretch; justify-content: flex-end; align-items: flex-start; gap: 4px; display: inline-flex">
-<div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 <div class="AssigningRider" data-layer="Assigning Rider." id="trackFullAssigningRider" style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
 </div>
 </div>
@@ -205,13 +214,13 @@ button {
 <div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
 <div class="Frame78" data-layer="Frame 78" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #8806CE; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="CallRiderButton" data-layer="call-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/call-rider-button.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="CallRiderButton" data-layer="call-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/call-rider-button.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 <div class="Call" data-layer="Call" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Call</div>
 </div>
 <div class="Frame79" data-layer="Frame 79" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #12130F; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="TextRiderButton" data-layer="text-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/text-rider-button.svg" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="TextRiderButton" data-layer="text-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/text-rider-button.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
 </div>
 <div class="Text" data-layer="Text" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Text</div>
 </div>
@@ -222,7 +231,7 @@ button {
 <div class="PaymentDetailsGroup" data-layer="payment-details-group" style="align-self: stretch; height: 231px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="OrderSummary" data-layer="Order summary" style="align-self: stretch; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Order summary</div>
 <div class="PaymentInfoCard" data-layer="payment-info-card" style="align-self: stretch; padding: 12px; background: #FDFDFF; border-radius: 10px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
-<div class="PaymentInformations" data-layer="payment-informations" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: flex">
+<div class="PaymentInformations" data-layer="payment-informations" id="trackPaymentInformations" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: flex">
 <div class="BillInfo1" data-layer="bill-info-1" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
 <div class="MenuItem1" data-layer="menu-item-1" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
 <div class="X" data-layer="1x" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
@@ -263,7 +272,7 @@ button {
 <div class="Divider" data-layer="divider" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
 <div class="PaymentTopayInfo" data-layer="payment-topay-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
 <div class="ToPay" data-layer="To pay" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">To pay</div>
-<div class="466" data-layer="₹466" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹466</div>
+<div class="466" data-layer="₹466" id="trackTotalPay" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹466</div>
 </div>
 </div>
 </div>
@@ -274,6 +283,7 @@ button {
 </div>
 </div>
 </main>
+
 <script>
 (function setupTrackFullscreen() {
   function readJSON(key) {
@@ -285,12 +295,47 @@ button {
     }
   }
 
+  function normalizeOrders(value) {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'object') return Object.values(value).filter(Boolean);
+    return [];
+  }
+
+  function getOrderId(order) {
+    return String(order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || '');
+  }
+
   function getSelectedOrder() {
+    const params = new URLSearchParams(window.location.search);
+    const queryId = params.get('orderId') || '';
+
     const saved = readJSON('cbe_track_selected_order');
-    if (saved && typeof saved === 'object') return saved;
+    if (saved && typeof saved === 'object') {
+      if (!queryId || getOrderId(saved) === queryId) return saved;
+    }
+
+    const candidates = [];
     const current = readJSON('current_order');
-    if (current && typeof current === 'object') return current;
-    return {};
+    const history = normalizeOrders(readJSON('order_history'));
+    const previous = normalizeOrders(readJSON('previous_orders'));
+    const orders = normalizeOrders(readJSON('orders'));
+    const customerOrders = normalizeOrders(readJSON('customer_orders'));
+    const pending = readJSON('pending_order');
+
+    if (current && typeof current === 'object') candidates.push(current);
+    history.forEach(order => candidates.push(order));
+    previous.forEach(order => candidates.push(order));
+    orders.forEach(order => candidates.push(order));
+    customerOrders.forEach(order => candidates.push(order));
+    if (pending && typeof pending === 'object') candidates.push(pending);
+
+    if (queryId) {
+      const found = candidates.find(order => getOrderId(order) === queryId);
+      if (found) return found;
+    }
+
+    return candidates[0] || {};
   }
 
   function getAddress(order) {
@@ -305,29 +350,94 @@ button {
     return order.eta || order.estimatedDeliveryTime || order.deliveryEta || order.deliveryTime || order.timing || '25 - 35mins';
   }
 
+  function getItems(order) {
+    const items = order.items || order.cartItems || order.orderItems || [];
+    if (Array.isArray(items)) return items.filter(Boolean);
+    if (items && typeof items === 'object') return Object.values(items).filter(Boolean);
+    return [];
+  }
+
+  function getItemName(item) {
+    return item.name || item.title || item.itemName || item.productName || 'Item';
+  }
+
+  function getItemQty(item) {
+    return Number(item.qty ?? item.quantity ?? item.count ?? 1) || 1;
+  }
+
+  function getItemPrice(item) {
+    return Number(item.price ?? item.unitPrice ?? item.amount ?? 0) || 0;
+  }
+
+  function money(value) {
+    return `₹${Math.round(Number(value || 0))}`;
+  }
+
   function setTextById(id, value) {
     if (!value) return;
     const element = document.getElementById(id);
     if (element) element.textContent = value;
   }
 
+  function renderSummary(order) {
+    const itemsEl = document.getElementById('trackPaymentInformations');
+    const totalEl = document.getElementById('trackTotalPay');
+    if (!itemsEl || !totalEl) return;
+
+    const items = getItems(order);
+    const itemTotal = items.reduce((sum, item) => sum + getItemPrice(item) * getItemQty(item), 0);
+    const deliveryFee = Number(order.deliveryFee ?? order.totals?.delivery ?? 0) || 0;
+    const tax = Number(order.tax ?? order.totals?.tax ?? 0) || 0;
+    const total = Number(order.total ?? order.totals?.total ?? (itemTotal + deliveryFee + tax)) || 0;
+
+    const rows = [];
+
+    if (items.length) {
+      items.forEach((item, index) => {
+        const qty = getItemQty(item);
+        const name = getItemName(item);
+        const linePrice = getItemPrice(item) * qty;
+        rows.push(`
+          <div data-layer="bill-info-item-${index + 1}" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+            <div style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
+              <div style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">${qty}x</div>
+              <div style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px;">${name}</div>
+            </div>
+            <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${money(linePrice)}</div>
+          </div>
+        `);
+      });
+    }
+
+    rows.push(`
+      <div data-layer="tax-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+        <div style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">Tax & charges</div>
+        <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${tax ? money(tax) : '-'}</div>
+      </div>
+    `);
+
+    rows.push(`
+      <div data-layer="fee-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
+        <div style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">Delivery fee</div>
+        <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${money(deliveryFee)}</div>
+      </div>
+    `);
+
+    itemsEl.innerHTML = rows.join('');
+    totalEl.textContent = money(total);
+  }
+
   function hydrate() {
     const order = getSelectedOrder();
-    const address = getAddress(order);
-    const eta = getEta(order);
-    const rider = order.riderName || order.partnerName || order.deliveryPartner || '';
 
-    /*
-      Important:
-      Update only exact fields inside:
-      map-wrap-v1 > map-section-v1 > top-bar > deliver-to > address
-      Do not search all parent divs by text, because that can replace the whole screen
-      with just the address.
-    */
-    setTextById('trackFullDeliveryAddress', address);
-    setTextById('trackFullEta', eta);
+    setTextById('trackFullDeliveryAddress', getAddress(order));
+    setTextById('trackFullEta', getEta(order));
+
+    const rider = order.riderName || order.partnerName || order.deliveryPartner || '';
     setTextById('trackFullAssigningRider', rider);
     setTextById('trackFullRiderName', rider);
+
+    renderSummary(order);
   }
 
   document.addEventListener('click', function(event) {
@@ -339,6 +449,6 @@ button {
   hydrate();
 })();
 </script>
-<script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
+<script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
