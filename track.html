@@ -508,6 +508,28 @@ button {
   object-fit: contain;
 }
 
+
+/* Multiple active order support */
+#trackAddedRaw {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+}
+
+#trackAddedRaw [data-layer="Frame 84"],
+#trackAddedRaw [data-layer="Frame 81"],
+#trackAddedRaw [data-layer="empty-tract-content"] {
+  height: auto !important;
+  min-height: auto !important;
+}
+
+#trackAddedRaw [data-layer="empty-tract-content"] {
+  padding-bottom: 88px !important;
+}
+
+#trackAddedRaw [data-active-order-card] {
+  flex: none !important;
+}
+
 </style>
 </head>
 
@@ -702,8 +724,8 @@ button {
     ).toLowerCase().trim();
   }
 
-  function getOrderStatusText(order) {
-    const status = getAdminOrderStatus(order);
+  function getOrderStatusVariant(order) {
+    const status = getAdminOrderStatus(order).replace(/[\s-]+/g, '_');
 
     if (
       status === 'received' ||
@@ -713,7 +735,7 @@ button {
       status === 'order_placed' ||
       status === 'accepted'
     ) {
-      return 'Preparing';
+      return 'received';
     }
 
     if (
@@ -721,35 +743,115 @@ button {
       status === 'food_preparing' ||
       status === 'being_prepared'
     ) {
-      return 'Preparing';
-    }
-
-    if (
-      status === 'assigned' ||
-      status === 'rider_assigned'
-    ) {
-      return 'Assigned';
+      return 'preparing';
     }
 
     if (
       status === 'picked_up' ||
       status === 'pickup_done' ||
       status === 'out_for_delivery' ||
+      status === 'outfordelivery' ||
       status === 'on_the_way' ||
-      status === 'on way'
+      status === 'on_way'
     ) {
-      return 'Out for delivery';
+      return 'out_for_delivery';
+    }
+
+    if (
+      status === 'reached_location' ||
+      status === 'reached' ||
+      status === 'arrived' ||
+      status === 'arrived_location' ||
+      status === 'at_location' ||
+      status === 'nearby'
+    ) {
+      return 'reached_location';
     }
 
     if (status === 'delivered' || status === 'completed') {
-      return 'Delivered';
+      return 'reached_location';
     }
 
-    if (status === 'cancelled' || status === 'canceled') {
-      return 'Cancelled';
-    }
+    return 'preparing';
+  }
+
+  function getOrderStatusText(order) {
+    const variant = getOrderStatusVariant(order);
+
+    if (variant === 'received') return 'Order received';
+    if (variant === 'out_for_delivery') return 'Out for delivery';
+    if (variant === 'reached_location') return 'Reached location';
 
     return 'Preparing';
+  }
+
+  function renderActiveOrderStatus(order) {
+    const variant = getOrderStatusVariant(order);
+
+    if (variant === 'received') {
+      return `
+        <div data-layer="order-status-received" class="OrderStatusReceived" style="height: 30px; justify-content: flex-start; align-items: center; gap: 6px; display: inline-flex">
+          <div data-layer="Order received" class="OrderReceived" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Order received</div>
+          <div data-layer="status-outfordelivery" class="StatusOutfordelivery" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-svg-wrapper data-layer="status-order-received-icon" class="StatusOrderReceivedIcon" style="position: relative">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9.8 15.1673H6.20001C2.90667 15.1673 1.50667 13.7606 1.50667 10.474V7.48063C1.50667 7.2073 1.73334 6.98063 2.00667 6.98063C2.28001 6.98063 2.50667 7.2073 2.50667 7.48063V10.474C2.50667 13.2006 3.47334 14.1673 6.20001 14.1673H9.79333C12.52 14.1673 13.4867 13.2006 13.4867 10.474V7.48063C13.4867 7.2073 13.7133 6.98063 13.9867 6.98063C14.26 6.98063 14.4867 7.2073 14.4867 7.48063V10.474C14.4933 13.7606 13.0867 15.1673 9.8 15.1673Z" fill="#FDFDFF"/>
+                <path d="M8 8.50016C7.26667 8.50016 6.6 8.2135 6.12667 7.68683C5.65333 7.16016 5.43333 6.4735 5.50667 5.74016L5.95333 1.28683C5.98 1.0335 6.19333 0.833496 6.45333 0.833496H9.56667C9.82667 0.833496 10.04 1.02683 10.0667 1.28683L10.5133 5.74016C10.5867 6.4735 10.3667 7.16016 9.89333 7.68683C9.4 8.2135 8.73333 8.50016 8 8.50016Z" fill="#FDFDFF"/>
+                <path d="M9.66667 15.1668H6.33333C6.06 15.1668 5.83333 14.9402 5.83333 14.6668V13.0002C5.83333 11.6002 6.6 10.8335 8 10.8335C9.4 10.8335 10.1667 11.6002 10.1667 13.0002V14.6668C10.1667 14.9402 9.94 15.1668 9.66667 15.1668Z" fill="#FDFDFF"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (variant === 'out_for_delivery') {
+      return `
+        <div data-layer="order-status-outfodelivery" class="OrderStatusOutfodelivery" style="height: 30px; justify-content: flex-start; align-items: center; gap: 6px; display: inline-flex">
+          <div data-layer="Out for delivery" class="OutForDelivery" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Out for delivery</div>
+          <div data-layer="status-outfordelivery" class="StatusOutfordelivery" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-svg-wrapper data-layer="status-outfordelivery-icon" class="StatusOutfordeliveryIcon" style="position: relative">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.99998 15.1735C7.01331 15.1735 6.02 14.8002 5.24666 14.0602C3.28 12.1668 1.10666 9.14683 1.92666 5.5535C2.66666 2.2935 5.51333 0.833496 7.99998 0.833496C10.4933 0.833496 13.34 2.2935 14.08 5.56016C14.8933 9.1535 12.72 12.1668 10.7533 14.0602C9.97998 14.8002 8.98664 15.1735 7.99998 15.1735Z" fill="#FDFDFF"/>
+                <path d="M7.16664 9.1665C7.03998 9.1665 6.91331 9.11983 6.81331 9.01983L5.81334 8.01983C5.62 7.8265 5.62 7.5065 5.81334 7.31316C6.00667 7.11983 6.32667 7.11983 6.52 7.31316L7.16664 7.95983L9.47998 5.64646C9.67331 5.45313 9.99331 5.45313 10.1866 5.64646C10.38 5.8398 10.38 6.1598 10.1866 6.35313L7.51998 9.01983C7.41998 9.11983 7.29331 9.1665 7.16664 9.1665Z" fill="#FDFDFF"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    if (variant === 'reached_location') {
+      return `
+        <div data-layer="order-status-reached" class="OrderStatusReached" style="height: 30px; justify-content: flex-start; align-items: center; gap: 6px; display: inline-flex">
+          <div data-layer="Reached location" class="ReachedLocation" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Reached location</div>
+          <div data-layer="status-outfordelivery" class="StatusOutfordelivery" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+            <div data-svg-wrapper data-layer="status-delivered-icon" class="StatusDeliveredIcon" style="position: relative">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.64 14.2133C10.5134 14.2133 10.3867 14.1666 10.2867 14.0666L9.27336 13.0533C9.08002 12.86 9.08002 12.54 9.27336 12.3466C9.46669 12.1533 9.78669 12.1533 9.98002 12.3466L10.64 13.0066L12.3134 11.3333C12.5067 11.14 12.8267 11.14 13.02 11.3333C13.2134 11.5266 13.2134 11.8466 13.02 12.04L10.9934 14.0666C10.8934 14.1666 10.7667 14.2133 10.64 14.2133Z" fill="#FDFDFF"/>
+                <path d="M8.10676 7.74683C8.08676 7.74683 8.07342 7.74683 8.05342 7.74683C8.02009 7.74016 7.97342 7.74016 7.93342 7.74683C6.00008 7.68683 4.54009 6.16683 4.54009 4.2935C4.53342 3.3735 4.89342 2.50683 5.54675 1.8535C6.20008 1.20016 7.06676 0.833496 7.99342 0.833496C9.90009 0.833496 11.4534 2.38683 11.4534 4.2935C11.4534 6.16683 9.99342 7.68016 8.12676 7.74683C8.12009 7.74683 8.11342 7.74683 8.10676 7.74683Z" fill="#FDFDFF"/>
+                <path d="M7.99342 15.04C6.6334 15.04 5.34673 14.6866 4.3734 14.0333C3.44673 13.4133 2.94006 12.5666 2.94006 11.6533C2.94006 10.74 3.4534 9.89996 4.3734 9.28663C6.36673 7.9533 9.60676 7.9533 11.6001 9.28663C11.8268 9.43996 11.8934 9.7533 11.7401 9.97996C11.5868 10.2133 11.2734 10.2733 11.0468 10.12C9.38676 9.0133 6.58673 9.0133 4.92673 10.12C4.28673 10.5466 3.94006 11.0866 3.94006 11.6533C3.94006 12.22 4.28673 12.7733 4.92673 13.2C5.7334 13.74 6.82009 14.0333 7.98676 14.0333C8.26009 14.0333 8.48676 14.26 8.48676 14.5333C8.48676 14.8066 8.26676 15.04 7.99342 15.04Z" fill="#FDFDFF"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    return `
+      <div data-layer="order-status-preparing" class="OrderStatusPreparing" style="height: 30px; justify-content: flex-start; align-items: center; gap: 6px; display: inline-flex">
+        <div data-layer="Preparing" class="Preparing" style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">Preparing</div>
+        <div data-layer="status-preparing" class="StatusPreparing" style="padding: 6px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
+          <div data-svg-wrapper data-layer="status-preparing-icon" class="StatusPreparingIcon" style="position: relative">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12.6467 15.1668H3.31335C0.813355 15.1668 0.813354 13.7802 0.813354 12.6668V12.0002C0.813354 11.3602 1.34002 10.8335 1.98002 10.8335H13.98C14.62 10.8335 15.1467 11.3602 15.1467 12.0002V12.6668C15.1467 13.7802 15.1467 15.1668 12.6467 15.1668Z" fill="#FDFDFF"/>
+              <path d="M13.8134 11.8335H2.18005C1.90672 11.8335 1.68005 11.6068 1.68005 11.3335V8.66683C1.68005 5.9335 3.62005 3.5335 6.28672 2.96683C6.68004 2.88016 7.09337 2.8335 7.51337 2.8335H8.48004C8.90671 2.8335 9.32004 2.88016 9.71337 2.96683C12.38 3.54016 14.3134 5.94016 14.3134 8.66683V11.3335C14.3134 11.6068 14.0934 11.8335 13.8134 11.8335Z" fill="#FDFDFF"/>
+              <path d="M10 7.8335H6.00004C5.72671 7.8335 5.50004 7.60683 5.50004 7.3335C5.50004 7.06016 5.72671 6.8335 6.00004 6.8335H10C10.2734 6.8335 10.5 7.06016 10.5 7.3335C10.5 7.60683 10.2734 7.8335 10 7.8335Z" fill="#FDFDFF"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    `;
   }
 
   function renderActiveOrderItems(order) {
@@ -800,36 +902,24 @@ button {
     }
   }
 
-  function updateAdded(order) {
-    const root = document.getElementById('trackAddedRaw');
-    if (!root || !order) return;
+  function updateActiveOrderCard(card, order) {
+    if (!card || !order) return;
 
     const id = getOrderId(order).replace(/^CBE-/, '');
+    const fullId = getOrderId(order);
     const total = money(getTotal(order));
     const placedTime = formatOrderDateTime(order);
-    const statusText = getOrderStatusText(order);
 
-    /*
-      Sync these from placed order:
-      - Order ID
-      - order items and quantity
-      - order date and time
-      - total amount
-    */
-    setFirstTextMatching(root, text => text.startsWith('Order ID #'), `Order ID #${id}`);
-    const statusTextEl =
-      root.querySelector('[data-layer="Preparing"]') ||
-      root.querySelector('[data-layer="Out for delivery"]') ||
-      root.querySelector('[data-layer="Delivered"]') ||
-      root.querySelector('[class*="Preparing"]');
+    card.setAttribute('data-active-order-card', fullId);
 
-    if (statusTextEl) {
-      statusTextEl.textContent = statusText;
-    } else {
-      setFirstTextMatching(root, text => ['Preparing', 'Assigned', 'Out for delivery', 'Delivered', 'Cancelled'].includes(text), statusText);
+    setFirstTextMatching(card, text => text.startsWith('Order ID #'), `Order ID #${id}`);
+
+    const statusWrap = card.querySelector('[data-layer^="order-status-"]');
+    if (statusWrap) {
+      statusWrap.outerHTML = renderActiveOrderStatus(order);
     }
 
-    const itemList = root.querySelector('[data-layer="item-list"]');
+    const itemList = card.querySelector('[data-layer="item-list"]');
     if (itemList) {
       itemList.innerHTML = renderActiveOrderItems(order);
       itemList.style.height = 'auto';
@@ -837,7 +927,7 @@ button {
       itemList.style.flexWrap = 'wrap';
     }
 
-    const timeValue = root.querySelector('[data-layer="time & value"]');
+    const timeValue = card.querySelector('[data-layer="time & value"]');
     if (timeValue) {
       timeValue.innerHTML = `
         <div data-layer="Order placed: ${placedTime}" style="justify-content: center; display: flex; flex-direction: column; color: rgba(18, 19, 15, 0.50); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px; word-wrap: break-word">Order placed: ${placedTime}</div>
@@ -846,9 +936,38 @@ button {
         </div>
       `;
     } else {
-      setFirstTextMatching(root, text => text.startsWith('Total value:'), `Total value: ${total}`);
-      setFirstTextMatching(root, text => text.startsWith('Order placed:'), `Order placed: ${placedTime}`);
+      setFirstTextMatching(card, text => text.startsWith('Total value:'), `Total value: ${total}`);
+      setFirstTextMatching(card, text => text.startsWith('Order placed:'), `Order placed: ${placedTime}`);
     }
+
+    const trackButton = card.querySelector('[data-layer="track order-button"]');
+    if (trackButton) {
+      trackButton.setAttribute('data-order-id', fullId);
+    }
+  }
+
+  function updateAdded(ordersInput) {
+    const root = document.getElementById('trackAddedRaw');
+    if (!root) return;
+
+    const orders = Array.isArray(ordersInput) ? ordersInput : [ordersInput].filter(Boolean);
+    if (!orders.length) return;
+
+    const content = root.querySelector('[data-layer="empty-tract-content"]');
+    const firstCard = root.querySelector('[data-layer="item-cards"]');
+    if (!content || !firstCard) return;
+
+    const templateHTML = firstCard.outerHTML;
+
+    Array.from(content.querySelectorAll('[data-layer="item-cards"]')).forEach(card => card.remove());
+
+    orders.forEach(order => {
+      const holder = document.createElement('template');
+      holder.innerHTML = templateHTML.trim();
+      const card = holder.content.firstElementChild;
+      content.appendChild(card);
+      updateActiveOrderCard(card, order);
+    });
   }
 
   function renderSummary(order) {
@@ -892,9 +1011,9 @@ button {
     history.replaceState(null, '', 'track.html');
   }
 
-  function showAdded(order) {
+  function showAdded(orders) {
     renderTemplate('added');
-    updateAdded(order);
+    updateAdded(orders);
     history.replaceState(null, '', 'track.html');
   }
 
@@ -925,7 +1044,7 @@ button {
     }
 
     writeJSON('cbe_track_selected_order', orders[0]);
-    showAdded(orders[0]);
+    showAdded(orders);
   }
 
   document.addEventListener('click', function(event) {
@@ -949,8 +1068,17 @@ button {
       return;
     }
 
-    if (event.target.closest('[data-layer="track order-button"], [data-layer="full screen-button"]')) {
-      openFullscreen(getOrders()[0] || getSelectedOrder());
+    const trackButton = event.target.closest('[data-layer="track order-button"]');
+    if (trackButton) {
+      const card = trackButton.closest('[data-active-order-card]');
+      const orderId = card?.getAttribute('data-active-order-card') || trackButton.getAttribute('data-order-id');
+      const selectedOrder = getOrders().find(order => getOrderId(order) === orderId) || getOrders()[0] || getSelectedOrder();
+      openFullscreen(selectedOrder);
+      return;
+    }
+
+    if (event.target.closest('[data-layer="full screen-button"]')) {
+      openFullscreen(getSelectedOrder());
       return;
     }
 
@@ -985,7 +1113,11 @@ button {
       localStorage.getItem('previous_orders') || '',
       localStorage.getItem('orders') || '',
       localStorage.getItem('customer_orders') || '',
-      localStorage.getItem('pending_order') || ''
+      localStorage.getItem('pending_order') || '',
+      localStorage.getItem('adminStatus') || '',
+      localStorage.getItem('orderStatus') || '',
+      localStorage.getItem('deliveryStatus') || '',
+      localStorage.getItem('riderStatus') || ''
     ].join('|');
 
     if (snapshot !== lastTrackOrderSnapshot) {
