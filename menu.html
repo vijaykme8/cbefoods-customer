@@ -1964,6 +1964,14 @@ body.map-screen-open {
   transform: translate(-50%, 0);
 }
 
+body.is-location-flow-open .floating-cart-card,
+body.is-location-flow-open .floating-added-card {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translate(-50%, 18px) !important;
+}
+
 .items-added,
 .floating-cart-title {
   margin: 0;
@@ -4784,6 +4792,21 @@ function updateFloatingCartCard() {
 
   if (!floatingCartCard) return;
 
+  const mapScreen = document.getElementById("locationMapScreen");
+  const detailsScreen = document.getElementById("locationDetailsScreen");
+
+  if (
+    mapScreen?.classList.contains("is-open") ||
+    mapScreen?.getAttribute("aria-hidden") === "false" ||
+    detailsScreen?.classList.contains("is-open") ||
+    detailsScreen?.getAttribute("aria-hidden") === "false" ||
+    document.body.classList.contains("is-location-flow-open")
+  ) {
+    floatingCartCard.classList.remove("is-visible");
+    document.querySelector(".app")?.classList.remove("has-floating-cart");
+    return;
+  }
+
   const { totalQty, totalAmount } = getCartSummary();
 
   if (totalQty <= 0) {
@@ -5327,6 +5350,29 @@ if (shouldAutoOpenLocationMap()) {
     });
   }
 
+  function isLocationFlowOpen() {
+    const mapScreen = document.getElementById("locationMapScreen");
+    const detailsScreen = document.getElementById("locationDetailsScreen");
+
+    return Boolean(
+      mapScreen?.classList.contains("is-open") ||
+      mapScreen?.getAttribute("aria-hidden") === "false" ||
+      detailsScreen?.classList.contains("is-open") ||
+      detailsScreen?.getAttribute("aria-hidden") === "false" ||
+      document.body.classList.contains("is-location-flow-open")
+    );
+  }
+
+  function hideFloatingCardForLocationFlow(card) {
+    if (!card) return;
+
+    card.classList.remove("is-visible");
+    card.style.opacity = "";
+    card.style.visibility = "";
+    card.style.pointerEvents = "";
+    document.querySelector(".app")?.classList.remove("has-floating-cart");
+  }
+
   function syncFloatingCard() {
     const card = getFloatingCard();
     const title = document.getElementById("floatingCartTitle");
@@ -5335,6 +5381,11 @@ if (shouldAutoOpenLocationMap()) {
     bindCardNavigation(card);
 
     if (!card) return;
+
+    if (isLocationFlowOpen()) {
+      hideFloatingCardForLocationFlow(card);
+      return;
+    }
 
     if (totalQty <= 0) {
       card.classList.remove("is-visible");
@@ -5440,6 +5491,65 @@ if (shouldAutoOpenLocationMap()) {
     refresh: scheduleSync,
     readCart: safeParseCart
   };
+})();
+</script>
+
+
+<script>
+(function keepFloatingCardHiddenDuringLocationFlow() {
+  function syncLocationFlowState() {
+    const mapScreen = document.getElementById("locationMapScreen");
+    const detailsScreen = document.getElementById("locationDetailsScreen");
+    const floatingCard = document.getElementById("floatingCartCard");
+
+    const isOpen = Boolean(
+      mapScreen?.classList.contains("is-open") ||
+      mapScreen?.getAttribute("aria-hidden") === "false" ||
+      detailsScreen?.classList.contains("is-open") ||
+      detailsScreen?.getAttribute("aria-hidden") === "false"
+    );
+
+    document.body.classList.toggle("is-location-flow-open", isOpen);
+
+    if (isOpen && floatingCard) {
+      floatingCard.classList.remove("is-visible");
+      floatingCard.style.opacity = "";
+      floatingCard.style.visibility = "";
+      floatingCard.style.pointerEvents = "";
+    }
+
+    if (!isOpen && window.CBEFloatingAddedCard && typeof window.CBEFloatingAddedCard.refresh === "function") {
+      window.CBEFloatingAddedCard.refresh();
+    }
+  }
+
+  function observeElement(element) {
+    if (!element || element.dataset.locationFlowObserved === "1") return;
+
+    element.dataset.locationFlowObserved = "1";
+
+    new MutationObserver(syncLocationFlowState).observe(element, {
+      attributes: true,
+      attributeFilter: ["class", "aria-hidden", "style"]
+    });
+  }
+
+  function boot() {
+    observeElement(document.getElementById("locationMapScreen"));
+    observeElement(document.getElementById("locationDetailsScreen"));
+
+    syncLocationFlowState();
+    window.setTimeout(syncLocationFlowState, 120);
+    window.setTimeout(syncLocationFlowState, 500);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+
+  window.addEventListener("pageshow", boot);
 })();
 </script>
 
