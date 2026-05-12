@@ -1933,6 +1933,7 @@ body.map-screen-open {
 .floating-added-card {
   position: fixed;
   left: 50%;
+  bottom: 76px;
   bottom: calc(76px + env(safe-area-inset-bottom));
   transform: translate(-50%, 18px);
   width: 342px;
@@ -1947,8 +1948,9 @@ body.map-screen-open {
   justify-content: space-between;
   align-items: center;
   gap: 51px;
-  z-index: 2190;
+  z-index: 9999;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   cursor: pointer;
   transition: transform 0.22s ease, opacity 0.22s ease;
@@ -1956,7 +1958,8 @@ body.map-screen-open {
 
 .floating-cart-card.is-visible,
 .floating-added-card.is-visible {
-  opacity: 1;
+  opacity: 1 !important;
+  visibility: visible !important;
   pointer-events: auto;
   transform: translate(-50%, 0);
 }
@@ -5174,6 +5177,269 @@ if (shouldAutoOpenLocationMap()) {
   [80, 250, 700, 1200].forEach(delay => {
     window.setTimeout(openMapAddressScreenDirectly, delay);
   });
+})();
+</script>
+
+
+<script>
+(function installFloatingAddedCardController() {
+  const CART_KEY = "cart";
+
+  const fallbackProducts = [
+    {
+      id: 1,
+      category: "protein",
+      name: "Protein egg lunch",
+      price: 89,
+      protein: "45g",
+      image: "assets/menu/img/Protein egg lunch-img.png"
+    },
+    {
+      id: 2,
+      category: "regular",
+      name: "Regular meal",
+      price: 65,
+      image: "assets/menu/img/Regular meal-img.png"
+    },
+    {
+      id: 3,
+      category: "protein",
+      name: "Protein chicken dinner",
+      price: 109,
+      protein: "50g",
+      image: "assets/menu/img/Protein chicken lunch-img.png"
+    },
+    {
+      id: 4,
+      category: "regular",
+      name: "Chappati & gravy",
+      price: 89,
+      image: "assets/menu/img/Chappati & gravy-img.png"
+    }
+  ];
+
+  function safeParseCart() {
+    try {
+      const raw = localStorage.getItem(CART_KEY);
+      if (!raw) return [];
+
+      const parsed = JSON.parse(raw);
+
+      if (Array.isArray(parsed)) {
+        return parsed.filter(Boolean);
+      }
+
+      if (parsed && typeof parsed === "object") {
+        return Object.values(parsed).filter(Boolean);
+      }
+
+      return [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveCart(items) {
+    try {
+      localStorage.setItem(CART_KEY, JSON.stringify(items.filter(item => Number(item.qty || 0) > 0)));
+    } catch {
+      // localStorage unavailable should not break menu UI.
+    }
+  }
+
+  function getTotalQty() {
+    return safeParseCart().reduce((sum, item) => {
+      return sum + (Number(item.qty ?? item.quantity ?? item.count ?? 0) || 0);
+    }, 0);
+  }
+
+  function findProduct(productId) {
+    return fallbackProducts.find(product => Number(product.id) === Number(productId));
+  }
+
+  function fallbackChangeQty(productId, direction) {
+    const product = findProduct(productId);
+    if (!product) return;
+
+    const cart = safeParseCart();
+    const existing = cart.find(item => Number(item.id) === Number(productId));
+
+    if (existing) {
+      existing.qty = (Number(existing.qty) || 0) + direction;
+    } else if (direction > 0) {
+      cart.push({
+        ...product,
+        qty: 1
+      });
+    }
+
+    saveCart(cart);
+  }
+
+  function getFloatingCard() {
+    let card = document.getElementById("floatingCartCard");
+
+    if (card) {
+      return card;
+    }
+
+    /*
+      Safety fallback: if future edits accidentally remove the HTML,
+      create the same floating card dynamically.
+    */
+    card = document.createElement("div");
+    card.className = "floating-cart-card floating-added-card";
+    card.id = "floatingCartCard";
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", "Open cart");
+    card.innerHTML = `
+      <div class="items-added floating-cart-title" id="floatingCartTitle">0 items added</div>
+      <div class="cart-button" aria-hidden="true">
+        <div class="cart-button-text">Cart</div>
+        <div class="arrow-right-icon">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7.425 3.575C7.65833 3.34167 8.025 3.34167 8.25833 3.575L14.2583 9.575C14.4917 9.80833 14.4917 10.175 14.2583 10.4083L8.25833 16.4083C8.025 16.6417 7.65833 16.6417 7.425 16.4083C7.19167 16.175 7.19167 15.8083 7.425 15.575L13.0083 9.99167L7.425 4.40833C7.2 4.175 7.2 3.80833 7.425 3.575Z" fill="#FDFDFF"/>
+          </svg>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(card);
+    bindCardNavigation(card);
+
+    return card;
+  }
+
+  function bindCardNavigation(card) {
+    if (!card || card.dataset.boundCartOpen === "1") return;
+
+    card.dataset.boundCartOpen = "1";
+
+    card.addEventListener("click", () => {
+      window.location.href = "cart.html";
+    });
+
+    card.addEventListener("keydown", event => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      window.location.href = "cart.html";
+    });
+  }
+
+  function syncFloatingCard() {
+    const card = getFloatingCard();
+    const title = document.getElementById("floatingCartTitle");
+    const totalQty = getTotalQty();
+
+    bindCardNavigation(card);
+
+    if (!card) return;
+
+    if (totalQty <= 0) {
+      card.classList.remove("is-visible");
+      card.style.opacity = "";
+      card.style.visibility = "";
+      card.style.pointerEvents = "";
+      document.querySelector(".app")?.classList.remove("has-floating-cart");
+      return;
+    }
+
+    const itemLabel = totalQty === 1 ? "item" : "items";
+
+    if (title) {
+      title.textContent = `${totalQty} ${itemLabel} added`;
+    }
+
+    card.classList.add("is-visible");
+    card.style.opacity = "1";
+    card.style.visibility = "visible";
+    card.style.pointerEvents = "auto";
+    document.querySelector(".app")?.classList.add("has-floating-cart");
+  }
+
+  function scheduleSync() {
+    syncFloatingCard();
+    window.setTimeout(syncFloatingCard, 60);
+    window.setTimeout(syncFloatingCard, 180);
+    window.setTimeout(syncFloatingCard, 420);
+  }
+
+  /*
+    If the older add-to-cart handler fails for any reason, this fallback updates cart.
+    If the older handler works, this does NOT double-add because it checks whether cart changed.
+  */
+  document.addEventListener("click", event => {
+    const actionButton = event.target.closest(".action-btn, .product-list-action");
+    if (!actionButton) return;
+
+    const productId = Number(actionButton.dataset.productId);
+    if (!productId) {
+      scheduleSync();
+      return;
+    }
+
+    const before = localStorage.getItem(CART_KEY) || "";
+
+    window.setTimeout(() => {
+      const after = localStorage.getItem(CART_KEY) || "";
+
+      if (after === before) {
+        if (event.target.closest(".qty-minus")) {
+          fallbackChangeQty(productId, -1);
+        } else if (event.target.closest(".qty-plus")) {
+          fallbackChangeQty(productId, 1);
+        } else if (!actionButton.classList.contains("qty-button")) {
+          fallbackChangeQty(productId, 1);
+        }
+      }
+
+      scheduleSync();
+    }, 50);
+  }, true);
+
+  /*
+    Watch all cart localStorage changes, including changes made by old logic.
+  */
+  try {
+    const originalSetItem = localStorage.setItem.bind(localStorage);
+    const originalRemoveItem = localStorage.removeItem.bind(localStorage);
+
+    localStorage.setItem = function patchedSetItem(key, value) {
+      const result = originalSetItem(key, value);
+      if (key === CART_KEY) scheduleSync();
+      return result;
+    };
+
+    localStorage.removeItem = function patchedRemoveItem(key) {
+      const result = originalRemoveItem(key);
+      if (key === CART_KEY) scheduleSync();
+      return result;
+    };
+  } catch {
+    // Ignore localStorage patch failures.
+  }
+
+  window.addEventListener("storage", event => {
+    if (event.key === CART_KEY) {
+      scheduleSync();
+    }
+  });
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", scheduleSync, { once: true });
+  } else {
+    scheduleSync();
+  }
+
+  window.addEventListener("load", scheduleSync);
+  window.setTimeout(scheduleSync, 250);
+  window.setTimeout(scheduleSync, 900);
+
+  window.CBEFloatingAddedCard = {
+    refresh: scheduleSync,
+    readCart: safeParseCart
+  };
 })();
 </script>
 
