@@ -126,21 +126,6 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   white-space: normal !important;
 }
 
-
-/* Let Ola/MapLibre handle touch gestures while preventing scroll chaining */
-#trackFullscreenRoot [data-layer="map-section-v1"],
-#trackOlaMapCanvas {
-  touch-action: none !important;
-  overscroll-behavior: contain !important;
-  -webkit-user-select: none;
-  user-select: none;
-}
-
-#trackOlaMapCanvas canvas,
-#trackOlaMapCanvas .maplibregl-canvas {
-  touch-action: none !important;
-}
-
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -339,17 +324,6 @@ function renderSummary(o){const box=document.getElementById('trackPaymentInforma
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
 function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoute(start,c,'rider');fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoute(r,c,'restaurant-customer');fit([r,c])}
 
-
-function enableTrackMapGestures(){
-  if(!map) return;
-  try{
-    map.dragPan?.enable();
-    map.touchZoomRotate?.enable();
-    map.scrollZoom?.enable();
-    map.keyboard?.enable();
-    map.doubleClickZoom?.enable();
-  }catch(_){}
-}
 function bindTrackMapControls(){
   if(!map) return;
   const zoomIn=document.getElementById('trackMapZoomIn');
