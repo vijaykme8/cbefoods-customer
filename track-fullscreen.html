@@ -282,7 +282,95 @@ button {
   height: 24px;
 }
 
+
+/* Real Ola map behind track preview overlay */
+.track-ola-map-canvas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 22% 36%, rgba(8, 160, 69, 0.16), transparent 18%),
+    radial-gradient(circle at 72% 25%, rgba(136, 6, 206, 0.16), transparent 20%),
+    linear-gradient(135deg, #E8EBEF 0%, #FDFDFF 55%, #E9F7EF 100%);
+}
+
+.track-ola-map-canvas .maplibregl-control-container {
+  display: none;
+}
+
+.track-map-preview-layer {
+  z-index: 2;
+}
+
+.track-route-path {
+  filter: drop-shadow(0 1px 2px rgba(255,255,255,0.88));
+}
+
+.track-route-path.rider-customer-route {
+  stroke: #08A045;
+  stroke-width: 2.5;
+  stroke-dasharray: 7 5;
+}
+
+.track-route-path.restaurant-customer-curve {
+  stroke: #12130F;
+  stroke-width: 2;
+  stroke-dasharray: 3 6;
+}
+
+.track-map-pin {
+  z-index: 3;
+}
+
+.track-map-pin-label {
+  padding: 1px 4px;
+  border-radius: 999px;
+  background: rgba(253,253,255,0.88);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+
+/* Ola map markers inside track fullscreen preview */
+.track-ola-marker {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.track-ola-marker img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.16));
+}
+
+.track-ola-marker-customer {
+  width: 18px;
+  height: 24px;
+}
+
+.track-ola-marker-rider {
+  width: 20px;
+  height: 20px;
+}
+
+.track-ola-rider-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #08A045;
+  border: 3px solid #FDFDFF;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+
 </style>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" />
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
@@ -290,6 +378,7 @@ button {
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden">
+<div id="trackOlaMapCanvas" class="track-ola-map-canvas" aria-label="Delivery tracking map"></div>
 <div aria-hidden="true" class="track-map-preview-layer" id="trackMapPreviewLayer">
 <svg class="track-route-svg" preserveaspectratio="none" viewbox="0 0 294 264">
 <path class="track-route-path restaurant-customer-curve" d="" id="trackRoutePath"></path>
@@ -620,6 +709,7 @@ button {
   hydrate();
 })();
 </script>
+<script src="ola-map-v4.js"></script>
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 
 <script>
@@ -641,8 +731,8 @@ button {
   };
 
   const DEFAULT_RESTAURANT_LOCATION = {
-    lat: 11.0168,
-    lng: 76.9558,
+    lat: 11.051992,
+    lng: 77.0427325,
     name: 'Coimbatore Foods'
   };
 
@@ -830,6 +920,9 @@ button {
     const customerLocation = getCustomerLocation(order);
     const riderLocation = getRiderLocation(order);
 
+    ensureOlaMap(order);
+    updateOlaMap(order);
+
     restaurantPin.classList.remove('is-visible');
     customerPin.classList.remove('is-visible');
     riderPin.classList.remove('is-visible');
@@ -869,6 +962,215 @@ button {
     path.classList.add('restaurant-customer-curve');
     path.classList.remove('rider-customer-route');
   }
+
+
+  let olaMapInstance = null;
+  let olaRestaurantMarker = null;
+  let olaCustomerMarker = null;
+  let olaRiderMarker = null;
+  let olaRouteSourceAdded = false;
+  let hasTriedOlaMap = false;
+
+  function getMapBounds(points) {
+    const values = Object.values(points).filter(Boolean);
+    if (!values.length) return null;
+
+    const lngs = values.map(point => point.location?.lng).filter(Number.isFinite);
+    const lats = values.map(point => point.location?.lat).filter(Number.isFinite);
+
+    if (!lngs.length || !lats.length) return null;
+
+    return {
+      minLng: Math.min(...lngs),
+      maxLng: Math.max(...lngs),
+      minLat: Math.min(...lats),
+      maxLat: Math.max(...lats)
+    };
+  }
+
+  function makeOlaMarkerElement(type) {
+    const element = document.createElement('div');
+    element.className = `track-ola-marker track-ola-marker-${type}`;
+
+    if (type === 'restaurant') {
+      element.innerHTML = '<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin1" alt="">';
+    } else if (type === 'customer') {
+      element.innerHTML = '<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin1" alt="">';
+    } else {
+      element.innerHTML = '<div class="track-ola-rider-dot"></div>';
+    }
+
+    return element;
+  }
+
+  function loadOlaConfig() {
+    if (window.OlaMapsConfig && window.OlaMapsConfig.apiKey) {
+      return Promise.resolve(window.OlaMapsConfig);
+    }
+
+    return fetch('/ola-maps?type=config', { cache: 'no-store' })
+      .then(response => response.ok ? response.json() : null)
+      .catch(() => null);
+  }
+
+  function ensureOlaMap(order) {
+    const canvas = document.getElementById('trackOlaMapCanvas');
+    if (!canvas || hasTriedOlaMap) {
+      return;
+    }
+
+    hasTriedOlaMap = true;
+
+    loadOlaConfig().then(config => {
+      if (!config || !config.apiKey || !window.maplibregl) return;
+
+      const restaurant = getRestaurantLocation(order);
+      const customer = getCustomerLocation(order);
+      const center = customer || restaurant || DEFAULT_RESTAURANT_LOCATION;
+
+      try {
+        olaMapInstance = new window.maplibregl.Map({
+          container: canvas,
+          style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json?api_key=${encodeURIComponent(config.apiKey)}`,
+          center: [center.lng, center.lat],
+          zoom: 13.4,
+          interactive: false,
+          attributionControl: false
+        });
+
+        olaMapInstance.on('load', () => {
+          updateOlaMap(order);
+        });
+      } catch (error) {
+        console.warn('Ola map could not initialize in track preview', error);
+      }
+    });
+  }
+
+  function makeMarker(marker, type, location) {
+    if (!location || !olaMapInstance || !window.maplibregl) return marker;
+
+    if (!marker) {
+      marker = new window.maplibregl.Marker({
+        element: makeOlaMarkerElement(type),
+        anchor: 'bottom'
+      }).setLngLat([location.lng, location.lat]).addTo(olaMapInstance);
+    } else {
+      marker.setLngLat([location.lng, location.lat]);
+    }
+
+    return marker;
+  }
+
+  function ensureRouteLayer() {
+    if (!olaMapInstance || !olaMapInstance.isStyleLoaded()) return false;
+
+    if (!olaMapInstance.getSource('track-preview-route')) {
+      olaMapInstance.addSource('track-preview-route', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+    }
+
+    if (!olaMapInstance.getLayer('track-preview-route-line')) {
+      olaMapInstance.addLayer({
+        id: 'track-preview-route-line',
+        type: 'line',
+        source: 'track-preview-route',
+        paint: {
+          'line-color': '#08A045',
+          'line-width': 3,
+          'line-dasharray': [2, 2],
+          'line-opacity': 0.9
+        }
+      });
+    }
+
+    olaRouteSourceAdded = true;
+    return true;
+  }
+
+  function setMapRoute(from, to, mode) {
+    if (!ensureRouteLayer()) return;
+
+    const source = olaMapInstance.getSource('track-preview-route');
+    if (!source || !from || !to) return;
+
+    source.setData({
+      type: 'FeatureCollection',
+      features: [{
+        type: 'Feature',
+        properties: { mode },
+        geometry: {
+          type: 'LineString',
+          coordinates: [
+            [from.lng, from.lat],
+            [
+              (from.lng + to.lng) / 2,
+              Math.max(from.lat, to.lat) + 0.006
+            ],
+            [to.lng, to.lat]
+          ]
+        }
+      }]
+    });
+  }
+
+  function fitOlaMapToLocations(locations) {
+    if (!olaMapInstance || !window.maplibregl) return;
+
+    const valid = locations.filter(Boolean);
+    if (!valid.length) return;
+
+    if (valid.length === 1) {
+      olaMapInstance.setCenter([valid[0].lng, valid[0].lat]);
+      olaMapInstance.setZoom(14);
+      return;
+    }
+
+    const bounds = new window.maplibregl.LngLatBounds();
+    valid.forEach(location => bounds.extend([location.lng, location.lat]));
+
+    olaMapInstance.fitBounds(bounds, {
+      padding: { top: 90, bottom: 72, left: 60, right: 60 },
+      duration: 500,
+      maxZoom: 15
+    });
+  }
+
+  function updateOlaMap(order) {
+    if (!olaMapInstance || !olaMapInstance.isStyleLoaded()) return;
+
+    const restaurant = getRestaurantLocation(order);
+    const customer = getCustomerLocation(order);
+    const rider = getRiderLocation(order);
+    const showRiderRoute = isOutForDelivery(order);
+
+    if (showRiderRoute) {
+      olaRiderMarker = makeMarker(olaRiderMarker, 'rider', rider || restaurant);
+      olaCustomerMarker = makeMarker(olaCustomerMarker, 'customer', customer);
+      if (olaRestaurantMarker) {
+        olaRestaurantMarker.remove();
+        olaRestaurantMarker = null;
+      }
+      setMapRoute(rider || restaurant, customer, 'rider-customer');
+      fitOlaMapToLocations([rider || restaurant, customer]);
+      return;
+    }
+
+    olaRestaurantMarker = makeMarker(olaRestaurantMarker, 'restaurant', restaurant);
+    olaCustomerMarker = makeMarker(olaCustomerMarker, 'customer', customer);
+    if (olaRiderMarker) {
+      olaRiderMarker.remove();
+      olaRiderMarker = null;
+    }
+    setMapRoute(restaurant, customer, 'restaurant-customer');
+    fitOlaMapToLocations([restaurant, customer]);
+  }
+
 
   window.renderRestaurantCustomerCurve = renderTrackMapPreview;
   window.renderTrackMapPreview = renderTrackMapPreview;
