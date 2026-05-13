@@ -126,6 +126,20 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   white-space: normal !important;
 }
 
+
+/* Prevent page scroll while interacting with the map preview */
+#trackFullscreenRoot [data-layer="map-section-v1"],
+#trackOlaMapCanvas {
+  touch-action: none !important;
+  overscroll-behavior: contain !important;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#trackOlaMapCanvas canvas {
+  touch-action: none !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -364,6 +378,39 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-but
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
 })();
 </script>
+
+<script>
+(function lockPageScrollInsideTrackMap() {
+  function lockMapTouchScroll() {
+    const mapSection = document.querySelector('#trackFullscreenRoot [data-layer="map-section-v1"]');
+    const mapCanvas = document.getElementById('trackOlaMapCanvas');
+
+    [mapSection, mapCanvas].forEach(element => {
+      if (!element || element.dataset.scrollLockBound === '1') return;
+
+      element.dataset.scrollLockBound = '1';
+
+      element.addEventListener('touchmove', event => {
+        event.preventDefault();
+      }, { passive: false });
+
+      element.addEventListener('wheel', event => {
+        event.preventDefault();
+      }, { passive: false });
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', lockMapTouchScroll, { once: true });
+  } else {
+    lockMapTouchScroll();
+  }
+
+  window.setTimeout(lockMapTouchScroll, 500);
+  window.setTimeout(lockMapTouchScroll, 1500);
+})();
+</script>
+
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
