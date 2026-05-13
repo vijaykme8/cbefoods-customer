@@ -205,18 +205,24 @@ export async function onRequest(context) {
       const originLng = url.searchParams.get("originLng");
       const destLat = url.searchParams.get("destLat");
       const destLng = url.searchParams.get("destLng");
+      const originPoint = url.searchParams.get("origin") ||
+        (originLat && originLng ? `${originLat},${originLng}` : "");
+      const destinationPoint = url.searchParams.get("destination") ||
+        (destLat && destLng ? `${destLat},${destLng}` : "");
+      const mode = url.searchParams.get("mode") || "driving";
 
-      if (!originLat || !originLng || !destLat || !destLng) {
+      if (!originPoint || !destinationPoint) {
         return jsonResponse(
-          { message: "originLat, originLng, destLat and destLng are required" },
+          { message: "origin/destination or originLat, originLng, destLat and destLng are required" },
           400
         );
       }
 
       const directionsUrl =
-        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(`${originLat},${originLng}`)}` +
-        `&destination=${encodeURIComponent(`${destLat},${destLng}`)}` +
-        `&mode=driving`;
+        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(originPoint)}` +
+        `&destination=${encodeURIComponent(destinationPoint)}` +
+        `&mode=${encodeURIComponent(mode)}` +
+        `&alternatives=false&steps=true&overview=full`;
 
       return await fetchOla(directionsUrl, apiKey, origin);
     }

@@ -374,11 +374,11 @@ body.track-map-fullscreen-open .track-map-controls {
 </div>
 </div>
 </main>
-<script src="ola-map-v4.js"></script>
+<script src="ola-map-v4.js?v=roadroute1"></script>
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
-let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
+let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false,routeRenderToken=0,lastFitKey="",lastRouteKey="";
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
 function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
 function getOrderId(o){return String(o?.id||o?.orderId||o?.order_id||o?.receipt||o?.razorpayOrderId||'')}
@@ -400,13 +400,80 @@ function money(v){return `₹${Math.round(Number(v||0))}`}
 function setText(id,v){if(!v)return;const e=document.getElementById(id);if(e)e.textContent=v}
 function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
 function upsert(marker,type,location){if(!map||!maplibre||!location)return marker;if(!marker){marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'}).setLngLat([location.lng,location.lat]).addTo(map)}else marker.setLngLat([location.lng,location.lat]);return marker}
-function ensureRoute(){if(!map||!map.isStyleLoaded())return false;if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
+function ensureRoute(){
+  if(!map||!map.isStyleLoaded())return false;
+  if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
+  if(!map.getLayer('track-route-casing'))map.addLayer({
+    id:'track-route-casing',
+    type:'line',
+    source:'track-route-source',
+    layout:{'line-cap':'round','line-join':'round'},
+    paint:{'line-color':'#FDFDFF','line-width':10,'line-opacity':.96}
+  });
+  if(!map.getLayer('track-route-line'))map.addLayer({
+    id:'track-route-line',
+    type:'line',
+    source:'track-route-source',
+    layout:{'line-cap':'round','line-join':'round'},
+    paint:{'line-color':'#4B00E8','line-width':6,'line-opacity':.96}
+  });
+  return true;
+}
 function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
-function setRoute(from,to,mode){if(!ensureRoute()||!from||!to)return;const s=map.getSource('track-route-source');const rider=mode==='rider';const coords=rider?[[from.lng,from.lat],[to.lng,to.lat]]:curve(from,to);s.setData({type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}}]});map.setPaintProperty('track-route-line','line-color',rider?'#08A045':'#12130F');map.setPaintProperty('track-route-line','line-width',rider?3:2);map.setPaintProperty('track-route-line','line-dasharray',rider?[2,2]:[1.5,3])}
+function routeKey(from,to,mode){return `${mode}:${Number(from.lat).toFixed(4)},${Number(from.lng).toFixed(4)}>${Number(to.lat).toFixed(4)},${Number(to.lng).toFixed(4)}`}
+function routeFeature(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
+function fallbackRoute(from,to,mode){return mode==='restaurant-customer'?curve(from,to):[[from.lng,from.lat],[to.lng,to.lat]]}
+function applyRoute(coords,mode,isFallback){
+  if(!ensureRoute())return;
+  const source=map.getSource('track-route-source');
+  const rider=mode==='rider';
+  source.setData(routeFeature(coords));
+  map.setPaintProperty('track-route-line','line-color',rider?'#08A045':'#4B00E8');
+  map.setPaintProperty('track-route-line','line-width',rider?5.5:6);
+  map.setPaintProperty('track-route-line','line-opacity',isFallback ? .78 : .96);
+  map.setPaintProperty('track-route-casing','line-width',rider?9.5:10);
+  map.setPaintProperty('track-route-casing','line-opacity',isFallback ? .72 : .96);
+}
+function fitRoute(coords,extraLocs,fitKey){
+  if(!map||!maplibre)return;
+  const force=window.CBE_TRACK_FORCE_FIT===true;
+  if(!force&&lastFitKey===fitKey)return;
+  const b=new maplibre.LngLatBounds();
+  let count=0;
+  (coords||[]).forEach(point=>{if(Array.isArray(point)&&Number.isFinite(point[0])&&Number.isFinite(point[1])){b.extend(point);count++}});
+  (extraLocs||[]).filter(Boolean).forEach(l=>{b.extend([l.lng,l.lat]);count++});
+  if(!count)return;
+  if(count===1){const l=(extraLocs||[]).filter(Boolean)[0];if(l){map.easeTo({center:[l.lng,l.lat],zoom:14,duration:350})}}
+  else map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:450,maxZoom:15.5});
+  lastFitKey=fitKey;
+  window.CBE_TRACK_FORCE_FIT=false;
+}
+async function setRoadRoute(from,to,mode){
+  if(!ensureRoute()||!from||!to)return;
+  const key=routeKey(from,to,mode);
+  const token=++routeRenderToken;
+  if(lastRouteKey!==key){
+    const fallback=fallbackRoute(from,to,mode);
+    applyRoute(fallback,mode,true);
+    fitRoute(fallback,[from,to],`${key}:fallback`);
+    lastRouteKey=key;
+  }
+  try{
+    const helper=window.CBEOlaMapV4;
+    if(!helper||typeof helper.getRoute!=='function')return;
+    const route=await helper.getRoute(from,to);
+    if(token!==routeRenderToken)return;
+    const coords=Array.isArray(route?.coordinates)?route.coordinates:[];
+    if(coords.length>1){
+      applyRoute(coords,mode,!!route.fallback);
+      fitRoute(coords,[from,to],`${key}:${route.fallback?'fallback':'road'}:${coords.length}`);
+    }
+  }catch(error){console.warn('Track road route failed',error)}
+}
 function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:400,maxZoom:15})}
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
-function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoute(start,c,'rider');fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoute(r,c,'restaurant-customer');fit([r,c])}
+function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(!c){fit([r]);return}if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoadRoute(start,c,'rider');return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoadRoute(r,c,'restaurant-customer')}
 
 function bindTrackMapControls(){
   if(!map) return;
@@ -458,6 +525,7 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot
       window.trackOlaMapInstance.resize();
     }
 
+    window.CBE_TRACK_FORCE_FIT = true;
     if (typeof window.renderTrackMapPreview === 'function') {
       window.renderTrackMapPreview();
     }
