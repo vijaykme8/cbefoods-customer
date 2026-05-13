@@ -205,6 +205,215 @@ body.track-map-fullscreen-open .track-map-controls {
   z-index: 100000 !important;
 }
 
+
+/* Dynamic order-status-card variants */
+.cf-order-status-card {
+  width: 342px;
+  height: 194px;
+  background: #FFFFFF;
+  overflow: hidden;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 12px;
+}
+.cf-order-status-card .cf-highlight-info {
+  width: 342px;
+  height: 37px;
+  padding: 8px 16px;
+  background: #8806CE;
+  overflow: hidden;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  align-self: stretch;
+}
+.cf-order-status-card .cf-highlight-title {
+  color: #FDFDFF;
+  font-size: 16px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 600;
+  line-height: 20.8px;
+  white-space: nowrap;
+}
+.cf-order-status-card .cf-status-progress {
+  width: 342px;
+  height: 62px;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  align-self: stretch;
+}
+.cf-order-status-card .cf-status-copy {
+  color: #12130F;
+  font-size: 14px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  line-height: 19.6px;
+  white-space: nowrap;
+}
+.cf-order-status-card .cf-status-icons-set {
+  width: 294px;
+  height: 38px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.cf-order-status-card .cf-step {
+  width: 38px;
+  height: 38px;
+  padding: 10px;
+  border-radius: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 0 0 38px;
+  background: linear-gradient(0deg, rgba(18, 19, 15, 0.06), rgba(18, 19, 15, 0.06)), #FFFFFF;
+}
+.cf-order-status-card .cf-step.active {
+  background: #08A045;
+}
+.cf-order-status-card .cf-step img {
+  width: 18px;
+  height: 18px;
+  display: block;
+  object-fit: contain;
+}
+.cf-order-status-card .cf-step.active img {
+  filter: brightness(0) invert(1);
+}
+.cf-order-status-card .cf-connector {
+  flex: 1 1 0;
+  height: 0;
+  outline: 2px #12130F dashed;
+  outline-offset: -1px;
+}
+.cf-order-status-card .cf-connector.active {
+  outline-style: solid;
+  outline-color: #08A045;
+}
+.cf-order-status-card .cf-eta-partner-content {
+  width: 342px;
+  height: 71px;
+  padding: 0 16px 16px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 24px;
+  align-self: stretch;
+}
+.cf-order-status-card .cf-eta-content {
+  width: 142px;
+  height: 55px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 6px;
+  flex: 0 0 142px;
+}
+.cf-order-status-card .cf-restaurant-name {
+  color: #12130F;
+  font-size: 16px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 600;
+  line-height: 20.8px;
+  white-space: nowrap;
+}
+.cf-order-status-card .cf-eta-time {
+  height: 28px;
+  padding: 6px 8px;
+  background: #12130F;
+  border-radius: 6px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.cf-order-status-card .cf-eta-time span {
+  color: #FDFDFF;
+  font-size: 12px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  line-height: 15.6px;
+  white-space: nowrap;
+}
+.cf-order-status-card .cf-rider-content {
+  width: 144px;
+  height: 55px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 4px;
+  flex: 1 1 0;
+  align-self: stretch;
+}
+.cf-order-status-card .cf-rider-info-group {
+  align-self: stretch;
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 4px;
+  height: 17px;
+}
+.cf-order-status-card .cf-rider-info-group img {
+  width: 16px;
+  height: 16px;
+  display: block;
+  object-fit: contain;
+  flex: 0 0 16px;
+}
+.cf-order-status-card .cf-rider-state-text {
+  text-align: right;
+  font-size: 12px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  line-height: 16.8px;
+  white-space: nowrap;
+}
+.cf-order-status-card .cf-rider-state-text.assigning {
+  color: rgba(18, 19, 15, 0.50);
+}
+.cf-order-status-card .cf-rider-state-text.assigned {
+  color: #08A045;
+}
+.cf-order-status-card .cf-rider-details {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+}
+.cf-order-status-card .cf-rider-name {
+  text-align: right;
+  color: #12130F;
+  font-size: 12px;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  line-height: 16.8px;
+  max-width: 100px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cf-order-status-card .cf-rider-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  display: block;
+  object-fit: cover;
+  background: #ECECEF;
+  flex: 0 0 24px;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -245,45 +454,7 @@ body.track-map-fullscreen-open .track-map-controls {
 </div>
 </div>
 <div class="MainContent" data-layer="main-content" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
-<div class="OrderStatusCardV1" data-layer="order-status-card-v1" style="align-self: stretch; background: white; overflow: hidden; border-radius: 14px; flex-direction: column; justify-content: center; align-items: flex-start; gap: 12px; display: flex">
-<div class="HighlightInfo" data-layer="Highlight-info" style="align-self: stretch; padding-left: 16px; padding-right: 16px; padding-top: 8px; padding-bottom: 8px; background: #8806CE; overflow: hidden; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex">
-<div class="OrderReceived" data-layer="Order received" style="color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 20.80px; word-wrap: break-word">Order received</div>
-</div>
-<div class="StatusProgressBarV1" data-layer="status-progress-bar-v1" style="align-self: stretch; padding-left: 16px; padding-right: 16px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex">
-<div class="WeHaveReceivedYourOrder" data-layer="We have received your order" style="color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">We have received your order</div>
-<div class="StatusIconsSet" data-layer="status-icons-set" style="width: 294px; justify-content: space-between; align-items: center; display: inline-flex">
-<div class="StatusOrderReceived" data-layer="status-order-received" style="padding: 10px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOrderReceivedIcon" data-layer="status-order-received-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-order-received-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-<div class="ConnectoreLine1" data-layer="connectore-line-1" style="flex: 1 1 0; height: 0px; outline: 2px #08A045 solid; outline-offset: -1px"></div>
-<div class="StatusPreparing" data-layer="status-preparing" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusPreparingIcon" data-layer="status-preparing-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-preparing-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-<div class="ConnectoreLine2" data-layer="connectore-line-2" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
-<div class="StatusOutfordelivery" data-layer="status-outfordelivery" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOutfordeliveryIcon" data-layer="status-outfordelivery-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-outfordelivery-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-<div class="ConnectoreLine3" data-layer="connectore-line-3" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
-<div class="StatusDelivered" data-layer="status-delivered" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusDeliveredIcon" data-layer="status-delivered-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-delivered-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-</div>
-</div>
-<div class="EtaPartnerContent" data-layer="eta&amp;partner-content" style="align-self: stretch; padding-bottom: 16px; padding-left: 16px; padding-right: 16px; justify-content: flex-start; align-items: center; gap: 24px; display: inline-flex">
-<div class="EtaContent" data-layer="eta-content" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: inline-flex">
-<div class="CoimbatoreFoods" data-layer="Coimbatore Foods" style="color: #12130F; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 20.80px; word-wrap: break-word">Coimbatore Foods</div>
-<div class="EtaTime" data-layer="eta-time" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: #12130F; border-radius: 6px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="35mins" data-layer="25 - 35mins" id="trackFullEta" style="color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word">25 - 35mins</div>
-</div>
-</div>
-<div class="RiderContent" data-layer="rider-content" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
-<div class="RiderInfoGroup" data-layer="rider-info-group" style="align-self: stretch; justify-content: flex-end; align-items: flex-start; gap: 4px; display: inline-flex">
-<div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-<div class="AssigningRider" data-layer="Assigning Rider." id="trackFullAssigningRider" style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
-</div>
-</div>
-</div>
-</div>
+<div id="trackOrderStatusCard" data-layer="order-status-card-dynamic" style="width:342px;min-height:194px"></div>
 <div class="Line4" data-layer="Line 4" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
 <div class="Frame77" data-layer="Frame 77" style="align-self: stretch; height: 58px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
 <div class="Rider" data-layer="Rider" style="align-self: stretch; flex: 1 1 0; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Rider</div>
@@ -405,7 +576,7 @@ function itemName(i){return i.name||i.title||i.itemName||i.productName||'Item'}
 function itemQty(i){return Number(i.qty??i.quantity??i.count??1)||1}
 function itemPrice(i){return Number(i.price??i.unitPrice??i.amount??0)||0}
 function money(v){return `₹${Math.round(Number(v||0))}`}
-function setText(id,v){if(!v)return;const e=document.getElementById(id);if(e)e.textContent=v}
+function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=(v==null?'':String(v))}
 function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
 function upsert(marker,type,location){if(!map||!maplibre||!location)return marker;if(!marker){marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'}).setLngLat([location.lng,location.lat]).addTo(map)}else marker.setLngLat([location.lng,location.lat]);return marker}
 function ensureRoute(){if(!map||!map.isStyleLoaded())return false;if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-casing'))map.addLayer({id:'track-route-casing',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':0,'line-opacity':0}},map.getLayer('track-route-line')?'track-route-line':undefined);if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
@@ -428,7 +599,34 @@ function encodedCandidates(value,depth=0){if(!value||depth>7)return[];if(typeof 
 function extractRoadCoords(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;let coords=[];const direct=route?.overview_polyline?.points||route?.overviewPolyline?.points||route?.overview_polyline||route?.overviewPolyline||route?.polyline||route?.encodedPolyline||route?.geometry;if(typeof direct==='string'){coords=decodePolyline(direct,5);if(coords.length<3)coords=decodePolyline(direct,6)}if(coords.length<3)coords=geoJsonCoords(route?.geometry||route?.geojson||route?.routeGeoJson||data?.geometry||data?.geojson);if(coords.length<3&&Array.isArray(route?.legs)){let step=[];route.legs.forEach(leg=>(leg.steps||[]).forEach(st=>{const enc=st.polyline?.points||st.polyline||st.encodedPolyline||st.geometry;if(typeof enc==='string'){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);step=step.concat(d)}else{step=step.concat(geoJsonCoords(enc),deepCoords(enc))}}));coords=step}if(coords.length<3){for(const enc of encodedCandidates(route||data)){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);if(d.length>=3){coords=d;break}}}if(coords.length<3)coords=deepCoords(route||data);return normalizePointList(coords)}
 async function fetchRoadRoute(from,to){if(!ensureRoute()||!from||!to)return;if(!shouldFetchRoadRoute(from,to))return;const token=++routeRequestToken;try{const helper=window.CBEOlaMapV4;if(!helper||typeof helper.directions!=='function')return;lastRouteState={from:{...from},to:{...to},at:Date.now()};const data=await helper.directions(from,to);if(token!==routeRequestToken)return;const coords=extractRoadCoords(data);if(coords.length>=3){drawRoadRoute(coords)}else{lastRouteState=null;clearRoute();console.warn('Ola returned no road geometry; hidden straight fallback.')}}catch(err){lastRouteState=null;clearRoute();console.warn('Ola road route failed; hidden straight fallback.',err)}}
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
-function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
+
+function riderName(o){return String(o?.riderName||o?.assignedRiderName||o?.rider?.name||o?.riderDetails?.name||o?.deliveryPartnerName||o?.deliveryPartner?.name||o?.partnerName||o?.driverName||'').trim()}
+function riderPhone(o){return String(o?.riderPhone||o?.assignedRiderPhone||o?.rider?.phone||o?.riderDetails?.phone||o?.deliveryPartnerPhone||o?.deliveryPartner?.phone||o?.partnerPhone||'').trim()}
+function riderPhoto(o){return String(o?.riderPhoto||o?.riderImage||o?.riderAvatar||o?.rider?.photo||o?.rider?.photoUrl||o?.riderDetails?.photo||o?.deliveryPartner?.photo||'').trim()}
+function hasAssignedRider(o){return !!(riderName(o)||riderPhone(o)||o?.riderId||o?.assignedRiderId||o?.rider?.id||o?.deliveryPartnerId)}
+function htmlSafe(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function getStatusVariant(o){const s=status(o);if(['reached','arrived','arrived_at_location','reached_customer','reached_location','at_customer','at_customer_location','delivered'].includes(s))return 4;if(['picked_up','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(s))return 3;if(['preparing','cooking','accepted','admin_accepted','confirmed_by_restaurant','food_preparing','in_kitchen','in_progress'].includes(s))return 2;return 1}
+function statusCardConfig(variant){
+  if(variant===4)return{layer:'order-status-card-v4',cls:'OrderStatusCardV4',title:'Reached your location',copy:'Your order is at your door.',active:4};
+  if(variant===3)return{layer:'order-status-card-v3',cls:'OrderStatusCardV3',title:'Out for delivery',copy:'Rider picked up your order.',active:3};
+  if(variant===2)return{layer:'order-status-card-v2',cls:'OrderStatusCardV2',title:'Preparing',copy:'Started cooking your order',active:2};
+  return{layer:'order-status-card-v1',cls:'OrderStatusCardV1',title:'Order received',copy:'We have received your order',active:1};
+}
+function stepHtml(n,layer,icon,cfg){const active=n<=cfg.active?' active':'';return `<div data-layer="${layer}" class="cf-step${active}"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards1"></div>`}
+function connectorHtml(n,cfg){const active=n<cfg.active?' active':'';return `<div data-layer="connectore-line-${n}" class="cf-connector${active}"></div>`}
+function riderCardHtml(o){
+  const assigned=hasAssignedRider(o);const name=htmlSafe(riderName(o)||'Rider');const photo=riderPhoto(o);const icon=assigned?'round-tick-icon.svg':'clock-icon.svg';
+  const stateText=assigned?'Rider Assigned':'Assigning Rider.';const stateClass=assigned?'assigned':'assigning';
+  const avatar=photo?`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="${htmlSafe(photo)}" alt="">`:`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="./assets/track orders/track-screen/rider-profile-picture-1.png?v=statuscards1" alt="">`;
+  const details=assigned?`<div data-layer="rider-details" class="cf-rider-details"><div data-layer="${name}" class="cf-rider-name">${name}</div>${avatar}</div>`:'';
+  return `<div data-layer="rider-content" class="cf-rider-content"><div data-layer="rider-info-group" class="cf-rider-info-group"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards1"><div id="trackFullAssigningRider" data-layer="${stateText}" class="cf-rider-state-text ${stateClass}">${stateText}</div></div>${details}</div>`;
+}
+function buildOrderStatusCard(o){
+  const cfg=statusCardConfig(getStatusVariant(o));const etaText=htmlSafe(eta(o));
+  return `<div data-layer="${cfg.layer}" class="cf-order-status-card ${cfg.cls}"><div data-layer="Highlight-info" class="cf-highlight-info"><div data-layer="${cfg.title}" class="cf-highlight-title">${cfg.title}</div></div><div data-layer="status-progress-bar-v${cfg.active>1?2:1}" class="cf-status-progress"><div data-layer="${cfg.copy}" class="cf-status-copy">${cfg.copy}</div><div data-layer="status-icons-set" class="cf-status-icons-set">${stepHtml(1,'status-order-received','status-order-received-icon.svg',cfg)}${connectorHtml(1,cfg)}${stepHtml(2,'status-preparing','status-preparing-icon.svg',cfg)}${connectorHtml(2,cfg)}${stepHtml(3,'status-outfordelivery','status-outfordelivery-icon.svg',cfg)}${connectorHtml(3,cfg)}${stepHtml(4,'status-delivered','status-delivered-icon.svg',cfg)}</div></div><div data-layer="eta&partner-content" class="cf-eta-partner-content"><div data-layer="eta-content" class="cf-eta-content"><div data-layer="Coimbatore Foods" class="cf-restaurant-name">Coimbatore Foods</div><div data-layer="eta-time" class="cf-eta-time"><span data-layer="25 - 35mins" id="trackFullEta">${etaText}</span></div></div>${riderCardHtml(o)}</div></div>`;
+}
+function renderStatusCard(o){const host=document.getElementById('trackOrderStatusCard');if(host)host.innerHTML=buildOrderStatusCard(o)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=riderName(o);setText('trackFullAssigningRider',hasAssignedRider(o)?'Rider Assigned':'Assigning Rider.');setText('trackFullRiderName',rider||'Rider not assigned yet');renderSummary(o)}
 function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(!c)return;if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);fetchRoadRoute(start,c);fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setDottedCurve(r,c);fit([r,c])}
 function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementById('trackMapZoomIn');const zoomOut=document.getElementById('trackMapZoomOut');if(zoomIn&&zoomIn.dataset.bound!=='1'){zoomIn.dataset.bound='1';zoomIn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomIn({duration:180})})}if(zoomOut&&zoomOut.dataset.bound!=='1'){zoomOut.dataset.bound='1';zoomOut.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomOut({duration:180})})}}
 function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
