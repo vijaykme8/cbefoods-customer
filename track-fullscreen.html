@@ -292,12 +292,11 @@ body.track-map-fullscreen-open .track-map-controls {
 .cf-order-status-card .cf-connector {
   flex: 1 1 0;
   height: 0;
-  outline: 2px #12130F dashed;
-  outline-offset: -1px;
+  border-top: 1.5px dashed #12130F;
 }
 .cf-order-status-card .cf-connector.active {
-  outline-style: solid;
-  outline-color: #08A045;
+  border-top-style: solid;
+  border-top-color: #08A045;
 }
 .cf-order-status-card .cf-eta-partner-content {
   width: 342px;
@@ -612,14 +611,14 @@ function statusCardConfig(variant){
   if(variant===2)return{layer:'order-status-card-v2',cls:'OrderStatusCardV2',title:'Preparing',copy:'Started cooking your order',active:2};
   return{layer:'order-status-card-v1',cls:'OrderStatusCardV1',title:'Order received',copy:'We have received your order',active:1};
 }
-function stepHtml(n,layer,icon,cfg){const active=n<=cfg.active?' active':'';return `<div data-layer="${layer}" class="cf-step${active}"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards1"></div>`}
+function stepHtml(n,layer,icon,cfg){const active=n<=cfg.active?' active':'';return `<div data-layer="${layer}" class="cf-step${active}"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards2"></div>`}
 function connectorHtml(n,cfg){const active=n<cfg.active?' active':'';return `<div data-layer="connectore-line-${n}" class="cf-connector${active}"></div>`}
 function riderCardHtml(o){
   const assigned=hasAssignedRider(o);const name=htmlSafe(riderName(o)||'Rider');const photo=riderPhoto(o);const icon=assigned?'round-tick-icon.svg':'clock-icon.svg';
   const stateText=assigned?'Rider Assigned':'Assigning Rider.';const stateClass=assigned?'assigned':'assigning';
-  const avatar=photo?`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="${htmlSafe(photo)}" alt="">`:`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="./assets/track orders/track-screen/rider-profile-picture-1.png?v=statuscards1" alt="">`;
+  const avatar=photo?`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="${htmlSafe(photo)}" alt="">`:`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="./assets/track orders/track-screen/rider-profile-picture-1.png?v=statuscards2" alt="">`;
   const details=assigned?`<div data-layer="rider-details" class="cf-rider-details"><div data-layer="${name}" class="cf-rider-name">${name}</div>${avatar}</div>`:'';
-  return `<div data-layer="rider-content" class="cf-rider-content"><div data-layer="rider-info-group" class="cf-rider-info-group"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards1"><div id="trackFullAssigningRider" data-layer="${stateText}" class="cf-rider-state-text ${stateClass}">${stateText}</div></div>${details}</div>`;
+  return `<div data-layer="rider-content" class="cf-rider-content"><div data-layer="rider-info-group" class="cf-rider-info-group"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards2"><div id="trackFullAssigningRider" data-layer="${stateText}" class="cf-rider-state-text ${stateClass}">${stateText}</div></div>${details}</div>`;
 }
 function buildOrderStatusCard(o){
   const cfg=statusCardConfig(getStatusVariant(o));const etaText=htmlSafe(eta(o));
