@@ -632,7 +632,7 @@ button {
 
   function renderStatus(order) {
     const variant = getOrderStatusVariant(order);
-    const base = './assets/track orders';
+    const base = './assets/track%20orders';
 
     const configs = {
       received: ['order-status-received', 'Order received', 'status-order-received-icon.svg'],
@@ -647,7 +647,7 @@ button {
       <div data-layer="${layer}" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 6px; display: flex">
         <div style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">${text}</div>
         <div class="track-status-icon-box" data-track-status-icon="${variant}">
-          <img class="track-status-icon-img" src="${base}/${icon}?v=trackordersfix2" alt="">
+          <img class="track-status-icon-img" src="${base}/${icon}?v=trackordersfix3" alt="" onerror="this.onerror=null;this.src='./assets/track%20orders/track-screen/'+this.getAttribute('data-icon-name')+'?v=trackordersfix3b';" data-icon-name="${icon}">
         </div>
       </div>
     `;
