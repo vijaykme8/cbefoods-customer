@@ -135,7 +135,7 @@ button {
   top: 20px;
   width: 294px;
   height: 264px;
-  z-index: 1;
+  z-index: 2;
   pointer-events: none;
 }
 
@@ -150,7 +150,7 @@ button {
 .track-route-path {
   fill: none;
   stroke: #12130F;
-  stroke-width: 1.5;
+  stroke-width: 2;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -290,7 +290,7 @@ button {
 </div>
 </div>
 
-<div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex; position: relative; z-index: 3">
+<div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex; position: relative; z-index: 4">
 <div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; background: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex">
 <div class="BackButton" data-layer="back-button" style="border-radius: 14px; justify-content: flex-start; align-items: center; gap: 4px; display: flex">
 <div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
@@ -610,6 +610,18 @@ button {
   const PREVIEW_HEIGHT = 264;
   const PREVIEW_PADDING = 28;
 
+  /*
+    Visible safe area inside map-section-v1.
+    Top area is covered by address card, bottom-right has fullscreen button.
+    Keep restaurant-customer curve centered and easy to see.
+  */
+  const SAFE_BOUNDS = {
+    minX: 72,
+    maxX: 226,
+    minY: 136,
+    maxY: 224
+  };
+
   const DEFAULT_RESTAURANT_LOCATION = {
     lat: 11.0168,
     lng: 76.9558,
@@ -715,9 +727,9 @@ button {
   }
 
   function fallbackPoint(kind) {
-    if (kind === 'restaurant') return { x: 226, y: 54 };
-    if (kind === 'customer') return { x: 42, y: 222 };
-    if (kind === 'rider') return { x: 70, y: 170 };
+    if (kind === 'restaurant') return { x: 92, y: 174 };
+    if (kind === 'customer') return { x: 212, y: 206 };
+    if (kind === 'rider') return { x: 104, y: 190 };
     return { x: PREVIEW_WIDTH / 2, y: PREVIEW_HEIGHT / 2 };
   }
 
@@ -746,12 +758,12 @@ button {
         return;
       }
 
-      const x = PREVIEW_PADDING + ((item.location.lng - minLng) / lngSpan) * (PREVIEW_WIDTH - PREVIEW_PADDING * 2);
-      const y = PREVIEW_PADDING + ((maxLat - item.location.lat) / latSpan) * (PREVIEW_HEIGHT - PREVIEW_PADDING * 2);
+      const x = SAFE_BOUNDS.minX + ((item.location.lng - minLng) / lngSpan) * (SAFE_BOUNDS.maxX - SAFE_BOUNDS.minX);
+      const y = SAFE_BOUNDS.minY + ((maxLat - item.location.lat) / latSpan) * (SAFE_BOUNDS.maxY - SAFE_BOUNDS.minY);
 
       points[item.key] = {
-        x: Math.max(PREVIEW_PADDING, Math.min(PREVIEW_WIDTH - PREVIEW_PADDING, x)),
-        y: Math.max(PREVIEW_PADDING, Math.min(PREVIEW_HEIGHT - PREVIEW_PADDING, y))
+        x: Math.max(SAFE_BOUNDS.minX, Math.min(SAFE_BOUNDS.maxX, x)),
+        y: Math.max(SAFE_BOUNDS.minY, Math.min(SAFE_BOUNDS.maxY, y))
       };
     });
 
@@ -763,11 +775,11 @@ button {
     const dy = to.y - from.y;
     const c1 = {
       x: from.x + dx * 0.28,
-      y: from.y - Math.abs(dy) * 0.42 - 28
+      y: from.y - Math.abs(dy) * 0.28 - 42
     };
     const c2 = {
       x: from.x + dx * 0.72,
-      y: to.y - Math.abs(dy) * 0.30 - 18
+      y: to.y - Math.abs(dy) * 0.22 - 34
     };
 
     return `M ${from.x} ${from.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${to.x} ${to.y}`;
