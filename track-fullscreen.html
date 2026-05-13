@@ -1,15 +1,16 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
-<meta name="theme-color" content="#8806CE" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+<meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
+<meta content="#8806CE" name="theme-color"/>
 <title>Track Order - Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest" />
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" />
+<link id="pwa-manifest" rel="manifest"/>
+<link href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" rel="stylesheet"/>
 <script>
   if (!localStorage.getItem('cust_auth')) {
     window.location.replace('login.html');
@@ -38,11 +39,45 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 [data-layer="back-button"]:active,[data-layer="back to orders-button"]:active,[data-layer="full screen-button"]:active{opacity:.82}
 @media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot{width:100%!important;max-width:390px}}
 
+
+/* Track map movement + zoom controls */
+.track-map-controls {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  width: 38px;
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 5;
+  pointer-events: auto;
+}
+
+.track-map-control-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  background: #FDFDFF;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.14), 1px 2px 10px rgba(0, 0, 0, 0.10);
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.track-map-control-btn:active {
+  transform: scale(0.96);
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-  <div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px;  flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden"><div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
@@ -60,6 +95,11 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 <div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
 <div class="FullScreenIcons" data-layer="full screen-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
+</div>
+
+<div aria-label="Map controls" class="track-map-controls" id="trackMapControls">
+<button aria-label="Zoom in" class="track-map-control-btn" id="trackMapZoomIn" type="button">+</button>
+<button aria-label="Zoom out" class="track-map-control-btn" id="trackMapZoomOut" type="button">−</button>
 </div>
 </div>
 </div>
@@ -194,7 +234,6 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 </div>
 </main>
 <script src="ola-map-v4.js"></script>
-
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
@@ -227,13 +266,47 @@ function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
 function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoute(start,c,'rider');fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoute(r,c,'restaurant-customer');fit([r,c])}
-function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;maplibre=maplibregl||window.maplibregl;map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
+
+function bindTrackMapControls(){
+  if(!map) return;
+  const zoomIn=document.getElementById('trackMapZoomIn');
+  const zoomOut=document.getElementById('trackMapZoomOut');
+
+  if(zoomIn && zoomIn.dataset.bound !== '1'){
+    zoomIn.dataset.bound='1';
+    zoomIn.addEventListener('click', event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      map.zoomIn({duration:180});
+    });
+  }
+
+  if(zoomOut && zoomOut.dataset.bound !== '1'){
+    zoomOut.dataset.bound='1';
+    zoomOut.addEventListener('click', event=>{
+      event.preventDefault();
+      event.stopPropagation();
+      map.zoomOut({duration:180});
+    });
+  }
+}
+
+function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;maplibre=maplibregl||window.maplibregl;
+try{
+  map.dragPan?.enable();
+  map.touchZoomRotate?.enable();
+  map.scrollZoom?.enable();
+  map.keyboard?.enable();
+  map.doubleClickZoom?.enable();
+}catch(_){}
+bindTrackMapControls();
+map.on('load',renderMap);
+if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
 function boot(){hydrate();initMap();renderMap()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
 })();
 </script>
-
-<script src="pwa-speed.js?v=20260512_speed1" defer></script>
+<script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
