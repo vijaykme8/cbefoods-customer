@@ -376,112 +376,28 @@ body.track-map-fullscreen-open .track-map-controls {
 </main>
 <script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
-<script src="ola-map-v4.js?v=instantpickup1"></script>
+<script src="ola-map-v4.js?v=pickup-road-light1"></script>
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
-let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false,routeRenderToken=0,lastFitKey="",lastRouteKey="";
-let liveOrderUnsubscribe=null,liveOrderListeningId="",liveOrderAuthWaitingId="",lastRenderedStatus="";
-const TRACK_BOOT_INTERVAL_MS=10000;
-const ROUTE_HARD_MIN_INTERVAL_MS=45000;
-const ROUTE_NORMAL_REFRESH_MS=90000;
-const ROUTE_FORCE_REFRESH_MS=180000;
-const ROUTE_REFRESH_DISTANCE_M=160;
-const ROUTE_HARD_DISTANCE_M=260;
-const ROUTE_TARGET_CHANGE_M=45;
-let lastRouteState=null;
+const ROUTE_REFRESH_MIN_MS=90000;
+const ROUTE_REFRESH_MIN_DISTANCE_M=150;
+let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
+let liveUnsubscribe=null,routeRequestToken=0,lastRouteState=null,lastFitKey='';
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
+function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
 function getOrderId(o){return String(o?.id||o?.orderId||o?.order_id||o?.receipt||o?.razorpayOrderId||'')}
+function mergeOrder(localOrder,cloudOrder){return {...(localOrder||{}),...(cloudOrder||{})}}
 function getSelectedOrder(){const p=new URLSearchParams(location.search);const q=p.get('orderId')||'';const saved=readJSON('cbe_track_selected_order');if(saved&&typeof saved==='object'){if(!q||getOrderId(saved)===q)return saved}const c=[];const cur=readJSON('current_order');const h=normalizeOrders(readJSON('order_history'));const prev=normalizeOrders(readJSON('previous_orders'));const orders=normalizeOrders(readJSON('orders'));const cust=normalizeOrders(readJSON('customer_orders'));const pend=readJSON('pending_order');if(cur&&typeof cur==='object')c.push(cur);h.forEach(o=>c.push(o));prev.forEach(o=>c.push(o));orders.forEach(o=>c.push(o));cust.forEach(o=>c.push(o));if(pend&&typeof pend==='object')c.push(pend);if(q){const f=c.find(o=>getOrderId(o)===q);if(f)return f}return c[0]||{}}
-function plainFirestoreValue(value){
-  if(value===null||value===undefined)return value;
-  if(typeof value.toDate==='function')return value.toDate().toISOString();
-  if(Array.isArray(value))return value.map(plainFirestoreValue);
-  if(typeof value==='object'){
-    const out={};
-    Object.keys(value).forEach(key=>{if(typeof value[key]!=='function')out[key]=plainFirestoreValue(value[key])});
-    return out;
-  }
-  return value;
-}
-function normalizeCloudOrder(id,data){
-  if(!data||typeof data!=='object')return null;
-  const clean=plainFirestoreValue(data);
-  return {id,...clean,items:Array.isArray(clean.items)?clean.items:[]};
-}
-function activeOrderId(){
-  const p=new URLSearchParams(location.search);
-  const q=p.get('orderId')||'';
-  if(q)return String(q);
-  const saved=readJSON('cbe_track_selected_order');
-  const savedId=getOrderId(saved);
-  if(savedId)return savedId;
-  return getOrderId(getSelectedOrder());
-}
-function upsertOrderInList(key,order){
-  const list=normalizeOrders(readJSON(key));
-  if(!list.length)return;
-  const id=getOrderId(order);
-  const index=list.findIndex(item=>getOrderId(item)===id);
-  if(index>=0)list[index]={...list[index],...order};
-  else list.unshift(order);
-  try{localStorage.setItem(key,JSON.stringify(list))}catch(_){ }
-}
-function saveLiveOrderLocally(order){
-  if(!order)return;
-  const id=getOrderId(order);
-  try{
-    const selected=readJSON('cbe_track_selected_order');
-    if(!selected||!getOrderId(selected)||getOrderId(selected)===id)localStorage.setItem('cbe_track_selected_order',JSON.stringify({...selected,...order}));
-  }catch(_){ }
-  try{
-    const current=readJSON('current_order');
-    if(!current||!getOrderId(current)||getOrderId(current)===id)localStorage.setItem('current_order',JSON.stringify({...current,...order}));
-  }catch(_){ }
-  upsertOrderInList('order_history',order);
-  upsertOrderInList('orders',order);
-  upsertOrderInList('customer_orders',order);
-}
-function firebaseReady(){return !!(window.firebase&&window.TIFFIN_FIREBASE_CONFIG&&window.TIFFIN_FIREBASE_CONFIG.apiKey)}
-function startLiveOrderSync(){
-  const id=activeOrderId();
-  if(!id||!firebaseReady())return;
-  if(liveOrderListeningId===id&&liveOrderUnsubscribe)return;
-  if(liveOrderUnsubscribe){try{liveOrderUnsubscribe()}catch(_){ }liveOrderUnsubscribe=null;}
-  liveOrderListeningId=id;
-  try{
-    if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
-    const auth=firebase.auth();
-    const db=firebase.firestore();
-    const listen=()=>{
-      if(liveOrderListeningId!==id||liveOrderUnsubscribe)return;
-      liveOrderUnsubscribe=db.collection('orders').doc(id).onSnapshot(snap=>{
-        if(!snap.exists)return;
-        const cloudOrder=normalizeCloudOrder(snap.id,snap.data());
-        if(!cloudOrder)return;
-        saveLiveOrderLocally(cloudOrder);
-        window.CBE_TRACK_FORCE_FIT=true;
-        boot();
-      },error=>console.warn('Track fullscreen order live sync failed',error));
-    };
-    if(auth.currentUser)listen();
-    else if(liveOrderAuthWaitingId!==id){
-      liveOrderAuthWaitingId=id;
-      auth.onAuthStateChanged(user=>{if(user&&liveOrderListeningId===id&&!liveOrderUnsubscribe)listen()});
-    }
-  }catch(error){console.warn('Track fullscreen live sync init failed',error)}
-}
-
 function num(v){const n=Number(v);return Number.isFinite(n)?n:null}
 function loc(v){if(!v||typeof v!=='object')return null;const lat=num(v.lat??v.latitude??v.coords?.lat??v.coords?.latitude);const lng=num(v.lng??v.lon??v.long??v.longitude??v.coords?.lng??v.coords?.longitude);if(lat===null||lng===null)return null;return{lat,lng}}
 function restLoc(o){return loc(o?.restaurantLocation)||loc(o?.adminLocation)||loc(readJSON('restaurant_location'))||loc(readJSON('admin_restaurant_location'))||loc(readJSON('default_restaurant_location'))||DEFAULT_RESTAURANT_LOCATION}
 function custLoc(o){return loc(o?.deliveryLocation)||loc(o?.customerLocation)||loc(o?.addressLocation)||loc(o?.location)||loc(readJSON('active_delivery_location'))||loc(readJSON('selectedDeliveryLocation'))||null}
 function riderLoc(o){return loc(o?.riderLocation)||loc(o?.liveRiderLocation)||loc(o?.rider?.location)||loc(readJSON('rider_live_location'))||null}
 function status(o){return String(o?.adminStatus||o?.orderStatus||o?.deliveryStatus||o?.riderStatus||o?.status||'confirmed').toLowerCase().replace(/[\s-]+/g,'_')}
-function outForDelivery(o){return['picked_up','pickedup','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(status(o))}
+function outForDelivery(o){return['picked_up','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(status(o))}
 function address(o){return o.deliveryAddress||o.address||(o.deliveryLocation&&(o.deliveryLocation.fullAddress||o.deliveryLocation.displayAddress))||o.delivery_address||''}
 function eta(o){return o.eta||o.estimatedDeliveryTime||o.deliveryEta||o.deliveryTime||o.timing||'25 - 35mins'}
 function items(o){const it=o.items||o.cartItems||o.orderItems||[];if(Array.isArray(it))return it.filter(Boolean);if(it&&typeof it==='object')return Object.values(it).filter(Boolean);return[]}
@@ -492,257 +408,36 @@ function money(v){return `₹${Math.round(Number(v||0))}`}
 function setText(id,v){if(!v)return;const e=document.getElementById(id);if(e)e.textContent=v}
 function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
 function upsert(marker,type,location){if(!map||!maplibre||!location)return marker;if(!marker){marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'}).setLngLat([location.lng,location.lat]).addTo(map)}else marker.setLngLat([location.lng,location.lat]);return marker}
-function ensureRoute(){
-  if(!map||!map.isStyleLoaded())return false;
-  if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});
-  if(!map.getLayer('track-route-casing'))map.addLayer({
-    id:'track-route-casing',
-    type:'line',
-    source:'track-route-source',
-    layout:{'line-cap':'round','line-join':'round'},
-    paint:{'line-color':'#FDFDFF','line-width':10,'line-opacity':0}
-  });
-  if(!map.getLayer('track-route-line'))map.addLayer({
-    id:'track-route-line',
-    type:'line',
-    source:'track-route-source',
-    layout:{'line-cap':'round','line-join':'round'},
-    paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}
-  });
-  return true;
-}
+function ensureRoute(){if(!map||!map.isStyleLoaded())return false;if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-casing'))map.addLayer({id:'track-route-casing',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':0,'line-opacity':0}},map.getLayer('track-route-line')?'track-route-line':undefined);if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
+function routeData(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
+function clearRoute(){if(!ensureRoute())return;map.getSource('track-route-source').setData(routeData([]))}
 function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
-function routeKey(from,to,mode){return `${mode}:${Number(from.lat).toFixed(4)},${Number(from.lng).toFixed(4)}>${Number(to.lat).toFixed(4)},${Number(to.lng).toFixed(4)}`}
-function routeFeature(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
-function fallbackRoute(from,to){return [[from.lng,from.lat],[to.lng,to.lat]]}
-function distanceMeters(a,b){
-  if(!a||!b)return Infinity;
-  const R=6371000;
-  const toRad=v=>v*Math.PI/180;
-  const dLat=toRad(Number(b.lat)-Number(a.lat));
-  const dLng=toRad(Number(b.lng)-Number(a.lng));
-  const lat1=toRad(Number(a.lat));
-  const lat2=toRad(Number(b.lat));
-  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
-  return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
-}
-function shouldRefreshRoadRoute(from,to,mode){
-  const now=Date.now();
-  if(!lastRouteState)return {refresh:true,reason:'first_route'};
-  if(lastRouteState.mode!==mode)return {refresh:true,reason:'mode_changed'};
-  const targetShift=distanceMeters(lastRouteState.to,to);
-  if(targetShift>ROUTE_TARGET_CHANGE_M)return {refresh:true,reason:'target_changed'};
-  const elapsed=now-lastRouteState.requestedAt;
-  if(lastRouteState.isFallback&&elapsed>=30000)return {refresh:true,reason:'retry_fallback'};
-  const moved=distanceMeters(lastRouteState.from,from);
-  if(elapsed>=ROUTE_FORCE_REFRESH_MS)return {refresh:true,reason:'max_stale'};
-  if(elapsed>=ROUTE_NORMAL_REFRESH_MS&&moved>=ROUTE_REFRESH_DISTANCE_M)return {refresh:true,reason:'rider_moved'};
-  if(elapsed>=ROUTE_HARD_MIN_INTERVAL_MS&&moved>=ROUTE_HARD_DISTANCE_M)return {refresh:true,reason:'rider_far_from_route_start'};
-  return {refresh:false,reason:'keep_cached_route',moved,elapsed};
-}
-function applyRiderRoadRoute(coords,isFallback){
-  if(!ensureRoute())return;
-  const source=map.getSource('track-route-source');
-  source.setData(routeFeature(coords));
-  map.setPaintProperty('track-route-line','line-color','#08A045');
-  map.setPaintProperty('track-route-line','line-width',5.5);
-  map.setPaintProperty('track-route-line','line-opacity',isFallback ? .78 : .96);
-  map.setPaintProperty('track-route-line','line-dasharray',[1,0]);
-  map.setPaintProperty('track-route-casing','line-width',9.5);
-  map.setPaintProperty('track-route-casing','line-opacity',isFallback ? .72 : .96);
-}
-function setRestaurantCustomerCurve(from,to){
-  if(!ensureRoute()||!from||!to)return;
-  // Preparing/received state must stay like the original file:
-  // restaurant pin + customer pin + dotted curved path.
-  routeRenderToken++;
-  lastRouteState=null;
-  const coords=curve(from,to);
-  map.getSource('track-route-source').setData(routeFeature(coords));
-  map.setPaintProperty('track-route-casing','line-opacity',0);
-  map.setPaintProperty('track-route-casing','line-width',0);
-  map.setPaintProperty('track-route-line','line-color','#12130F');
-  map.setPaintProperty('track-route-line','line-width',2);
-  map.setPaintProperty('track-route-line','line-opacity',.9);
-  map.setPaintProperty('track-route-line','line-dasharray',[1.5,3]);
-  fitRoute(coords,[from,to],`restaurant-customer:${Number(from.lat).toFixed(4)},${Number(from.lng).toFixed(4)}>${Number(to.lat).toFixed(4)},${Number(to.lng).toFixed(4)}`);
-}
-function fitRoute(coords,extraLocs,fitKey){
-  if(!map||!maplibre)return;
-  const force=window.CBE_TRACK_FORCE_FIT===true;
-  if(!force&&lastFitKey===fitKey)return;
-  const b=new maplibre.LngLatBounds();
-  let count=0;
-  (coords||[]).forEach(point=>{if(Array.isArray(point)&&Number.isFinite(point[0])&&Number.isFinite(point[1])){b.extend(point);count++}});
-  (extraLocs||[]).filter(Boolean).forEach(l=>{b.extend([l.lng,l.lat]);count++});
-  if(!count)return;
-  if(count===1){const l=(extraLocs||[]).filter(Boolean)[0];if(l){map.easeTo({center:[l.lng,l.lat],zoom:14,duration:350})}}
-  else map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:450,maxZoom:15.5});
-  lastFitKey=fitKey;
-  window.CBE_TRACK_FORCE_FIT=false;
-}
-async function setRiderRoadRoute(from,to,options={}){
-  if(!ensureRoute()||!from||!to)return;
-  const mode='rider';
-  const key=routeKey(from,to,mode);
-  const decision=options.force?{refresh:true,reason:options.reason||'forced_immediate_pickup'}:shouldRefreshRoadRoute(from,to,mode);
-
-  // Rider marker can update every 10 seconds.
-  // Ola Directions route should be fetched only after pickup and only when needed.
-  // Important: do NOT draw a straight fallback line. Straight line looks wrong for delivery tracking.
-  if(!decision.refresh){
-    return;
-  }
-
-  if(document.hidden){
-    return;
-  }
-
-  const token=++routeRenderToken;
-  const firstOrChanged=lastRouteKey!==key||!lastRouteState;
-
-  if(firstOrChanged){
-    // Clear old route while waiting for Ola road route, instead of showing a fake straight line.
-    const source=map.getSource('track-route-source');
-    if(source)source.setData(routeFeature([]));
-    lastRouteKey=key;
-  }
-
-  lastRouteState={
-    mode,
-    from:{lat:from.lat,lng:from.lng},
-    to:{lat:to.lat,lng:to.lng},
-    requestedAt:Date.now(),
-    isFallback:false,
-    reason:decision.reason,
-    usedRestaurantFallback:!options.usingRiderLocation
-  };
-
-  try{
-    const helper=window.CBEOlaMapV4;
-    if(!helper||typeof helper.getRoute!=='function'){
-      console.warn('Ola route helper missing. Check ola-map-v4.js is updated to routepickup2.');
-      return;
-    }
-    const route=await helper.getRoute(from,to);
-    if(token!==routeRenderToken)return;
-    const coords=Array.isArray(route?.coordinates)?route.coordinates:[];
-
-    // If Directions fails, do not show a straight fallback line.
-    // Keep the map with rider + customer pins and retry later by throttle rules.
-    if(route?.fallback || coords.length<2){
-      console.warn('Ola road route unavailable. Straight fallback hidden.', route?.error || route);
-      lastRouteState={
-        mode,
-        from:{lat:from.lat,lng:from.lng},
-        to:{lat:to.lat,lng:to.lng},
-        requestedAt:Date.now(),
-        isFallback:true,
-        reason:'directions_failed',
-        usedRestaurantFallback:!options.usingRiderLocation
-      };
-      const source=map.getSource('track-route-source');
-      if(source)source.setData(routeFeature([]));
-      return;
-    }
-
-    applyRiderRoadRoute(coords,false);
-    fitRoute(coords,[from,to],`${key}:road:${coords.length}`);
-    lastRouteState={
-      mode,
-      from:{lat:from.lat,lng:from.lng},
-      to:{lat:to.lat,lng:to.lng},
-      requestedAt:Date.now(),
-      isFallback:false,
-      reason:decision.reason,
-      usedRestaurantFallback:!options.usingRiderLocation
-    };
-  }catch(error){
-    console.warn('Track rider road route failed',error);
-    lastRouteState={
-      mode,
-      from:{lat:from.lat,lng:from.lng},
-      to:{lat:to.lat,lng:to.lng},
-      requestedAt:Date.now(),
-      isFallback:true,
-      reason:'directions_exception',
-      usedRestaurantFallback:!options.usingRiderLocation
-    };
-    const source=map.getSource('track-route-source');
-    if(source)source.setData(routeFeature([]));
-  }
-}
-
+function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return;routeRequestToken++;lastRouteState=null;const s=map.getSource('track-route-source');s.setData(routeData(curve(from,to)));map.setPaintProperty('track-route-casing','line-width',0);map.setPaintProperty('track-route-casing','line-opacity',0);map.setPaintProperty('track-route-line','line-color','#12130F');map.setPaintProperty('track-route-line','line-width',2);map.setPaintProperty('track-route-line','line-opacity',.9);map.setPaintProperty('track-route-line','line-dasharray',[1.5,3])}
+function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#08A045');map.setPaintProperty('track-route-line','line-width',5);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
+function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;const key=valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|');if(key===lastFitKey)return;lastFitKey=key;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:350,maxZoom:15})}
+function haversineMeters(a,b){if(!a||!b)return Infinity;const R=6371000;const rad=v=>v*Math.PI/180;const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);const lat1=rad(a.lat),lat2=rad(b.lat);const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
+function shouldFetchRoadRoute(from,to){if(!from||!to)return false;if(document.hidden)return false;if(!lastRouteState)return true;const moved=haversineMeters(lastRouteState.from,from);const elapsed=Date.now()-lastRouteState.at;return moved>=ROUTE_REFRESH_MIN_DISTANCE_M&&elapsed>=ROUTE_REFRESH_MIN_MS}
+function decodePolyline(str,precision=5){if(!str||typeof str!=='string')return[];let index=0,lat=0,lng=0,out=[],factor=Math.pow(10,precision);while(index<str.length){let result=0,shift=0,byte;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lat+=(result&1)?~(result>>1):(result>>1);result=0;shift=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lng+=(result&1)?~(result>>1):(result>>1);out.push([lng/factor,lat/factor])}return out.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]))}
+function looksLatLng(a,b){return a>=5&&a<=40&&b>=65&&b<=100}
+function looksLngLat(a,b){return a>=65&&a<=100&&b>=5&&b<=40}
+function pair(a,b){const x=Number(a),y=Number(b);if(!Number.isFinite(x)||!Number.isFinite(y))return null;if(looksLatLng(x,y))return[y,x];if(looksLngLat(x,y))return[x,y];if(Math.abs(x)<=90&&Math.abs(y)>45)return[y,x];return[x,y]}
+function normalizePointList(list){if(!Array.isArray(list))return[];return list.map(p=>Array.isArray(p)?pair(p[0],p[1]):p&&typeof p==='object'?pair(p.lng??p.lon??p.long??p.longitude,p.lat??p.latitude):null).filter(Boolean)}
+function geoJsonCoords(obj){if(!obj||typeof obj!=='object')return[];if(obj.type==='LineString')return normalizePointList(obj.coordinates);if(obj.type==='MultiLineString')return normalizePointList((obj.coordinates||[]).flat());if(obj.type==='Feature')return geoJsonCoords(obj.geometry);if(obj.type==='FeatureCollection')return(obj.features||[]).flatMap(geoJsonCoords);return[]}
+function deepCoords(value,depth=0){if(!value||depth>7)return[];if(Array.isArray(value)){if(value.length>=2&&typeof value[0]!=='object'&&typeof value[1]!=='object'){const p=pair(value[0],value[1]);return p?[p]:[]}return value.flatMap(v=>deepCoords(v,depth+1))}if(typeof value==='object'){for(const key of ['coordinates','overview_path','path','points','route_points','polyline_points','geometry','geojson']){if(key in value){const found=deepCoords(value[key],depth+1);if(found.length>=3)return found}}return[]}return[]}
+function encodedCandidates(value,depth=0){if(!value||depth>7)return[];if(typeof value==='string')return value.length>=12&&/[\\_@?`~|{}\[\]\^]/.test(value)?[value]:[];if(Array.isArray(value))return value.flatMap(v=>encodedCandidates(v,depth+1));if(typeof value==='object'){let out=[];for(const key of ['points','polyline','encodedPolyline','overview_polyline','overviewPolyline','geometry'])if(key in value)out=out.concat(encodedCandidates(value[key],depth+1));return out.length?out:Object.values(value).flatMap(v=>encodedCandidates(v,depth+1))}return[]}
+function extractRoadCoords(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;let coords=[];const direct=route?.overview_polyline?.points||route?.overviewPolyline?.points||route?.overview_polyline||route?.overviewPolyline||route?.polyline||route?.encodedPolyline||route?.geometry;if(typeof direct==='string'){coords=decodePolyline(direct,5);if(coords.length<3)coords=decodePolyline(direct,6)}if(coords.length<3)coords=geoJsonCoords(route?.geometry||route?.geojson||route?.routeGeoJson||data?.geometry||data?.geojson);if(coords.length<3&&Array.isArray(route?.legs)){let step=[];route.legs.forEach(leg=>(leg.steps||[]).forEach(st=>{const enc=st.polyline?.points||st.polyline||st.encodedPolyline||st.geometry;if(typeof enc==='string'){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);step=step.concat(d)}else{step=step.concat(geoJsonCoords(enc),deepCoords(enc))}}));coords=step}if(coords.length<3){for(const enc of encodedCandidates(route||data)){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);if(d.length>=3){coords=d;break}}}if(coords.length<3)coords=deepCoords(route||data);return normalizePointList(coords)}
+async function fetchRoadRoute(from,to){if(!ensureRoute()||!from||!to)return;if(!shouldFetchRoadRoute(from,to))return;const token=++routeRequestToken;const previousState=lastRouteState;lastRouteState={from:{...from},to:{...to},at:Date.now()};try{const helper=window.CBEOlaMapV4;if(!helper||typeof helper.directions!=='function')return;const data=await helper.directions(from,to);if(token!==routeRequestToken)return;const coords=extractRoadCoords(data);if(coords.length>=3){drawRoadRoute(coords)}else{lastRouteState=previousState;clearRoute();console.warn('Ola returned no road geometry; hidden straight fallback.')}}catch(err){lastRouteState=previousState;clearRoute();console.warn('Ola road route failed; hidden straight fallback.',err)}}
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
-function renderMap(){
-  if(!map||!map.isStyleLoaded())return;
-  const o=getSelectedOrder();
-  const currentStatus=status(o);
-  const wasOut=['picked_up','pickedup','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(lastRenderedStatus);
-  const isOut=outForDelivery(o);
-  const becameOut=isOut&&!wasOut;
-  const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);
-  if(!c){fit([r]);lastRenderedStatus=currentStatus;return}
-  if(isOut){
-    if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}
-    const start=rd||r;
-    const usingRiderLocation=!!rd;
-    const forceRoadRoute=becameOut||(usingRiderLocation&&lastRouteState&&lastRouteState.usedRestaurantFallback);
-    riderMarker=upsert(riderMarker,'rider',start);
-    customerMarker=upsert(customerMarker,'customer',c);
-    setRiderRoadRoute(start,c,{force:forceRoadRoute,usingRiderLocation,reason:becameOut?'picked_up_now':'rider_location_became_available'});
-    lastRenderedStatus=currentStatus;
-    return;
-  }
-  if(riderMarker){riderMarker.remove();riderMarker=null}
-  restaurantMarker=upsert(restaurantMarker,'restaurant',r);
-  customerMarker=upsert(customerMarker,'customer',c);
-  setRestaurantCustomerCurve(r,c);
-  lastRenderedStatus=currentStatus;
-}
-
-function bindTrackMapControls(){
-  if(!map) return;
-  const zoomIn=document.getElementById('trackMapZoomIn');
-  const zoomOut=document.getElementById('trackMapZoomOut');
-
-  if(zoomIn && zoomIn.dataset.bound !== '1'){
-    zoomIn.dataset.bound='1';
-    zoomIn.addEventListener('click', event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      map.zoomIn({duration:180});
-    });
-  }
-
-  if(zoomOut && zoomOut.dataset.bound !== '1'){
-    zoomOut.dataset.bound='1';
-    zoomOut.addEventListener('click', event=>{
-      event.preventDefault();
-      event.stopPropagation();
-      map.zoomOut({duration:180});
-    });
-  }
-}
-
-function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;
-try{
-  map.dragPan?.enable();
-  map.touchZoomRotate?.enable();
-  map.scrollZoom?.enable();
-  map.keyboard?.enable();
-  map.doubleClickZoom?.enable();
-}catch(_){}
-bindTrackMapControls();
-map.on('load',renderMap);
-if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
-function boot(){hydrate();initMap();renderMap();startLiveOrderSync()}
+function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(!c)return;if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);fetchRoadRoute(start,c);fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setDottedCurve(r,c);fit([r,c])}
+function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementById('trackMapZoomIn');const zoomOut=document.getElementById('trackMapZoomOut');if(zoomIn&&zoomIn.dataset.bound!=='1'){zoomIn.dataset.bound='1';zoomIn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomIn({duration:180})})}if(zoomOut&&zoomOut.dataset.bound!=='1'){zoomOut.dataset.bound='1';zoomOut.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomOut({duration:180})})}}
+function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
+function boot(){hydrate();initMap();renderMap()}
+function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order);if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists)return;const cloud=mergeOrder(order,{id:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>console.warn('Track live order sync failed',err))}catch(err){console.warn('Track live order listener failed',err)}}
 document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
-window.renderTrack=boot;window.renderOrders=boot;window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});setInterval(boot,TRACK_BOOT_INTERVAL_MS);window.addEventListener('beforeunload',()=>{if(liveOrderUnsubscribe){try{liveOrderUnsubscribe()}catch(_){}}});
+window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);
 })();
 </script>
-
 <script>
 (function setupTrackMapFullscreenMode() {
   function resizeOlaMapAfterLayout() {
@@ -752,7 +447,6 @@ window.renderTrack=boot;window.renderOrders=boot;window.renderTrackMapPreview=bo
       window.trackOlaMapInstance.resize();
     }
 
-    window.CBE_TRACK_FORCE_FIT = true;
     if (typeof window.renderTrackMapPreview === 'function') {
       window.renderTrackMapPreview();
     }
