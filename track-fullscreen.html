@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
-<meta content="#8806CE" name="theme-color"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
+<meta name="theme-color" content="#8806CE" />
 <title>Track Order - Coimbatore Foods</title>
-<link id="pwa-manifest" rel="manifest"/>
+<link rel="manifest" id="pwa-manifest" />
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" />
 <script>
   if (!localStorage.getItem('cust_auth')) {
     window.location.replace('login.html');
@@ -17,189 +17,39 @@
 </script>
 <style>
 
-@font-face {
-  font-family: 'General Sans';
-  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'General Sans';
-  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'General Sans';
-  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html,
-body {
-  width: 100%;
-  min-height: 100%;
-  margin: 0;
-  background: #F4F4F6;
-  color: #12130F;
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  overflow-x: hidden;
-}
-
-button,
-a {
-  font: inherit;
-}
-
-button {
-  border: 0;
-  background: transparent;
-  padding: 0;
-  cursor: pointer;
-}
-
-.track-fullscreen-shell {
-  width: 100%;
-  max-width: 390px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  background: #FDFDFF;
-  overflow-x: hidden;
-}
-
-#trackFullscreenRoot {
-  margin: 0 auto;
-}
-
-#trackFullscreenRoot img[src*="assets/track orders/track-screen"] {
-  display: block;
-  object-fit: contain;
-}
-
-#trackFullscreenRoot [data-layer="map-section-v1"] {
-  background-image:
-    radial-gradient(circle at 22% 36%, rgba(8, 160, 69, 0.16), transparent 18%),
-    radial-gradient(circle at 72% 25%, rgba(136, 6, 206, 0.16), transparent 20%),
-    linear-gradient(135deg, #E8EBEF 0%, #FDFDFF 55%, #E9F7EF 100%) !important;
-  background-size: cover !important;
-  background-position: center !important;
-}
-
-#trackFullDeliveryAddress {
-  display: -webkit-box !important;
-  -webkit-line-clamp: 2 !important;
-  line-clamp: 2 !important;
-  -webkit-box-orient: vertical !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
-  white-space: normal !important;
-}
-
-[data-layer="back-button"],
-[data-layer="back to orders-button"],
-[data-layer="full screen-button"] {
-  cursor: pointer;
-  user-select: none;
-}
-
-[data-layer="back-button"]:active,
-[data-layer="back to orders-button"]:active,
-[data-layer="full screen-button"]:active {
-  opacity: .82;
-}
-
-@media (max-width: 389px) {
-  .track-fullscreen-shell,
-  #trackFullscreenRoot {
-    width: 100% !important;
-    max-width: 390px;
-  }
-}
-
-
-/* Clean real Ola map preview */
-.track-ola-map-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 14px;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 22% 36%, rgba(8, 160, 69, 0.16), transparent 18%),
-    radial-gradient(circle at 72% 25%, rgba(136, 6, 206, 0.16), transparent 20%),
-    linear-gradient(135deg, #E8EBEF 0%, #FDFDFF 55%, #E9F7EF 100%);
-}
-
-.track-ola-map-canvas canvas {
-  border-radius: 14px;
-}
-
-.track-ola-map-canvas .maplibregl-control-container {
-  display: none;
-}
-
-.track-ola-marker {
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.track-ola-marker img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.18));
-}
-
-.track-ola-marker-customer {
-  width: 18px;
-  height: 24px;
-}
-
-.track-ola-marker-rider {
-  width: 22px;
-  height: 22px;
-}
-
-.track-ola-rider-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #08A045;
-  border: 3px solid #FDFDFF;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
-}
+@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:'General Sans';src:url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');font-weight:600;font-style:normal;font-display:swap}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;min-height:100%;margin:0;background:#F4F4F6;color:#12130F;font-family:'General Sans',system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:pointer}
+.track-fullscreen-shell{width:100%;max-width:390px;min-height:100dvh;margin:0 auto;background:#FDFDFF;overflow-x:hidden}
+#trackFullscreenRoot{margin:0 auto}
+#trackFullscreenRoot img[src*="assets/track orders/track-screen"]{display:block;object-fit:contain}
+#trackFullscreenRoot [data-layer="map-section-v1"]{background:radial-gradient(circle at 22% 36%,rgba(8,160,69,.16),transparent 18%),radial-gradient(circle at 72% 25%,rgba(136,6,206,.16),transparent 20%),linear-gradient(135deg,#E8EBEF 0%,#FDFDFF 55%,#E9F7EF 100%)!important;background-size:cover!important;background-position:center!important}
+.track-ola-map-canvas{position:absolute;inset:0;z-index:0;width:100%;height:100%;border-radius:14px;overflow:hidden;background:radial-gradient(circle at 22% 36%,rgba(8,160,69,.16),transparent 18%),radial-gradient(circle at 72% 25%,rgba(136,6,206,.16),transparent 20%),linear-gradient(135deg,#E8EBEF 0%,#FDFDFF 55%,#E9F7EF 100%)}
+.track-ola-map-canvas canvas{border-radius:14px}.track-ola-map-canvas .maplibregl-control-container{display:none}
+.track-ola-marker{width:24px;height:24px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.track-ola-marker img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+.track-ola-marker-customer{width:18px;height:24px}.track-ola-marker-rider{width:22px;height:22px}
+.track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+#trackFullDeliveryAddress{display:-webkit-box!important;-webkit-line-clamp:2!important;line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:normal!important}
+[data-layer="back-button"],[data-layer="back to orders-button"],[data-layer="full screen-button"]{cursor:pointer;user-select:none}
+[data-layer="back-button"]:active,[data-layer="back to orders-button"]:active,[data-layer="full screen-button"]:active{opacity:.82}
+@media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot{width:100%!important;max-width:390px}}
 
 </style>
-<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" />
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+  <div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
-<div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden"><div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
+<div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px;  flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden"><div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
 <div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex; position: relative; z-index: 2">
 <div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; background: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex">
 <div class="BackButton" data-layer="back-button" style="border-radius: 14px; justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 <div class="Back" data-layer="back" style="color: #12130F; font-size: 18px; font-family: General Sans; font-weight: 500; line-height: 27px; word-wrap: break-word">back</div>
 </div>
 <div class="DeliverTo" data-layer="deliver-to" style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
@@ -208,7 +58,7 @@ button {
 </div>
 </div>
 <div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="FullScreenIcons" data-layer="full screen-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="FullScreenIcons" data-layer="full screen-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 </div>
 </div>
@@ -222,19 +72,19 @@ button {
 <div class="WeHaveReceivedYourOrder" data-layer="We have received your order" style="color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">We have received your order</div>
 <div class="StatusIconsSet" data-layer="status-icons-set" style="width: 294px; justify-content: space-between; align-items: center; display: inline-flex">
 <div class="StatusOrderReceived" data-layer="status-order-received" style="padding: 10px; background: #08A045; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOrderReceivedIcon" data-layer="status-order-received-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-order-received-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusOrderReceivedIcon" data-layer="status-order-received-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-order-received-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 <div class="ConnectoreLine1" data-layer="connectore-line-1" style="flex: 1 1 0; height: 0px; outline: 2px #08A045 solid; outline-offset: -1px"></div>
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusPreparingIcon" data-layer="status-preparing-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-preparing-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusPreparingIcon" data-layer="status-preparing-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-preparing-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 <div class="ConnectoreLine2" data-layer="connectore-line-2" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
 <div class="StatusOutfordelivery" data-layer="status-outfordelivery" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusOutfordeliveryIcon" data-layer="status-outfordelivery-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-outfordelivery-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusOutfordeliveryIcon" data-layer="status-outfordelivery-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-outfordelivery-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 <div class="ConnectoreLine3" data-layer="connectore-line-3" style="flex: 1 1 0; height: 0px; outline: 2px #12130F solid; outline-offset: -1px"></div>
 <div class="StatusDelivered" data-layer="status-delivered" style="padding: 10px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.06) 0%, rgba(18, 19, 15, 0.06) 100%), white; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="StatusDeliveredIcon" data-layer="status-delivered-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-delivered-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="StatusDeliveredIcon" data-layer="status-delivered-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/status-delivered-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 </div>
 </div>
@@ -247,7 +97,7 @@ button {
 </div>
 <div class="RiderContent" data-layer="rider-content" style="flex: 1 1 0; align-self: stretch; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex">
 <div class="RiderInfoGroup" data-layer="rider-info-group" style="align-self: stretch; justify-content: flex-end; align-items: flex-start; gap: 4px; display: inline-flex">
-<div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="ClockIcon" data-layer="clock-icon" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 <div class="AssigningRider" data-layer="Assigning Rider." id="trackFullAssigningRider" style="text-align: right; color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Assigning Rider.</div>
 </div>
 </div>
@@ -274,13 +124,13 @@ button {
 <div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
 <div class="Frame78" data-layer="Frame 78" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #8806CE; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="CallRiderButton" data-layer="call-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/call-rider-button.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="CallRiderButton" data-layer="call-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/call-rider-button.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 <div class="Call" data-layer="Call" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Call</div>
 </div>
 <div class="Frame79" data-layer="Frame 79" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
 <div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #12130F; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="TextRiderButton" data-layer="text-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/text-rider-button.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
+<div class="TextRiderButton" data-layer="text-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/text-rider-button.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
 </div>
 <div class="Text" data-layer="Text" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Text</div>
 </div>
@@ -343,171 +193,47 @@ button {
 </div>
 </div>
 </main>
+<script src="ola-map-v4.js"></script>
+
 <script>
-(function setupTrackFullscreen() {
-  function readJSON(key) {
-    try {
-      const raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : null;
-    } catch {
-      return null;
-    }
-  }
-
-  function normalizeOrders(value) {
-    if (!value) return [];
-    if (Array.isArray(value)) return value.filter(Boolean);
-    if (typeof value === 'object') return Object.values(value).filter(Boolean);
-    return [];
-  }
-
-  function getOrderId(order) {
-    return String(order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || '');
-  }
-
-  function getSelectedOrder() {
-    const params = new URLSearchParams(window.location.search);
-    const queryId = params.get('orderId') || '';
-
-    const saved = readJSON('cbe_track_selected_order');
-    if (saved && typeof saved === 'object') {
-      if (!queryId || getOrderId(saved) === queryId) return saved;
-    }
-
-    const candidates = [];
-    const current = readJSON('current_order');
-    const history = normalizeOrders(readJSON('order_history'));
-    const previous = normalizeOrders(readJSON('previous_orders'));
-    const orders = normalizeOrders(readJSON('orders'));
-    const customerOrders = normalizeOrders(readJSON('customer_orders'));
-    const pending = readJSON('pending_order');
-
-    if (current && typeof current === 'object') candidates.push(current);
-    history.forEach(order => candidates.push(order));
-    previous.forEach(order => candidates.push(order));
-    orders.forEach(order => candidates.push(order));
-    customerOrders.forEach(order => candidates.push(order));
-    if (pending && typeof pending === 'object') candidates.push(pending);
-
-    if (queryId) {
-      const found = candidates.find(order => getOrderId(order) === queryId);
-      if (found) return found;
-    }
-
-    return candidates[0] || {};
-  }
-
-  function getAddress(order) {
-    return order.deliveryAddress ||
-      order.address ||
-      (order.deliveryLocation && (order.deliveryLocation.fullAddress || order.deliveryLocation.displayAddress)) ||
-      order.delivery_address ||
-      '';
-  }
-
-  function getEta(order) {
-    return order.eta || order.estimatedDeliveryTime || order.deliveryEta || order.deliveryTime || order.timing || '25 - 35mins';
-  }
-
-  function getItems(order) {
-    const items = order.items || order.cartItems || order.orderItems || [];
-    if (Array.isArray(items)) return items.filter(Boolean);
-    if (items && typeof items === 'object') return Object.values(items).filter(Boolean);
-    return [];
-  }
-
-  function getItemName(item) {
-    return item.name || item.title || item.itemName || item.productName || 'Item';
-  }
-
-  function getItemQty(item) {
-    return Number(item.qty ?? item.quantity ?? item.count ?? 1) || 1;
-  }
-
-  function getItemPrice(item) {
-    return Number(item.price ?? item.unitPrice ?? item.amount ?? 0) || 0;
-  }
-
-  function money(value) {
-    return `₹${Math.round(Number(value || 0))}`;
-  }
-
-  function setTextById(id, value) {
-    if (!value) return;
-    const element = document.getElementById(id);
-    if (element) element.textContent = value;
-  }
-
-  function renderSummary(order) {
-    const itemsEl = document.getElementById('trackPaymentInformations');
-    const totalEl = document.getElementById('trackTotalPay');
-    if (!itemsEl || !totalEl) return;
-
-    const items = getItems(order);
-    const itemTotal = items.reduce((sum, item) => sum + getItemPrice(item) * getItemQty(item), 0);
-    const deliveryFee = Number(order.deliveryFee ?? order.totals?.delivery ?? 0) || 0;
-    const tax = Number(order.tax ?? order.totals?.tax ?? 0) || 0;
-    const total = Number(order.total ?? order.totals?.total ?? (itemTotal + deliveryFee + tax)) || 0;
-
-    const rows = [];
-
-    if (items.length) {
-      items.forEach((item, index) => {
-        const qty = getItemQty(item);
-        const name = getItemName(item);
-        const linePrice = getItemPrice(item) * qty;
-        rows.push(`
-          <div data-layer="bill-info-item-${index + 1}" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-            <div style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-              <div style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">${qty}x</div>
-              <div style="color: #12130F; font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px;">${name}</div>
-            </div>
-            <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${money(linePrice)}</div>
-          </div>
-        `);
-      });
-    }
-
-    rows.push(`
-      <div data-layer="tax-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-        <div style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">Tax & charges</div>
-        <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${tax ? money(tax) : '-'}</div>
-      </div>
-    `);
-
-    rows.push(`
-      <div data-layer="fee-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-        <div style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px;">Delivery fee</div>
-        <div style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px;">${money(deliveryFee)}</div>
-      </div>
-    `);
-
-    itemsEl.innerHTML = rows.join('');
-    totalEl.textContent = money(total);
-  }
-
-  function hydrate() {
-    const order = getSelectedOrder();
-
-    setTextById('trackFullDeliveryAddress', getAddress(order));
-    setTextById('trackFullEta', getEta(order));
-
-    const rider = order.riderName || order.partnerName || order.deliveryPartner || '';
-    setTextById('trackFullAssigningRider', rider);
-    setTextById('trackFullRiderName', rider);
-
-    renderSummary(order);
-  }
-
-  document.addEventListener('click', function(event) {
-    if (event.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]')) {
-      window.location.href = 'track.html';
-    }
-  }, true);
-
-  hydrate();
+(function(){
+const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
+let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
+function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
+function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
+function getOrderId(o){return String(o?.id||o?.orderId||o?.order_id||o?.receipt||o?.razorpayOrderId||'')}
+function getSelectedOrder(){const p=new URLSearchParams(location.search);const q=p.get('orderId')||'';const saved=readJSON('cbe_track_selected_order');if(saved&&typeof saved==='object'){if(!q||getOrderId(saved)===q)return saved}const c=[];const cur=readJSON('current_order');const h=normalizeOrders(readJSON('order_history'));const prev=normalizeOrders(readJSON('previous_orders'));const orders=normalizeOrders(readJSON('orders'));const cust=normalizeOrders(readJSON('customer_orders'));const pend=readJSON('pending_order');if(cur&&typeof cur==='object')c.push(cur);h.forEach(o=>c.push(o));prev.forEach(o=>c.push(o));orders.forEach(o=>c.push(o));cust.forEach(o=>c.push(o));if(pend&&typeof pend==='object')c.push(pend);if(q){const f=c.find(o=>getOrderId(o)===q);if(f)return f}return c[0]||{}}
+function num(v){const n=Number(v);return Number.isFinite(n)?n:null}
+function loc(v){if(!v||typeof v!=='object')return null;const lat=num(v.lat??v.latitude??v.coords?.lat??v.coords?.latitude);const lng=num(v.lng??v.lon??v.long??v.longitude??v.coords?.lng??v.coords?.longitude);if(lat===null||lng===null)return null;return{lat,lng}}
+function restLoc(o){return loc(o?.restaurantLocation)||loc(o?.adminLocation)||loc(readJSON('restaurant_location'))||loc(readJSON('admin_restaurant_location'))||loc(readJSON('default_restaurant_location'))||DEFAULT_RESTAURANT_LOCATION}
+function custLoc(o){return loc(o?.deliveryLocation)||loc(o?.customerLocation)||loc(o?.addressLocation)||loc(o?.location)||loc(readJSON('active_delivery_location'))||loc(readJSON('selectedDeliveryLocation'))||null}
+function riderLoc(o){return loc(o?.riderLocation)||loc(o?.liveRiderLocation)||loc(o?.rider?.location)||loc(readJSON('rider_live_location'))||null}
+function status(o){return String(o?.adminStatus||o?.orderStatus||o?.deliveryStatus||o?.riderStatus||o?.status||'confirmed').toLowerCase().replace(/[\s-]+/g,'_')}
+function outForDelivery(o){return['picked_up','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(status(o))}
+function address(o){return o.deliveryAddress||o.address||(o.deliveryLocation&&(o.deliveryLocation.fullAddress||o.deliveryLocation.displayAddress))||o.delivery_address||''}
+function eta(o){return o.eta||o.estimatedDeliveryTime||o.deliveryEta||o.deliveryTime||o.timing||'25 - 35mins'}
+function items(o){const it=o.items||o.cartItems||o.orderItems||[];if(Array.isArray(it))return it.filter(Boolean);if(it&&typeof it==='object')return Object.values(it).filter(Boolean);return[]}
+function itemName(i){return i.name||i.title||i.itemName||i.productName||'Item'}
+function itemQty(i){return Number(i.qty??i.quantity??i.count??1)||1}
+function itemPrice(i){return Number(i.price??i.unitPrice??i.amount??0)||0}
+function money(v){return `₹${Math.round(Number(v||0))}`}
+function setText(id,v){if(!v)return;const e=document.getElementById(id);if(e)e.textContent=v}
+function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
+function upsert(marker,type,location){if(!map||!maplibre||!location)return marker;if(!marker){marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'}).setLngLat([location.lng,location.lat]).addTo(map)}else marker.setLngLat([location.lng,location.lat]);return marker}
+function ensureRoute(){if(!map||!map.isStyleLoaded())return false;if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
+function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
+function setRoute(from,to,mode){if(!ensureRoute()||!from||!to)return;const s=map.getSource('track-route-source');const rider=mode==='rider';const coords=rider?[[from.lng,from.lat],[to.lng,to.lat]]:curve(from,to);s.setData({type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}}]});map.setPaintProperty('track-route-line','line-color',rider?'#08A045':'#12130F');map.setPaintProperty('track-route-line','line-width',rider?3:2);map.setPaintProperty('track-route-line','line-dasharray',rider?[2,2]:[1.5,3])}
+function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:400,maxZoom:15})}
+function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
+function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
+function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoute(start,c,'rider');fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoute(r,c,'restaurant-customer');fit([r,c])}
+function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;maplibre=maplibregl||window.maplibregl;map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
+function boot(){hydrate();initMap();renderMap()}
+document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
+window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
 })();
 </script>
-<script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
+
+<script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
