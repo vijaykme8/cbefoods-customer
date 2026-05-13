@@ -126,6 +126,85 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   white-space: normal !important;
 }
 
+
+/* Fullscreen map mode from track fullscreen */
+body.track-map-fullscreen-open {
+  overflow: hidden !important;
+}
+
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="map-section-v1"] {
+  position: fixed !important;
+  z-index: 99999 !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 390px !important;
+  max-width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+}
+
+body.track-map-fullscreen-open #trackOlaMapCanvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0 !important;
+}
+
+body.track-map-fullscreen-open #trackOlaMapCanvas canvas {
+  border-radius: 0 !important;
+}
+
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="floating-content"] {
+  display: none !important;
+}
+
+.track-map-fullscreen-back {
+  position: absolute;
+  z-index: 100001;
+  left: 16px;
+  top: calc(16px + env(safe-area-inset-top));
+  height: 42px;
+  padding: 6px 12px 6px 8px;
+  display: none;
+  align-items: center;
+  gap: 4px;
+  background: #FFFFFF;
+  border-radius: 14px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.10);
+  color: #12130F;
+}
+
+.track-map-fullscreen-back img {
+  width: 30px;
+  height: 30px;
+  opacity: 0.5;
+  display: block;
+  object-fit: contain;
+}
+
+.track-map-fullscreen-back span {
+  color: #12130F;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+}
+
+body.track-map-fullscreen-open .track-map-fullscreen-back {
+  display: inline-flex;
+}
+
+body.track-map-fullscreen-open .track-map-controls {
+  left: 16px !important;
+  bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+  z-index: 100000 !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -146,6 +225,11 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 </div>
 </div>
 <div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding: 16px; border-radius: 14px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; width: 342px; height: 296px; position: relative; overflow: hidden;">
+<button aria-label="Back from full screen map" class="track-map-fullscreen-back" id="trackMapFullscreenBack" type="button">
+<img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=mapfull1"/>
+<span>back</span>
+</button>
+
 <div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
 <div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: flex-end; align-items: flex-end; gap: 20px; display: flex; width: 310px; position: relative; z-index: 2;">
 <div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex; width: 48px; height: 48px;">
@@ -348,7 +432,7 @@ function bindTrackMapControls(){
   }
 }
 
-function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;maplibre=maplibregl||window.maplibregl;
+function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;
 try{
   map.dragPan?.enable();
   map.touchZoomRotate?.enable();
@@ -364,6 +448,58 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-but
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
 })();
 </script>
+
+<script>
+(function setupTrackMapFullscreenMode() {
+  function resizeOlaMapAfterLayout() {
+    window.dispatchEvent(new Event('resize'));
+
+    if (window.trackOlaMapInstance && typeof window.trackOlaMapInstance.resize === 'function') {
+      window.trackOlaMapInstance.resize();
+    }
+
+    if (typeof window.renderTrackMapPreview === 'function') {
+      window.renderTrackMapPreview();
+    }
+  }
+
+  function openFullscreenMap() {
+    document.body.classList.add('track-map-fullscreen-open');
+    window.setTimeout(resizeOlaMapAfterLayout, 80);
+    window.setTimeout(resizeOlaMapAfterLayout, 320);
+  }
+
+  function closeFullscreenMap() {
+    document.body.classList.remove('track-map-fullscreen-open');
+    window.setTimeout(resizeOlaMapAfterLayout, 80);
+    window.setTimeout(resizeOlaMapAfterLayout, 320);
+  }
+
+  document.addEventListener('click', function(event) {
+    const fullscreenButton = event.target.closest('[data-layer="full screen-button"]');
+    if (fullscreenButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      openFullscreenMap();
+      return;
+    }
+
+    const fullscreenBack = event.target.closest('#trackMapFullscreenBack');
+    if (fullscreenBack) {
+      event.preventDefault();
+      event.stopPropagation();
+      closeFullscreenMap();
+    }
+  }, true);
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && document.body.classList.contains('track-map-fullscreen-open')) {
+      closeFullscreenMap();
+    }
+  });
+})();
+</script>
+
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
