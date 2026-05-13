@@ -432,31 +432,32 @@ body.track-map-fullscreen-open .track-map-controls {
 
 
 /* Frame 77 rider sync/contact actions */
-#trackFullRiderPhoto,.Frame77RiderInitial{
+.Frame77RiderInitial{
   width:34px;
   height:34px;
   border-radius:9999px;
   flex:none;
-}
-#trackFullRiderPhoto{
-  object-fit:cover;
-  display:block;
-  background:rgba(18,19,15,.06);
-}
-
-#trackFullRiderPhoto[hidden],#trackFullRiderInitial[hidden]{
-  display:none!important;
-}
-.Frame77RiderInitial{
   display:flex;
   align-items:center;
   justify-content:center;
   background:#08A045;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
   color:#FDFDFF;
   font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   font-size:14px;
   font-weight:600;
   line-height:1;
+}
+.Frame77RiderInitial.has-photo{
+  color:transparent;
+  text-indent:-9999px;
+  overflow:hidden;
+  background-color:rgba(18,19,15,.06);
+}
+#trackFullRiderInitial[hidden]{
+  display:none!important;
 }
 #trackFullCallRiderAction,#trackFullTextRiderAction{
   cursor:pointer;
@@ -517,7 +518,6 @@ body.track-map-fullscreen-open .track-map-controls {
 <div class="Frame76" data-layer="Frame 76" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
 <div class="RiderDetails" data-layer="rider-details" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
 <span id="trackFullRiderInitial" data-layer="rider-profile-initial" class="Frame77RiderInitial" aria-hidden="true">R</span>
-<img id="trackFullRiderPhoto" data-layer="rider-profile-picture" class="Frame77RiderProfilePicture" alt="Rider profile" src="" hidden/>
 <div class="AshokKumar" data-layer="Ashok Kumar" id="trackFullRiderName" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Assigning Rider</div>
 </div>
 <div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
@@ -659,27 +659,24 @@ function updateFrame77Rider(o){
   const photo=riderPhoto(o);
   const assigned=hasAssignedRider(o);
   const nameEl=document.getElementById('trackFullRiderName');
-  const photoEl=document.getElementById('trackFullRiderPhoto');
   const initialEl=document.getElementById('trackFullRiderInitial');
   const callEl=document.getElementById('trackFullCallRiderAction');
   const textEl=document.getElementById('trackFullTextRiderAction');
   if(nameEl)nameEl.textContent=assigned?(name||'Rider Assigned'):'Assigning Rider';
   if(initialEl){
-    initialEl.textContent=riderInitialText(name);
-    initialEl.hidden=!!photo;
-    initialEl.style.display=photo?'none':'flex';
-  }
-  if(photoEl){
-    photoEl.hidden=!photo;
-    photoEl.style.display=photo?'block':'none';
-    if(photo){photoEl.src=photo;photoEl.alt=name?`${name} profile picture`:'Rider profile picture';}
-    else{photoEl.removeAttribute('src');photoEl.alt='';}
-    photoEl.onerror=function(){
-      this.hidden=true;
-      this.style.display='none';
-      this.removeAttribute('src');
-      if(initialEl){initialEl.hidden=false;initialEl.style.display='flex';}
-    };
+    initialEl.hidden=false;
+    initialEl.style.display='flex';
+    if(photo){
+      initialEl.textContent=riderInitialText(name);
+      initialEl.style.backgroundImage=`url("${String(photo).replace(/"/g,'%22')}")`;
+      initialEl.classList.add('has-photo');
+      initialEl.setAttribute('aria-label',name?`${name} profile picture`:'Rider profile picture');
+    }else{
+      initialEl.textContent=riderInitialText(name);
+      initialEl.style.backgroundImage='';
+      initialEl.classList.remove('has-photo');
+      initialEl.setAttribute('aria-label','Rider initial');
+    }
   }
   [callEl,textEl].forEach(el=>{if(!el)return;el.dataset.riderPhone=phone;el.setAttribute('aria-disabled',phone?'false':'true');el.classList.toggle('is-disabled',!phone)});
 }
