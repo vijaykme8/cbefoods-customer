@@ -157,6 +157,28 @@ button {
     max-width: 390px;
   }
 }
+
+
+/* Active orders dynamic list fixes */
+#trackAddedRaw { overflow: visible !important; }
+#trackAddedRaw > [data-layer="Frame 84"] {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 390px !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding-bottom: 96px !important;
+}
+#trackAddedRaw [data-layer="Frame 81"] { width: 390px !important; height: auto !important; min-height: auto !important; }
+#trackAddedRaw [data-layer="empty-tract-content"] { width: 390px !important; gap: 12px !important; padding-bottom: 104px !important; }
+#trackAddedRaw [data-layer="item-cards"] { width: 342px !important; flex: none !important; height: auto !important; }
+#trackAddedRaw [data-layer="item-list"] { height: auto !important; min-height: 42px !important; }
+#trackAddedRaw [data-layer="time & value"] { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: nowrap !important; }
+.track-order-placed-time { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.track-order-total-value { flex: 0 0 auto; white-space: nowrap; }
 </style>
 </head>
 
@@ -353,14 +375,21 @@ button {
   }
 
   function getOrderId(order) {
-    return String(
-      order?.id ||
-      order?.orderId ||
-      order?.order_id ||
-      order?.receipt ||
-      order?.razorpayOrderId ||
-      `CBE-${Date.now()}`
-    );
+    const direct = order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || order?.paymentId || order?.payment?.id || '';
+    if (direct) return String(direct);
+
+    const seed = JSON.stringify({
+      createdAt: getDateSource(order),
+      total: getTotal(order),
+      items: getItems(order).map(item => [getItemName(item), getItemQty(item), getItemPrice(item)]),
+      phone: order?.customerPhone || order?.customer?.phone || order?.phone || ''
+    });
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+      hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+      hash |= 0;
+    }
+    return `LOCAL-${Math.abs(hash).toString(36).toUpperCase()}`;
   }
 
   function getAdminOrderStatus(order) {
@@ -371,19 +400,19 @@ button {
       order?.riderStatus ||
       order?.status ||
       'confirmed'
-    ).toLowerCase().trim();
+    ).toLowerCase().trim().replace(/[\s-]+/g, '_');
   }
 
   function getOrderStatusVariant(order) {
-    const status = getAdminOrderStatus(order).replace(/[\s-]+/g, '_');
+    const status = getAdminOrderStatus(order);
 
-    if (['received', 'confirmed', 'checkout_ready', 'placed', 'order_placed', 'accepted'].includes(status)) return 'received';
-    if (['preparing', 'food_preparing', 'being_prepared'].includes(status)) return 'preparing';
-    if (['picked_up', 'pickup_done', 'out_for_delivery', 'outfordelivery', 'on_the_way', 'on_way'].includes(status)) return 'out_for_delivery';
+    if (['received', 'confirmed', 'checkout_ready', 'placed', 'order_placed', 'accepted', 'paid', 'payment_success', 'new'].includes(status)) return 'received';
+    if (['preparing', 'food_preparing', 'being_prepared', 'cooking', 'rider_assigned', 'assigned'].includes(status)) return 'preparing';
+    if (['picked_up', 'pickup_done', 'out_for_delivery', 'outfordelivery', 'on_the_way', 'on_way', 'dispatched'].includes(status)) return 'out_for_delivery';
     if (['reached_location', 'reached', 'arrived', 'arrived_location', 'at_location', 'nearby'].includes(status)) return 'reached_location';
     if (['delivered', 'completed'].includes(status)) return 'reached_location';
 
-    return 'preparing';
+    return 'received';
   }
 
   function getOrders() {
@@ -433,37 +462,97 @@ button {
     return Number(item?.qty ?? item?.quantity ?? item?.count ?? 1) || 1;
   }
 
+
+  function getItemPrice(item) {
+    const lineTotal = Number(item?.lineTotal ?? item?.total ?? item?.totalPrice ?? item?.amount ?? 0) || 0;
+    const qty = getItemQty(item);
+    if (lineTotal && qty > 1 && !item?.price && !item?.unitPrice) return lineTotal / qty;
+    return Number(item?.price ?? item?.unitPrice ?? item?.rate ?? item?.sellingPrice ?? lineTotal ?? 0) || 0;
+  }
+
   function getTotal(order) {
     return Number(
       order?.total ??
+      order?.grandTotal ??
+      order?.totalAmount ??
       order?.amount ??
       order?.paidAmount ??
+      order?.amountPaid ??
       order?.totalPaid ??
+      order?.payableAmount ??
       order?.totals?.total ??
+      order?.totals?.grandTotal ??
+      order?.totals?.finalTotal ??
+      order?.payment?.total ??
       order?.payment?.amount ??
       0
     ) || 0;
   }
 
   function getDateSource(order) {
-    return order?.placedAt || order?.paidAt || order?.createdAt || order?.created_at || order?.orderDate || order?.orderedAt || order?.dateTime || order?.date || order?.timestamp || order?.updatedAt || '';
+    return order?.placedAt ||
+      order?.paidAt ||
+      order?.createdAt ||
+      order?.createdAtClient ||
+      order?.created_at ||
+      order?.orderDate ||
+      order?.orderedAt ||
+      order?.orderTime ||
+      order?.dateTime ||
+      order?.date ||
+      order?.timestamp ||
+      order?.updatedAt ||
+      order?.payment?.createdAt ||
+      order?.payment?.paidAt ||
+      '';
   }
 
   function toDate(value) {
     if (!value) return null;
     if (value instanceof Date && !Number.isNaN(value.getTime())) return value;
     if (typeof value === 'number') {
-      const date = new Date(value);
+      const date = new Date(value < 10000000000 ? value * 1000 : value);
       return Number.isNaN(date.getTime()) ? null : date;
     }
     if (typeof value === 'string') {
-      const date = new Date(value);
-      return Number.isNaN(date.getTime()) ? null : date;
+      const input = value.trim();
+      if (!input) return null;
+      if (/^\d+$/.test(input)) {
+        const numeric = Number(input);
+        const date = new Date(numeric < 10000000000 ? numeric * 1000 : numeric);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      let date = new Date(input);
+      if (!Number.isNaN(date.getTime())) return date;
+      const match = input.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})(?:[,\s]+(\d{1,2}):(\d{2})\s*(am|pm)?)?/i);
+      if (match) {
+        const day = Number(match[1]);
+        const month = Number(match[2]) - 1;
+        let year = Number(match[3]);
+        if (year < 100) year += 2000;
+        let hour = Number(match[4] || 0);
+        const minute = Number(match[5] || 0);
+        const ampm = String(match[6] || '').toLowerCase();
+        if (ampm === 'pm' && hour < 12) hour += 12;
+        if (ampm === 'am' && hour === 12) hour = 0;
+        date = new Date(year, month, day, hour, minute);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      return null;
     }
     if (typeof value === 'object') {
+      if (typeof value.toDate === 'function') {
+        const date = value.toDate();
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
       const seconds = value.seconds ?? value._seconds;
+      const millis = value.milliseconds ?? value._milliseconds;
       if (typeof seconds === 'number') {
         const date = new Date(seconds * 1000);
+        return Number.isNaN(date.getTime()) ? null : date;
+      }
+      if (typeof millis === 'number') {
+        const date = new Date(millis);
         return Number.isNaN(date.getTime()) ? null : date;
       }
     }
@@ -471,7 +560,8 @@ button {
   }
 
   function formatDateTime(order) {
-    const date = toDate(getDateSource(order)) || new Date();
+    const date = toDate(getDateSource(order));
+    if (!date) return 'Just now';
     const day = String(date.getDate()).padStart(2, '0');
     const month = date.toLocaleString('en-IN', { month: 'short' });
     const year = date.getFullYear();
@@ -524,11 +614,13 @@ button {
   }
 
   function computedTotalForOrder(order) {
+    const saved = getTotal(order);
+    if (saved) return saved;
     const items = getItems(order);
     const itemTotal = items.reduce((sum, item) => sum + getItemPrice(item) * getItemQty(item), 0);
-    const tax = Number(order?.tax ?? order?.totals?.tax ?? 0) || 0;
+    const tax = Number(order?.tax ?? order?.taxAmount ?? order?.totals?.tax ?? 0) || 0;
     const fee = deliveryFeeForOrder(order);
-    return itemTotal ? itemTotal + tax + fee : getTotal(order);
+    return itemTotal + tax + fee;
   }
 
   function setFirstTextMatching(root, matcher, value) {
@@ -545,19 +637,17 @@ button {
     const configs = {
       received: ['order-status-received', 'Order received', 'status-order-received-icon.svg'],
       preparing: ['order-status-preparing', 'Preparing', 'status-preparing-icon.svg'],
-      out_for_delivery: ['order-status-outfodelivery', 'Out for delivery', 'status-outfordelivery-icon.svg'],
-      reached_location: ['order-status-reached', 'Reached location', 'status-delivered-icon.svg']
+      out_for_delivery: ['order-status-outfordelivery', 'Out for delivery', 'status-outfordelivery-icon.svg'],
+      reached_location: ['order-status-reached', 'Reached your location', 'status-delivered-icon.svg']
     };
 
-    const [layer, text, icon] = configs[variant] || configs.preparing;
+    const [layer, text, icon] = configs[variant] || configs.received;
 
     return `
-      <div data-layer="${layer}" style="height: 30px; justify-content: flex-start; align-items: center; gap: 6px; display: inline-flex">
+      <div data-layer="${layer}" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 6px; display: flex">
         <div style="text-align: right; color: #08A045; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; letter-spacing: 0.24px; word-wrap: break-word">${text}</div>
-        <div class="track-status-icon-box">
-          <div style="position: relative">
-            <img class="track-status-icon-img" src="${base}/${icon}" alt="">
-          </div>
+        <div class="track-status-icon-box" data-track-status-icon="${variant}">
+          <img class="track-status-icon-img" src="${base}/${icon}?v=trackorders2" alt="">
         </div>
       </div>
     `;
@@ -615,9 +705,9 @@ button {
     const timeValue = card.querySelector('[data-layer="time & value"]');
     if (timeValue) {
       timeValue.innerHTML = `
-        <div style="color: rgba(18,19,15,.5); font-size: 10px; font-family: General Sans; font-weight: 500; line-height: 12px;">Order placed: ${placed}</div>
-        <div style="display:flex; align-items:center; gap:2px; white-space:nowrap; color: rgba(18,19,15,.5); font-size:10px; font-family: General Sans; font-weight:500; line-height:12px;">
-          <span>Total value:</span><strong style="color:#12130F; font-weight:600;">${total}</strong>
+        <div class="track-order-placed-time" style="justify-content:center;display:flex;flex-direction:column;color:rgba(18,19,15,.50);font-size:10px;font-family:General Sans;font-weight:500;line-height:12px;word-wrap:break-word;min-width:0;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Order placed: ${placed}</div>
+        <div class="track-order-total-value" style="text-align:right;justify-content:center;display:flex;flex-direction:row;align-items:center;gap:2px;white-space:nowrap;flex:0 0 auto;">
+          <span style="color:rgba(18,19,15,.50);font-size:10px;font-family:General Sans;font-weight:500;line-height:12px;white-space:nowrap;">Total value: </span><span style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:600;line-height:12px;white-space:nowrap;">${total}</span>
         </div>
       `;
     }
