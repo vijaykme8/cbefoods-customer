@@ -413,17 +413,46 @@ body.track-map-fullscreen-open .track-map-controls {
   flex: 0 0 24px;
 }
 
+.cf-order-status-card .cf-rider-initial {
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #08A045;
+  color: #FDFDFF;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1;
+  flex: 0 0 24px;
+}
+
 
 
 /* Frame 77 rider sync/contact actions */
-#trackFullRiderPhoto{
+#trackFullRiderPhoto,.Frame77RiderInitial{
   width:34px;
   height:34px;
   border-radius:9999px;
+  flex:none;
+}
+#trackFullRiderPhoto{
   object-fit:cover;
   display:block;
   background:rgba(18,19,15,.06);
-  flex:none;
+}
+.Frame77RiderInitial{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#08A045;
+  color:#FDFDFF;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:14px;
+  font-weight:600;
+  line-height:1;
 }
 #trackFullCallRiderAction,#trackFullTextRiderAction{
   cursor:pointer;
@@ -483,7 +512,8 @@ body.track-map-fullscreen-open .track-map-controls {
 <div class="Rider" data-layer="Rider" style="align-self: stretch; flex: 1 1 0; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Rider</div>
 <div class="Frame76" data-layer="Frame 76" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
 <div class="RiderDetails" data-layer="rider-details" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
-<img id="trackFullRiderPhoto" data-layer="rider-profile-picture" class="Frame77RiderProfilePicture" alt="" src="./assets/track orders/track-screen/rider-profile-picture-1.png?v=frame77sync1" onerror="this.onerror=null;this.src='./assets/track orders/track-screen/rider-profile-picture-1.png?v=frame77sync1';"/>
+<span id="trackFullRiderInitial" data-layer="rider-profile-initial" class="Frame77RiderInitial" aria-hidden="true">R</span>
+<img id="trackFullRiderPhoto" data-layer="rider-profile-picture" class="Frame77RiderProfilePicture" alt="Rider profile" src="" hidden/>
 <div class="AshokKumar" data-layer="Ashok Kumar" id="trackFullRiderName" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Assigning Rider</div>
 </div>
 <div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
@@ -615,21 +645,28 @@ function renderSummary(o){const box=document.getElementById('trackPaymentInforma
 
 function riderName(o){return String(o?.riderName||o?.assignedRiderName||o?.assignedRider?.name||o?.rider?.name||o?.riderDetails?.name||o?.deliveryPartnerName||o?.deliveryPartner?.name||o?.partnerName||o?.driverName||'').trim()}
 function riderPhone(o){return String(o?.riderPhone||o?.riderMobile||o?.riderMobileNumber||o?.riderPhoneNumber||o?.assignedRiderPhone||o?.assignedRiderMobile||o?.assignedRider?.phone||o?.assignedRider?.mobile||o?.assignedRider?.phoneNumber||o?.rider?.phone||o?.rider?.mobile||o?.rider?.phoneNumber||o?.riderDetails?.phone||o?.riderDetails?.mobile||o?.deliveryPartnerPhone||o?.deliveryPartner?.phone||o?.deliveryPartner?.mobile||o?.partnerPhone||o?.driverPhone||'').trim()}
-function riderPhoto(o){return String(o?.riderPhoto||o?.riderImage||o?.riderAvatar||o?.riderPhotoUrl||o?.riderPhotoURL||o?.riderImageUrl||o?.riderProfilePicture||o?.riderProfileImage||o?.assignedRiderPhoto||o?.assignedRider?.photo||o?.assignedRider?.photoUrl||o?.assignedRider?.photoURL||o?.assignedRider?.image||o?.assignedRider?.imageUrl||o?.assignedRider?.profilePicture||o?.rider?.photo||o?.rider?.photoUrl||o?.rider?.photoURL||o?.rider?.image||o?.rider?.imageUrl||o?.rider?.avatar||o?.rider?.avatarUrl||o?.rider?.profilePicture||o?.rider?.profileImage||o?.riderDetails?.photo||o?.riderDetails?.photoUrl||o?.deliveryPartner?.photo||o?.deliveryPartner?.photoUrl||'').trim()}
+function riderPhoto(o){return String(o?.assignedRiderPhotoUrl||o?.assignedRiderPhotoURL||o?.assignedRiderImageUrl||o?.assignedRiderProfilePhoto||o?.assignedRiderAvatarUrl||o?.riderPhotoUrl||o?.riderPhotoURL||o?.riderPhoto||o?.riderImage||o?.riderAvatar||o?.riderProfilePicture||o?.riderProfileImage||o?.rider?.photoUrl||o?.rider?.photoURL||o?.rider?.photo||o?.rider?.imageUrl||o?.rider?.avatarUrl||o?.rider?.profilePhotoUrl||o?.rider?.profilePicture||o?.assignedRider?.photoUrl||o?.assignedRider?.photoURL||o?.assignedRider?.photo||o?.assignedRider?.imageUrl||o?.assignedRider?.avatarUrl||o?.riderDetails?.photoUrl||o?.riderDetails?.photoURL||o?.deliveryPartner?.photoUrl||o?.deliveryPartner?.photoURL||'').trim()}
 function hasAssignedRider(o){return !!(riderName(o)||riderPhone(o)||riderPhoto(o)||o?.riderId||o?.assignedRiderId||o?.assignedRider?.id||o?.rider?.id||o?.deliveryPartnerId)}
-function defaultRiderPhoto(){return './assets/track orders/track-screen/rider-profile-picture-1.png?v=frame77sync1'}
 function phoneForLink(raw){const text=String(raw||'').trim();if(!text)return'';let cleaned=text.replace(/[^\d+]/g,'');if(cleaned.startsWith('00'))cleaned='+'+cleaned.slice(2);const digits=cleaned.replace(/\D/g,'');if(cleaned.startsWith('+'))return '+'+digits;if(digits.length===10)return '+91'+digits;if(digits.length>10&&digits.startsWith('91'))return '+'+digits;return digits}
+function riderInitialText(name){return String(name||'Rider').trim().slice(0,1).toUpperCase()||'R'}
 function updateFrame77Rider(o){
+  const name=riderName(o);
+  const phone=phoneForLink(riderPhone(o));
+  const photo=riderPhoto(o);
   const assigned=hasAssignedRider(o);
   const nameEl=document.getElementById('trackFullRiderName');
   const photoEl=document.getElementById('trackFullRiderPhoto');
+  const initialEl=document.getElementById('trackFullRiderInitial');
   const callEl=document.getElementById('trackFullCallRiderAction');
   const textEl=document.getElementById('trackFullTextRiderAction');
-  const name=riderName(o);
-  const phone=phoneForLink(riderPhone(o));
-  const photo=riderPhoto(o)||defaultRiderPhoto();
   if(nameEl)nameEl.textContent=assigned?(name||'Rider Assigned'):'Assigning Rider';
-  if(photoEl){photoEl.src=photo;photoEl.alt=assigned?(name||'Rider profile'):'Rider profile';}
+  if(initialEl){initialEl.textContent=riderInitialText(name);initialEl.hidden=!!photo;}
+  if(photoEl){
+    photoEl.hidden=!photo;
+    if(photo){photoEl.src=photo;photoEl.alt=name?`${name} profile picture`:'Rider profile picture';}
+    else{photoEl.removeAttribute('src');photoEl.alt='';}
+    photoEl.onerror=function(){this.hidden=true;this.removeAttribute('src');if(initialEl)initialEl.hidden=false;};
+  }
   [callEl,textEl].forEach(el=>{if(!el)return;el.dataset.riderPhone=phone;el.setAttribute('aria-disabled',phone?'false':'true');el.classList.toggle('is-disabled',!phone)});
 }
 function openRiderContact(action){const order=getSelectedOrder();const phone=phoneForLink(riderPhone(order));if(!phone){alert('Rider phone number is not available yet.');return}window.location.href=(action==='text'?'sms:':'tel:')+phone}
@@ -647,7 +684,8 @@ function connectorHtml(n,cfg){const active=n<cfg.active?' active':'';return `<di
 function riderCardHtml(o){
   const assigned=hasAssignedRider(o);const name=htmlSafe(riderName(o)||'Rider');const photo=riderPhoto(o);const icon=assigned?'round-tick-icon.svg':'clock-icon.svg';
   const stateText=assigned?'Rider Assigned':'Assigning Rider.';const stateClass=assigned?'assigned':'assigning';
-  const avatar=photo?`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="${htmlSafe(photo)}" alt="">`:`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="./assets/track orders/track-screen/rider-profile-picture-1.png?v=frame77sync1" alt="">`;
+  const initial=htmlSafe((riderName(o)||'R').slice(0,1).toUpperCase());
+  const avatar=photo?`<img data-layer="rider-profile-picture" class="cf-rider-avatar" src="${htmlSafe(photo)}" alt="${name} profile picture" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'cf-rider-initial',textContent:'${initial}'}))">`:`<span data-layer="rider-profile-initial" class="cf-rider-initial">${initial}</span>`;
   const details=assigned?`<div data-layer="rider-details" class="cf-rider-details"><div data-layer="${name}" class="cf-rider-name">${name}</div>${avatar}</div>`:'';
   return `<div data-layer="rider-content" class="cf-rider-content"><div data-layer="rider-info-group" class="cf-rider-info-group"><img alt="" src="./assets/track orders/track-screen/${icon}?v=statuscards2"><div id="trackFullAssigningRider" data-layer="${stateText}" class="cf-rider-state-text ${stateClass}">${stateText}</div></div>${details}</div>`;
 }
