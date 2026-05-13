@@ -127,7 +127,7 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 }
 
 
-/* Prevent page scroll while interacting with the map preview */
+/* Let Ola/MapLibre handle touch gestures while preventing scroll chaining */
 #trackFullscreenRoot [data-layer="map-section-v1"],
 #trackOlaMapCanvas {
   touch-action: none !important;
@@ -136,7 +136,8 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   user-select: none;
 }
 
-#trackOlaMapCanvas canvas {
+#trackOlaMapCanvas canvas,
+#trackOlaMapCanvas .maplibregl-canvas {
   touch-action: none !important;
 }
 
@@ -338,6 +339,17 @@ function renderSummary(o){const box=document.getElementById('trackPaymentInforma
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
 function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRoute(start,c,'rider');fit([start,c]);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRoute(r,c,'restaurant-customer');fit([r,c])}
 
+
+function enableTrackMapGestures(){
+  if(!map) return;
+  try{
+    map.dragPan?.enable();
+    map.touchZoomRotate?.enable();
+    map.scrollZoom?.enable();
+    map.keyboard?.enable();
+    map.doubleClickZoom?.enable();
+  }catch(_){}
+}
 function bindTrackMapControls(){
   if(!map) return;
   const zoomIn=document.getElementById('trackMapZoomIn');
@@ -378,39 +390,6 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-but
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
 })();
 </script>
-
-<script>
-(function lockPageScrollInsideTrackMap() {
-  function lockMapTouchScroll() {
-    const mapSection = document.querySelector('#trackFullscreenRoot [data-layer="map-section-v1"]');
-    const mapCanvas = document.getElementById('trackOlaMapCanvas');
-
-    [mapSection, mapCanvas].forEach(element => {
-      if (!element || element.dataset.scrollLockBound === '1') return;
-
-      element.dataset.scrollLockBound = '1';
-
-      element.addEventListener('touchmove', event => {
-        event.preventDefault();
-      }, { passive: false });
-
-      element.addEventListener('wheel', event => {
-        event.preventDefault();
-      }, { passive: false });
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', lockMapTouchScroll, { once: true });
-  } else {
-    lockMapTouchScroll();
-  }
-
-  window.setTimeout(lockMapTouchScroll, 500);
-  window.setTimeout(lockMapTouchScroll, 1500);
-})();
-</script>
-
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
