@@ -408,6 +408,83 @@ function pointDistance(a,b){if(!a||!b)return 999999;return Math.abs(a.lng-b[0])+
 function orientRouteCoords(coords,from,to){if(!coords||coords.length<2)return coords;const asLngLat=coords;const swapped=coords.map(p=>[p[1],p[0]]);const scoreA=pointDistance(from,asLngLat[0])+pointDistance(to,asLngLat[asLngLat.length-1]);const scoreB=pointDistance(from,swapped[0])+pointDistance(to,swapped[swapped.length-1]);return scoreB<scoreA?swapped:asLngLat}
 function routeCacheKey(from,to,mode){return `${mode}:${from.lat.toFixed(5)},${from.lng.toFixed(5)}>${to.lat.toFixed(5)},${to.lng.toFixed(5)}`}
 function applyRouteCoords(coords,isRider){if(!ensureRoute()||!coords||coords.length<2)return;const s=map.getSource('track-route-source');s.setData({type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords}}]});map.setPaintProperty('track-route-line','line-color',isRider?'#08A045':'#12130F');map.setPaintProperty('track-route-line','line-width',isRider?3:2);map.setPaintProperty('track-route-line','line-dasharray',isRider?[2,2]:[1.5,3])}
+
+let routeCacheKey = '';
+let routeCacheCoordinates = null;
+
+function extractRouteCoordinates(data) {
+  const candidates = [
+    data?.routes?.[0]?.geometry?.coordinates,
+    data?.routes?.[0]?.overview_polyline?.coordinates,
+    data?.routes?.[0]?.legs?.[0]?.steps?.flatMap(step => step.geometry?.coordinates || []),
+    data?.route?.geometry?.coordinates,
+    data?.features?.[0]?.geometry?.coordinates,
+    data?.data?.routes?.[0]?.geometry?.coordinates
+  ];
+
+  for (const candidate of candidates) {
+    if (Array.isArray(candidate) && candidate.length >= 2) {
+      return candidate
+        .map(point => {
+          if (Array.isArray(point) && point.length >= 2) return [Number(point[0]), Number(point[1])];
+          if (point && typeof point === 'object') return [Number(point.lng ?? point.lon ?? point.longitude), Number(point.lat ?? point.latitude)];
+          return null;
+        })
+        .filter(point => point && Number.isFinite(point[0]) && Number.isFinite(point[1]));
+    }
+  }
+
+  return null;
+}
+
+async function getRoadRouteCoordinates(from, to) {
+  if (!from || !to) return null;
+
+  const cacheKey = [
+    Number(from.lat).toFixed(5),
+    Number(from.lng).toFixed(5),
+    Number(to.lat).toFixed(5),
+    Number(to.lng).toFixed(5)
+  ].join(',');
+
+  if (routeCacheKey === cacheKey && Array.isArray(routeCacheCoordinates) && routeCacheCoordinates.length) {
+    return routeCacheCoordinates;
+  }
+
+  routeCacheKey = cacheKey;
+
+  const params = new URLSearchParams({
+    type: 'directions',
+    originLat: String(from.lat),
+    originLng: String(from.lng),
+    destLat: String(to.lat),
+    destLng: String(to.lng)
+  });
+
+  try {
+    const response = await fetch(`/ola-maps?${params.toString()}`, { cache: 'no-store' });
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+      console.warn('Ola road route failed, using fallback line', data || response.status);
+      return null;
+    }
+
+    const coords = extractRouteCoordinates(data);
+
+    if (Array.isArray(coords) && coords.length >= 2) {
+      routeCacheCoordinates = coords;
+      return coords;
+    }
+
+    console.warn('Ola road route response has no usable coordinates', data);
+    return null;
+  } catch (error) {
+    console.warn('Ola road route failed, using fallback line', error);
+    return null;
+  }
+}
+
 function setRoute(from,to,mode){if(!ensureRoute()||!from||!to)return;const rider=mode==='rider';const fallbackCoords=rider?[[from.lng,from.lat],[to.lng,to.lat]]:curve(from,to);applyRouteCoords(fallbackCoords,rider);if(!rider)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.directions!=='function')return;const key=routeCacheKey(from,to,mode);if(realRouteCacheKey===key&&realRouteCacheCoords){applyRouteCoords(realRouteCacheCoords,true);return}const now=Date.now();if(realRoutePendingKey===key&&now-realRouteRequestedAt<15000)return;realRoutePendingKey=key;realRouteRequestedAt=now;window.CBEOlaMapV4.directions(from,to).then(data=>{const extracted=findRouteCoordinates(data);const coords=orientRouteCoords(extracted,from,to);if(coords&&coords.length>1){realRouteCacheKey=key;realRouteCacheCoords=coords;applyRouteCoords(coords,true)}}).catch(error=>console.warn('Ola road route failed, using fallback line',error)).finally(()=>{if(realRoutePendingKey===key)realRoutePendingKey=''})}
 function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:400,maxZoom:15})}
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
