@@ -471,6 +471,54 @@ body.track-map-fullscreen-open .track-map-controls {
   transform:scale(.98);
 }
 
+
+/* Layout fix: remove fixed-height blank space and allow Back to orders to be fully visible */
+html, body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+.track-fullscreen-shell {
+  min-height: 100dvh !important;
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
+}
+
+#trackFullscreenRoot {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot > [data-layer="Frame 88"] {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot [data-layer="main-content"] {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot [data-layer="payment-details-group"] {
+  height: auto !important;
+  min-height: 0 !important;
+  flex: none !important;
+}
+
+#trackFullscreenRoot [data-layer="payment-info-card"] {
+  height: auto !important;
+}
+
+#trackFullscreenRoot [data-layer="back to orders-button"] {
+  flex: none !important;
+  margin-bottom: 0 !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
