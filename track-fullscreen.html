@@ -374,11 +374,16 @@ body.track-map-fullscreen-open .track-map-controls {
 </div>
 </div>
 </main>
-<script src="ola-map-v4.js?v=routepickup2"></script>
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="ola-map-v4.js?v=instantpickup1"></script>
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false,routeRenderToken=0,lastFitKey="",lastRouteKey="";
+let liveOrderUnsubscribe=null,liveOrderListeningId="",liveOrderAuthWaitingId="",lastRenderedStatus="";
 const TRACK_BOOT_INTERVAL_MS=10000;
 const ROUTE_HARD_MIN_INTERVAL_MS=45000;
 const ROUTE_NORMAL_REFRESH_MS=90000;
@@ -391,6 +396,85 @@ function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):
 function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
 function getOrderId(o){return String(o?.id||o?.orderId||o?.order_id||o?.receipt||o?.razorpayOrderId||'')}
 function getSelectedOrder(){const p=new URLSearchParams(location.search);const q=p.get('orderId')||'';const saved=readJSON('cbe_track_selected_order');if(saved&&typeof saved==='object'){if(!q||getOrderId(saved)===q)return saved}const c=[];const cur=readJSON('current_order');const h=normalizeOrders(readJSON('order_history'));const prev=normalizeOrders(readJSON('previous_orders'));const orders=normalizeOrders(readJSON('orders'));const cust=normalizeOrders(readJSON('customer_orders'));const pend=readJSON('pending_order');if(cur&&typeof cur==='object')c.push(cur);h.forEach(o=>c.push(o));prev.forEach(o=>c.push(o));orders.forEach(o=>c.push(o));cust.forEach(o=>c.push(o));if(pend&&typeof pend==='object')c.push(pend);if(q){const f=c.find(o=>getOrderId(o)===q);if(f)return f}return c[0]||{}}
+function plainFirestoreValue(value){
+  if(value===null||value===undefined)return value;
+  if(typeof value.toDate==='function')return value.toDate().toISOString();
+  if(Array.isArray(value))return value.map(plainFirestoreValue);
+  if(typeof value==='object'){
+    const out={};
+    Object.keys(value).forEach(key=>{if(typeof value[key]!=='function')out[key]=plainFirestoreValue(value[key])});
+    return out;
+  }
+  return value;
+}
+function normalizeCloudOrder(id,data){
+  if(!data||typeof data!=='object')return null;
+  const clean=plainFirestoreValue(data);
+  return {id,...clean,items:Array.isArray(clean.items)?clean.items:[]};
+}
+function activeOrderId(){
+  const p=new URLSearchParams(location.search);
+  const q=p.get('orderId')||'';
+  if(q)return String(q);
+  const saved=readJSON('cbe_track_selected_order');
+  const savedId=getOrderId(saved);
+  if(savedId)return savedId;
+  return getOrderId(getSelectedOrder());
+}
+function upsertOrderInList(key,order){
+  const list=normalizeOrders(readJSON(key));
+  if(!list.length)return;
+  const id=getOrderId(order);
+  const index=list.findIndex(item=>getOrderId(item)===id);
+  if(index>=0)list[index]={...list[index],...order};
+  else list.unshift(order);
+  try{localStorage.setItem(key,JSON.stringify(list))}catch(_){ }
+}
+function saveLiveOrderLocally(order){
+  if(!order)return;
+  const id=getOrderId(order);
+  try{
+    const selected=readJSON('cbe_track_selected_order');
+    if(!selected||!getOrderId(selected)||getOrderId(selected)===id)localStorage.setItem('cbe_track_selected_order',JSON.stringify({...selected,...order}));
+  }catch(_){ }
+  try{
+    const current=readJSON('current_order');
+    if(!current||!getOrderId(current)||getOrderId(current)===id)localStorage.setItem('current_order',JSON.stringify({...current,...order}));
+  }catch(_){ }
+  upsertOrderInList('order_history',order);
+  upsertOrderInList('orders',order);
+  upsertOrderInList('customer_orders',order);
+}
+function firebaseReady(){return !!(window.firebase&&window.TIFFIN_FIREBASE_CONFIG&&window.TIFFIN_FIREBASE_CONFIG.apiKey)}
+function startLiveOrderSync(){
+  const id=activeOrderId();
+  if(!id||!firebaseReady())return;
+  if(liveOrderListeningId===id&&liveOrderUnsubscribe)return;
+  if(liveOrderUnsubscribe){try{liveOrderUnsubscribe()}catch(_){ }liveOrderUnsubscribe=null;}
+  liveOrderListeningId=id;
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+    const auth=firebase.auth();
+    const db=firebase.firestore();
+    const listen=()=>{
+      if(liveOrderListeningId!==id||liveOrderUnsubscribe)return;
+      liveOrderUnsubscribe=db.collection('orders').doc(id).onSnapshot(snap=>{
+        if(!snap.exists)return;
+        const cloudOrder=normalizeCloudOrder(snap.id,snap.data());
+        if(!cloudOrder)return;
+        saveLiveOrderLocally(cloudOrder);
+        window.CBE_TRACK_FORCE_FIT=true;
+        boot();
+      },error=>console.warn('Track fullscreen order live sync failed',error));
+    };
+    if(auth.currentUser)listen();
+    else if(liveOrderAuthWaitingId!==id){
+      liveOrderAuthWaitingId=id;
+      auth.onAuthStateChanged(user=>{if(user&&liveOrderListeningId===id&&!liveOrderUnsubscribe)listen()});
+    }
+  }catch(error){console.warn('Track fullscreen live sync init failed',error)}
+}
+
 function num(v){const n=Number(v);return Number.isFinite(n)?n:null}
 function loc(v){if(!v||typeof v!=='object')return null;const lat=num(v.lat??v.latitude??v.coords?.lat??v.coords?.latitude);const lng=num(v.lng??v.lon??v.long??v.longitude??v.coords?.lng??v.coords?.longitude);if(lat===null||lng===null)return null;return{lat,lng}}
 function restLoc(o){return loc(o?.restaurantLocation)||loc(o?.adminLocation)||loc(readJSON('restaurant_location'))||loc(readJSON('admin_restaurant_location'))||loc(readJSON('default_restaurant_location'))||DEFAULT_RESTAURANT_LOCATION}
@@ -497,11 +581,11 @@ function fitRoute(coords,extraLocs,fitKey){
   lastFitKey=fitKey;
   window.CBE_TRACK_FORCE_FIT=false;
 }
-async function setRiderRoadRoute(from,to){
+async function setRiderRoadRoute(from,to,options={}){
   if(!ensureRoute()||!from||!to)return;
   const mode='rider';
   const key=routeKey(from,to,mode);
-  const decision=shouldRefreshRoadRoute(from,to,mode);
+  const decision=options.force?{refresh:true,reason:options.reason||'forced_immediate_pickup'}:shouldRefreshRoadRoute(from,to,mode);
 
   // Rider marker can update every 10 seconds.
   // Ola Directions route should be fetched only after pickup and only when needed.
@@ -530,7 +614,8 @@ async function setRiderRoadRoute(from,to){
     to:{lat:to.lat,lng:to.lng},
     requestedAt:Date.now(),
     isFallback:false,
-    reason:decision.reason
+    reason:decision.reason,
+    usedRestaurantFallback:!options.usingRiderLocation
   };
 
   try{
@@ -553,7 +638,8 @@ async function setRiderRoadRoute(from,to){
         to:{lat:to.lat,lng:to.lng},
         requestedAt:Date.now(),
         isFallback:true,
-        reason:'directions_failed'
+        reason:'directions_failed',
+        usedRestaurantFallback:!options.usingRiderLocation
       };
       const source=map.getSource('track-route-source');
       if(source)source.setData(routeFeature([]));
@@ -568,7 +654,8 @@ async function setRiderRoadRoute(from,to){
       to:{lat:to.lat,lng:to.lng},
       requestedAt:Date.now(),
       isFallback:false,
-      reason:decision.reason
+      reason:decision.reason,
+      usedRestaurantFallback:!options.usingRiderLocation
     };
   }catch(error){
     console.warn('Track rider road route failed',error);
@@ -578,7 +665,8 @@ async function setRiderRoadRoute(from,to){
       to:{lat:to.lat,lng:to.lng},
       requestedAt:Date.now(),
       isFallback:true,
-      reason:'directions_exception'
+      reason:'directions_exception',
+      usedRestaurantFallback:!options.usingRiderLocation
     };
     const source=map.getSource('track-route-source');
     if(source)source.setData(routeFeature([]));
@@ -587,7 +675,32 @@ async function setRiderRoadRoute(from,to){
 
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
-function renderMap(){if(!map||!map.isStyleLoaded())return;const o=getSelectedOrder();const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);if(!c){fit([r]);return}if(outForDelivery(o)){if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}const start=rd||r;riderMarker=upsert(riderMarker,'rider',start);customerMarker=upsert(customerMarker,'customer',c);setRiderRoadRoute(start,c);return}if(riderMarker){riderMarker.remove();riderMarker=null}restaurantMarker=upsert(restaurantMarker,'restaurant',r);customerMarker=upsert(customerMarker,'customer',c);setRestaurantCustomerCurve(r,c)}
+function renderMap(){
+  if(!map||!map.isStyleLoaded())return;
+  const o=getSelectedOrder();
+  const currentStatus=status(o);
+  const wasOut=['picked_up','pickedup','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(lastRenderedStatus);
+  const isOut=outForDelivery(o);
+  const becameOut=isOut&&!wasOut;
+  const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);
+  if(!c){fit([r]);lastRenderedStatus=currentStatus;return}
+  if(isOut){
+    if(restaurantMarker){restaurantMarker.remove();restaurantMarker=null}
+    const start=rd||r;
+    const usingRiderLocation=!!rd;
+    const forceRoadRoute=becameOut||(usingRiderLocation&&lastRouteState&&lastRouteState.usedRestaurantFallback);
+    riderMarker=upsert(riderMarker,'rider',start);
+    customerMarker=upsert(customerMarker,'customer',c);
+    setRiderRoadRoute(start,c,{force:forceRoadRoute,usingRiderLocation,reason:becameOut?'picked_up_now':'rider_location_became_available'});
+    lastRenderedStatus=currentStatus;
+    return;
+  }
+  if(riderMarker){riderMarker.remove();riderMarker=null}
+  restaurantMarker=upsert(restaurantMarker,'restaurant',r);
+  customerMarker=upsert(customerMarker,'customer',c);
+  setRestaurantCustomerCurve(r,c);
+  lastRenderedStatus=currentStatus;
+}
 
 function bindTrackMapControls(){
   if(!map) return;
@@ -624,9 +737,9 @@ try{
 bindTrackMapControls();
 map.on('load',renderMap);
 if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
-function boot(){hydrate();initMap();renderMap()}
+function boot(){hydrate();initMap();renderMap();startLiveOrderSync()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
-window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});setInterval(boot,TRACK_BOOT_INTERVAL_MS);
+window.renderTrack=boot;window.renderOrders=boot;window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});setInterval(boot,TRACK_BOOT_INTERVAL_MS);window.addEventListener('beforeunload',()=>{if(liveOrderUnsubscribe){try{liveOrderUnsubscribe()}catch(_){}}});
 })();
 </script>
 
