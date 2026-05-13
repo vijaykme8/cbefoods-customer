@@ -443,6 +443,10 @@ body.track-map-fullscreen-open .track-map-controls {
   display:block;
   background:rgba(18,19,15,.06);
 }
+
+#trackFullRiderPhoto[hidden],#trackFullRiderInitial[hidden]{
+  display:none!important;
+}
 .Frame77RiderInitial{
   display:flex;
   align-items:center;
@@ -660,12 +664,22 @@ function updateFrame77Rider(o){
   const callEl=document.getElementById('trackFullCallRiderAction');
   const textEl=document.getElementById('trackFullTextRiderAction');
   if(nameEl)nameEl.textContent=assigned?(name||'Rider Assigned'):'Assigning Rider';
-  if(initialEl){initialEl.textContent=riderInitialText(name);initialEl.hidden=!!photo;}
+  if(initialEl){
+    initialEl.textContent=riderInitialText(name);
+    initialEl.hidden=!!photo;
+    initialEl.style.display=photo?'none':'flex';
+  }
   if(photoEl){
     photoEl.hidden=!photo;
+    photoEl.style.display=photo?'block':'none';
     if(photo){photoEl.src=photo;photoEl.alt=name?`${name} profile picture`:'Rider profile picture';}
     else{photoEl.removeAttribute('src');photoEl.alt='';}
-    photoEl.onerror=function(){this.hidden=true;this.removeAttribute('src');if(initialEl)initialEl.hidden=false;};
+    photoEl.onerror=function(){
+      this.hidden=true;
+      this.style.display='none';
+      this.removeAttribute('src');
+      if(initialEl){initialEl.hidden=false;initialEl.style.display='flex';}
+    };
   }
   [callEl,textEl].forEach(el=>{if(!el)return;el.dataset.riderPhone=phone;el.setAttribute('aria-disabled',phone?'false':'true');el.classList.toggle('is-disabled',!phone)});
 }
