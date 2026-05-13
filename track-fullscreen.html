@@ -264,6 +264,24 @@ button {
   opacity: 0 !important;
 }
 
+
+/* Restaurant/customer SVG pins for track fullscreen map */
+.track-map-pin-img {
+  display: block;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.16));
+}
+
+.restaurant-pin-img {
+  width: 24px;
+  height: 24px;
+}
+
+.customer-pin-img {
+  width: 18px;
+  height: 24px;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -278,11 +296,11 @@ button {
 </svg>
 <div class="track-map-pin track-restaurant-pin" id="trackRestaurantPin">
 <div class="track-map-pin-label">Coimbatore<br/>Foods</div>
-<div class="track-map-pin-dot restaurant-dot"></div>
+<img class="track-map-pin-img restaurant-pin-img" src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin1" alt="">
 </div>
 <div class="track-map-pin track-customer-pin" id="trackCustomerPin">
 <div class="track-map-pin-label">You</div>
-<div class="track-map-pin-dot customer-dot"></div>
+<img class="track-map-pin-img customer-pin-img" src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin1" alt="">
 </div>
 <div class="track-map-pin track-rider-pin" id="trackRiderPin">
 <div class="track-map-pin-label">Rider</div>
