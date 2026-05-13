@@ -1,3 +1,4 @@
+// routepickup2: Ola proxy with directions support for customer pickup road route
 const OLA_STYLE_URL =
   "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
 

@@ -1,4 +1,6 @@
-/* routebudget1: route helper used with throttled customer tracking.
+/* routepickup2: route helper used with pickup-only road routing.
+   Straight-line fallback is hidden in the UI; this parser tries multiple Ola route response shapes.
+
    =========================================================
    CBE Foods Ola Maps V4 shared helper
    Swiggy-like map behavior foundation:
@@ -192,13 +194,98 @@
     return Number(String(value).replace(/[^0-9.]/g, "")) || 0;
   }
 
+  function looksLikeIndiaLatLng(a, b) {
+    return a >= 5 && a <= 40 && b >= 65 && b <= 100;
+  }
+
+  function looksLikeLngLat(a, b) {
+    return a >= 65 && a <= 100 && b >= 5 && b <= 40;
+  }
+
+  function normalizeCoordinatePair(a, b) {
+    const x = Number(a);
+    const y = Number(b);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+
+    // Ola responses may return either [lat,lng] or [lng,lat].
+    // MapLibre requires [lng,lat]. For Tamil Nadu/India, detect the order safely.
+    if (looksLikeIndiaLatLng(x, y)) return [y, x];
+    if (looksLikeLngLat(x, y)) return [x, y];
+
+    // Generic fallback: if first value is latitude-ish and second longitude-ish, swap.
+    if (Math.abs(x) <= 90 && Math.abs(y) <= 180 && Math.abs(y) > 45) return [y, x];
+    return [x, y];
+  }
+
   function collectCoordinatesFromGeoJson(obj) {
     if (!obj || typeof obj !== "object") return [];
-    if (obj.type === "LineString" && Array.isArray(obj.coordinates)) return obj.coordinates;
-    if (obj.type === "MultiLineString" && Array.isArray(obj.coordinates)) return obj.coordinates.flat();
+    if (obj.type === "LineString" && Array.isArray(obj.coordinates)) return normalizeCoordinateList(obj.coordinates);
+    if (obj.type === "MultiLineString" && Array.isArray(obj.coordinates)) return normalizeCoordinateList(obj.coordinates.flat());
     if (obj.type === "Feature" && obj.geometry) return collectCoordinatesFromGeoJson(obj.geometry);
     if (obj.type === "FeatureCollection" && Array.isArray(obj.features)) {
       return obj.features.flatMap(feature => collectCoordinatesFromGeoJson(feature));
+    }
+    return [];
+  }
+
+  function collectCoordinateArraysDeep(value, depth = 0) {
+    if (!value || depth > 8) return [];
+
+    if (Array.isArray(value)) {
+      if (value.length >= 2 && typeof value[0] !== "object" && typeof value[1] !== "object") {
+        const pair = normalizeCoordinatePair(value[0], value[1]);
+        return pair ? [pair] : [];
+      }
+      return value.flatMap(item => collectCoordinateArraysDeep(item, depth + 1));
+    }
+
+    if (typeof value === "object") {
+      if (("lat" in value || "latitude" in value) && ("lng" in value || "lon" in value || "long" in value || "longitude" in value)) {
+        const point = normalizePoint(value);
+        return point ? [[point.lng, point.lat]] : [];
+      }
+
+      const priorityKeys = [
+        "coordinates",
+        "points",
+        "path",
+        "polyline_points",
+        "route_points",
+        "overview_path",
+        "geometry",
+        "geojson"
+      ];
+
+      for (const key of priorityKeys) {
+        if (key in value) {
+          const found = collectCoordinateArraysDeep(value[key], depth + 1);
+          if (found.length >= 2) return found;
+        }
+      }
+
+      return Object.values(value).flatMap(item => collectCoordinateArraysDeep(item, depth + 1));
+    }
+
+    return [];
+  }
+
+  function collectEncodedPolylineStrings(value, depth = 0) {
+    if (!value || depth > 8) return [];
+    if (typeof value === "string") {
+      // Encoded polylines are compact and usually contain many non-alphanumeric chars.
+      // Avoid treating normal text/status strings as polylines.
+      if (value.length >= 12 && /[\\_@?`~|{}\\[\\]\\^]/.test(value)) return [value];
+      return [];
+    }
+    if (Array.isArray(value)) return value.flatMap(item => collectEncodedPolylineStrings(item, depth + 1));
+    if (typeof value === "object") {
+      const keys = ["points", "polyline", "encodedPolyline", "overview_polyline", "overviewPolyline", "geometry"];
+      const out = [];
+      for (const key of keys) {
+        if (key in value) out.push(...collectEncodedPolylineStrings(value[key], depth + 1));
+      }
+      if (out.length) return out;
+      return Object.values(value).flatMap(item => collectEncodedPolylineStrings(item, depth + 1));
     }
     return [];
   }
@@ -207,8 +294,11 @@
     if (!Array.isArray(coords)) return [];
     return coords
       .map(point => {
-        if (Array.isArray(point)) return [Number(point[0]), Number(point[1])];
-        if (point && typeof point === "object") return [Number(point.lng ?? point.lon ?? point.longitude), Number(point.lat ?? point.latitude)];
+        if (Array.isArray(point)) return normalizeCoordinatePair(point[0], point[1]) || [NaN, NaN];
+        if (point && typeof point === "object") {
+          const normalized = normalizePoint(point);
+          return normalized ? [normalized.lng, normalized.lat] : [NaN, NaN];
+        }
         return [NaN, NaN];
       })
       .filter(point => Number.isFinite(point[0]) && Number.isFinite(point[1]));
@@ -222,7 +312,7 @@
     const origin = normalizePoint(originInput);
     const destination = normalizePoint(destinationInput);
     const fallbackCoords = origin && destination ? fallbackCoordinates(origin, destination) : [];
-    const routes = data?.routes || data?.data?.routes || data?.result?.routes || data?.route || [];
+    const routes = data?.routes || data?.data?.routes || data?.result?.routes || data?.route || data?.data?.route || [];
     const route = Array.isArray(routes) ? routes[0] : routes;
     let coords = [];
     let distanceMeters = 0;
@@ -246,6 +336,10 @@
       coords = collectCoordinatesFromGeoJson(route?.geometry || route?.geojson || route?.routeGeoJson || data?.geometry || data?.geojson);
     }
 
+    if (!coords.length) {
+      coords = normalizeCoordinateList(collectCoordinateArraysDeep(route || data));
+    }
+
     const legs = Array.isArray(route?.legs) ? route.legs : [];
     if (!coords.length && legs.length) {
       const stepCoords = [];
@@ -254,12 +348,26 @@
           const encoded = step.polyline?.points || step.polyline || step.encodedPolyline || step.geometry;
           if (typeof encoded === "string") {
             stepCoords.push(...decodePolyline(encoded, 5));
+            if (!stepCoords.length) stepCoords.push(...decodePolyline(encoded, 6));
           } else {
             stepCoords.push(...collectCoordinatesFromGeoJson(encoded));
+            stepCoords.push(...collectCoordinateArraysDeep(encoded));
           }
         });
       });
       coords = stepCoords;
+    }
+
+    if (!coords.length) {
+      const encodedList = collectEncodedPolylineStrings(route || data);
+      for (const encoded of encodedList) {
+        let decoded = decodePolyline(encoded, 5);
+        if (decoded.length < 2) decoded = decodePolyline(encoded, 6);
+        if (decoded.length >= 2) {
+          coords = decoded;
+          break;
+        }
+      }
     }
 
     if (legs.length) {
@@ -267,16 +375,18 @@
       durationSeconds = legs.reduce((sum, leg) => sum + getNumberFromDuration(leg.duration), 0);
     }
 
-    if (!distanceMeters) distanceMeters = getNumberFromDistance(route?.distance || route?.distanceMeters || data?.distance);
-    if (!durationSeconds) durationSeconds = getNumberFromDuration(route?.duration || route?.durationSeconds || data?.duration);
+    if (!distanceMeters) distanceMeters = getNumberFromDistance(route?.distance || route?.distanceMeters || route?.distance_meters || data?.distance);
+    if (!durationSeconds) durationSeconds = getNumberFromDuration(route?.duration || route?.durationSeconds || route?.duration_seconds || data?.duration);
     if (!distanceMeters && origin && destination) distanceMeters = haversineMeters(origin, destination);
     if (!durationSeconds && distanceMeters) durationSeconds = Math.round(distanceMeters / 6.5);
 
     coords = normalizeCoordinateList(coords);
-    if (coords.length < 2) coords = fallbackCoords;
+    const usedFallback = coords.length < 2;
+    if (usedFallback) coords = fallbackCoords;
 
     return {
       coordinates: coords,
+      fallback: usedFallback,
       distanceMeters,
       durationSeconds,
       distanceText: formatDistance(distanceMeters),

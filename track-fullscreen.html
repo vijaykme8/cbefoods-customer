@@ -374,7 +374,7 @@ body.track-map-fullscreen-open .track-map-controls {
 </div>
 </div>
 </main>
-<script src="ola-map-v4.js?v=routepickup1"></script>
+<script src="ola-map-v4.js?v=routepickup2"></script>
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
@@ -504,8 +504,8 @@ async function setRiderRoadRoute(from,to){
   const decision=shouldRefreshRoadRoute(from,to,mode);
 
   // Rider marker can update every 10 seconds.
-  // Ola Directions must NOT be called every 10 seconds.
-  // Road route is requested only after pickup, then refreshed only when needed.
+  // Ola Directions route should be fetched only after pickup and only when needed.
+  // Important: do NOT draw a straight fallback line. Straight line looks wrong for delivery tracking.
   if(!decision.refresh){
     return;
   }
@@ -515,11 +515,12 @@ async function setRiderRoadRoute(from,to){
   }
 
   const token=++routeRenderToken;
-  const fallback=fallbackRoute(from,to);
   const firstOrChanged=lastRouteKey!==key||!lastRouteState;
+
   if(firstOrChanged){
-    applyRiderRoadRoute(fallback,true);
-    fitRoute(fallback,[from,to],`${key}:fallback`);
+    // Clear old route while waiting for Ola road route, instead of showing a fake straight line.
+    const source=map.getSource('track-route-source');
+    if(source)source.setData(routeFeature([]));
     lastRouteKey=key;
   }
 
@@ -528,32 +529,61 @@ async function setRiderRoadRoute(from,to){
     from:{lat:from.lat,lng:from.lng},
     to:{lat:to.lat,lng:to.lng},
     requestedAt:Date.now(),
-    isFallback:true,
+    isFallback:false,
     reason:decision.reason
   };
 
   try{
     const helper=window.CBEOlaMapV4;
-    if(!helper||typeof helper.getRoute!=='function')return;
+    if(!helper||typeof helper.getRoute!=='function'){
+      console.warn('Ola route helper missing. Check ola-map-v4.js is updated to routepickup2.');
+      return;
+    }
     const route=await helper.getRoute(from,to);
     if(token!==routeRenderToken)return;
     const coords=Array.isArray(route?.coordinates)?route.coordinates:[];
-    if(coords.length>1){
-      applyRiderRoadRoute(coords,!!route.fallback);
-      fitRoute(coords,[from,to],`${key}:${route.fallback?'fallback':'road'}:${coords.length}`);
+
+    // If Directions fails, do not show a straight fallback line.
+    // Keep the map with rider + customer pins and retry later by throttle rules.
+    if(route?.fallback || coords.length<2){
+      console.warn('Ola road route unavailable. Straight fallback hidden.', route?.error || route);
       lastRouteState={
         mode,
         from:{lat:from.lat,lng:from.lng},
         to:{lat:to.lat,lng:to.lng},
         requestedAt:Date.now(),
-        isFallback:!!route.fallback,
-        reason:decision.reason,
-        points:coords.length
+        isFallback:true,
+        reason:'directions_failed'
       };
+      const source=map.getSource('track-route-source');
+      if(source)source.setData(routeFeature([]));
+      return;
     }
-  }catch(error){console.warn('Track rider road route failed',error)}
+
+    applyRiderRoadRoute(coords,false);
+    fitRoute(coords,[from,to],`${key}:road:${coords.length}`);
+    lastRouteState={
+      mode,
+      from:{lat:from.lat,lng:from.lng},
+      to:{lat:to.lat,lng:to.lng},
+      requestedAt:Date.now(),
+      isFallback:false,
+      reason:decision.reason
+    };
+  }catch(error){
+    console.warn('Track rider road route failed',error);
+    lastRouteState={
+      mode,
+      from:{lat:from.lat,lng:from.lng},
+      to:{lat:to.lat,lng:to.lng},
+      requestedAt:Date.now(),
+      isFallback:true,
+      reason:'directions_exception'
+    };
+    const source=map.getSource('track-route-source');
+    if(source)source.setData(routeFeature([]));
+  }
 }
-function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:400,maxZoom:15})}
 
 function renderSummary(o){const box=document.getElementById('trackPaymentInformations');const totalEl=document.getElementById('trackTotalPay');if(!box||!totalEl)return;const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;const total=Number(o.total??o.totals?.total??(itemTotal+fee+tax))||0;const rows=its.map((i,k)=>`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="display:flex;align-items:center;gap:4px"><div style="color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">${itemQty(i)}x</div><div style="color:#12130F;font-size:10px;font-family:General Sans;font-weight:500;line-height:12px">${itemName(i)}</div></div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(itemPrice(i)*itemQty(i))}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Tax & charges</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${tax?money(tax):'-'}</div></div>`);rows.push(`<div style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div style="width:119px;color:#12130F;font-size:12px;font-family:General Sans;font-weight:400;line-height:14.4px">Delivery fee</div><div style="text-align:right;color:#12130F;font-size:14px;font-family:General Sans;font-weight:400;line-height:16.8px;letter-spacing:.28px">${money(fee)}</div></div>`);box.innerHTML=rows.join('');totalEl.textContent=money(total)}
 function hydrate(){const o=getSelectedOrder();setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=o.riderName||o.partnerName||o.deliveryPartner||'';setText('trackFullAssigningRider',rider);setText('trackFullRiderName',rider);renderSummary(o)}
