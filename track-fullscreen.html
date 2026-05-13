@@ -500,6 +500,177 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot
 })();
 </script>
 
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script src="firebase-mvp.js"></script>
+
+<script>
+(function setupCustomerLiveOrderListener() {
+  let unsubscribeLiveOrder = null;
+
+  function safeJSON(value, fallback) {
+    try {
+      return value ? JSON.parse(value) : fallback;
+    } catch {
+      return fallback;
+    }
+  }
+
+  function getLocalSelectedOrder() {
+    return (
+      safeJSON(localStorage.getItem('cbe_track_selected_order'), null) ||
+      safeJSON(localStorage.getItem('current_order'), null) ||
+      {}
+    );
+  }
+
+  function getOrderId() {
+    const selectedOrder = getLocalSelectedOrder();
+
+    return (
+      new URLSearchParams(location.search).get('orderId') ||
+      selectedOrder.id ||
+      selectedOrder.orderId ||
+      selectedOrder.order_id ||
+      selectedOrder.receipt ||
+      ''
+    );
+  }
+
+  function normalizeTimestamp(value) {
+    if (!value) return value;
+
+    if (value && typeof value.toDate === 'function') {
+      return value.toDate().toISOString();
+    }
+
+    if (value && typeof value === 'object' && typeof value.seconds === 'number') {
+      return new Date(value.seconds * 1000).toISOString();
+    }
+
+    return value;
+  }
+
+  function normalizeFirestoreOrder(data, orderId) {
+    const normalized = {
+      ...data,
+      id: data.id || orderId,
+      orderId: data.orderId || orderId,
+      createdAt: normalizeTimestamp(data.createdAt),
+      updatedAt: normalizeTimestamp(data.updatedAt),
+      paidAt: normalizeTimestamp(data.paidAt)
+    };
+
+    if (data.riderLocation) {
+      normalized.riderLocation = {
+        ...data.riderLocation,
+        updatedAt: normalizeTimestamp(data.riderLocation.updatedAt)
+      };
+    }
+
+    if (data.liveRiderLocation) {
+      normalized.liveRiderLocation = {
+        ...data.liveRiderLocation,
+        updatedAt: normalizeTimestamp(data.liveRiderLocation.updatedAt)
+      };
+    }
+
+    return normalized;
+  }
+
+  function refreshTrackScreenFromLiveOrder(order) {
+    const previousSelected = getLocalSelectedOrder();
+
+    /*
+      Preserve local fields if Firestore document misses them,
+      but Firestore status/riderLocation must win.
+    */
+    const merged = {
+      ...previousSelected,
+      ...order,
+      customerLocation: order.customerLocation || previousSelected.customerLocation,
+      deliveryLocation: order.deliveryLocation || previousSelected.deliveryLocation,
+      restaurantLocation: order.restaurantLocation || previousSelected.restaurantLocation,
+      riderLocation: order.riderLocation || order.liveRiderLocation || previousSelected.riderLocation,
+      liveRiderLocation: order.liveRiderLocation || previousSelected.liveRiderLocation
+    };
+
+    localStorage.setItem('cbe_track_selected_order', JSON.stringify(merged));
+    localStorage.setItem('current_order', JSON.stringify(merged));
+
+    if (typeof window.renderTrackMapPreview === 'function') {
+      window.renderTrackMapPreview();
+    }
+
+    if (typeof window.renderRestaurantCustomerCurve === 'function') {
+      window.renderRestaurantCustomerCurve();
+    }
+  }
+
+  function listenToLiveOrder() {
+    const orderId = getOrderId();
+
+    console.log('[Track live] orderId:', orderId);
+    console.log('[Track live] firebase available:', typeof firebase !== 'undefined', !!(window.firebase && firebase.apps && firebase.apps.length));
+
+    if (!orderId) {
+      console.warn('[Track live] No orderId found in URL/localStorage.');
+      return;
+    }
+
+    if (typeof firebase === 'undefined' || !firebase.apps || !firebase.apps.length || !firebase.firestore) {
+      console.warn('[Track live] Firebase is not ready yet. Retrying...');
+      window.setTimeout(listenToLiveOrder, 800);
+      return;
+    }
+
+    if (unsubscribeLiveOrder) {
+      unsubscribeLiveOrder();
+      unsubscribeLiveOrder = null;
+    }
+
+    const db = firebase.firestore();
+
+    unsubscribeLiveOrder = db.collection('orders').doc(orderId).onSnapshot(doc => {
+      console.log('[Track live] doc exists:', doc.exists);
+
+      if (!doc.exists) {
+        console.warn('[Track live] Order document not found:', `orders/${orderId}`);
+        return;
+      }
+
+      const data = doc.data() || {};
+      const liveOrder = normalizeFirestoreOrder(data, orderId);
+
+      console.log('[Track live] order status:', liveOrder.status || liveOrder.orderStatus || liveOrder.deliveryStatus);
+      console.log('[Track live] riderLocation:', liveOrder.riderLocation || liveOrder.liveRiderLocation || null);
+
+      refreshTrackScreenFromLiveOrder(liveOrder);
+    }, error => {
+      console.error('[Track live] listener failed:', error);
+    });
+  }
+
+  window.TrackLiveOrderDebug = {
+    getOrderId,
+    getLocalSelectedOrder,
+    restart: listenToLiveOrder
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', listenToLiveOrder, { once: true });
+  } else {
+    listenToLiveOrder();
+  }
+
+  window.addEventListener('beforeunload', () => {
+    if (unsubscribeLiveOrder) unsubscribeLiveOrder();
+  });
+})();
+</script>
+
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 </body>
 </html>
