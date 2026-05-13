@@ -374,11 +374,19 @@ body.track-map-fullscreen-open .track-map-controls {
 </div>
 </div>
 </main>
-<script src="ola-map-v4.js?v=roadroute1"></script>
+<script src="ola-map-v4.js?v=routebudget1"></script>
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false,routeRenderToken=0,lastFitKey="",lastRouteKey="";
+const TRACK_BOOT_INTERVAL_MS=10000;
+const ROUTE_HARD_MIN_INTERVAL_MS=45000;
+const ROUTE_NORMAL_REFRESH_MS=90000;
+const ROUTE_FORCE_REFRESH_MS=180000;
+const ROUTE_REFRESH_DISTANCE_M=160;
+const ROUTE_HARD_DISTANCE_M=260;
+const ROUTE_TARGET_CHANGE_M=45;
+let lastRouteState=null;
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
 function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
 function getOrderId(o){return String(o?.id||o?.orderId||o?.order_id||o?.receipt||o?.razorpayOrderId||'')}
@@ -423,6 +431,32 @@ function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from
 function routeKey(from,to,mode){return `${mode}:${Number(from.lat).toFixed(4)},${Number(from.lng).toFixed(4)}>${Number(to.lat).toFixed(4)},${Number(to.lng).toFixed(4)}`}
 function routeFeature(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
 function fallbackRoute(from,to,mode){return mode==='restaurant-customer'?curve(from,to):[[from.lng,from.lat],[to.lng,to.lat]]}
+function distanceMeters(a,b){
+  if(!a||!b)return Infinity;
+  const R=6371000;
+  const toRad=v=>v*Math.PI/180;
+  const dLat=toRad(Number(b.lat)-Number(a.lat));
+  const dLng=toRad(Number(b.lng)-Number(a.lng));
+  const lat1=toRad(Number(a.lat));
+  const lat2=toRad(Number(b.lat));
+  const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
+  return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h));
+}
+function shouldRefreshRoadRoute(from,to,mode){
+  const now=Date.now();
+  if(!lastRouteState)return {refresh:true,reason:'first_route'};
+  if(lastRouteState.mode!==mode)return {refresh:true,reason:'mode_changed'};
+  const targetShift=distanceMeters(lastRouteState.to,to);
+  if(targetShift>ROUTE_TARGET_CHANGE_M)return {refresh:true,reason:'target_changed'};
+  const elapsed=now-lastRouteState.requestedAt;
+  if(lastRouteState.isFallback&&elapsed>=30000)return {refresh:true,reason:'retry_fallback'};
+  if(mode!=='rider')return {refresh:false,reason:'static_restaurant_customer'};
+  const moved=distanceMeters(lastRouteState.from,from);
+  if(elapsed>=ROUTE_FORCE_REFRESH_MS)return {refresh:true,reason:'max_stale'};
+  if(elapsed>=ROUTE_NORMAL_REFRESH_MS&&moved>=ROUTE_REFRESH_DISTANCE_M)return {refresh:true,reason:'rider_moved'};
+  if(elapsed>=ROUTE_HARD_MIN_INTERVAL_MS&&moved>=ROUTE_HARD_DISTANCE_M)return {refresh:true,reason:'rider_far_from_route_start'};
+  return {refresh:false,reason:'keep_cached_route',moved,elapsed};
+}
 function applyRoute(coords,mode,isFallback){
   if(!ensureRoute())return;
   const source=map.getSource('track-route-source');
@@ -451,13 +485,38 @@ function fitRoute(coords,extraLocs,fitKey){
 async function setRoadRoute(from,to,mode){
   if(!ensureRoute()||!from||!to)return;
   const key=routeKey(from,to,mode);
+  const decision=shouldRefreshRoadRoute(from,to,mode);
+
+  // Marker movement is live, but road routing is budget-safe.
+  // We do NOT call Ola Directions every 10 seconds.
+  // Route refresh happens only on first load, important status/target changes,
+  // or when the rider has moved enough and the minimum cooldown passed.
+  if(!decision.refresh){
+    return;
+  }
+
+  if(document.hidden){
+    return;
+  }
+
   const token=++routeRenderToken;
-  if(lastRouteKey!==key){
-    const fallback=fallbackRoute(from,to,mode);
+  const fallback=fallbackRoute(from,to,mode);
+  const firstOrChanged=lastRouteKey!==key||!lastRouteState;
+  if(firstOrChanged){
     applyRoute(fallback,mode,true);
     fitRoute(fallback,[from,to],`${key}:fallback`);
     lastRouteKey=key;
   }
+
+  lastRouteState={
+    mode,
+    from:{lat:from.lat,lng:from.lng},
+    to:{lat:to.lat,lng:to.lng},
+    requestedAt:Date.now(),
+    isFallback:true,
+    reason:decision.reason
+  };
+
   try{
     const helper=window.CBEOlaMapV4;
     if(!helper||typeof helper.getRoute!=='function')return;
@@ -467,6 +526,15 @@ async function setRoadRoute(from,to,mode){
     if(coords.length>1){
       applyRoute(coords,mode,!!route.fallback);
       fitRoute(coords,[from,to],`${key}:${route.fallback?'fallback':'road'}:${coords.length}`);
+      lastRouteState={
+        mode,
+        from:{lat:from.lat,lng:from.lng},
+        to:{lat:to.lat,lng:to.lng},
+        requestedAt:Date.now(),
+        isFallback:!!route.fallback,
+        reason:decision.reason,
+        points:coords.length
+      };
     }
   }catch(error){console.warn('Track road route failed',error)}
 }
@@ -512,7 +580,7 @@ map.on('load',renderMap);
 if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
 function boot(){hydrate();initMap();renderMap()}
 document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
-window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});setInterval(boot,3000);
+window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;boot();setTimeout(boot,700);setTimeout(boot,1800);window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});setInterval(boot,TRACK_BOOT_INTERVAL_MS);
 })();
 </script>
 
