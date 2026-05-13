@@ -135,7 +135,7 @@ button {
   top: 20px;
   width: 294px;
   height: 264px;
-  z-index: 2;
+  z-index: 1;
   pointer-events: none;
 }
 
@@ -150,7 +150,7 @@ button {
 .track-route-path {
   fill: none;
   stroke: #12130F;
-  stroke-width: 2;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
@@ -265,29 +265,12 @@ button {
 }
 
 
-/* Restaurant/customer SVG pins for track fullscreen map */
-.track-map-pin-img {
-  display: block;
-  object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.16));
-}
-
-.restaurant-pin-img {
-  width: 24px;
-  height: 24px;
-}
-
-.customer-pin-img {
-  width: 18px;
-  height: 24px;
-}
-
-
 /* Real Ola map behind track preview overlay */
 .track-ola-map-canvas {
   position: absolute;
   inset: 0;
   z-index: 0;
+  min-height: 304px;
   border-radius: 14px;
   overflow: hidden;
   background:
@@ -296,43 +279,14 @@ button {
     linear-gradient(135deg, #E8EBEF 0%, #FDFDFF 55%, #E9F7EF 100%);
 }
 
+.track-ola-map-canvas canvas {
+  border-radius: 14px;
+}
+
 .track-ola-map-canvas .maplibregl-control-container {
   display: none;
 }
 
-.track-map-preview-layer {
-  z-index: 2;
-}
-
-.track-route-path {
-  filter: drop-shadow(0 1px 2px rgba(255,255,255,0.88));
-}
-
-.track-route-path.rider-customer-route {
-  stroke: #08A045;
-  stroke-width: 2.5;
-  stroke-dasharray: 7 5;
-}
-
-.track-route-path.restaurant-customer-curve {
-  stroke: #12130F;
-  stroke-width: 2;
-  stroke-dasharray: 3 6;
-}
-
-.track-map-pin {
-  z-index: 3;
-}
-
-.track-map-pin-label {
-  padding: 1px 4px;
-  border-radius: 999px;
-  background: rgba(253,253,255,0.88);
-  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
-}
-
-
-/* Ola map markers inside track fullscreen preview */
 .track-ola-marker {
   width: 24px;
   height: 24px;
@@ -377,7 +331,7 @@ button {
 <div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
-<div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden">
+<div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; padding-top: 20px; padding-bottom: 20px; border-radius: 14px; background-image: url(https://placehold.co/342x304); position: relative; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; position: relative; overflow: hidden">
 <div id="trackOlaMapCanvas" class="track-ola-map-canvas" aria-label="Delivery tracking map"></div>
 <div aria-hidden="true" class="track-map-preview-layer" id="trackMapPreviewLayer">
 <svg class="track-route-svg" preserveaspectratio="none" viewbox="0 0 294 264">
@@ -385,11 +339,11 @@ button {
 </svg>
 <div class="track-map-pin track-restaurant-pin" id="trackRestaurantPin">
 <div class="track-map-pin-label">Coimbatore<br/>Foods</div>
-<img class="track-map-pin-img restaurant-pin-img" src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin1" alt="">
+<div class="track-map-pin-dot restaurant-dot"></div>
 </div>
 <div class="track-map-pin track-customer-pin" id="trackCustomerPin">
 <div class="track-map-pin-label">You</div>
-<img class="track-map-pin-img customer-pin-img" src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin1" alt="">
+<div class="track-map-pin-dot customer-dot"></div>
 </div>
 <div class="track-map-pin track-rider-pin" id="trackRiderPin">
 <div class="track-map-pin-label">Rider</div>
@@ -397,7 +351,7 @@ button {
 </div>
 </div>
 
-<div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex; position: relative; z-index: 4">
+<div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: space-between; align-items: flex-end; display: flex; position: relative; z-index: 3">
 <div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; background: white; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex">
 <div class="BackButton" data-layer="back-button" style="border-radius: 14px; justify-content: flex-start; align-items: center; gap: 4px; display: flex">
 <div class="ArrowLeftIcons" data-layer="arrow-left-icons" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trackfresh1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/></div>
@@ -718,18 +672,6 @@ button {
   const PREVIEW_HEIGHT = 264;
   const PREVIEW_PADDING = 28;
 
-  /*
-    Visible safe area inside map-section-v1.
-    Top area is covered by address card, bottom-right has fullscreen button.
-    Keep restaurant-customer curve centered and easy to see.
-  */
-  const SAFE_BOUNDS = {
-    minX: 72,
-    maxX: 226,
-    minY: 136,
-    maxY: 224
-  };
-
   const DEFAULT_RESTAURANT_LOCATION = {
     lat: 11.051992,
     lng: 77.0427325,
@@ -835,9 +777,9 @@ button {
   }
 
   function fallbackPoint(kind) {
-    if (kind === 'restaurant') return { x: 92, y: 174 };
-    if (kind === 'customer') return { x: 212, y: 206 };
-    if (kind === 'rider') return { x: 104, y: 190 };
+    if (kind === 'restaurant') return { x: 226, y: 54 };
+    if (kind === 'customer') return { x: 42, y: 222 };
+    if (kind === 'rider') return { x: 70, y: 170 };
     return { x: PREVIEW_WIDTH / 2, y: PREVIEW_HEIGHT / 2 };
   }
 
@@ -866,12 +808,12 @@ button {
         return;
       }
 
-      const x = SAFE_BOUNDS.minX + ((item.location.lng - minLng) / lngSpan) * (SAFE_BOUNDS.maxX - SAFE_BOUNDS.minX);
-      const y = SAFE_BOUNDS.minY + ((maxLat - item.location.lat) / latSpan) * (SAFE_BOUNDS.maxY - SAFE_BOUNDS.minY);
+      const x = PREVIEW_PADDING + ((item.location.lng - minLng) / lngSpan) * (PREVIEW_WIDTH - PREVIEW_PADDING * 2);
+      const y = PREVIEW_PADDING + ((maxLat - item.location.lat) / latSpan) * (PREVIEW_HEIGHT - PREVIEW_PADDING * 2);
 
       points[item.key] = {
-        x: Math.max(SAFE_BOUNDS.minX, Math.min(SAFE_BOUNDS.maxX, x)),
-        y: Math.max(SAFE_BOUNDS.minY, Math.min(SAFE_BOUNDS.maxY, y))
+        x: Math.max(PREVIEW_PADDING, Math.min(PREVIEW_WIDTH - PREVIEW_PADDING, x)),
+        y: Math.max(PREVIEW_PADDING, Math.min(PREVIEW_HEIGHT - PREVIEW_PADDING, y))
       };
     });
 
@@ -883,11 +825,11 @@ button {
     const dy = to.y - from.y;
     const c1 = {
       x: from.x + dx * 0.28,
-      y: from.y - Math.abs(dy) * 0.28 - 42
+      y: from.y - Math.abs(dy) * 0.42 - 28
     };
     const c2 = {
       x: from.x + dx * 0.72,
-      y: to.y - Math.abs(dy) * 0.22 - 34
+      y: to.y - Math.abs(dy) * 0.30 - 18
     };
 
     return `M ${from.x} ${from.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${to.x} ${to.y}`;
@@ -965,28 +907,12 @@ button {
 
 
   let olaMapInstance = null;
+  let olaMapLibre = null;
   let olaRestaurantMarker = null;
   let olaCustomerMarker = null;
   let olaRiderMarker = null;
-  let olaRouteSourceAdded = false;
   let hasTriedOlaMap = false;
-
-  function getMapBounds(points) {
-    const values = Object.values(points).filter(Boolean);
-    if (!values.length) return null;
-
-    const lngs = values.map(point => point.location?.lng).filter(Number.isFinite);
-    const lats = values.map(point => point.location?.lat).filter(Number.isFinite);
-
-    if (!lngs.length || !lats.length) return null;
-
-    return {
-      minLng: Math.min(...lngs),
-      maxLng: Math.max(...lngs),
-      minLat: Math.min(...lats),
-      maxLat: Math.max(...lats)
-    };
-  }
+  let pendingOlaMapOrder = null;
 
   function makeOlaMarkerElement(type) {
     const element = document.createElement('div');
@@ -1003,55 +929,48 @@ button {
     return element;
   }
 
-  function loadOlaConfig() {
-    if (window.OlaMapsConfig && window.OlaMapsConfig.apiKey) {
-      return Promise.resolve(window.OlaMapsConfig);
-    }
-
-    return fetch('/ola-maps?type=config', { cache: 'no-store' })
-      .then(response => response.ok ? response.json() : null)
-      .catch(() => null);
-  }
-
   function ensureOlaMap(order) {
     const canvas = document.getElementById('trackOlaMapCanvas');
-    if (!canvas || hasTriedOlaMap) {
+    if (!canvas || hasTriedOlaMap) return;
+
+    hasTriedOlaMap = true;
+    pendingOlaMapOrder = order;
+
+    const restaurant = getRestaurantLocation(order);
+    const customer = getCustomerLocation(order);
+    const center = customer || restaurant || DEFAULT_RESTAURANT_LOCATION;
+
+    if (!window.CBEOlaMapV4 || typeof window.CBEOlaMapV4.createMap !== 'function') {
+      console.warn('Ola map helper is not loaded yet.');
       return;
     }
 
-    hasTriedOlaMap = true;
+    window.CBEOlaMapV4.createMap({
+      container: canvas,
+      center: [center.lng, center.lat],
+      zoom: 13.4,
+      controls: false
+    }).then(({ map, maplibregl }) => {
+      olaMapInstance = map;
+      olaMapLibre = maplibregl || window.maplibregl;
 
-    loadOlaConfig().then(config => {
-      if (!config || !config.apiKey || !window.maplibregl) return;
+      olaMapInstance.on('load', () => {
+        updateOlaMap(pendingOlaMapOrder || order);
+      });
 
-      const restaurant = getRestaurantLocation(order);
-      const customer = getCustomerLocation(order);
-      const center = customer || restaurant || DEFAULT_RESTAURANT_LOCATION;
-
-      try {
-        olaMapInstance = new window.maplibregl.Map({
-          container: canvas,
-          style: `https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json?api_key=${encodeURIComponent(config.apiKey)}`,
-          center: [center.lng, center.lat],
-          zoom: 13.4,
-          interactive: false,
-          attributionControl: false
-        });
-
-        olaMapInstance.on('load', () => {
-          updateOlaMap(order);
-        });
-      } catch (error) {
-        console.warn('Ola map could not initialize in track preview', error);
+      if (olaMapInstance.loaded()) {
+        updateOlaMap(pendingOlaMapOrder || order);
       }
+    }).catch(error => {
+      console.warn('Ola map could not initialize in track preview', error);
     });
   }
 
   function makeMarker(marker, type, location) {
-    if (!location || !olaMapInstance || !window.maplibregl) return marker;
+    if (!location || !olaMapInstance || !olaMapLibre) return marker;
 
     if (!marker) {
-      marker = new window.maplibregl.Marker({
+      marker = new olaMapLibre.Marker({
         element: makeOlaMarkerElement(type),
         anchor: 'bottom'
       }).setLngLat([location.lng, location.lat]).addTo(olaMapInstance);
@@ -1089,7 +1008,6 @@ button {
       });
     }
 
-    olaRouteSourceAdded = true;
     return true;
   }
 
@@ -1108,10 +1026,7 @@ button {
           type: 'LineString',
           coordinates: [
             [from.lng, from.lat],
-            [
-              (from.lng + to.lng) / 2,
-              Math.max(from.lat, to.lat) + 0.006
-            ],
+            [(from.lng + to.lng) / 2, Math.max(from.lat, to.lat) + 0.006],
             [to.lng, to.lat]
           ]
         }
@@ -1120,7 +1035,7 @@ button {
   }
 
   function fitOlaMapToLocations(locations) {
-    if (!olaMapInstance || !window.maplibregl) return;
+    if (!olaMapInstance || !olaMapLibre) return;
 
     const valid = locations.filter(Boolean);
     if (!valid.length) return;
@@ -1131,7 +1046,7 @@ button {
       return;
     }
 
-    const bounds = new window.maplibregl.LngLatBounds();
+    const bounds = new olaMapLibre.LngLatBounds();
     valid.forEach(location => bounds.extend([location.lng, location.lat]));
 
     olaMapInstance.fitBounds(bounds, {
@@ -1152,10 +1067,12 @@ button {
     if (showRiderRoute) {
       olaRiderMarker = makeMarker(olaRiderMarker, 'rider', rider || restaurant);
       olaCustomerMarker = makeMarker(olaCustomerMarker, 'customer', customer);
+
       if (olaRestaurantMarker) {
         olaRestaurantMarker.remove();
         olaRestaurantMarker = null;
       }
+
       setMapRoute(rider || restaurant, customer, 'rider-customer');
       fitOlaMapToLocations([rider || restaurant, customer]);
       return;
@@ -1163,19 +1080,30 @@ button {
 
     olaRestaurantMarker = makeMarker(olaRestaurantMarker, 'restaurant', restaurant);
     olaCustomerMarker = makeMarker(olaCustomerMarker, 'customer', customer);
+
     if (olaRiderMarker) {
       olaRiderMarker.remove();
       olaRiderMarker = null;
     }
+
     setMapRoute(restaurant, customer, 'restaurant-customer');
     fitOlaMapToLocations([restaurant, customer]);
   }
 
+  function retryOlaMapIfNeeded() {
+    if (olaMapInstance || !hasTriedOlaMap) return;
+    if (!window.CBEOlaMapV4 || typeof window.CBEOlaMapV4.createMap !== 'function') return;
+
+    hasTriedOlaMap = false;
+    ensureOlaMap(pendingOlaMapOrder || getSelectedOrder());
+  }
 
   window.renderRestaurantCustomerCurve = renderTrackMapPreview;
   window.renderTrackMapPreview = renderTrackMapPreview;
 
   renderTrackMapPreview();
+  window.setTimeout(retryOlaMapIfNeeded, 500);
+  window.setTimeout(retryOlaMapIfNeeded, 1500);
 
   window.addEventListener('storage', event => {
     if ([
