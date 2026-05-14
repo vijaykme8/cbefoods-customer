@@ -708,6 +708,115 @@ function animateRiderMarkerTo(marker,location,duration=1400){
   riderMarkerAnimationFrame=requestAnimationFrame(step);
 }
 
+
+function closestRouteIndex(coords,location){
+  if(!Array.isArray(coords)||!coords.length||!location)return -1;
+
+  let bestIndex=-1;
+  let bestDistance=Infinity;
+
+  coords.forEach((point,index)=>{
+    if(!Array.isArray(point)||point.length<2)return;
+
+    const distance=haversineMeters(
+      {lat:Number(point[1]),lng:Number(point[0])},
+      location
+    );
+
+    if(distance<bestDistance){
+      bestDistance=distance;
+      bestIndex=index;
+    }
+  });
+
+  return bestIndex;
+}
+
+function buildRouteFollowPath(fromLoc,toLoc,routeCoords){
+  if(!fromLoc||!toLoc||!Array.isArray(routeCoords)||routeCoords.length<3)return [];
+
+  const fromIndex=closestRouteIndex(routeCoords,fromLoc);
+  const toIndex=closestRouteIndex(routeCoords,toLoc);
+
+  if(fromIndex<0||toIndex<0||fromIndex===toIndex)return [];
+
+  let segment=[];
+
+  if(toIndex>fromIndex){
+    segment=routeCoords.slice(fromIndex,toIndex+1);
+  }else{
+    segment=routeCoords.slice(toIndex,fromIndex+1).reverse();
+  }
+
+  const path=[
+    [fromLoc.lng,fromLoc.lat],
+    ...segment,
+    [toLoc.lng,toLoc.lat]
+  ].filter(point=>Array.isArray(point)&&Number.isFinite(point[0])&&Number.isFinite(point[1]));
+
+  return path.length>=2?path:[];
+}
+
+function animateMarkerAlongCoords(marker,coords,duration=2600){
+  if(!marker||!Array.isArray(coords)||coords.length<2)return;
+
+  if(riderMarkerAnimationFrame)cancelAnimationFrame(riderMarkerAnimationFrame);
+
+  const segments=[];
+  let total=0;
+
+  for(let i=0;i<coords.length-1;i++){
+    const a=coords[i];
+    const b=coords[i+1];
+
+    const length=haversineMeters(
+      {lat:a[1],lng:a[0]},
+      {lat:b[1],lng:b[0]}
+    );
+
+    if(length>0){
+      segments.push({a,b,length});
+      total+=length;
+    }
+  }
+
+  if(!segments.length){
+    marker.setLngLat(coords[coords.length-1]);
+    return;
+  }
+
+  const start=performance.now();
+
+  function step(now){
+    const t=Math.min(1,(now-start)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const targetDistance=total*eased;
+
+    let travelled=0;
+    let active=segments[segments.length-1];
+
+    for(const seg of segments){
+      if(travelled+seg.length>=targetDistance){
+        active=seg;
+        break;
+      }
+      travelled+=seg.length;
+    }
+
+    const localT=Math.max(0,Math.min(1,(targetDistance-travelled)/active.length));
+    const lng=active.a[0]+(active.b[0]-active.a[0])*localT;
+    const lat=active.a[1]+(active.b[1]-active.a[1])*localT;
+
+    marker.setLngLat([lng,lat]);
+
+    if(t<1){
+      riderMarkerAnimationFrame=requestAnimationFrame(step);
+    }
+  }
+
+  riderMarkerAnimationFrame=requestAnimationFrame(step);
+}
+
 function upsert(marker,type,location){
   if(!map||!maplibre||!location)return marker;
 
@@ -731,7 +840,8 @@ function routeData(coords){return{type:'FeatureCollection',features:[{type:'Feat
 function clearRoute(){if(!ensureRoute())return;map.getSource('track-route-source').setData(routeData([]))}
 function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
 function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return;routeRequestToken++;lastRouteState=null;const s=map.getSource('track-route-source');s.setData(routeData(curve(from,to)));map.setPaintProperty('track-route-casing','line-width',0);map.setPaintProperty('track-route-casing','line-opacity',0);map.setPaintProperty('track-route-line','line-color','#12130F');map.setPaintProperty('track-route-line','line-width',2);map.setPaintProperty('track-route-line','line-opacity',.9);map.setPaintProperty('track-route-line','line-dasharray',[1.5,3])}
-function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#08A045');map.setPaintProperty('track-route-line','line-width',5);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
+let currentRoadRouteCoords=[];
+function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;currentRoadRouteCoords=coords.slice();map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#08A045');map.setPaintProperty('track-route-line','line-width',5);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
 function routeCacheKey(from,to){const o=getSelectedOrder();const id=getOrderId(o)||'latest';return `cbe_static_road_route_${id}_${to.lat.toFixed(4)}_${to.lng.toFixed(4)}`}
 function readRouteCache(from,to){try{const cached=JSON.parse(localStorage.getItem(routeCacheKey(from,to))||'null');if(!cached||!Array.isArray(cached.coords)||cached.coords.length<3)return null;if(Date.now()-Number(cached.at||0)>ROUTE_REFRESH_MIN_MS)return null;return cached}catch{return null}}
 function writeRouteCache(from,to,coords){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords}))}catch{}}
@@ -895,11 +1005,17 @@ async function updateRouteThenMoveRider(start,customer){
   if(pendingRiderRouteKey===nextKey)return;
   pendingRiderRouteKey=nextKey;
 
+  const previousRoadRouteCoords=Array.isArray(currentRoadRouteCoords)?currentRoadRouteCoords.slice():[];
+  const routeFollowPath=buildRouteFollowPath(currentLoc,start,previousRoadRouteCoords);
   const routeReady=await fetchRoadRoute(start,customer);
 
   if(latestRequestedRiderKey===nextKey){
-    // Option B: route first, then marker moves smoothly.
-    riderMarker=upsert(riderMarker,'rider',start);
+    // Option B: route first, then marker follows road-route segment smoothly.
+    if(routeFollowPath&&routeFollowPath.length>=2){
+      animateMarkerAlongCoords(riderMarker,routeFollowPath);
+    }else{
+      riderMarker=upsert(riderMarker,'rider',start);
+    }
   }
 
   pendingRiderRouteKey='';
