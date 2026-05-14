@@ -685,7 +685,17 @@ function readRouteCache(from,to){try{const cached=JSON.parse(localStorage.getIte
 function writeRouteCache(from,to,coords){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords}))}catch{}}
 function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;const key=valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|');if(key===lastFitKey)return;lastFitKey=key;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:350,maxZoom:15})}
 function haversineMeters(a,b){if(!a||!b)return Infinity;const R=6371000;const rad=v=>v*Math.PI/180;const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);const lat1=rad(a.lat),lat2=rad(b.lat);const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
-function shouldFetchRoadRoute(from,to){if(!from||!to)return false;if(document.hidden)return false;if(!lastRouteState)return true;const destinationChanged=haversineMeters(lastRouteState.to,to)>30;const elapsed=Date.now()-lastRouteState.at;return destinationChanged||elapsed>=ROUTE_REFRESH_MIN_MS}
+function shouldFetchRoadRoute(from,to){
+  if(!from||!to)return false;
+  if(document.hidden)return false;
+  if(!lastRouteState)return true;
+
+  const riderMoved=haversineMeters(lastRouteState.from,from)>=ROUTE_REFRESH_MIN_DISTANCE_M;
+  const destinationChanged=haversineMeters(lastRouteState.to,to)>30;
+  const elapsed=Date.now()-lastRouteState.at;
+
+  return riderMoved||destinationChanged||elapsed>=ROUTE_REFRESH_MIN_MS;
+}
 function decodePolyline(str,precision=5){if(!str||typeof str!=='string')return[];let index=0,lat=0,lng=0,out=[],factor=Math.pow(10,precision);while(index<str.length){let result=0,shift=0,byte;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lat+=(result&1)?~(result>>1):(result>>1);result=0;shift=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lng+=(result&1)?~(result>>1):(result>>1);out.push([lng/factor,lat/factor])}return out.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]))}
 function looksLatLng(a,b){return a>=5&&a<=40&&b>=65&&b<=100}
 function looksLngLat(a,b){return a>=65&&a<=100&&b>=5&&b<=40}
