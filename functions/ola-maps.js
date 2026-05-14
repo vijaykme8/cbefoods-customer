@@ -1,3 +1,4 @@
+// routefix1: use POST for Ola Directions API; GET can return 404.
 const OLA_STYLE_URL =
   "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
 
@@ -6,6 +7,9 @@ const OLA_REVERSE_URL =
 
 const OLA_DIRECTIONS_URL =
   "https://api.olamaps.io/routing/v1/directions";
+
+const OLA_DIRECTIONS_BASIC_URL =
+  "https://api.olamaps.io/routing/v1/directions/basic";
 
 const CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -95,19 +99,23 @@ function rewriteOlaUrls(value, origin) {
   return value;
 }
 
-async function fetchOla(rawUrl, apiKey, origin) {
+async function fetchOla(rawUrl, apiKey, origin, options = {}) {
   if (!isAllowedOlaUrl(rawUrl)) {
     return jsonResponse({ message: "Blocked non-Ola URL" }, 403);
   }
 
   const upstreamUrl = withApiKey(rawUrl, apiKey);
+  const method = options.method || "GET";
 
   const upstream = await fetch(upstreamUrl, {
+    method,
+    body: options.body,
     headers: {
-      "Accept": "*/*",
+      "Accept": "application/json, text/plain, */*",
       "Origin": origin,
       "Referer": origin + "/",
       "User-Agent": "CBEFoods-Cloudflare-Pages-Proxy",
+      ...(method !== "GET" ? { "Content-Type": "application/json" } : {}),
     },
   });
 
@@ -213,14 +221,35 @@ export async function onRequest(context) {
         );
       }
 
-      const directionsUrl =
-        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(`${originLat},${originLng}`)}` +
+      const directionsQuery =
+        `?origin=${encodeURIComponent(`${originLat},${originLng}`)}` +
         `&destination=${encodeURIComponent(`${destLat},${destLng}`)}` +
-        `&mode=driving` +
+        `&alternatives=false` +
+        `&steps=false` +
         `&overview=full` +
-        `&alternatives=false`;
+        `&language=en` +
+        `&traffic_metadata=false`;
 
-      return await fetchOla(directionsUrl, apiKey, origin);
+      // Ola Routing Directions API requires POST even when parameters are in the query string.
+      // A GET request can return 404 even with correct coordinates.
+      const primary = await fetchOla(
+        `${OLA_DIRECTIONS_URL}${directionsQuery}`,
+        apiKey,
+        origin,
+        { method: "POST", body: "" }
+      );
+
+      if (primary.status !== 404) {
+        return primary;
+      }
+
+      // Safety fallback: basic routing endpoint, also POST. Used only when the main endpoint returns 404.
+      return await fetchOla(
+        `${OLA_DIRECTIONS_BASIC_URL}${directionsQuery}`,
+        apiKey,
+        origin,
+        { method: "POST", body: "" }
+      );
     }
 
     return jsonResponse({ message: "Unknown Ola proxy type" }, 400);
