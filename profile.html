@@ -1,697 +1,1359 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
-<meta name="theme-color" content="#8806CE">
-<title>Coimbatore Foods - Profile</title>
-<link rel="manifest" id="pwa-manifest">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
+<meta name="theme-color" content="#8806CE" />
+<title>Profile | Coimbatore Foods</title>
+<link rel="manifest" id="pwa-manifest" />
 <style>
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype'); font-weight: 400; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype'); font-weight: 500; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'General Sans'; src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Semibold.otf') format('opentype'); font-weight: 600; font-style: normal; }
-@font-face { font-family: 'Chillax'; src: url('./fonts/Chillax/Chillax-Bold.otf') format('opentype'); font-weight: 700; font-style: normal; }
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
 
 :root {
   --white: #FDFDFF;
-  --surface: #FFFFFF;
-  --page: #F5F5F7;
-  --ink: #12130F;
+  --black: #12130F;
   --muted: rgba(18, 19, 15, 0.50);
-  --body: rgba(18, 19, 15, 0.78);
-  --soft: rgba(18, 19, 15, 0.06);
-  --line: rgba(18, 19, 15, 0.08);
-  --brand: #8806CE;
-  --green: #08A045;
-  --red: #E23009;
-  --yellow: #FFCC00;
-  --shadow: 2px 4px 24px rgba(0, 0, 0, 0.08);
+  --line: rgba(18, 19, 15, 0.12);
+  --soft: rgba(18, 19, 15, 0.04);
+  --field: rgba(18, 19, 15, 0.02);
+  --cta: #08A045;
+  --violet: #8806CE;
+  --danger: #D62828;
 }
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; scrollbar-width: none; -ms-overflow-style: none; }
-*::-webkit-scrollbar { display: none; width: 0; height: 0; }
-html, body { width: 100%; min-height: 100%; }
-html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; }
-body { background: var(--page); font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, sans-serif; color: var(--ink); display: flex; justify-content: center; padding: 0; }
-a { color: inherit; text-decoration: none; }
-button, input, textarea { font-family: inherit; }
-button { border: none; background: none; cursor: pointer; }
-img { max-width: 100%; display: block; }
-.app { width: 390px; min-height: 100dvh; background: var(--surface); overflow-x: hidden; display: flex; flex-direction: column; align-items: flex-start; padding-bottom: calc(100px + env(safe-area-inset-bottom)); position: relative; }
-.hero { align-self: stretch; padding-top: calc(40px + env(safe-area-inset-top)); padding-bottom: 10px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, #FDFDFF 0%, #F7F7F9 100%); display: flex; flex-direction: column; gap: 10px; }
-.top-row { width: 342px; display: flex; justify-content: space-between; align-items: center; }
-.back-link { min-height: 38px; padding: 8px 14px; background: rgba(18, 19, 15, 0.06); color: var(--ink); border-radius: 28px; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 800; line-height: 14px; }
-.avatar { width: 46px; height: 46px; overflow: hidden; border-radius: 50px; flex-shrink: 0; background: #F7F7F9; display: block; }
-.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.hero-card { width: 342px; padding: 18px 16px; background: linear-gradient(0deg, rgba(18, 19, 15, 0.14) 0%, rgba(18, 19, 15, 0.14) 100%), #12130F; border-radius: 40px; background-image: url('assets/menu/img/hero card-img.png'); background-size: auto; background-position: right bottom; background-repeat: no-repeat; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
-.hero-title { color: var(--white); font-size: 26px; font-family: 'Chillax', 'General Sans', sans-serif; font-weight: 700; line-height: 30px; letter-spacing: -0.2px; }
-.hero-title span { display: inline-block; }
-.text-green { color: var(--green); }
-.text-purple { color: var(--brand); }
-.hero-meta { max-width: 220px; color: rgba(253, 253, 255, 0.62); font-size: 12px; font-weight: 600; line-height: 16px; }
-.badge-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.badge { padding: 6px 8px; background: rgba(255, 255, 255, 0.12); border-radius: 12px; color: rgba(253, 253, 255, 0.68); font-size: 12px; font-weight: 600; line-height: 12px; white-space: nowrap; }
-.content { align-self: stretch; padding: 18px 24px 0; display: flex; flex-direction: column; gap: 20px; }
-.section { width: 342px; display: flex; flex-direction: column; gap: 10px; }
-.section-header { min-height: 42px; display: flex; flex-direction: column; }
-.section-title { color: var(--brand); font-size: 20px; font-family: 'Chillax', 'General Sans', sans-serif; font-weight: 600; line-height: 30px; }
-.section-title.green { color: var(--green); }
-.section-title.red { color: var(--red); }
-.section-subtitle { color: var(--muted); font-size: 12px; font-weight: 500; line-height: 12px; }
-.card { width: 342px; padding: 14px; background: var(--surface); border-radius: 40px; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
-.profile-head { display: flex; align-items: center; gap: 12px; padding: 12px; background: #F7F7F9; border: 1px solid var(--line); border-radius: 28px; }
-.profile-icon { width: 54px; height: 54px; border-radius: 36px; overflow: hidden; background: var(--soft); flex-shrink: 0; }
-.profile-icon img { width: 100%; height: 100%; object-fit: cover; }
-.profile-name { color: var(--ink); font-size: 18px; font-weight: 800; line-height: 22px; }
-.profile-phone { color: var(--muted); font-size: 12px; font-weight: 600; line-height: 16px; margin-top: 2px; }
-.field-grid { display: flex; flex-direction: column; gap: 10px; }
-.field { display: flex; flex-direction: column; gap: 6px; }
-.field span { color: rgba(18, 19, 15, 0.58); font-size: 11px; font-weight: 700; line-height: 12px; }
-.field input, .field textarea { width: 100%; border: 1px solid rgba(18, 19, 15, 0.10); outline: none; background: #FDFDFF; border-radius: 28px; padding: 12px 14px; color: var(--ink); font-size: 13px; font-weight: 600; line-height: 17px; box-shadow: 0 4px 18px rgba(18, 19, 15, 0.04); }
-.field input[readonly] { background: rgba(18, 19, 15, 0.04); color: rgba(18, 19, 15, 0.72); cursor: not-allowed; }
-.field-note { color: var(--muted); font-size: 10px; font-weight: 600; line-height: 14px; margin-top: -2px; }
-.field textarea { min-height: 88px; resize: none; border-radius: 28px; }
-.field input:focus, .field textarea:focus { border-color: rgba(8, 160, 69, 0.55); box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.10); }
-.action-row { display: flex; gap: 10px; }
-.btn { min-height: 46px; padding: 12px 14px; border-radius: 28px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 800; line-height: 14px; transition: transform 0.12s ease, opacity 0.12s ease; }
-.btn:active { transform: scale(0.98); }
-.btn.primary { flex: 1; background: var(--green); color: var(--white); box-shadow: 0 10px 24px rgba(8, 160, 69, 0.18); }
-.btn.secondary { flex: 1; background: rgba(18, 19, 15, 0.06); color: var(--ink); }
-.btn.danger { flex: 1; background: rgba(226, 48, 9, 0.10); color: var(--red); }
-.address-preview { padding: 12px; border-radius: 28px; background: #F7F7F9; border: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; }
-.preview-label { color: var(--muted); font-size: 10px; font-weight: 800; line-height: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
-.preview-value { color: var(--ink); font-size: 13px; font-weight: 700; line-height: 18px; }
-.preview-mini { color: rgba(18, 19, 15, 0.62); font-size: 11px; font-weight: 600; line-height: 15px; }
-.order-list { display: flex; flex-direction: column; gap: 10px; }
-.order-card { padding: 12px; background: var(--surface); border-radius: 32px; box-shadow: var(--shadow); border: 1px solid rgba(18, 19, 15, 0.02); display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
-.order-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.order-id { color: var(--ink); font-size: 13px; font-weight: 800; line-height: 16px; word-break: break-word; }
-.order-date { color: var(--muted); font-size: 10px; font-weight: 600; line-height: 13px; margin-top: 3px; }
-.order-price { color: var(--green); font-size: 16px; font-weight: 800; line-height: 20px; white-space: nowrap; }
-.status-pill { width: fit-content; padding: 6px 8px; border-radius: 999px; background: rgba(8, 160, 69, 0.10); color: var(--green); font-size: 10px; font-weight: 800; line-height: 12px; }
-.status-pill.failed { background: rgba(226, 48, 9, 0.10); color: var(--red); }
-.order-line { display: flex; justify-content: space-between; gap: 12px; color: var(--body); font-size: 11px; font-weight: 600; line-height: 15px; }
-.order-line strong { color: var(--ink); font-weight: 800; text-align: right; }
-.order-details { border-top: 1px solid var(--line); padding-top: 10px; }
-.order-details summary { list-style: none; cursor: pointer; color: var(--brand); font-size: 12px; font-weight: 800; line-height: 16px; }
-.order-details summary::-webkit-details-marker { display: none; }
-.item-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
-.item-row { display: flex; justify-content: space-between; gap: 12px; color: var(--body); font-size: 11px; font-weight: 600; line-height: 15px; }
-.item-row strong { color: var(--ink); white-space: nowrap; }
-.empty-state { padding: 18px; background: #F7F7F9; border-radius: 32px; border: 1px dashed rgba(18, 19, 15, 0.16); text-align: center; color: rgba(18, 19, 15, 0.58); font-size: 12px; font-weight: 700; line-height: 17px; }
-.setting-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-radius: 28px; background: #F7F7F9; border: 1px solid var(--line); }
-.setting-copy { min-width: 0; }
-.setting-title { color: var(--ink); font-size: 13px; font-weight: 800; line-height: 16px; }
-.setting-sub { color: var(--muted); font-size: 11px; font-weight: 600; line-height: 15px; margin-top: 2px; }
-.switch { position: relative; width: 48px; height: 30px; flex-shrink: 0; }
-.switch input { opacity: 0; width: 0; height: 0; }
-.slider { position: absolute; cursor: pointer; inset: 0; background: rgba(18, 19, 15, 0.16); border-radius: 999px; transition: 0.2s ease; }
-.slider:before { content: ""; position: absolute; height: 24px; width: 24px; left: 3px; top: 3px; background: var(--white); border-radius: 999px; box-shadow: 0 2px 8px rgba(0,0,0,0.14); transition: 0.2s ease; }
-.switch input:checked + .slider { background: var(--green); }
-.switch input:checked + .slider:before { transform: translateX(18px); }
-.toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(18px); width: calc(390px - 48px); min-height: 44px; padding: 12px 14px; border-radius: 28px; background: rgba(18, 19, 15, 0.94); color: var(--white); font-size: 12px; font-weight: 700; line-height: 16px; display: flex; align-items: center; justify-content: center; text-align: center; opacity: 0; pointer-events: none; transition: 0.2s ease; z-index: 4000; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-.bottom-nav { position: fixed; left: 50%; bottom: 0; transform: translateX(-50%); width: 390px; height: calc(64px + env(safe-area-inset-bottom)); padding-top: 10px; padding-bottom: env(safe-area-inset-bottom); background: white; box-shadow: 0px -2px 16px rgba(0, 0, 0, 0.10); z-index: 2200; display: inline-flex; justify-content: center; align-items: flex-start; gap: 40px; }
-.nav-item { width: 80px; text-decoration: none; color: inherit; display: inline-flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; }
-.nav-item-icon { width: 24px; height: 24px; position: relative; overflow: visible; }
-.nav-item-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
-.nav-item-text { align-self: stretch; text-align: center; color: var(--ink); font-size: 10px; font-weight: 500; line-height: 10px; }
-.cart-badge { position: absolute; top: -8px; right: -8px; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--red); color: white; font-size: 10px; font-weight: 700; line-height: 18px; display: none; align-items: center; justify-content: center; }
-@supports (corner-shape: squircle) {
-  .back-link, .avatar, .hero-card, .badge, .card, .profile-head, .profile-icon, .field input, .field textarea, .btn, .address-preview, .order-card, .empty-state, .setting-row, .toast, .bottom-nav { corner-shape: squircle; }
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; background: var(--white); color: var(--black); }
+body { font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+button, input { font: inherit; }
+button { border: 0; background: none; padding: 0; color: inherit; cursor: pointer; }
+
+.profile-screen {
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  position: relative;
+  background: var(--white);
+  overflow-x: hidden;
+  padding: calc(40px + env(safe-area-inset-top, 0px)) 22px 32px;
 }
-@media (max-width: 389px) {
-  .app, .bottom-nav { width: 100vw; }
-  .hero, .content { padding-left: 20px; padding-right: 20px; }
-  .top-row, .hero-card, .section, .card, .toast { width: calc(100vw - 40px); }
+
+.top-car {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  height: 30px;
+  border-radius: 14px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-30 {
+  width: 30px;
+  height: 30px;
+  opacity: 0.50;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.back-text {
+  color: var(--black);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 27px;
+}
+
+.full-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.personal-info-group {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.persona-info {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px 16px;
+  background: var(--soft);
+  border-radius: 14px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+}
+
+.user-profile {
+  width: 56px;
+  height: 56px;
+  position: relative;
+  overflow: visible;
+  flex: 0 0 auto;
+}
+
+.avatar-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #878887;
+  color: var(--white);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+  overflow: hidden;
+}
+
+.avatar-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.avatar-edit-icon {
+  width: 16px;
+  height: 16px;
+  padding: 3px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  background: var(--cta);
+  border-radius: 20px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.name-number {
+  min-width: 0;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.profile-name {
+  max-width: 224px;
+  color: var(--black);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 22.4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.profile-phone {
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22.4px;
+  white-space: nowrap;
+}
+
+.input-field-group,
+.phone-input-field {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.field-label {
+  width: 100%;
+  color: var(--black);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+}
+.field-label.muted { opacity: 0.60; }
+
+.input-field-with-edit {
+  width: 100%;
+  min-height: 54px;
+  padding: 14px 20px;
+  border: 1px solid rgba(18, 19, 15, 0.08);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
+.input-field-with-edit.locked {
+  background: var(--field);
+  gap: 30px;
+}
+
+.field-value {
+  min-width: 0;
+  flex: 1 1 0;
+  color: var(--black);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.number-value {
+  min-width: 0;
+  flex: 1 1 0;
+  opacity: 0.40;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--black);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 26px;
+  white-space: nowrap;
+}
+
+.number-value .digits { letter-spacing: 0.02em; }
+
+.edit-button {
+  min-width: 52px;
+  height: 21px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  color: var(--cta);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20.8px;
+}
+
+.edit-button svg { width: 20px; height: 20px; flex: 0 0 auto; }
+
+.divider {
+  align-self: stretch;
+  height: 1px;
+  background: var(--line);
+}
+
+.saved-address-section {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+}
+
+.saved-add-content {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.title-info {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.section-title {
+  align-self: stretch;
+  color: var(--black);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 28px;
+}
+
+.section-info {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19.6px;
+}
+
+.saved-add-group {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.address-row {
+  align-self: stretch;
+  padding: 6px 0;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.inside-wrap {
+  align-self: stretch;
+  min-height: 40px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 16px;
+}
+
+.address-left-group {
+  min-width: 0;
+  flex: 1 1 0;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.title-with-icon {
+  max-width: 100%;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 4px;
+  color: var(--black);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20.8px;
+}
+
+.title-with-icon svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--violet);
+}
+
+.address-title-text {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.address-line {
+  align-self: stretch;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16.8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.add-address-button {
+  width: 164px;
+  min-height: 44px;
+  padding: 12px 24px;
+  background: var(--white);
+  border: 1px solid var(--cta);
+  border-radius: 10px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: var(--cta);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19.6px;
+}
+
+.past-order-section {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.past-orders-title {
+  align-self: stretch;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19.6px;
+}
+
+.order-cards-group {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.item-card {
+  align-self: stretch;
+  padding: 4px;
+  background: var(--white);
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.order-header-card {
+  align-self: stretch;
+  min-height: 54px;
+  padding: 12px;
+  background: var(--soft);
+  overflow: hidden;
+  border-radius: 10px 10px 0 0;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.order-left-content {
+  flex: 1 1 0;
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 8px;
+}
+
+.item-img {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: rgba(136, 6, 206, 0.10);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  flex: 0 0 auto;
+}
+
+.item-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.item-title {
+  min-width: 0;
+  flex: 1 1 0;
+  align-self: stretch;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.restaurant-name {
+  color: var(--black);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 14.4px;
+}
+
+.order-id {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 14.4px;
+}
+
+.item-list {
+  align-self: stretch;
+  padding: 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 2px 14px;
+}
+
+.item-chip {
+  min-height: 20px;
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  color: #000;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.item-chip .count {
+  min-width: 20px;
+  height: 20px;
+  padding: 4px;
+  background: rgba(18, 19, 15, 0.06);
+  border-radius: 30px;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.cta-time-info {
+  align-self: stretch;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.view-details {
+  color: var(--cta);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19.6px;
+}
+
+.time-value {
+  align-self: stretch;
+  padding: 12px 0;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.time-value .total { text-align: right; white-space: nowrap; }
+.time-value .amount { color: var(--black); font-weight: 600; }
+
+.empty-state {
+  width: 100%;
+  padding: 16px 14px;
+  border: 1px dashed rgba(18, 19, 15, 0.16);
+  border-radius: 14px;
+  background: rgba(18, 19, 15, 0.02);
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 19.6px;
+  text-align: center;
+}
+
+.menu-popover {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: calc(78px + env(safe-area-inset-top, 0px));
+  background: rgba(18, 19, 15, 0.08);
+}
+.menu-popover.show { display: flex; }
+.menu-card {
+  width: min(342px, calc(100vw - 48px));
+  background: var(--white);
+  border: 1px solid rgba(18, 19, 15, 0.10);
+  border-radius: 16px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  overflow: hidden;
+}
+.menu-action {
+  width: 100%;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--black);
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(18, 19, 15, 0.08);
+}
+.menu-action:last-child { border-bottom: 0; }
+.menu-action.danger { color: var(--danger); }
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(18, 19, 15, 0.22);
+}
+.sheet-backdrop.show { display: flex; }
+.sheet {
+  width: min(390px, 100vw);
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  padding: 18px 24px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -12px 32px rgba(0,0,0,0.12);
+}
+.sheet-handle {
+  width: 44px;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(18, 19, 15, 0.16);
+  margin: 0 auto 18px;
+}
+.sheet-title {
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.sheet-input {
+  width: 100%;
+  height: 54px;
+  border-radius: 10px;
+  border: 1px solid rgba(18, 19, 15, 0.12);
+  padding: 0 16px;
+  outline: none;
+  color: var(--black);
+  font-size: 18px;
+  font-weight: 500;
+}
+.sheet-input:focus { border-color: rgba(8, 160, 69, 0.70); }
+.sheet-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.sheet-btn {
+  flex: 1;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 15px;
+  font-weight: 600;
+}
+.sheet-btn.cancel { border: 1px solid rgba(18, 19, 15, 0.12); color: var(--black); }
+.sheet-btn.save { background: var(--cta); color: var(--white); }
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 120px);
+  z-index: 80;
+  width: max-content;
+  max-width: min(342px, calc(100vw - 48px));
+  padding: 11px 14px;
+  background: var(--black);
+  color: var(--white);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 18px;
+  opacity: 0;
+  transition: transform .24s ease, opacity .24s ease;
+  pointer-events: none;
+}
+.toast.show { transform: translate(-50%, 0); opacity: 1; }
+
+@media (max-width: 360px) {
+  .profile-screen { padding-left: 18px; padding-right: 18px; }
+  .edit-button { min-width: 46px; font-size: 15px; }
+  .item-chip { font-size: 9.5px; }
 }
 </style>
-<script>
-(function () {
-  document.documentElement.style.display = 'none';
-  const auth = localStorage.getItem('cust_auth');
-  if (!auth || auth !== '1') {
-    window.location.replace('login.html');
-    return;
-  }
-  window.addEventListener('DOMContentLoaded', () => {
-    document.documentElement.style.display = 'block';
-  });
-})();
-</script>
 </head>
 <body>
-<div class="app">
-  <header class="hero">
-    <div class="top-row">
-      <a class="back-link" href="menu.html" aria-label="Back to menu">‹ Menu</a>
-      <div class="avatar" aria-hidden="true"><img src="assets/menu/icons/user profile.svg" alt="User profile"></div>
-    </div>
+<main class="profile-screen" aria-label="Profile screen">
+  <div class="top-car">
+    <button class="back-button" type="button" id="backButton" aria-label="Go back">
+      <span class="icon-30" aria-hidden="true">
+        <svg viewBox="0 0 30 30" width="30" height="30" fill="none">
+          <path d="M15 27.5C8.096 27.5 2.5 21.904 2.5 15S8.096 2.5 15 2.5 27.5 8.096 27.5 15 21.904 27.5 15 27.5Z" stroke="#12130F" stroke-width="1.5"/>
+          <path d="M16.58 10.59 12.18 15l4.4 4.41" stroke="#12130F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span class="back-text">back</span>
+    </button>
 
-    <div class="hero-card">
-      <h1 class="hero-title"><span>Manage&nbsp;</span><span class="text-green">profile,&nbsp;</span><span>orders&nbsp;</span><span class="text-purple">easy.</span></h1>
-      <p class="hero-meta">Update details, saved address, previous orders and app settings.</p>
-      <div class="badge-row">
-        <div class="badge" id="profileNameChip">👤 Customer</div>
-        <div class="badge" id="orderCountChip">🧾 0 orders</div>
-      </div>
-    </div>
-  </header>
+    <button class="icon-30" type="button" id="dotMenuButton" aria-label="Open profile options">
+      <svg viewBox="0 0 30 30" width="30" height="30" fill="none" aria-hidden="true">
+        <circle cx="6.8" cy="15" r="2.2" fill="#12130F"/>
+        <circle cx="15" cy="15" r="2.2" fill="#12130F"/>
+        <circle cx="23.2" cy="15" r="2.2" fill="#12130F"/>
+      </svg>
+    </button>
+  </div>
 
-  <main class="content">
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title">Your details</div>
-        <div class="section-subtitle">Used for payment and delivery updates · phone number is locked</div>
+  <section class="full-content">
+    <section class="personal-info-group" aria-label="Personal information">
+      <div class="persona-info">
+        <button class="user-profile" type="button" id="avatarButton" aria-label="Edit profile photo">
+          <span class="avatar-circle" id="avatarCircle"><span id="avatarInitial">C</span></span>
+          <span class="avatar-edit-icon" aria-hidden="true">
+            <svg viewBox="0 0 20 20" width="12" height="12" fill="none">
+              <path d="M4.2 13.93 3.75 16.25l2.32-.45 8.94-8.94-1.87-1.87-8.94 8.94Z" fill="#FDFDFF"/>
+              <path d="M14.1 4.04 15 3.14a1.25 1.25 0 0 1 1.77 0l.09.09c.49.49.49 1.28 0 1.77l-.9.9-1.86-1.86Z" fill="#FDFDFF"/>
+            </svg>
+          </span>
+        </button>
+        <input type="file" id="avatarInput" accept="image/*" hidden />
+        <div class="name-number">
+          <div class="profile-name" id="profileName">Customer</div>
+          <div class="profile-phone" id="profilePhone">+91-0000000000</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="profile-head">
-          <div class="profile-icon"><img src="assets/menu/icons/user profile.svg" alt="User profile"></div>
-          <div>
-            <div class="profile-name" id="profileDisplayName">Customer</div>
-            <div class="profile-phone" id="profileDisplayPhone">Mobile number not added</div>
+
+      <div class="input-field-group">
+        <div class="field-label muted">Name</div>
+        <div class="input-field-with-edit">
+          <div class="field-value" id="nameFieldValue">Customer</div>
+          <button class="edit-button" type="button" id="editNameButton" aria-label="Edit name">
+            <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M3.12 14.92 2.5 17.5l2.58-.62 9.79-9.79-1.96-1.96-9.79 9.79Z" fill="#08A045"/>
+              <path d="m13.73 4.3.94-.94a1.57 1.57 0 0 1 2.22 0l.25.25c.61.61.61 1.61 0 2.22l-.94.94-2.47-2.47Z" fill="#08A045"/>
+            </svg>
+            <span>Edit</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="phone-input-field">
+        <div class="field-label">Phone Number</div>
+        <div class="input-field-with-edit locked" aria-label="Phone number cannot be edited here">
+          <div class="number-value">
+            <span>+91</span>
+            <span class="digits" id="phoneDigits">0000000000</span>
           </div>
         </div>
-        <div class="field-grid">
-          <label class="field">
-            <span>Name</span>
-            <input id="nameInput" type="text" autocomplete="name" placeholder="Eg: Vijay Kumar">
-          </label>
-          <label class="field">
-            <span>Mobile number</span>
-            <input id="phoneInput" type="tel" autocomplete="tel" placeholder="Login verified number" readonly aria-readonly="true">
-            <div class="field-note">Verified through phone login. To change this number, logout and login with the new number.</div>
-          </label>
-          <label class="field">
-            <span>Email optional</span>
-            <input id="emailInput" type="email" autocomplete="email" placeholder="Eg: name@email.com">
-          </label>
-        </div>
-        <div class="action-row">
-          <button class="btn primary" id="saveProfileBtn" type="button">Save details</button>
-        </div>
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title green">Saved address</div>
-        <div class="section-subtitle">Manage your default delivery address</div>
+    <div class="divider" aria-hidden="true"></div>
+
+    <section class="saved-address-section" aria-label="Saved addresses">
+      <div class="saved-add-content">
+        <div class="title-info">
+          <div class="section-title">Saved Address</div>
+          <div class="section-info">Manage your default delivery address</div>
+        </div>
+        <div class="saved-add-group" id="savedAddressList"></div>
       </div>
-      <div class="card">
-        <div class="address-preview">
-          <div class="preview-label">Current address</div>
-          <div class="preview-value" id="addressPreview">No address saved yet</div>
-          <div class="preview-mini" id="landmarkPreview">Add address from here or from menu location drawer.</div>
-        </div>
-        <div class="field-grid">
-          <label class="field">
-            <span>House / Flat / Door no.</span>
-            <input id="doorNoInput" type="text" autocomplete="address-line1" placeholder="Eg: 9/34, Flat 2B">
-          </label>
-          <label class="field">
-            <span>Full address</span>
-            <textarea id="fullAddressInput" autocomplete="street-address" placeholder="Street, area, city"></textarea>
-          </label>
-          <label class="field">
-            <span>Landmark</span>
-            <input id="landmarkInput" type="text" autocomplete="off" placeholder="Eg: Near temple / opposite school">
-          </label>
-        </div>
-        <div class="action-row">
-          <button class="btn primary" id="saveAddressBtn" type="button">Save address</button>
-          <button class="btn secondary" id="clearAddressBtn" type="button">Clear</button>
-        </div>
-      </div>
+      <button class="add-address-button" type="button" id="addAddressButton">+ Add address</button>
     </section>
 
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title red">Previous orders</div>
-        <div class="section-subtitle">Order details saved on this device</div>
-      </div>
-      <div class="order-list" id="orderList"></div>
-    </section>
+    <div class="divider" aria-hidden="true"></div>
 
-    <section class="section">
-      <div class="section-header">
-        <div class="section-title">Settings</div>
-        <div class="section-subtitle">Local app preferences</div>
-      </div>
-      <div class="card">
-        <div class="setting-row">
-          <div class="setting-copy">
-            <div class="setting-title">Order updates</div>
-            <div class="setting-sub">Keep delivery update reminders enabled.</div>
-          </div>
-          <label class="switch"><input id="orderUpdatesToggle" type="checkbox"><span class="slider"></span></label>
-        </div>
-        <div class="setting-row">
-          <div class="setting-copy">
-            <div class="setting-title">Remember address</div>
-            <div class="setting-sub">Use saved address during checkout.</div>
-          </div>
-          <label class="switch"><input id="rememberAddressToggle" type="checkbox"><span class="slider"></span></label>
-        </div>
-        <div class="action-row">
-          <button class="btn secondary" id="clearHistoryBtn" type="button">Clear orders</button>
-          <button class="btn danger" id="logoutBtn" type="button">Logout</button>
-        </div>
-      </div>
+    <section class="past-order-section" aria-label="Past orders">
+      <div class="past-orders-title">Past orders</div>
+      <div class="order-cards-group" id="pastOrdersList"></div>
     </section>
-  </main>
+  </section>
+</main>
 
-  <nav class="bottom-nav" aria-label="Bottom navigation">
-    <a class="nav-item" href="menu.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/search-icon.svg" alt="Menu"></div>
-      <div class="nav-item-text">Menu</div>
-    </a>
-    <a class="nav-item" href="cart.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/cart-icon.svg" alt="Cart"><div class="cart-badge" id="cart-badge">0</div></div>
-      <div class="nav-item-text">Cart</div>
-    </a>
-    <a class="nav-item" href="track.html">
-      <div class="nav-item-icon"><img src="assets/menu/icons/track-icon.svg" alt="Track orders"></div>
-      <div class="nav-item-text">Track</div>
-    </a>
-  </nav>
+<div class="menu-popover" id="menuPopover" aria-hidden="true">
+  <div class="menu-card" role="menu" aria-label="Profile menu">
+    <button class="menu-action" type="button" id="refreshProfileButton">Refresh profile data <span>↻</span></button>
+    <button class="menu-action" type="button" id="goOrdersButton">Go to orders <span>›</span></button>
+    <button class="menu-action danger" type="button" id="logoutButton">Logout <span>›</span></button>
+  </div>
 </div>
-<div class="toast" id="toast"></div>
+
+<div class="sheet-backdrop" id="nameSheet" aria-hidden="true">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="nameSheetTitle">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title" id="nameSheetTitle">Edit name</div>
+    <input class="sheet-input" id="nameInput" type="text" maxlength="40" autocomplete="name" placeholder="Enter your name" />
+    <div class="sheet-actions">
+      <button class="sheet-btn cancel" type="button" id="cancelNameButton">Cancel</button>
+      <button class="sheet-btn save" type="button" id="saveNameButton">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
-const mf = { name: "Tiffin CBE", short_name: "Tiffin", start_url: "./", display: "standalone", background_color: "#FDFDFF", theme_color: "#8806CE" };
-const blob = new Blob([JSON.stringify(mf)], { type: "application/json" });
-document.getElementById("pwa-manifest").href = URL.createObjectURL(blob);
+(function () {
+  'use strict';
 
-const CUSTOMER_PROFILE_REGISTRY_KEY = "customer_profiles_by_phone";
+  const PROFILE_KEYS = [
+    'TIFFIN_CUSTOMER_PROFILE',
+    'CBE_CUSTOMER_PROFILE',
+    'customerProfile',
+    'cust_profile',
+    'userProfile',
+    'profile'
+  ];
 
-function cleanText(value) {
-  if (value === null || value === undefined) return "";
-  return String(value).trim();
-}
-function parseLocalJSON(value) {
-  if (!value) return null;
-  const trimmed = String(value).trim();
-  if (!trimmed) return null;
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
-    try { return JSON.parse(trimmed); } catch (error) { return null; }
-  }
-  return trimmed;
-}
-function formatRupee(value) {
-  return `₹${Number(value || 0).toLocaleString("en-IN")}`;
-}
-function formatDate(value) {
-  if (!value) return "Date unavailable";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "Date unavailable";
-  return date.toLocaleString("en-IN", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
-}
-function showToast(message) {
-  const toast = document.getElementById("toast");
-  toast.textContent = message;
-  toast.classList.add("show");
-  clearTimeout(showToast.timer);
-  showToast.timer = setTimeout(() => toast.classList.remove("show"), 1800);
-}
-function getFirstLocalValue(keys) {
-  for (const key of keys) {
-    const value = cleanText(localStorage.getItem(key));
-    if (value) return value;
-  }
-  return "";
-}
-function normalizeCustomerPhone(value) {
-  const digits = cleanText(value).replace(/\D/g, "");
-  if (!digits) return "";
-  return digits.length > 10 ? digits.slice(-10) : digits;
-}
-function getAuthenticatedCustomerPhone() {
-  const savedProfile = parseLocalJSON(localStorage.getItem("customer_profile"));
+  const ADDRESS_KEYS = [
+    'TIFFIN_SAVED_ADDRESSES',
+    'tiffin_saved_addresses',
+    'CBE_SAVED_ADDRESSES',
+    'cbe_saved_addresses',
+    'savedAddresses',
+    'saved_addresses',
+    'delivery_addresses',
+    'TIFFIN_CUSTOMER_ADDRESSES'
+  ];
 
-  return normalizeCustomerPhone(
-    getFirstLocalValue([
-      "cust_phone",
-      "cust_mobile",
-      "customer_phone",
-      "customer_mobile"
-    ]) ||
-    savedProfile?.phone ||
-    ""
-  );
-}
-function formatCustomerPhone(phone) {
-  const cleanPhone = normalizeCustomerPhone(phone);
-  return cleanPhone ? `+91 ${cleanPhone}` : "";
-}
-function readCustomerProfileRegistry() {
-  const saved = parseLocalJSON(localStorage.getItem(CUSTOMER_PROFILE_REGISTRY_KEY));
-  return saved && typeof saved === "object" && !Array.isArray(saved) ? saved : {};
-}
-function writeCustomerProfileRegistry(registry) {
-  localStorage.setItem(CUSTOMER_PROFILE_REGISTRY_KEY, JSON.stringify(registry || {}));
-}
-function saveCustomerProfileSnapshot(name, phone, email = "") {
-  const cleanName = cleanText(name);
-  const cleanPhone = normalizeCustomerPhone(phone);
-  const cleanEmail = cleanText(email);
-  if (!cleanName || !cleanPhone) return null;
+  const ACTIVE_LOCATION_KEYS = [
+    'TIFFIN_ACTIVE_DELIVERY_LOCATION',
+    'tiffin_active_delivery_location',
+    'activeDeliveryLocation',
+    'selectedDeliveryAddress',
+    'currentDeliveryAddress',
+    'TIFFIN_SELECTED_ADDRESS'
+  ];
 
-  const profile = {
-    name: cleanName,
-    phone: cleanPhone,
-    email: cleanEmail,
-    uid: cleanText(localStorage.getItem("cust_uid")),
-    savedAt: new Date().toISOString()
+  const ORDER_KEYS = [
+    'TIFFIN_ORDERS',
+    'TIFFIN_CUSTOMER_ORDERS',
+    'customerOrders',
+    'orders',
+    'cbeOrders',
+    'pastOrders',
+    'TIFFIN_ORDER_HISTORY'
+  ];
+
+  const $ = (selector) => document.querySelector(selector);
+  const els = {
+    profileName: $('#profileName'),
+    profilePhone: $('#profilePhone'),
+    nameFieldValue: $('#nameFieldValue'),
+    phoneDigits: $('#phoneDigits'),
+    avatarCircle: $('#avatarCircle'),
+    avatarInitial: $('#avatarInitial'),
+    avatarButton: $('#avatarButton'),
+    avatarInput: $('#avatarInput'),
+    savedAddressList: $('#savedAddressList'),
+    pastOrdersList: $('#pastOrdersList'),
+    nameSheet: $('#nameSheet'),
+    nameInput: $('#nameInput'),
+    toast: $('#toast'),
+    menuPopover: $('#menuPopover')
   };
 
-  localStorage.setItem("cust_name", cleanName);
-  localStorage.setItem("customer_name", cleanName);
-  localStorage.setItem("user_name", cleanName);
-  localStorage.setItem("cust_phone", cleanPhone);
-  localStorage.setItem("cust_mobile", cleanPhone);
-  localStorage.setItem("customer_phone", cleanPhone);
-  localStorage.setItem("customer_mobile", cleanPhone);
-  localStorage.setItem("cust_profile_ready", "1");
-  localStorage.setItem("customer_profile", JSON.stringify(profile));
+  let profile = loadProfile();
 
-  if (cleanEmail) localStorage.setItem("cust_email", cleanEmail);
+  document.addEventListener('DOMContentLoaded', init);
 
-  const registry = readCustomerProfileRegistry();
-  registry[cleanPhone] = profile;
-  writeCustomerProfileRegistry(registry);
-
-  return profile;
-}
-function restoreProfileSnapshot() {
-  const phone = normalizeCustomerPhone(getFirstLocalValue(["cust_mobile", "cust_phone", "customer_mobile", "customer_phone", "user_mobile", "user_phone", "phoneNumber", "phone", "mobile"]));
-  const existingName = getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]);
-
-  if (existingName && phone) {
-    saveCustomerProfileSnapshot(existingName, phone, getFirstLocalValue(["cust_email", "customer_email", "user_email", "email"]));
-    return;
+  function init() {
+    renderAll();
+    bindEvents();
   }
 
-  if (!phone) return;
+  function bindEvents() {
+    $('#backButton').addEventListener('click', goBack);
+    $('#editNameButton').addEventListener('click', openNameSheet);
+    $('#cancelNameButton').addEventListener('click', closeNameSheet);
+    $('#saveNameButton').addEventListener('click', saveName);
+    els.nameSheet.addEventListener('click', function (event) {
+      if (event.target === els.nameSheet) closeNameSheet();
+    });
+    els.nameInput.addEventListener('keydown', function (event) {
+      if (event.key === 'Enter') saveName();
+      if (event.key === 'Escape') closeNameSheet();
+    });
 
-  const registry = readCustomerProfileRegistry();
-  const profile = registry[phone];
-  if (!profile?.name) return;
+    els.avatarButton.addEventListener('click', function () { els.avatarInput.click(); });
+    els.avatarInput.addEventListener('change', saveAvatar);
 
-  saveCustomerProfileSnapshot(profile.name, phone, profile.email || "");
-}
-function loadCart() {
-  try {
-    const saved = JSON.parse(localStorage.getItem("cart")) || [];
-    return Array.isArray(saved) ? saved : Object.values(saved);
-  } catch (error) {
-    return [];
+    $('#addAddressButton').addEventListener('click', function () {
+      location.href = 'menu.html?openLocation=1&returnTo=profile&profileAction=addAddress';
+    });
+
+    $('#dotMenuButton').addEventListener('click', toggleMenu);
+    els.menuPopover.addEventListener('click', function (event) {
+      if (event.target === els.menuPopover) closeMenu();
+    });
+    $('#refreshProfileButton').addEventListener('click', function () {
+      closeMenu();
+      profile = loadProfile();
+      renderAll();
+      showToast('Profile refreshed');
+    });
+    $('#goOrdersButton').addEventListener('click', function () {
+      location.href = 'track.html';
+    });
+    $('#logoutButton').addEventListener('click', logout);
   }
-}
-function updateCartBadge() {
-  const badge = document.getElementById("cart-badge");
-  const totalQty = loadCart().reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
-  badge.textContent = totalQty;
-  badge.style.display = totalQty > 0 ? "flex" : "none";
-}
-function compactAddress(fullAddress, doorNo = "") {
-  const parts = [];
-  const add = value => {
-    const part = cleanText(value);
-    if (!part) return;
-    if (!parts.some(saved => saved.toLowerCase() === part.toLowerCase())) parts.push(part);
-  };
-  add(doorNo);
-  cleanText(fullAddress).split(",").map(part => part.trim()).filter(Boolean).forEach(add);
-  return parts.slice(0, 2).join(", ") || "No address saved yet";
-}
-function getSavedAddress() {
-  const detailKeys = ["cust_location_details", "delivery_location_details", "cust_location", "delivery_location", "location"];
-  for (const key of detailKeys) {
-    const data = parseLocalJSON(localStorage.getItem(key));
-    if (data && typeof data === "object") {
-      const fullAddress = cleanText(data.fullAddress || data.full || data.address || data.displayAddress || data.display);
-      if (fullAddress) {
-        return {
-          doorNo: cleanText(data.doorNo || data.door_no || data.houseNo || data.house_no),
-          fullAddress,
-          landmark: cleanText(data.landmark || data.nearby || data.instruction),
-          lat: data.lat || data.latitude || "",
-          lng: data.lng || data.lon || data.longitude || "",
-          accuracy: data.accuracy || ""
-        };
-      }
+
+  function renderAll() {
+    renderProfile();
+    renderAddresses();
+    renderPastOrders();
+  }
+
+  function renderProfile() {
+    const name = cleanText(profile.name) || 'Customer';
+    const phone = normalizePhone(profile.phone || profile.mobile || profile.number || '');
+    const digits = phone.digits || '0000000000';
+    const displayPhone = phone.display || '+91-0000000000';
+
+    els.profileName.textContent = name;
+    els.nameFieldValue.textContent = name;
+    els.profilePhone.textContent = displayPhone;
+    els.phoneDigits.textContent = digits;
+
+    if (profile.avatarDataUrl) {
+      els.avatarCircle.innerHTML = '<img alt="Profile photo" src="' + escapeAttribute(profile.avatarDataUrl) + '" />';
+    } else {
+      els.avatarCircle.innerHTML = '<span id="avatarInitial">' + escapeHtml(getInitial(name)) + '</span>';
+      els.avatarInitial = $('#avatarInitial');
     }
   }
-  const fullAddress = getFirstLocalValue(["delivery_full_address", "cust_full_address", "delivery_address", "cust_address", "selected_address", "customer_address"]);
-  return fullAddress ? { doorNo: "", fullAddress, landmark: "", lat: "", lng: "", accuracy: "" } : null;
-}
-function renderProfile() {
-  restoreProfileSnapshot();
-  const name = getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]);
-  const phone = getAuthenticatedCustomerPhone();
-  const email = getFirstLocalValue(["cust_email", "customer_email", "user_email", "email"]);
 
-  document.getElementById("nameInput").value = name;
-  document.getElementById("phoneInput").value = formatCustomerPhone(phone);
-  document.getElementById("emailInput").value = email;
-  document.getElementById("profileDisplayName").textContent = name || "Customer";
-  document.getElementById("profileDisplayPhone").textContent = phone ? `${formatCustomerPhone(phone)} · Verified` : "Login mobile number missing";
-  document.getElementById("profileNameChip").textContent = name ? `👤 ${name.split(" ")[0]}` : "👤 Customer";
-}
-function saveProfile() {
-  const name = cleanText(document.getElementById("nameInput").value);
-  const phone = getAuthenticatedCustomerPhone();
-  const email = cleanText(document.getElementById("emailInput").value);
+  function renderAddresses() {
+    const addresses = getSavedAddresses();
+    els.savedAddressList.innerHTML = '';
 
-  if (!name) {
-    showToast("Please add your name.");
-    return;
-  }
+    if (!addresses.length) {
+      els.savedAddressList.innerHTML = '<div class="empty-state">No saved address yet. Add one from the map flow.</div>';
+      return;
+    }
 
-  if (!phone) {
-    showToast("Login mobile number missing. Please logout and login again.");
-    return;
-  }
-
-  saveCustomerProfileSnapshot(name, phone, email);
-  if (!email) localStorage.removeItem("cust_email");
-
-  renderProfile();
-  showToast("Profile details saved.");
-}
-function renderAddress() {
-  const address = getSavedAddress();
-  document.getElementById("doorNoInput").value = address?.doorNo || "";
-  document.getElementById("fullAddressInput").value = address?.fullAddress || "";
-  document.getElementById("landmarkInput").value = address?.landmark || "";
-  document.getElementById("addressPreview").textContent = address ? compactAddress(address.fullAddress, address.doorNo) : "No address saved yet";
-  document.getElementById("landmarkPreview").textContent = address?.landmark ? `Landmark: ${address.landmark}` : "Add address from here or from menu location drawer.";
-}
-function saveAddress() {
-  const existing = getSavedAddress() || {};
-  const doorNo = cleanText(document.getElementById("doorNoInput").value);
-  const fullAddress = cleanText(document.getElementById("fullAddressInput").value);
-  const landmark = cleanText(document.getElementById("landmarkInput").value);
-
-  if (!fullAddress) {
-    showToast("Please add your full address.");
-    return;
-  }
-
-  const savedLocation = {
-    lat: existing.lat || "",
-    lng: existing.lng || "",
-    accuracy: existing.accuracy || "",
-    doorNo,
-    landmark,
-    fullAddress,
-    displayAddress: compactAddress(fullAddress, doorNo),
-    source: "profile_saved_address",
-    savedAt: new Date().toISOString()
-  };
-
-  localStorage.setItem("cust_location_details", JSON.stringify(savedLocation));
-  localStorage.setItem("delivery_location_details", JSON.stringify(savedLocation));
-  localStorage.setItem("cust_address", savedLocation.displayAddress);
-  localStorage.setItem("delivery_address", savedLocation.displayAddress);
-  localStorage.setItem("cust_full_address", fullAddress);
-  localStorage.setItem("delivery_full_address", fullAddress);
-  if (savedLocation.lat && savedLocation.lng) {
-    localStorage.setItem("cust_location", JSON.stringify(savedLocation));
-    localStorage.setItem("cust_lat", String(savedLocation.lat));
-    localStorage.setItem("cust_lng", String(savedLocation.lng));
-  }
-  renderAddress();
-  showToast("Delivery address saved.");
-}
-function clearAddress() {
-  ["cust_location_details", "delivery_location_details", "cust_location", "delivery_location", "cust_address", "delivery_address", "cust_full_address", "delivery_full_address", "cust_lat", "cust_lng"].forEach(key => localStorage.removeItem(key));
-  renderAddress();
-  showToast("Saved address cleared.");
-}
-function readOrderArray(key) {
-  const value = parseLocalJSON(localStorage.getItem(key));
-  if (!value) return [];
-  if (Array.isArray(value)) return value.filter(Boolean);
-  if (typeof value === "object") return Object.values(value).filter(Boolean);
-  return [];
-}
-function readOrderObject(key) {
-  const value = parseLocalJSON(localStorage.getItem(key));
-  return value && typeof value === "object" && !Array.isArray(value) ? value : null;
-}
-function mergeOrders() {
-  const orders = [];
-  ["order_history", "previous_orders", "orders", "customer_orders"].forEach(key => orders.push(...readOrderArray(key)));
-  ["current_order", "last_order", "last_failed_order"].forEach(key => {
-    const order = readOrderObject(key);
-    if (order) orders.push(order);
-  });
-
-  const map = new Map();
-  orders.forEach(order => {
-    const key = cleanText(order.id || order.receipt || order.paymentId || order.razorpayOrderId || order.createdAt || JSON.stringify(order).slice(0, 60));
-    if (!key) return;
-    map.set(key, { ...(map.get(key) || {}), ...order });
-  });
-
-  return Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-}
-function saveOrderHistory(orders) {
-  const cleanOrders = orders.filter(Boolean).slice(0, 20);
-  localStorage.setItem("order_history", JSON.stringify(cleanOrders));
-}
-function syncCurrentOrderToHistory() {
-  const currentOrder = readOrderObject("current_order");
-  if (!currentOrder) return;
-  saveOrderHistory(mergeOrders());
-}
-function getOrderTotal(order) {
-  return Number(order?.totals?.total ?? order?.total ?? order?.amount ?? 0);
-}
-function getOrderStatus(order) {
-  const paymentStatus = cleanText(order?.paymentStatus);
-  const status = cleanText(order?.status || "confirmed");
-  if (status.includes("failed") || paymentStatus.includes("failed")) return "Payment failed";
-  if (paymentStatus === "paid") return "Paid";
-  return status.replace(/_/g, " ") || "Confirmed";
-}
-function renderOrders() {
-  syncCurrentOrderToHistory();
-  const orders = mergeOrders();
-  const orderList = document.getElementById("orderList");
-  document.getElementById("orderCountChip").textContent = `🧾 ${orders.length} order${orders.length === 1 ? "" : "s"}`;
-
-  if (!orders.length) {
-    orderList.innerHTML = `<div class="empty-state">No previous orders yet. Once payment is successful, order details will appear here.</div>`;
-    return;
-  }
-
-  orderList.innerHTML = orders.map((order, index) => {
-    const items = Array.isArray(order.items) ? order.items : [];
-    const itemCount = items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
-    const status = getOrderStatus(order);
-    const failed = status.toLowerCase().includes("failed");
-    const address = cleanText(order.address || order?.deliveryLocation?.fullAddress || order?.deliveryLocation?.displayAddress || order?.deliveryLocation?.address || "Address unavailable");
-    const paymentId = cleanText(order.paymentId || order.razorpay_payment_id || order.razorpayOrderId || "—");
-    const orderJson = encodeURIComponent(JSON.stringify(order));
-
-    return `<article class="order-card">
-      <div class="order-top">
-        <div>
-          <div class="order-id">${order.id || order.receipt || "Order"}</div>
-          <div class="order-date">${formatDate(order.createdAt)}</div>
+    const capped = addresses.slice(0, 6);
+    capped.forEach(function (address, index) {
+      const row = document.createElement('div');
+      row.className = 'address-row';
+      row.innerHTML = `
+        <div class="inside-wrap">
+          <div class="address-left-group">
+            <div class="title-with-icon">
+              ${getAddressIcon(address.type || address.title || '')}
+              <span class="address-title-text">${escapeHtml(address.title || address.type || 'Saved address')}</span>
+            </div>
+            <div class="address-line">${escapeHtml(address.line || 'Address details not available')}</div>
+          </div>
+          <button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title || 'address')}">
+            ${editIconSvg()}
+            <span>Edit</span>
+          </button>
         </div>
-        <div class="order-price">${formatRupee(getOrderTotal(order))}</div>
-      </div>
-      <div class="status-pill ${failed ? "failed" : ""}">${status}</div>
-      <div class="order-line"><span>Items</span><strong>${itemCount || items.length || "—"}</strong></div>
-      <div class="order-line"><span>ETA</span><strong>${order.eta || "15 - 25 mins"}</strong></div>
-      <details class="order-details">
-        <summary>View order details</summary>
-        <div class="item-list">
-          ${items.length ? items.map(item => `<div class="item-row"><span>${Number(item.qty) || 1} × ${item.name || "Item"}</span><strong>${formatRupee((Number(item.price) || 0) * (Number(item.qty) || 1))}</strong></div>`).join("") : `<div class="item-row"><span>No item details saved</span><strong>—</strong></div>`}
-          <div class="item-row"><span>Delivery address</span><strong>${address}</strong></div>
-          <div class="item-row"><span>Payment ID</span><strong>${paymentId}</strong></div>
+      `;
+      row.querySelector('.edit-button').addEventListener('click', function () {
+        localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX', String(index));
+        location.href = 'menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex=' + encodeURIComponent(index);
+      });
+      els.savedAddressList.appendChild(row);
+      if (index < capped.length - 1) {
+        const divider = document.createElement('div');
+        divider.className = 'divider';
+        els.savedAddressList.appendChild(divider);
+      }
+    });
+  }
+
+  function renderPastOrders() {
+    const orders = getPastOrders();
+    els.pastOrdersList.innerHTML = '';
+
+    if (!orders.length) {
+      els.pastOrdersList.innerHTML = '<div class="empty-state">No past orders yet. Completed orders will appear here.</div>';
+      return;
+    }
+
+    orders.slice(0, 5).forEach(function (order) {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      const itemsHtml = buildItemsHtml(order.items);
+      card.innerHTML = `
+        <div class="order-header-card">
+          <div class="order-left-content">
+            <div class="item-img">${order.image ? '<img alt="Order image" src="' + escapeAttribute(order.image) + '" />' : foodIconSvg()}</div>
+            <div class="item-title">
+              <div class="restaurant-name">${escapeHtml(order.restaurantName || 'Coimbatore Foods')}</div>
+              <div class="order-id">Order ID #${escapeHtml(order.id || '----')}</div>
+            </div>
+          </div>
         </div>
-      </details>
-      ${failed ? "" : `<button class="btn secondary" type="button" data-track-order="${orderJson}">Track this order</button>`}
-    </article>`;
-  }).join("");
-}
-function loadSettings() {
-  const settings = parseLocalJSON(localStorage.getItem("profile_settings")) || {};
-  document.getElementById("orderUpdatesToggle").checked = settings.orderUpdates !== false;
-  document.getElementById("rememberAddressToggle").checked = settings.rememberAddress !== false;
-}
-function saveSettings() {
-  const settings = {
-    orderUpdates: document.getElementById("orderUpdatesToggle").checked,
-    rememberAddress: document.getElementById("rememberAddressToggle").checked,
-    savedAt: new Date().toISOString()
-  };
-  localStorage.setItem("profile_settings", JSON.stringify(settings));
-}
-function clearOrderHistory() {
-  ["order_history", "previous_orders", "orders", "customer_orders", "last_failed_order"].forEach(key => localStorage.removeItem(key));
-  renderOrders();
-  showToast("Order history cleared.");
-}
-function logout() {
-  [
-    "cust_auth",
-    "cust_uid",
-    "cust_phone",
-    "cust_mobile",
-    "customer_phone",
-    "customer_mobile",
-    "cust_name",
-    "customer_name",
-    "user_name",
-    "cust_email",
-    "customer_profile",
-    "cust_profile_ready",
-    "cust_pending_phone"
-  ].forEach(key => localStorage.removeItem(key));
-  window.location.replace("login.html");
-}
+        <div class="item-list">${itemsHtml}</div>
+        <div class="divider" aria-hidden="true"></div>
+        <div class="cta-time-info">
+          <button class="view-details" type="button">View details</button>
+          <div class="time-value">
+            <div>Order placed: ${escapeHtml(formatOrderDate(order.createdAt || order.date || order.timestamp))}</div>
+            <div class="total"><span>Total value: </span><span class="amount">₹${escapeHtml(formatMoney(order.total || order.totalPaid || order.amount || 0))}</span></div>
+          </div>
+        </div>
+      `;
+      card.querySelector('.view-details').addEventListener('click', function () {
+        if (order.id) localStorage.setItem('TIFFIN_SELECTED_ORDER_ID', String(order.id));
+        location.href = 'track-fullscreen.html?orderId=' + encodeURIComponent(order.id || '');
+      });
+      els.pastOrdersList.appendChild(card);
+    });
+  }
 
-document.getElementById("saveProfileBtn").addEventListener("click", saveProfile);
-document.getElementById("saveAddressBtn").addEventListener("click", saveAddress);
-document.getElementById("clearAddressBtn").addEventListener("click", clearAddress);
-document.getElementById("clearHistoryBtn").addEventListener("click", clearOrderHistory);
-document.getElementById("logoutBtn").addEventListener("click", logout);
-document.getElementById("orderUpdatesToggle").addEventListener("change", saveSettings);
-document.getElementById("rememberAddressToggle").addEventListener("change", saveSettings);
-document.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-track-order]");
-  if (!button) return;
-  const order = JSON.parse(decodeURIComponent(button.dataset.trackOrder));
-  localStorage.setItem("current_order", JSON.stringify(order));
-  window.location.href = "track.html";
-});
+  function loadProfile() {
+    let stored = null;
+    for (const key of PROFILE_KEYS) {
+      stored = parseJson(localStorage.getItem(key));
+      if (stored && typeof stored === 'object' && !Array.isArray(stored)) break;
+      stored = null;
+    }
 
-renderProfile();
-renderAddress();
-loadSettings();
-renderOrders();
-updateCartBadge();
-window.addEventListener("storage", () => {
-  renderProfile();
-  renderAddress();
-  renderOrders();
-  updateCartBadge();
-});
+    const auth = parseJson(localStorage.getItem('cust_auth')) || parseJson(localStorage.getItem('customerAuth')) || null;
+    const rawPhone = localStorage.getItem('TIFFIN_CUSTOMER_PHONE') || localStorage.getItem('customer_phone') || localStorage.getItem('mobile') || '';
+    const authObj = auth && typeof auth === 'object' ? auth : {};
+
+    return Object.assign({
+      name: authObj.name || authObj.displayName || stored?.name || stored?.displayName || localStorage.getItem('TIFFIN_CUSTOMER_NAME') || 'Customer',
+      phone: authObj.phone || authObj.mobile || authObj.phoneNumber || stored?.phone || stored?.mobile || rawPhone,
+      avatarDataUrl: stored?.avatarDataUrl || stored?.avatar || ''
+    }, stored || {});
+  }
+
+  function persistProfile(nextProfile) {
+    profile = Object.assign({}, profile, nextProfile);
+    localStorage.setItem('TIFFIN_CUSTOMER_PROFILE', JSON.stringify(profile));
+    if (profile.name) localStorage.setItem('TIFFIN_CUSTOMER_NAME', profile.name);
+  }
+
+  function getSavedAddresses() {
+    const seen = new Set();
+    const addresses = [];
+
+    ADDRESS_KEYS.forEach(function (key) {
+      const parsed = parseJson(localStorage.getItem(key));
+      pushAddressCollection(parsed, addresses, seen);
+    });
+
+    ACTIVE_LOCATION_KEYS.forEach(function (key) {
+      const parsed = parseJson(localStorage.getItem(key));
+      pushAddressCollection(parsed, addresses, seen, true);
+    });
+
+    return addresses;
+  }
+
+  function pushAddressCollection(value, addresses, seen, activeOnly) {
+    if (!value) return;
+    const collection = Array.isArray(value) ? value : (Array.isArray(value.addresses) ? value.addresses : [value]);
+    collection.forEach(function (item) {
+      const normalized = normalizeAddress(item, activeOnly);
+      if (!normalized) return;
+      const signature = (normalized.title + '|' + normalized.line + '|' + normalized.lat + '|' + normalized.lng).toLowerCase();
+      if (seen.has(signature)) return;
+      seen.add(signature);
+      addresses.push(normalized);
+    });
+  }
+
+  function normalizeAddress(item, activeOnly) {
+    if (!item || typeof item !== 'object') return null;
+    const title = cleanText(item.title || item.label || item.type || item.name || (activeOnly ? 'Current location' : 'Saved address'));
+    const parts = [
+      item.doorNo || item.door || item.house || item.houseNo || item.flat || '',
+      item.addressDetails || item.addressLine || item.address || item.formattedAddress || item.line1 || item.text || '',
+      item.landmark || '',
+      item.area || '',
+      item.city || ''
+    ].map(cleanText).filter(Boolean);
+    const line = cleanText(parts.join(', '));
+    if (!title && !line) return null;
+    return {
+      title: title || 'Saved address',
+      type: cleanText(item.type || item.label || title),
+      line: line || 'Location saved',
+      lat: item.lat || item.latitude || item?.coords?.lat || item?.location?.lat || '',
+      lng: item.lng || item.longitude || item?.coords?.lng || item?.location?.lng || ''
+    };
+  }
+
+  function getPastOrders() {
+    const result = [];
+    const seen = new Set();
+
+    ORDER_KEYS.forEach(function (key) {
+      pushOrderCollection(parseJson(localStorage.getItem(key)), result, seen);
+    });
+
+    // Safe fallback: scan localStorage for project order arrays without assuming one fixed key.
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i) || '';
+      if (!/order/i.test(key)) continue;
+      pushOrderCollection(parseJson(localStorage.getItem(key)), result, seen);
+    }
+
+    return result
+      .filter(function (order) { return isPastOrder(order); })
+      .sort(function (a, b) { return getTime(b.createdAt || b.date || b.timestamp) - getTime(a.createdAt || a.date || a.timestamp); });
+  }
+
+  function pushOrderCollection(value, result, seen) {
+    if (!value) return;
+    const collection = Array.isArray(value) ? value : (Array.isArray(value.orders) ? value.orders : [value]);
+    collection.forEach(function (item) {
+      const normalized = normalizeOrder(item);
+      if (!normalized) return;
+      const id = String(normalized.id || normalized.createdAt || normalized.total || JSON.stringify(normalized.items)).slice(0, 140);
+      if (seen.has(id)) return;
+      seen.add(id);
+      result.push(normalized);
+    });
+  }
+
+  function normalizeOrder(item) {
+    if (!item || typeof item !== 'object') return null;
+    const rawItems = Array.isArray(item.items) ? item.items : Array.isArray(item.cartItems) ? item.cartItems : Array.isArray(item.orderItems) ? item.orderItems : [];
+    const items = rawItems.map(function (entry) {
+      return {
+        name: cleanText(entry.name || entry.title || entry.itemName || 'Item'),
+        qty: Number(entry.qty || entry.quantity || entry.count || 1) || 1
+      };
+    }).filter(function (entry) { return entry.name; });
+
+    if (!items.length && !item.id && !item.orderId) return null;
+
+    return {
+      id: item.orderId || item.id || item.orderNo || item.orderNumber || '',
+      status: cleanText(item.status || item.orderStatus || ''),
+      restaurantName: cleanText(item.restaurantName || item.storeName || 'Coimbatore Foods'),
+      items: items.length ? items : [{ name: 'Order items', qty: 1 }],
+      total: item.total || item.totalPaid || item.grandTotal || item.amount || item.payableAmount || 0,
+      createdAt: item.createdAt || item.orderPlacedAt || item.date || item.timestamp || '',
+      image: item.image || item.restaurantImage || item.itemImage || ''
+    };
+  }
+
+  function isPastOrder(order) {
+    const status = String(order.status || '').toLowerCase();
+    if (!status) return true;
+    return ['delivered', 'completed', 'complete', 'cancelled', 'canceled', 'rejected'].some(function (word) {
+      return status.includes(word);
+    });
+  }
+
+  function buildItemsHtml(items) {
+    return (items || []).slice(0, 6).map(function (item, index, arr) {
+      const comma = index < arr.length - 1 ? '<span>,</span>' : '';
+      return `<div class="item-chip"><span>${escapeHtml(item.name)}</span><span class="count">${escapeHtml(String(item.qty || 1))}</span>${comma}</div>`;
+    }).join('');
+  }
+
+  function openNameSheet() {
+    els.nameInput.value = cleanText(profile.name) || '';
+    els.nameSheet.classList.add('show');
+    els.nameSheet.setAttribute('aria-hidden', 'false');
+    setTimeout(function () { els.nameInput.focus(); els.nameInput.select(); }, 60);
+  }
+
+  function closeNameSheet() {
+    els.nameSheet.classList.remove('show');
+    els.nameSheet.setAttribute('aria-hidden', 'true');
+  }
+
+  function saveName() {
+    const name = cleanText(els.nameInput.value);
+    if (name.length < 2) {
+      showToast('Enter a valid name');
+      return;
+    }
+    persistProfile({ name: name });
+    renderProfile();
+    closeNameSheet();
+    showToast('Name updated');
+  }
+
+  function saveAvatar(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    if (!/^image\//.test(file.type)) {
+      showToast('Choose an image file');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function () {
+      persistProfile({ avatarDataUrl: String(reader.result || '') });
+      renderProfile();
+      showToast('Profile photo updated');
+    };
+    reader.onerror = function () { showToast('Could not read image'); };
+    reader.readAsDataURL(file);
+    event.target.value = '';
+  }
+
+  function goBack() {
+    const params = new URLSearchParams(location.search);
+    const from = params.get('from');
+    if (from === 'menu') return location.href = 'menu.html';
+    if (from === 'cart') return location.href = 'cart.html';
+    if (from === 'orders') return location.href = 'track.html';
+    if (document.referrer && !document.referrer.includes(location.pathname)) return history.back();
+    location.href = 'menu.html';
+  }
+
+  function toggleMenu() {
+    els.menuPopover.classList.toggle('show');
+    els.menuPopover.setAttribute('aria-hidden', els.menuPopover.classList.contains('show') ? 'false' : 'true');
+  }
+
+  function closeMenu() {
+    els.menuPopover.classList.remove('show');
+    els.menuPopover.setAttribute('aria-hidden', 'true');
+  }
+
+  function logout() {
+    closeMenu();
+    [
+      'cust_auth',
+      'customerAuth',
+      'TIFFIN_CUSTOMER_AUTH',
+      'TIFFIN_AUTH_USER'
+    ].forEach(function (key) { localStorage.removeItem(key); });
+    showToast('Logged out');
+    setTimeout(function () { location.replace('login.html?logout=1'); }, 250);
+  }
+
+  function getAddressIcon(value) {
+    const lower = String(value || '').toLowerCase();
+    if (lower.includes('home')) return homeIconSvg();
+    if (lower.includes('office') || lower.includes('work')) return suitcaseIconSvg();
+    if (lower.includes('gym') || lower.includes('fitness')) return dumbbellIconSvg();
+    return '';
+  }
+
+  function editIconSvg() {
+    return '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.12 14.92 2.5 17.5l2.58-.62 9.79-9.79-1.96-1.96-9.79 9.79Z" fill="#08A045"/><path d="m13.73 4.3.94-.94a1.57 1.57 0 0 1 2.22 0l.25.25c.61.61.61 1.61 0 2.22l-.94.94-2.47-2.47Z" fill="#08A045"/></svg>';
+  }
+
+  function homeIconSvg() {
+    return '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M2.15 9.45 9.32 3.1a1.03 1.03 0 0 1 1.36 0l7.17 6.35a.75.75 0 0 1-.5 1.31h-.92v5.66c0 .74-.6 1.34-1.34 1.34h-3.2v-4.68H8.11v4.68h-3.2c-.74 0-1.34-.6-1.34-1.34v-5.66h-.92a.75.75 0 0 1-.5-1.31Z" fill="currentColor"/></svg>';
+  }
+
+  function suitcaseIconSvg() {
+    return '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.1 4.1c0-.9.73-1.62 1.62-1.62h2.56c.9 0 1.62.73 1.62 1.62v1.02h2.68c.9 0 1.62.73 1.62 1.62v8.67c0 .9-.73 1.62-1.62 1.62H4.42c-.9 0-1.62-.73-1.62-1.62V6.74c0-.9.73-1.62 1.62-1.62H7.1V4.1Zm1.35 1.02h3.1V4.1a.27.27 0 0 0-.27-.27H8.72a.27.27 0 0 0-.27.27v1.02Zm-4.3 4.1v1.13c1.72.78 3.65 1.18 5.85 1.18s4.13-.4 5.85-1.18V9.22H4.15Z" fill="currentColor"/></svg>';
+  }
+
+  function dumbbellIconSvg() {
+    return '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4.2 7.15h1.35v5.7H4.2v1.15c0 .48-.38.86-.86.86H2.6a.86.86 0 0 1-.86-.86V6a.86.86 0 0 1 .86-.86h.74c.48 0 .86.38.86.86v1.15Zm2.7 1.9h6.2v1.9H6.9v-1.9Zm8.9-1.9V6c0-.48.38-.86.86-.86h.74c.48 0 .86.38.86.86v8c0 .48-.38.86-.86.86h-.74a.86.86 0 0 1-.86-.86v-1.15h-1.35v-5.7h1.35Z" fill="currentColor"/></svg>';
+  }
+
+  function foodIconSvg() {
+    return '<svg viewBox="0 0 30 30" width="22" height="22" fill="none" aria-hidden="true"><path d="M15 4.5c5.8 0 10.5 4.7 10.5 10.5S20.8 25.5 15 25.5 4.5 20.8 4.5 15 9.2 4.5 15 4.5Z" fill="#8806CE" opacity=".16"/><path d="M8.2 15.4h13.6c-.3 3.5-3.24 6.25-6.8 6.25s-6.5-2.75-6.8-6.25Zm1.1-2.9c.9-2.65 3.1-4.15 5.7-4.15s4.8 1.5 5.7 4.15H9.3Z" fill="#8806CE"/></svg>';
+  }
+
+  function parseJson(value) {
+    if (!value) return null;
+    if (typeof value !== 'string') return value;
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    try { return JSON.parse(trimmed); } catch (e) { return trimmed; }
+  }
+
+  function cleanText(value) {
+    return String(value == null ? '' : value).replace(/\s+/g, ' ').trim();
+  }
+
+  function normalizePhone(value) {
+    const raw = cleanText(value);
+    const digitsOnly = raw.replace(/\D/g, '');
+    let digits = digitsOnly;
+    if (digits.length > 10 && digits.startsWith('91')) digits = digits.slice(-10);
+    if (digits.length > 10) digits = digits.slice(-10);
+    return {
+      digits: digits,
+      display: digits ? '+91-' + digits : ''
+    };
+  }
+
+  function getInitial(name) {
+    const text = cleanText(name) || 'Customer';
+    return text.charAt(0).toUpperCase();
+  }
+
+  function formatOrderDate(value) {
+    const time = getTime(value);
+    if (!time) return 'Recently';
+    const date = new Date(time);
+    return date.toLocaleString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: 'numeric', minute: '2-digit', hour12: true
+    }).replace(',', '');
+  }
+
+  function getTime(value) {
+    if (!value) return 0;
+    if (typeof value === 'number') return value;
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function formatMoney(value) {
+    const amount = Number(value) || 0;
+    return Math.round(amount).toLocaleString('en-IN');
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function escapeAttribute(value) {
+    return escapeHtml(value).replace(/`/g, '&#096;');
+  }
+
+  let toastTimer = null;
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    els.toast.textContent = message;
+    els.toast.classList.add('show');
+    toastTimer = setTimeout(function () { els.toast.classList.remove('show'); }, 1800);
+  }
+})();
 </script>
-<script src="firebase-config.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
-<script src="firebase-mvp.js"></script>
 </body>
 </html>
