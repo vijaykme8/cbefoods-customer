@@ -1007,6 +1007,15 @@ async function updateRouteThenMoveRider(start,customer){
 
   const previousRoadRouteCoords=Array.isArray(currentRoadRouteCoords)?currentRoadRouteCoords.slice():[];
   const routeFollowPath=buildRouteFollowPath(currentLoc,start,previousRoadRouteCoords);
+
+  // Fast visual route preview:
+  // draw the remaining old road route from new rider GPS to customer immediately,
+  // then replace it with fresh Ola route when the API response arrives.
+  const instantRoutePreviewPath=buildRouteFollowPath(start,customer,previousRoadRouteCoords);
+  if(instantRoutePreviewPath&&instantRoutePreviewPath.length>=3){
+    drawRoadRoute(instantRoutePreviewPath);
+  }
+
   const routeReady=await fetchRoadRoute(start,customer);
 
   if(latestRequestedRiderKey===nextKey){
