@@ -648,7 +648,6 @@ html, body {
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
 const ROUTE_REFRESH_MIN_MS=10*60*1000;
-const ROUTE_REFRESH_MIN_DISTANCE_M=999999;
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
 let liveUnsubscribe=null,routeRequestToken=0,lastRouteState=null,lastFitKey='';
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
@@ -673,7 +672,60 @@ function itemPrice(i){return Number(i.price??i.unitPrice??i.amount??0)||0}
 function money(v){return `₹${Math.round(Number(v||0))}`}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=(v==null?'':String(v))}
 function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
-function upsert(marker,type,location){if(!map||!maplibre||!location)return marker;if(!marker){marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'}).setLngLat([location.lng,location.lat]).addTo(map)}else marker.setLngLat([location.lng,location.lat]);return marker}
+let riderMarkerAnimationFrame=0;
+
+function animateRiderMarkerTo(marker,location,duration=1400){
+  if(!marker||!location)return;
+
+  const current=marker.getLngLat&&marker.getLngLat();
+  if(!current){
+    marker.setLngLat([location.lng,location.lat]);
+    return;
+  }
+
+  const from={lng:current.lng,lat:current.lat};
+  const to={lng:location.lng,lat:location.lat};
+
+  if(Math.abs(from.lng-to.lng)<0.000001&&Math.abs(from.lat-to.lat)<0.000001)return;
+
+  if(riderMarkerAnimationFrame)cancelAnimationFrame(riderMarkerAnimationFrame);
+
+  const start=performance.now();
+
+  function step(now){
+    const t=Math.min(1,(now-start)/duration);
+    const eased=1-Math.pow(1-t,3);
+    const lng=from.lng+(to.lng-from.lng)*eased;
+    const lat=from.lat+(to.lat-from.lat)*eased;
+
+    marker.setLngLat([lng,lat]);
+
+    if(t<1){
+      riderMarkerAnimationFrame=requestAnimationFrame(step);
+    }
+  }
+
+  riderMarkerAnimationFrame=requestAnimationFrame(step);
+}
+
+function upsert(marker,type,location){
+  if(!map||!maplibre||!location)return marker;
+
+  if(!marker){
+    marker=new maplibre.Marker({element:makeMarkerElement(type),anchor:'bottom'})
+      .setLngLat([location.lng,location.lat])
+      .addTo(map);
+    return marker;
+  }
+
+  if(type==='rider'){
+    animateRiderMarkerTo(marker,location);
+  }else{
+    marker.setLngLat([location.lng,location.lat]);
+  }
+
+  return marker;
+}
 function ensureRoute(){if(!map||!map.isStyleLoaded())return false;if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-casing'))map.addLayer({id:'track-route-casing',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':0,'line-opacity':0}},map.getLayer('track-route-line')?'track-route-line':undefined);if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
 function routeData(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
 function clearRoute(){if(!ensureRoute())return;map.getSource('track-route-source').setData(routeData([]))}
@@ -690,12 +742,12 @@ function shouldFetchRoadRoute(from,to){
   if(document.hidden)return false;
   if(!lastRouteState)return true;
 
-  const riderMoved=haversineMeters(lastRouteState.from,from)>=ROUTE_REFRESH_MIN_DISTANCE_M;
   const destinationChanged=haversineMeters(lastRouteState.to,to)>30;
   const elapsed=Date.now()-lastRouteState.at;
 
-  return riderMoved||destinationChanged||elapsed>=ROUTE_REFRESH_MIN_MS;
+  return destinationChanged||elapsed>=ROUTE_REFRESH_MIN_MS;
 }
+
 function decodePolyline(str,precision=5){if(!str||typeof str!=='string')return[];let index=0,lat=0,lng=0,out=[],factor=Math.pow(10,precision);while(index<str.length){let result=0,shift=0,byte;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lat+=(result&1)?~(result>>1):(result>>1);result=0;shift=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lng+=(result&1)?~(result>>1):(result>>1);out.push([lng/factor,lat/factor])}return out.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]))}
 function looksLatLng(a,b){return a>=5&&a<=40&&b>=65&&b<=100}
 function looksLngLat(a,b){return a>=65&&a<=100&&b>=5&&b<=40}
