@@ -1,4 +1,3 @@
-// routefinal3: Ola proxy with directions support for customer pickup road route
 const OLA_STYLE_URL =
   "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
 
@@ -206,24 +205,20 @@ export async function onRequest(context) {
       const originLng = url.searchParams.get("originLng");
       const destLat = url.searchParams.get("destLat");
       const destLng = url.searchParams.get("destLng");
-      const originPoint = url.searchParams.get("origin") ||
-        (originLat && originLng ? `${originLat},${originLng}` : "");
-      const destinationPoint = url.searchParams.get("destination") ||
-        (destLat && destLng ? `${destLat},${destLng}` : "");
-      const mode = url.searchParams.get("mode") || "driving";
 
-      if (!originPoint || !destinationPoint) {
+      if (!originLat || !originLng || !destLat || !destLng) {
         return jsonResponse(
-          { message: "origin/destination or originLat, originLng, destLat and destLng are required" },
+          { message: "originLat, originLng, destLat and destLng are required" },
           400
         );
       }
 
       const directionsUrl =
-        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(originPoint)}` +
-        `&destination=${encodeURIComponent(destinationPoint)}` +
-        `&mode=${encodeURIComponent(mode)}` +
-        `&alternatives=false&steps=true&overview=full`;
+        `${OLA_DIRECTIONS_URL}?origin=${encodeURIComponent(`${originLat},${originLng}`)}` +
+        `&destination=${encodeURIComponent(`${destLat},${destLng}`)}` +
+        `&mode=driving` +
+        `&overview=full` +
+        `&alternatives=false`;
 
       return await fetchOla(directionsUrl, apiKey, origin);
     }
