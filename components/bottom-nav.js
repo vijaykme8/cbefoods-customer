@@ -63,7 +63,7 @@
   }
 
   const navItems = [
-    { key: 'search', label: 'Search', href: 'menu.html', match: ['menu', 'index', 'home', ''], modifier: 'search', icon: searchIcon },
+    { key: 'search', label: 'Menu', href: 'menu.html', match: ['menu', 'index', 'home', ''], modifier: 'search', icon: searchIcon },
     { key: 'cart', label: 'Cart', href: 'cart.html', match: ['cart'], modifier: 'cart', icon: cartIcon },
     { key: 'track', label: 'Track orders', href: 'track.html', match: ['track', 'track-order', 'orders'], modifier: 'track', icon: trackIcon }
   ];
