@@ -450,8 +450,19 @@
   }
 
   async function directions(origin, destination) {
-    const url = `${PROXY_URL}?type=directions&originLat=${encodeURIComponent(origin.lat)}&originLng=${encodeURIComponent(origin.lng)}&destLat=${encodeURIComponent(destination.lat)}&destLng=${encodeURIComponent(destination.lng)}`;
-    const response = await fetch(url);
+    const url =
+      `${PROXY_URL}?type=directions` +
+      `&originLat=${encodeURIComponent(origin.lat)}` +
+      `&originLng=${encodeURIComponent(origin.lng)}` +
+      `&destLat=${encodeURIComponent(destination.lat)}` +
+      `&destLng=${encodeURIComponent(destination.lng)}` +
+      `&_=${Date.now()}`;
+
+    const response = await fetch(url, {
+      cache: "no-store",
+      headers: { "Cache-Control": "no-cache" }
+    });
+
     if (!response.ok) throw new Error(`Directions failed: ${response.status}`);
     return response.json();
   }
