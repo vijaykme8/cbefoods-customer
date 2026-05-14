@@ -671,7 +671,7 @@ function itemQty(i){return Number(i.qty??i.quantity??i.count??1)||1}
 function itemPrice(i){return Number(i.price??i.unitPrice??i.amount??0)||0}
 function money(v){return `₹${Math.round(Number(v||0))}`}
 function setText(id,v){const e=document.getElementById(id);if(e)e.textContent=(v==null?'':String(v))}
-function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track%20orders/track-screen/restaurant-icon.svg?v=restauranticon1" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<img src="./assets/track%20orders/track-screen/rider-marker-icon.svg?v=ridericon1" alt="">';return el}
+function makeMarkerElement(type){const el=document.createElement('div');el.className=`track-ola-marker track-ola-marker-${type}`;if(type==='restaurant')el.innerHTML='<img src="./assets/track orders/track-screen/restaurant-icon.svg?v=trackpin3" alt="">';else if(type==='customer')el.innerHTML='<img src="./assets/track orders/track-screen/customer-icon.svg?v=trackpin3" alt="">';else el.innerHTML='<div class="track-ola-rider-dot"></div>';return el}
 let riderMarkerAnimationFrame=0;
 
 function animateRiderMarkerTo(marker,location,duration=1400){
