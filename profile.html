@@ -44,7 +44,7 @@
 'use strict';
 const PROFILE_KEYS=['TIFFIN_CUSTOMER_PROFILE','CBE_CUSTOMER_PROFILE','customerProfile','cust_profile','userProfile','profile'];
 const SAVED_ADDRESS_LIST_KEYS=['cust_saved_addresses','delivery_saved_addresses','TIFFIN_SAVED_ADDRESSES','tiffin_saved_addresses','CBE_SAVED_ADDRESSES','cbe_saved_addresses','savedAddresses','saved_addresses','savedDeliveryAddresses','delivery_addresses','TIFFIN_CUSTOMER_ADDRESSES'];
-const ACTIVE_LOCATION_KEYS=['cust_location_details','delivery_location_details','cust_location','delivery_location','customer_location','user_location','userLocation','deliveryLocation','current_location','currentLocation','geo_location','geoLocation','location','TIFFIN_ACTIVE_DELIVERY_LOCATION','activeDeliveryLocation','selectedDeliveryAddress','currentDeliveryAddress','TIFFIN_SELECTED_ADDRESS','cbe_active_delivery_location','active_delivery_location'];
+const ACTIVE_LOCATION_KEYS=['cust_location_details','delivery_location_details','activeDeliveryLocation','customer_active_delivery_location','cust_location','delivery_location','customer_location','user_location','userLocation','deliveryLocation','current_location','currentLocation','geo_location','geoLocation','location','TIFFIN_ACTIVE_DELIVERY_LOCATION','activeDeliveryLocation','selectedDeliveryAddress','currentDeliveryAddress','TIFFIN_SELECTED_ADDRESS','cbe_active_delivery_location','active_delivery_location'];
 const TEXT_FALLBACK_KEYS=['cust_address','customer_address','delivery_address','deliveryAddress','cust_full_address','delivery_full_address','selected_address','selectedAddress','user_address','address','cust_location_name','cust_location_address','current_address','currentAddress'];
 const ORDER_KEYS=['order_history','current_order','TIFFIN_ORDERS','TIFFIN_CUSTOMER_ORDERS','customerOrders','orders','cbeOrders','pastOrders','TIFFIN_ORDER_HISTORY'];
 const $=s=>document.querySelector(s);const els={profileName:$('#profileName'),profilePhone:$('#profilePhone'),nameFieldValue:$('#nameFieldValue'),phoneDigits:$('#phoneDigits'),avatarCircle:$('#avatarCircle'),avatarButton:$('#avatarButton'),avatarInput:$('#avatarInput'),savedAddressList:$('#savedAddressList'),pastOrdersList:$('#pastOrdersList'),nameSheet:$('#nameSheet'),nameInput:$('#nameInput'),toast:$('#toast'),menuPopover:$('#menuPopover')};
@@ -54,16 +54,16 @@ function init(){renderAll();bindEvents()}
 function bindEvents(){
  $('#backButton').addEventListener('click',goBack);$('#editNameButton').addEventListener('click',openNameSheet);$('#cancelNameButton').addEventListener('click',closeNameSheet);$('#saveNameButton').addEventListener('click',saveName);els.nameSheet.addEventListener('click',e=>{if(e.target===els.nameSheet)closeNameSheet()});els.nameInput.addEventListener('keydown',e=>{if(e.key==='Enter')saveName();if(e.key==='Escape')closeNameSheet()});
  els.avatarButton.addEventListener('click',()=>els.avatarInput.click());els.avatarInput.addEventListener('change',saveAvatar);
- $('#addAddressButton').addEventListener('click',()=>{location.href='menu.html?openLocation=1&returnTo=profile&profileAction=addAddress'});
+ $('#addAddressButton').addEventListener('click',()=>{sessionStorage.setItem('cbe_location_return_to','profile');sessionStorage.setItem('cbe_open_location_map','1');location.href='menu.html?openLocation=1&returnTo=profile&profileAction=addAddress'});
  $('#dotMenuButton').addEventListener('click',toggleMenu);els.menuPopover.addEventListener('click',e=>{if(e.target===els.menuPopover)closeMenu()});$('#refreshProfileButton').addEventListener('click',()=>{closeMenu();refreshFromStorage();showToast('Profile refreshed')});$('#goOrdersButton').addEventListener('click',()=>{location.href='track.html'});$('#logoutButton').addEventListener('click',logout);
  window.addEventListener('pageshow',refreshFromStorage);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshFromStorage()});
 }
 function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderPastOrders()}
 function renderProfile(){const name=cleanText(profile.name)||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<span id="avatarInitial">'+escapeHtml(getInitial(name))+'</span>'}}
-function renderAddresses(){const addresses=getSavedAddresses();els.savedAddressList.innerHTML='';if(!addresses.length){els.savedAddressList.innerHTML='<div class="empty-state">No saved address yet. Add one from the map flow.</div>';return}addresses.slice(0,6).forEach((address,index)=>{const row=document.createElement('div');row.className='address-row';row.innerHTML=`<div class="inside-wrap"><div class="address-left-group"><div class="title-with-icon">${getAddressIcon(address.type||address.title||'')}<span class="address-title-text">${escapeHtml(address.title||address.type||'Saved address')}</span></div><div class="address-line">${escapeHtml(address.line||'Address details not available')}</div></div><button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title||'address')}">${editIconSvg()}<span>Edit</span></button></div>`;row.querySelector('.edit-button').addEventListener('click',()=>{localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_ID',address.id||'');localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX',String(index));location.href='menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex='+encodeURIComponent(index)});els.savedAddressList.appendChild(row);if(index<Math.min(addresses.length,6)-1){const div=document.createElement('div');div.className='divider';els.savedAddressList.appendChild(div)}})}
+function renderAddresses(){const addresses=getSavedAddresses();els.savedAddressList.innerHTML='';if(!addresses.length){els.savedAddressList.innerHTML='<div class="empty-state">No saved address yet. Add one from the map flow.</div>';return}addresses.slice(0,6).forEach((address,index)=>{const row=document.createElement('div');row.className='address-row';row.innerHTML=`<div class="inside-wrap"><div class="address-left-group"><div class="title-with-icon">${getAddressIcon(address.type||address.title||'')}<span class="address-title-text">${escapeHtml(address.title||address.type||'Saved address')}</span></div><div class="address-line">${escapeHtml(address.line||'Address details not available')}</div></div><button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title||'address')}">${editIconSvg()}<span>Edit</span></button></div>`;row.querySelector('.edit-button').addEventListener('click',()=>{localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_ID',address.id||'');localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX',String(index));sessionStorage.setItem('cbe_location_return_to','profile');sessionStorage.setItem('cbe_open_location_map','1');location.href='menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex='+encodeURIComponent(index)});els.savedAddressList.appendChild(row);if(index<Math.min(addresses.length,6)-1){const div=document.createElement('div');div.className='divider';els.savedAddressList.appendChild(div)}})}
 function renderPastOrders(){const orders=getPastOrders();els.pastOrdersList.innerHTML='';if(!orders.length){els.pastOrdersList.innerHTML='<div class="empty-state">No past orders yet. Completed orders will appear here.</div>';return}orders.slice(0,5).forEach(order=>{const card=document.createElement('div');card.className='item-card';card.innerHTML=`<div class="order-header-card"><div class="order-left-content"><div class="item-img">${order.image?'<img alt="Order image" src="'+escapeAttribute(order.image)+'" />':foodIconSvg()}</div><div class="item-title"><div class="restaurant-name">${escapeHtml(order.restaurantName||'Coimbatore Foods')}</div><div class="order-id">Order ID #${escapeHtml(order.id||'----')}</div></div></div></div><div class="item-list">${buildItemsHtml(order.items)}</div><div class="divider" aria-hidden="true"></div><div class="cta-time-info"><button class="view-details" type="button">View details</button><div class="time-value"><div>Order placed: ${escapeHtml(formatOrderDate(order.createdAt||order.date||order.timestamp))}</div><div class="total"><span>Total value: </span><span class="amount">₹${escapeHtml(formatMoney(order.total||order.totalPaid||order.amount||0))}</span></div></div></div>`;card.querySelector('.view-details').addEventListener('click',()=>{if(order.id)localStorage.setItem('TIFFIN_SELECTED_ORDER_ID',String(order.id));location.href='track-fullscreen.html?orderId='+encodeURIComponent(order.id||'')});els.pastOrdersList.appendChild(card)})}
-function loadProfile(){let stored=null;for(const key of PROFILE_KEYS){stored=parseJson(localStorage.getItem(key));if(stored&&typeof stored==='object'&&!Array.isArray(stored))break;stored=null}const auth=parseJson(localStorage.getItem('cust_auth'))||parseJson(localStorage.getItem('customerAuth'))||null;const rawPhone=localStorage.getItem('TIFFIN_CUSTOMER_PHONE')||localStorage.getItem('customer_phone')||localStorage.getItem('mobile')||'';const authObj=auth&&typeof auth==='object'?auth:{};return Object.assign({name:authObj.name||authObj.displayName||stored?.name||stored?.displayName||localStorage.getItem('TIFFIN_CUSTOMER_NAME')||localStorage.getItem('customer_name')||'Customer',phone:authObj.phone||authObj.mobile||authObj.phoneNumber||stored?.phone||stored?.mobile||rawPhone,avatarDataUrl:stored?.avatarDataUrl||stored?.avatar||''},stored||{})}
-function persistProfile(next){profile=Object.assign({},profile,next);localStorage.setItem('TIFFIN_CUSTOMER_PROFILE',JSON.stringify(profile));if(profile.name)localStorage.setItem('TIFFIN_CUSTOMER_NAME',profile.name)}
+function loadProfile(){let stored=null;for(const key of PROFILE_KEYS){stored=parseJson(localStorage.getItem(key));if(stored&&typeof stored==='object'&&!Array.isArray(stored))break;stored=null}const auth=parseJson(localStorage.getItem('cust_auth'))||parseJson(localStorage.getItem('customerAuth'))||null;const rawPhone=localStorage.getItem('TIFFIN_CUSTOMER_PHONE')||localStorage.getItem('customer_phone')||localStorage.getItem('cust_phone')||localStorage.getItem('cbe_customer_phone')||localStorage.getItem('loggedInPhone')||localStorage.getItem('phoneNumber')||localStorage.getItem('mobile')||'';const authObj=auth&&typeof auth==='object'?auth:{};return Object.assign({name:stored?.name||stored?.displayName||stored?.profileName||authObj.name||authObj.displayName||localStorage.getItem('TIFFIN_CUSTOMER_NAME')||localStorage.getItem('customer_name')||'Customer',phone:stored?.phone||stored?.mobile||stored?.phoneNumber||authObj.phone||authObj.mobile||authObj.phoneNumber||rawPhone,avatarDataUrl:stored?.avatarDataUrl||stored?.avatar||stored?.profilePhoto||''},stored||{})}
+function persistProfile(next){profile=Object.assign({},profile,next);localStorage.setItem('TIFFIN_CUSTOMER_PROFILE',JSON.stringify(profile));localStorage.setItem('customerProfile',JSON.stringify(profile));if(profile.name){localStorage.setItem('TIFFIN_CUSTOMER_NAME',profile.name);localStorage.setItem('customer_name',profile.name)}if(window.CBEProfileCustomerStore&&typeof window.CBEProfileCustomerStore.scheduleSync==='function'){window.CBEProfileCustomerStore.scheduleSync('profile_update')}}
 function getSavedAddresses(){
  const saved=[];const seen=new Set();
  // 1) Prefer the same saved-address arrays used by the menu drawer.
@@ -100,6 +100,478 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script>
+(function installCBEProfileCustomerStore() {
+  /*
+    Profile customer memory bridge
+    ----------------------------------------
+    Reads/writes the same customer memory as menu.html:
+    customers/{uid or phone_id}
+      savedAddresses
+      activeDeliveryLocation
+      profile/name/avatar
+      currentCart
+
+    UI-safe rules:
+    - no layout changes
+    - no unpaid order creation
+    - localStorage remains only the fast cache
+  */
+
+  const CUSTOMER_ID_KEY = "cbe_active_customer_id";
+  const CACHE_VERSION_KEY = "cbe_customer_cache_version";
+  const CACHE_VERSION = "customer-memory-v1";
+  const SYNC_DELAY_MS = 700;
+
+  const PHONE_KEYS = [
+    "customer_phone",
+    "cust_phone",
+    "cbe_customer_phone",
+    "tiffin_customer_phone",
+    "TIFFIN_CUSTOMER_PHONE",
+    "loggedInPhone",
+    "logged_in_phone",
+    "phoneNumber",
+    "phone_number",
+    "mobile",
+    "user_phone"
+  ];
+
+  let db = null;
+  let currentIdentity = null;
+  let syncTimer = 0;
+  let restoring = false;
+  let lastSnapshot = "";
+
+  function clean(value) {
+    if (value === null || value === undefined) return "";
+    return String(value).trim();
+  }
+
+  function parseJSON(value, fallback = null) {
+    if (!value) return fallback;
+    if (typeof value !== "string") return value;
+    try { return JSON.parse(value); } catch (_) { return fallback; }
+  }
+
+  function stringify(value) {
+    try { return JSON.stringify(value); } catch (_) { return ""; }
+  }
+
+  function phoneId(phone) {
+    const digits = clean(phone).replace(/\D/g, "");
+    return digits ? `phone_${digits}` : "";
+  }
+
+  function readPhoneFromLocal() {
+    for (const key of PHONE_KEYS) {
+      const value = clean(localStorage.getItem(key));
+      if (value) return value;
+    }
+
+    const authUser = parseJSON(localStorage.getItem("cust_auth_user"), null);
+    if (authUser && typeof authUser === "object") {
+      return clean(authUser.phoneNumber || authUser.phone || authUser.mobile);
+    }
+
+    return "";
+  }
+
+  function getAuthUser() {
+    try {
+      if (!window.firebase || !firebase.auth) return null;
+      return firebase.auth().currentUser || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function getIdentity() {
+    const user = getAuthUser();
+    const uid = clean(user?.uid || localStorage.getItem("cust_uid") || localStorage.getItem("customer_uid"));
+    const phoneNumber = clean(user?.phoneNumber) || readPhoneFromLocal();
+    const customerId = uid || phoneId(phoneNumber);
+
+    if (!customerId) return null;
+
+    return {
+      customerId,
+      uid,
+      phoneNumber,
+      source: uid ? "firebase_auth_uid" : "phone_local_storage"
+    };
+  }
+
+  function getDb() {
+    if (db) return db;
+    try {
+      if (!window.firebase || !firebase.firestore) return null;
+      db = firebase.firestore();
+      return db;
+    } catch (error) {
+      console.warn("Profile customer memory Firestore unavailable", error);
+      return null;
+    }
+  }
+
+  function getCustomerRef(identity = currentIdentity) {
+    const firestore = getDb();
+    if (!firestore || !identity || !identity.customerId) return null;
+    return firestore.collection("customers").doc(identity.customerId);
+  }
+
+  function readSavedAddresses() {
+    const keys = [
+      "cust_saved_addresses",
+      "delivery_saved_addresses",
+      "savedAddresses",
+      "TIFFIN_SAVED_ADDRESSES",
+      "CBE_SAVED_ADDRESSES"
+    ];
+
+    for (const key of keys) {
+      const parsed = parseJSON(localStorage.getItem(key), null);
+      if (Array.isArray(parsed)) return parsed.filter(Boolean);
+    }
+
+    return [];
+  }
+
+  function writeSavedAddresses(addresses) {
+    const safeList = Array.isArray(addresses) ? addresses.filter(Boolean) : [];
+    const raw = stringify(safeList);
+    if (!raw) return;
+
+    localStorage.setItem("cust_saved_addresses", raw);
+    localStorage.setItem("delivery_saved_addresses", raw);
+    localStorage.setItem("savedAddresses", raw);
+  }
+
+  function readActiveLocation() {
+    const keys = [
+      "activeDeliveryLocation",
+      "customer_active_delivery_location",
+      "cust_location_details",
+      "delivery_location_details",
+      "cust_location",
+      "delivery_location"
+    ];
+
+    for (const key of keys) {
+      const parsed = parseJSON(localStorage.getItem(key), null);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) return parsed;
+    }
+
+    return null;
+  }
+
+  function writeActiveLocation(location) {
+    if (!location || typeof location !== "object") return;
+
+    const raw = stringify(location);
+    if (!raw) return;
+
+    localStorage.setItem("activeDeliveryLocation", raw);
+    localStorage.setItem("customer_active_delivery_location", raw);
+    localStorage.setItem("cust_location_details", raw);
+    localStorage.setItem("delivery_location_details", raw);
+
+    const shortAddress = clean(location.displayAddress || location.display || localStorage.getItem("cust_address"));
+    const fullAddress = clean(location.fullAddress || location.full || location.address || localStorage.getItem("cust_full_address"));
+
+    if (shortAddress) {
+      localStorage.setItem("cust_address", shortAddress);
+      localStorage.setItem("delivery_address", shortAddress);
+    }
+
+    if (fullAddress) {
+      localStorage.setItem("cust_full_address", fullAddress);
+      localStorage.setItem("delivery_full_address", fullAddress);
+    }
+
+    if (location.lat && location.lng) {
+      localStorage.setItem("cust_location", raw);
+      localStorage.setItem("cust_lat", String(location.lat));
+      localStorage.setItem("cust_lng", String(location.lng));
+    }
+  }
+
+  function readProfile() {
+    const saved = parseJSON(localStorage.getItem("TIFFIN_CUSTOMER_PROFILE"), null) ||
+      parseJSON(localStorage.getItem("customerProfile"), null) ||
+      {};
+
+    return {
+      ...(saved && typeof saved === "object" ? saved : {}),
+      name: clean(saved?.name || localStorage.getItem("TIFFIN_CUSTOMER_NAME") || localStorage.getItem("customer_name")),
+      phone: clean(saved?.phone || saved?.phoneNumber || currentIdentity?.phoneNumber || readPhoneFromLocal()),
+      avatarDataUrl: clean(saved?.avatarDataUrl || saved?.avatar || saved?.profilePhoto)
+    };
+  }
+
+  function writeProfile(profile) {
+    if (!profile || typeof profile !== "object") return;
+
+    const previous = readProfile();
+    const next = {
+      ...previous,
+      ...profile,
+      name: clean(profile.name || profile.displayName || profile.profileName || previous.name || "Customer"),
+      phone: clean(profile.phone || profile.phoneNumber || currentIdentity?.phoneNumber || previous.phone),
+      avatarDataUrl: clean(profile.avatarDataUrl || profile.avatar || profile.profilePhoto || previous.avatarDataUrl)
+    };
+
+    localStorage.setItem("TIFFIN_CUSTOMER_PROFILE", stringify(next));
+    localStorage.setItem("customerProfile", stringify(next));
+
+    if (next.name) {
+      localStorage.setItem("TIFFIN_CUSTOMER_NAME", next.name);
+      localStorage.setItem("customer_name", next.name);
+    }
+
+    if (next.phone) {
+      localStorage.setItem("TIFFIN_CUSTOMER_PHONE", next.phone);
+      localStorage.setItem("customer_phone", next.phone);
+      localStorage.setItem("cust_phone", next.phone);
+    }
+  }
+
+  function readCartItems() {
+    const value = parseJSON(localStorage.getItem("cart"), []);
+    if (Array.isArray(value)) return value.filter(item => item && Number(item.qty || item.quantity || 0) > 0);
+    if (value && typeof value === "object") return Object.values(value).filter(item => item && Number(item.qty || item.quantity || 0) > 0);
+    return [];
+  }
+
+  function writeCartItems(items) {
+    if (!Array.isArray(items)) return;
+    localStorage.setItem("cart", stringify(items.filter(item => item && Number(item.qty || item.quantity || 0) > 0)));
+  }
+
+  function addressKey(address) {
+    if (!address || typeof address !== "object") return "";
+    return [
+      clean(address.id),
+      clean(address.label || address.title || address.type),
+      clean(address.fullAddress || address.full || address.displayAddress || address.display || address.addressDetails || address.address),
+      clean(address.doorNo),
+      clean(address.lat),
+      clean(address.lng)
+    ].join("|").toLowerCase();
+  }
+
+  function mergeAddresses(localList, remoteList) {
+    const merged = [];
+    const seen = new Set();
+
+    [localList, remoteList].forEach(list => {
+      if (!Array.isArray(list)) return;
+      list.filter(Boolean).forEach(address => {
+        const key = addressKey(address);
+        const idKey = clean(address?.id).toLowerCase();
+        if ((key && seen.has(key)) || (idKey && seen.has(`id:${idKey}`))) return;
+        if (key) seen.add(key);
+        if (idKey) seen.add(`id:${idKey}`);
+        merged.push(address);
+      });
+    });
+
+    return merged;
+  }
+
+  function refreshProfileUI() {
+    try {
+      if (typeof window.CBEProfileRefresh === "function") window.CBEProfileRefresh();
+    } catch (_) {}
+  }
+
+  function clearPreviousCustomerCache() {
+    [
+      "cust_saved_addresses",
+      "delivery_saved_addresses",
+      "savedAddresses",
+      "activeDeliveryLocation",
+      "customer_active_delivery_location",
+      "cust_location_details",
+      "delivery_location_details",
+      "cust_address",
+      "delivery_address",
+      "cust_full_address",
+      "delivery_full_address",
+      "cust_location",
+      "cust_lat",
+      "cust_lng",
+      "cart"
+    ].forEach(key => {
+      try { localStorage.removeItem(key); } catch (_) {}
+    });
+  }
+
+  function buildPayload(reason = "sync") {
+    const now = new Date().toISOString();
+    const profile = readProfile();
+
+    return {
+      uid: currentIdentity?.uid || "",
+      phoneNumber: currentIdentity?.phoneNumber || profile.phone || "",
+      customerId: currentIdentity?.customerId || "",
+      identitySource: currentIdentity?.source || "",
+      app: "coimbatore-foods-customer-pwa",
+      sourcePage: "profile.html",
+      syncReason: reason,
+
+      name: profile.name || "Customer",
+      profile: {
+        name: profile.name || "Customer",
+        phone: profile.phone || currentIdentity?.phoneNumber || "",
+        avatarDataUrl: profile.avatarDataUrl || "",
+        updatedAt: now
+      },
+
+      savedAddresses: readSavedAddresses(),
+      activeDeliveryLocation: readActiveLocation(),
+      currentCart: {
+        items: readCartItems(),
+        updatedAt: now
+      },
+
+      cacheVersion: CACHE_VERSION,
+      updatedAt: now,
+      lastSeenAt: now
+    };
+  }
+
+  async function restoreFromFirebase(identity) {
+    const ref = getCustomerRef(identity);
+    if (!ref) return;
+
+    restoring = true;
+
+    try {
+      const previousCustomerId = clean(localStorage.getItem(CUSTOMER_ID_KEY));
+      const isDifferentCustomer = previousCustomerId && previousCustomerId !== identity.customerId;
+
+      if (isDifferentCustomer) clearPreviousCustomerCache();
+
+      localStorage.setItem(CUSTOMER_ID_KEY, identity.customerId);
+      localStorage.setItem(CACHE_VERSION_KEY, CACHE_VERSION);
+
+      const snapshot = await ref.get();
+      const remote = snapshot.exists ? (snapshot.data() || {}) : {};
+
+      const remoteProfile = remote.profile && typeof remote.profile === "object" ? remote.profile : {};
+      const remoteName = clean(remoteProfile.name || remote.name || remote.displayName);
+      const remoteAvatar = clean(remoteProfile.avatarDataUrl || remote.avatarDataUrl || remote.avatar || remote.profilePhoto);
+
+      if (remoteName || remoteAvatar || identity.phoneNumber) {
+        writeProfile({
+          name: remoteName || undefined,
+          phone: identity.phoneNumber || remoteProfile.phone || remote.phoneNumber,
+          avatarDataUrl: remoteAvatar || undefined
+        });
+      }
+
+      const localAddresses = readSavedAddresses();
+      const remoteAddresses = Array.isArray(remote.savedAddresses) ? remote.savedAddresses.filter(Boolean) : [];
+      const mergedAddresses = isDifferentCustomer ? remoteAddresses : mergeAddresses(localAddresses, remoteAddresses);
+      if (mergedAddresses.length) writeSavedAddresses(mergedAddresses);
+
+      const localActiveLocation = readActiveLocation();
+      const remoteActiveLocation = remote.activeDeliveryLocation && typeof remote.activeDeliveryLocation === "object"
+        ? remote.activeDeliveryLocation
+        : null;
+      if ((!localActiveLocation || isDifferentCustomer) && remoteActiveLocation) writeActiveLocation(remoteActiveLocation);
+
+      const localCart = readCartItems();
+      const remoteCart = Array.isArray(remote.currentCart?.items) ? remote.currentCart.items.filter(Boolean) : [];
+      if ((!localCart.length || isDifferentCustomer) && remoteCart.length) writeCartItems(remoteCart);
+
+      currentIdentity = identity;
+      refreshProfileUI();
+      await syncNow("profile_restore");
+    } catch (error) {
+      console.warn("Profile customer memory restore skipped", error);
+      refreshProfileUI();
+    } finally {
+      restoring = false;
+    }
+  }
+
+  async function syncNow(reason = "manual") {
+    if (restoring) return;
+    currentIdentity = getIdentity() || currentIdentity;
+    const ref = getCustomerRef(currentIdentity);
+    if (!ref) return;
+
+    const payload = buildPayload(reason);
+    const snapshot = stringify(payload);
+    if (snapshot && snapshot === lastSnapshot) return;
+
+    try {
+      await ref.set(payload, { merge: true });
+      lastSnapshot = snapshot;
+    } catch (error) {
+      console.warn("Profile customer memory sync skipped", error);
+    }
+  }
+
+  function scheduleSync(reason = "local_change") {
+    if (restoring) return;
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => syncNow(reason), SYNC_DELAY_MS);
+  }
+
+  function boot() {
+    currentIdentity = getIdentity();
+    if (!currentIdentity) {
+      window.CBEProfileCustomerStore.status = "waiting_for_customer_identity";
+      refreshProfileUI();
+      return;
+    }
+
+    window.CBEProfileCustomerStore.status = "ready";
+    window.CBEProfileCustomerStore.identity = currentIdentity;
+    restoreFromFirebase(currentIdentity);
+  }
+
+  function bootWhenAuthReady() {
+    try {
+      if (window.firebase && firebase.auth && typeof firebase.auth().onAuthStateChanged === "function") {
+        let didBoot = false;
+        firebase.auth().onAuthStateChanged(() => {
+          if (didBoot) return;
+          didBoot = true;
+          boot();
+        });
+
+        setTimeout(() => {
+          if (didBoot) return;
+          didBoot = true;
+          boot();
+        }, 1200);
+        return;
+      }
+    } catch (_) {}
+
+    boot();
+  }
+
+  window.CBEProfileCustomerStore = {
+    status: "booting",
+    identity: null,
+    scheduleSync,
+    syncNow,
+    restore: boot,
+    readLocal: () => buildPayload("read_local")
+  };
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bootWhenAuthReady, { once: true });
+  else bootWhenAuthReady();
+
+  window.addEventListener("pagehide", () => syncNow("pagehide"));
+})();
+</script>
+
 <script>
 (function syncProfilePastOrdersFromFirestore() {
   function clean(value) { return value === null || value === undefined ? "" : String(value).trim(); }

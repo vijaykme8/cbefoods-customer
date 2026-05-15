@@ -3968,6 +3968,10 @@ function getLocationReturnTarget() {
     return "cart.html";
   }
 
+  if (savedReturn === "profile" || savedReturn === "profile.html" || queryReturn === "profile") {
+    return "profile.html";
+  }
+
   return "";
 }
 
