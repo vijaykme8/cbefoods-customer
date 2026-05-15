@@ -416,20 +416,20 @@ button {
   }
 
   function getOrders() {
+    localStorage.removeItem('pending_order');
+    localStorage.removeItem('checkout_snapshot');
     const orders = [];
     const current = readJSON('current_order');
     const history = normalizeOrders(readJSON('order_history'));
     const previous = normalizeOrders(readJSON('previous_orders'));
     const ordersList = normalizeOrders(readJSON('orders'));
     const customerOrders = normalizeOrders(readJSON('customer_orders'));
-    const pending = readJSON('pending_order');
 
     if (current && typeof current === 'object') orders.push(current);
     history.forEach(order => orders.push(order));
     previous.forEach(order => orders.push(order));
     ordersList.forEach(order => orders.push(order));
     customerOrders.forEach(order => orders.push(order));
-    if (pending && typeof pending === 'object') orders.push(pending);
 
     const seen = new Set();
 
@@ -437,6 +437,34 @@ button {
       .filter(order => order && typeof order === 'object')
       .filter(order => {
         const status = getAdminOrderStatus(order);
+        const paymentStatus = String(
+          order?.paymentStatus ||
+          order?.payment?.status ||
+          order?.razorpayPaymentStatus ||
+          ''
+        ).toLowerCase().trim();
+
+        const blockedStatus = [
+          'checkout_ready',
+          'payment_pending',
+          'pending_payment',
+          'payment_initiated',
+          'awaiting_payment',
+          'created'
+        ];
+
+        const blockedPayment = [
+          'pending',
+          'unpaid',
+          'failed',
+          'cancelled',
+          'canceled',
+          'created'
+        ];
+
+        if (blockedStatus.includes(status)) return false;
+        if (blockedPayment.includes(paymentStatus)) return false;
+
         return !['delivered', 'completed', 'cancelled', 'canceled'].includes(status);
       })
       .filter(order => {
@@ -783,7 +811,7 @@ button {
   window.renderOrders = render;
 
   window.addEventListener('storage', function(event) {
-    if (['current_order', 'order_history', 'previous_orders', 'orders', 'customer_orders', 'pending_order'].includes(event.key)) render();
+    if (['current_order', 'order_history', 'previous_orders', 'orders', 'customer_orders', 'pending_order', 'checkout_snapshot'].includes(event.key)) render();
   });
 
   render();
@@ -796,7 +824,8 @@ button {
       localStorage.getItem('previous_orders') || '',
       localStorage.getItem('orders') || '',
       localStorage.getItem('customer_orders') || '',
-      localStorage.getItem('pending_order') || ''
+      localStorage.getItem('pending_order') || '',
+      localStorage.getItem('checkout_snapshot') || ''
     ].join('|');
 
     if (snapshot !== lastSnapshot) {
