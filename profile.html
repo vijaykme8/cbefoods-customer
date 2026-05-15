@@ -834,14 +834,48 @@ button { border: 0; background: none; padding: 0; color: inherit; cursor: pointe
   ];
 
   const ADDRESS_KEYS = [
+    // New profile keys
     'TIFFIN_SAVED_ADDRESSES',
     'tiffin_saved_addresses',
     'CBE_SAVED_ADDRESSES',
     'cbe_saved_addresses',
+    'cbe_saved_address_list',
     'savedAddresses',
     'saved_addresses',
+    'savedDeliveryAddresses',
     'delivery_addresses',
-    'TIFFIN_CUSTOMER_ADDRESSES'
+    'TIFFIN_CUSTOMER_ADDRESSES',
+
+    // Existing menu/cart location keys used in this customer PWA
+    'cust_location_details',
+    'delivery_location_details',
+    'cust_location',
+    'delivery_location',
+    'customer_location',
+    'user_location',
+    'userLocation',
+    'deliveryLocation',
+    'current_location',
+    'currentLocation',
+    'geo_location',
+    'geoLocation',
+    'location',
+
+    // Plain text address keys saved by menu.html
+    'cust_address',
+    'customer_address',
+    'delivery_address',
+    'deliveryAddress',
+    'cust_full_address',
+    'delivery_full_address',
+    'selected_address',
+    'selectedAddress',
+    'user_address',
+    'address',
+    'cust_location_name',
+    'cust_location_address',
+    'current_address',
+    'currentAddress'
   ];
 
   const ACTIVE_LOCATION_KEYS = [
@@ -850,7 +884,9 @@ button { border: 0; background: none; padding: 0; color: inherit; cursor: pointe
     'activeDeliveryLocation',
     'selectedDeliveryAddress',
     'currentDeliveryAddress',
-    'TIFFIN_SELECTED_ADDRESS'
+    'TIFFIN_SELECTED_ADDRESS',
+    'cbe_active_delivery_location',
+    'active_delivery_location'
   ];
 
   const ORDER_KEYS = [
@@ -924,6 +960,18 @@ button { border: 0; background: none; padding: 0; color: inherit; cursor: pointe
       location.href = 'track.html';
     });
     $('#logoutButton').addEventListener('click', logout);
+
+    // When returning from menu.html location flow, Safari/Chrome may restore this page
+    // from bfcache. Re-read localStorage so newly saved addresses appear immediately.
+    window.addEventListener('pageshow', refreshFromStorage);
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden) refreshFromStorage();
+    });
+  }
+
+  function refreshFromStorage() {
+    profile = loadProfile();
+    renderAll();
   }
 
   function renderAll() {
@@ -1063,23 +1111,37 @@ button { border: 0; background: none; padding: 0; color: inherit; cursor: pointe
     const addresses = [];
 
     ADDRESS_KEYS.forEach(function (key) {
-      const parsed = parseJson(localStorage.getItem(key));
-      pushAddressCollection(parsed, addresses, seen);
+      const raw = localStorage.getItem(key);
+      const parsed = parseJson(raw);
+      pushAddressCollection(parsed === null ? raw : parsed, addresses, seen, false, key);
     });
 
     ACTIVE_LOCATION_KEYS.forEach(function (key) {
-      const parsed = parseJson(localStorage.getItem(key));
-      pushAddressCollection(parsed, addresses, seen, true);
+      const raw = localStorage.getItem(key);
+      const parsed = parseJson(raw);
+      pushAddressCollection(parsed === null ? raw : parsed, addresses, seen, true, key);
     });
 
     return addresses;
   }
 
-  function pushAddressCollection(value, addresses, seen, activeOnly) {
-    if (!value) return;
-    const collection = Array.isArray(value) ? value : (Array.isArray(value.addresses) ? value.addresses : [value]);
+  function pushAddressCollection(value, addresses, seen, activeOnly, sourceKey) {
+    if (value === null || value === undefined || value === '') return;
+
+    let collection;
+    if (Array.isArray(value)) {
+      collection = value;
+    } else if (value && typeof value === 'object') {
+      collection = Array.isArray(value.addresses) ? value.addresses
+        : Array.isArray(value.savedAddresses) ? value.savedAddresses
+        : Array.isArray(value.items) ? value.items
+        : [value];
+    } else {
+      collection = [value];
+    }
+
     collection.forEach(function (item) {
-      const normalized = normalizeAddress(item, activeOnly);
+      const normalized = normalizeAddress(item, activeOnly, sourceKey);
       if (!normalized) return;
       const signature = (normalized.title + '|' + normalized.line + '|' + normalized.lat + '|' + normalized.lng).toLowerCase();
       if (seen.has(signature)) return;
@@ -1088,25 +1150,97 @@ button { border: 0; background: none; padding: 0; color: inherit; cursor: pointe
     });
   }
 
-  function normalizeAddress(item, activeOnly) {
-    if (!item || typeof item !== 'object') return null;
-    const title = cleanText(item.title || item.label || item.type || item.name || (activeOnly ? 'Current location' : 'Saved address'));
+  function normalizeAddress(item, activeOnly, sourceKey) {
+    if (item === null || item === undefined) return null;
+
+    if (typeof item !== 'object') {
+      const text = cleanText(item);
+      if (!text || isAddressPlaceholder(text)) return null;
+      return {
+        title: activeOnly ? 'Current location' : 'Saved address',
+        type: activeOnly ? 'Current location' : 'Saved address',
+        line: text,
+        lat: '',
+        lng: ''
+      };
+    }
+
+    const rawTitle = cleanText(
+      item.title ||
+      item.label ||
+      item.type ||
+      item.name ||
+      item.saveAs ||
+      item.tag ||
+      item.addressType ||
+      item.placeType ||
+      ''
+    );
+
+    const door = cleanText(item.doorNo || item.door || item.house || item.houseNo || item.flat || item.flatNo || item.building || '');
+    const mainAddress = cleanText(
+      item.fullAddress ||
+      item.displayAddress ||
+      item.addressDetails ||
+      item.addressLine ||
+      item.address ||
+      item.formattedAddress ||
+      item.shortAddress ||
+      item.detectedAddress ||
+      item.resolvedAddress ||
+      item.line1 ||
+      item.text ||
+      item.description ||
+      item.placeName ||
+      ''
+    );
+
     const parts = [
-      item.doorNo || item.door || item.house || item.houseNo || item.flat || '',
-      item.addressDetails || item.addressLine || item.address || item.formattedAddress || item.line1 || item.text || '',
+      door,
+      mainAddress,
       item.landmark || '',
-      item.area || '',
-      item.city || ''
+      item.area || item.locality || '',
+      item.city || item.district || ''
     ].map(cleanText).filter(Boolean);
-    const line = cleanText(parts.join(', '));
+
+    let line = cleanText(parts.join(', '));
+    if (!line && item.coords && typeof item.coords === 'object') {
+      line = cleanText([item.coords.lat, item.coords.lng].filter(Boolean).join(', '));
+    }
+
+    if (isAddressPlaceholder(line)) line = '';
+
+    const title = rawTitle && rawTitle !== mainAddress ? rawTitle : (activeOnly ? 'Current location' : guessAddressTitle(sourceKey));
+
     if (!title && !line) return null;
+
     return {
       title: title || 'Saved address',
-      type: cleanText(item.type || item.label || title),
+      type: rawTitle || title || 'Saved address',
       line: line || 'Location saved',
-      lat: item.lat || item.latitude || item?.coords?.lat || item?.location?.lat || '',
-      lng: item.lng || item.longitude || item?.coords?.lng || item?.location?.lng || ''
+      lat: item.lat || item.latitude || item?.coords?.lat || item?.location?.lat || item?.riderLocation?.lat || '',
+      lng: item.lng || item.lon || item.long || item.longitude || item?.coords?.lng || item?.location?.lng || item?.riderLocation?.lng || ''
     };
+  }
+
+  function guessAddressTitle(sourceKey) {
+    const key = cleanText(sourceKey).toLowerCase();
+    if (key.includes('active') || key.includes('current') || key.includes('selected')) return 'Current location';
+    return 'Saved address';
+  }
+
+  function isAddressPlaceholder(value) {
+    const text = cleanText(value).toLowerCase();
+    return (
+      !text ||
+      text === 'current location captured' ||
+      text === 'location captured' ||
+      text === 'location saved' ||
+      text === 'set delivery location' ||
+      text === 'set location' ||
+      text === 'getting location...' ||
+      text === 'finding your area...'
+    );
   }
 
   function getPastOrders() {
