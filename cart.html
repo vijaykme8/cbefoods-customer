@@ -826,6 +826,544 @@ button {
   }
 
 
+  function parseMaybeJSON(value) {
+    if (value === null || value === undefined || value === '') return null;
+    if (typeof value !== 'string') return value;
+
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+
+    if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        return value;
+      }
+    }
+
+    return value;
+  }
+
+  function cleanText(value) {
+    return String(value ?? '').trim();
+  }
+
+  const CUSTOMER_MEMORY_KEYS = {
+    lastCustomer: 'CBE_LAST_CUSTOMER_MEMORY_KEY',
+    activeLocation: [
+      'activeDeliveryLocation',
+      'customer_active_delivery_location',
+      'active_delivery_location',
+      'TIFFIN_ACTIVE_DELIVERY_LOCATION',
+      'selectedDeliveryLocation',
+      'selected_delivery_location',
+      'deliveryLocation',
+      'delivery_location',
+      'cust_location_details',
+      'delivery_location_details',
+      'cust_location',
+      'customer_location',
+      'user_location',
+      'current_location',
+      'currentLocation',
+      'location'
+    ],
+    savedAddresses: [
+      'cust_saved_addresses',
+      'delivery_saved_addresses',
+      'savedAddresses',
+      'saved_addresses',
+      'TIFFIN_SAVED_ADDRESSES',
+      'tiffin_saved_addresses',
+      'CBE_SAVED_ADDRESSES',
+      'cbe_saved_addresses',
+      'savedDeliveryAddresses',
+      'delivery_addresses',
+      'TIFFIN_CUSTOMER_ADDRESSES'
+    ],
+    profile: [
+      'TIFFIN_CUSTOMER_PROFILE',
+      'CBE_CUSTOMER_PROFILE',
+      'customerProfile',
+      'cust_profile',
+      'userProfile',
+      'profile'
+    ]
+  };
+
+  const customerMemory = {
+    docRef: null,
+    identity: null,
+    ready: false,
+    restoring: false,
+    syncTimer: null
+  };
+
+  function phone10(value) {
+    const digits = cleanText(value).replace(/\D/g, '');
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+
+  function getLocalAuthObject() {
+    return (
+      readJSON('customerAuth') ||
+      readJSON('TIFFIN_CUSTOMER_AUTH') ||
+      readJSON('authUser') ||
+      {}
+    );
+  }
+
+  function getLocalProfileObject() {
+    for (const key of CUSTOMER_MEMORY_KEYS.profile) {
+      const parsed = readJSON(key);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) return parsed;
+    }
+    return {};
+  }
+
+  function getCustomerIdentity(firebaseUser = null) {
+    const authObject = getLocalAuthObject();
+    const profileObject = getLocalProfileObject();
+
+    const uid = cleanText(
+      firebaseUser?.uid ||
+      localStorage.getItem('cust_uid') ||
+      localStorage.getItem('customer_uid') ||
+      localStorage.getItem('TIFFIN_CUSTOMER_UID') ||
+      authObject.uid ||
+      profileObject.uid
+    );
+
+    const phone = phone10(
+      firebaseUser?.phoneNumber ||
+      localStorage.getItem('cust_phone') ||
+      localStorage.getItem('cust_mobile') ||
+      localStorage.getItem('customer_phone') ||
+      localStorage.getItem('TIFFIN_CUSTOMER_PHONE') ||
+      authObject.phone ||
+      authObject.mobile ||
+      authObject.phoneNumber ||
+      profileObject.phone ||
+      profileObject.mobile
+    );
+
+    const name = cleanText(
+      profileObject.name ||
+      authObject.name ||
+      authObject.displayName ||
+      localStorage.getItem('cust_name') ||
+      localStorage.getItem('customer_name') ||
+      localStorage.getItem('TIFFIN_CUSTOMER_NAME')
+    );
+
+    const email = cleanText(
+      firebaseUser?.email ||
+      profileObject.email ||
+      authObject.email ||
+      localStorage.getItem('cust_email')
+    );
+
+    if (!uid && !phone) return null;
+
+    return {
+      uid: uid || `phone_${phone}`,
+      docId: uid || `phone_${phone}`,
+      phone,
+      name,
+      email
+    };
+  }
+
+  function handleCustomerSwitch(identity) {
+    if (!identity || !identity.docId) return;
+
+    const nextKey = identity.docId;
+    const previousKey = localStorage.getItem(CUSTOMER_MEMORY_KEYS.lastCustomer);
+
+    if (previousKey && previousKey !== nextKey) {
+      const keysToClear = [
+        CART_KEY,
+        'checkout_snapshot',
+        'pending_order',
+        'cust_address',
+        'delivery_address',
+        'cust_full_address',
+        'delivery_full_address',
+        'cust_lat',
+        'cust_lng',
+        ...CUSTOMER_MEMORY_KEYS.activeLocation,
+        ...CUSTOMER_MEMORY_KEYS.savedAddresses
+      ];
+
+      [...new Set(keysToClear)].forEach(key => {
+        try {
+          localStorage.removeItem(key);
+        } catch {}
+      });
+    }
+
+    localStorage.setItem(CUSTOMER_MEMORY_KEYS.lastCustomer, nextKey);
+    localStorage.setItem('cust_uid', identity.uid || nextKey);
+    localStorage.setItem('customer_uid', identity.uid || nextKey);
+
+    if (identity.phone) {
+      localStorage.setItem('cust_phone', identity.phone);
+      localStorage.setItem('customer_phone', identity.phone);
+      localStorage.setItem('TIFFIN_CUSTOMER_PHONE', identity.phone);
+    }
+  }
+
+  function normalizeAddressListFromValue(value) {
+    const parsed = parseMaybeJSON(value);
+    if (!parsed) return [];
+
+    if (Array.isArray(parsed)) return parsed.filter(Boolean);
+
+    if (typeof parsed === 'object') {
+      if (Array.isArray(parsed.savedAddresses)) return parsed.savedAddresses.filter(Boolean);
+      if (Array.isArray(parsed.addresses)) return parsed.addresses.filter(Boolean);
+      if (Array.isArray(parsed.items)) return parsed.items.filter(Boolean);
+      return [parsed];
+    }
+
+    return [];
+  }
+
+  function addressMemoryKey(address) {
+    if (!address) return '';
+
+    const fullAddress = cleanText(
+      address.fullAddress ||
+      address.full ||
+      address.address ||
+      address.displayAddress ||
+      address.line ||
+      ''
+    ).toLowerCase();
+
+    const lat = address.lat || address.latitude || address?.coords?.lat || '';
+    const lng = address.lng || address.lon || address.long || address.longitude || address?.coords?.lng || '';
+
+    if (lat && lng) return `geo:${Number(lat).toFixed(5)},${Number(lng).toFixed(5)}`;
+
+    return [
+      cleanText(address.id),
+      cleanText(address.label || address.title || address.type),
+      fullAddress,
+      cleanText(address.doorNo || address.door || address.houseNo)
+    ].join('|').toLowerCase();
+  }
+
+  function mergeAddressLists(...lists) {
+    const merged = [];
+    const seen = new Set();
+
+    lists.flat().filter(Boolean).forEach(address => {
+      const key = addressMemoryKey(address);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      merged.push(address);
+    });
+
+    return merged;
+  }
+
+  function getLocalSavedAddresses() {
+    const all = [];
+
+    CUSTOMER_MEMORY_KEYS.savedAddresses.forEach(key => {
+      all.push(...normalizeAddressListFromValue(localStorage.getItem(key)));
+    });
+
+    return mergeAddressLists(all);
+  }
+
+  function saveSharedSavedAddresses(addresses) {
+    const safeList = mergeAddressLists(Array.isArray(addresses) ? addresses : []);
+
+    CUSTOMER_MEMORY_KEYS.savedAddresses.forEach(key => {
+      try {
+        localStorage.setItem(key, JSON.stringify(safeList));
+      } catch {}
+    });
+
+    return safeList;
+  }
+
+  function getLocationFromAnyObject(value) {
+    const parsed = parseMaybeJSON(value);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+
+    const fullAddress = cleanText(
+      parsed.fullAddress ||
+      parsed.full ||
+      parsed.address ||
+      parsed.addressDetails ||
+      parsed.deliveryAddress ||
+      parsed.displayAddress ||
+      parsed.formattedAddress ||
+      parsed.line ||
+      parsed.text ||
+      parsed.description
+    );
+
+    const doorNo = cleanText(parsed.doorNo || parsed.door_no || parsed.houseNo || parsed.flat || parsed.house);
+    const displayAddress = cleanText(parsed.displayAddress || parsed.display || fullAddress);
+    const lat = parsed.lat ?? parsed.latitude ?? parsed?.coords?.lat ?? '';
+    const lng = parsed.lng ?? parsed.lon ?? parsed.long ?? parsed.longitude ?? parsed?.coords?.lng ?? '';
+
+    if (!fullAddress && !displayAddress && !(lat && lng)) return null;
+
+    return {
+      ...parsed,
+      label: cleanText(parsed.label || parsed.title || parsed.type || parsed.name || 'Home'),
+      doorNo,
+      fullAddress: fullAddress || displayAddress,
+      displayAddress: displayAddress || fullAddress,
+      lat,
+      lng,
+      updatedAt: parsed.updatedAt || new Date().toISOString()
+    };
+  }
+
+  function getActiveDeliveryLocationObject() {
+    for (const key of CUSTOMER_MEMORY_KEYS.activeLocation) {
+      const location = getLocationFromAnyObject(localStorage.getItem(key));
+      if (location) return location;
+    }
+
+    const readableAddress = getDeliveryAddress();
+
+    if (isUsableDeliveryAddress(readableAddress)) {
+      return {
+        label: 'Current location',
+        fullAddress: readableAddress,
+        displayAddress: readableAddress,
+        updatedAt: new Date().toISOString(),
+        source: 'cart_readable_address'
+      };
+    }
+
+    return null;
+  }
+
+  function saveSharedActiveLocation(locationValue) {
+    const location = getLocationFromAnyObject(locationValue) || locationValue;
+    if (!location || typeof location !== 'object') return null;
+
+    const fullAddress = cleanText(location.fullAddress || location.full || location.address || location.displayAddress);
+    const displayAddress = cleanText(location.displayAddress || location.display || fullAddress);
+
+    const normalized = {
+      ...location,
+      fullAddress,
+      displayAddress,
+      updatedAt: location.updatedAt || new Date().toISOString()
+    };
+
+    CUSTOMER_MEMORY_KEYS.activeLocation.forEach(key => {
+      try {
+        localStorage.setItem(key, JSON.stringify(normalized));
+      } catch {}
+    });
+
+    if (isUsableDeliveryAddress(displayAddress || fullAddress)) {
+      localStorage.setItem('cust_address', displayAddress || fullAddress);
+      localStorage.setItem('delivery_address', displayAddress || fullAddress);
+      localStorage.setItem('cust_full_address', fullAddress || displayAddress);
+      localStorage.setItem('delivery_full_address', fullAddress || displayAddress);
+    }
+
+    if (normalized.lat && normalized.lng) {
+      localStorage.setItem('cust_lat', String(normalized.lat));
+      localStorage.setItem('cust_lng', String(normalized.lng));
+    }
+
+    return normalized;
+  }
+
+  function normalizeCloudCart(value) {
+    return normalizeCartStorage(value)
+      .filter(Boolean)
+      .map(item => {
+        const qty = Math.max(1, parseInt(item.qty ?? item.quantity ?? item.count ?? 1, 10) || 1);
+        return { ...item, qty };
+      });
+  }
+
+  function getCustomerMemoryPayload(reason = 'cart_sync') {
+    const profileObject = getLocalProfileObject();
+    const activeDeliveryLocation = getActiveDeliveryLocationObject();
+    const savedAddresses = getLocalSavedAddresses();
+    const cartItems = loadCartRaw().map(({ _cartIndex, ...item }) => item);
+    const identity = customerMemory.identity || getCustomerIdentity();
+
+    const payload = {
+      updatedAt: new Date().toISOString(),
+      lastCartSyncAt: new Date().toISOString(),
+      lastCartSyncReason: reason,
+      cartItems,
+      cartUpdatedAt: new Date().toISOString()
+    };
+
+    if (identity) {
+      payload.uid = identity.uid;
+      payload.phoneNumber = identity.phone || '';
+      payload.name = profileObject.name || identity.name || '';
+      payload.email = profileObject.email || identity.email || '';
+    }
+
+    if (savedAddresses.length) {
+      payload.savedAddresses = savedAddresses;
+    }
+
+    if (activeDeliveryLocation) {
+      payload.activeDeliveryLocation = activeDeliveryLocation;
+    }
+
+    if (profileObject && Object.keys(profileObject).length) {
+      payload.profile = profileObject;
+    }
+
+    return payload;
+  }
+
+  function scheduleCustomerMemorySync(reason = 'cart_updated') {
+    if (!customerMemory.docRef || customerMemory.restoring) return;
+
+    window.clearTimeout(customerMemory.syncTimer);
+    customerMemory.syncTimer = window.setTimeout(() => {
+      const payload = getCustomerMemoryPayload(reason);
+      customerMemory.docRef.set(payload, { merge: true }).catch(error => {
+        console.warn('Customer cart memory sync failed', error);
+      });
+    }, 450);
+  }
+
+  async function restoreCustomerMemoryFromCloud() {
+    if (!customerMemory.docRef) return;
+
+    customerMemory.restoring = true;
+
+    try {
+      const snapshot = await customerMemory.docRef.get();
+      if (!snapshot.exists) {
+        scheduleCustomerMemorySync('new_customer_cart_memory');
+        return;
+      }
+
+      const data = snapshot.data() || {};
+
+      const localSaved = getLocalSavedAddresses();
+      const cloudSaved = normalizeAddressListFromValue(data.savedAddresses || data.addresses || []);
+      const mergedSaved = mergeAddressLists(cloudSaved, localSaved);
+
+      if (mergedSaved.length) {
+        saveSharedSavedAddresses(mergedSaved);
+      }
+
+      const cloudActiveLocation =
+        data.activeDeliveryLocation ||
+        data.active_delivery_location ||
+        data.currentDeliveryLocation ||
+        data.deliveryLocation ||
+        null;
+
+      if (cloudActiveLocation) {
+        saveSharedActiveLocation(cloudActiveLocation);
+      }
+
+      const localCart = loadCartRaw();
+      const cloudCart = normalizeCloudCart(data.cartItems || data.cart || data.currentCart || []);
+
+      if (!localCart.length && cloudCart.length) {
+        localStorage.setItem(CART_KEY, JSON.stringify(cloudCart));
+      }
+
+      renderCart();
+      scheduleCustomerMemorySync('cart_memory_restored');
+    } catch (error) {
+      console.warn('Customer cart memory restore failed', error);
+    } finally {
+      customerMemory.restoring = false;
+    }
+  }
+
+  function bootCustomerMemorySync() {
+    if (!window.firebase || !window.TIFFIN_FIREBASE_CONFIG || !window.TIFFIN_FIREBASE_CONFIG.apiKey) {
+      return;
+    }
+
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+
+      firebase.auth().onAuthStateChanged(user => {
+        const identity = getCustomerIdentity(user);
+        if (!identity || !identity.docId) return;
+
+        handleCustomerSwitch(identity);
+
+        customerMemory.identity = identity;
+        customerMemory.docRef = firebase.firestore().collection('customers').doc(identity.docId);
+        customerMemory.ready = true;
+
+        restoreCustomerMemoryFromCloud();
+      });
+    } catch (error) {
+      console.warn('Customer cart memory boot failed', error);
+    }
+  }
+
+  function getCustomerProfileForCheckout() {
+    const identity = customerMemory.identity || getCustomerIdentity();
+    const profileObject = getLocalProfileObject();
+
+    return {
+      id: identity?.uid || localStorage.getItem('cust_uid') || localStorage.getItem('customer_uid') || '',
+      name: cleanText(
+        profileObject.name ||
+        identity?.name ||
+        localStorage.getItem('cust_name') ||
+        localStorage.getItem('customer_name') ||
+        localStorage.getItem('TIFFIN_CUSTOMER_NAME')
+      ),
+      phone: phone10(
+        identity?.phone ||
+        profileObject.phone ||
+        profileObject.mobile ||
+        localStorage.getItem('cust_phone') ||
+        localStorage.getItem('cust_mobile') ||
+        localStorage.getItem('customer_phone') ||
+        localStorage.getItem('TIFFIN_CUSTOMER_PHONE')
+      ),
+      email: cleanText(
+        profileObject.email ||
+        identity?.email ||
+        localStorage.getItem('cust_email')
+      )
+    };
+  }
+
+  function saveOrderToCustomerMemory(order) {
+    if (!customerMemory.docRef || !order) return;
+
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || `order_${Date.now()}`);
+
+    customerMemory.docRef.collection('orders').doc(orderId).set(order, { merge: true }).catch(error => {
+      console.warn('Customer order memory sync failed', error);
+    });
+
+    customerMemory.docRef.set({
+      lastOrderId: orderId,
+      lastOrderAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }, { merge: true }).catch(error => {
+      console.warn('Customer last order memory sync failed', error);
+    });
+  }
+
+
+
   function getNumberValue(value) {
     if (value === null || value === undefined || value === '') return null;
     const parsed = Number(value);
@@ -1022,6 +1560,7 @@ button {
       .map(({ _cartIndex, ...item }) => item);
 
     localStorage.setItem(CART_KEY, JSON.stringify(cleanCart));
+    scheduleCustomerMemorySync('cart_updated');
   }
 
   function getItemId(item, index = 0) {
@@ -1218,10 +1757,14 @@ button {
     ];
 
     const objectKeys = [
-      'active_delivery_location',
       'activeDeliveryLocation',
+      'customer_active_delivery_location',
+      'active_delivery_location',
+      'TIFFIN_ACTIVE_DELIVERY_LOCATION',
       'deliveryLocation',
       'delivery_location',
+      'cust_location_details',
+      'delivery_location_details',
       'selectedDeliveryLocation',
       'selected_delivery_location',
       'selected_location',
@@ -1229,6 +1772,7 @@ button {
       'customer_location',
       'user_location',
       'current_location',
+      'currentLocation',
       'location'
     ];
 
@@ -1363,9 +1907,15 @@ button {
     const totals = getTotals(cart);
     const items = cart.map(({ _cartIndex, ...item }) => item);
     const totalQty = items.reduce((sum, item) => sum + Number(item.qty || 0), 0);
-    const customerName = localStorage.getItem('cust_name') || localStorage.getItem('customer_name') || '';
-    const customerPhone = localStorage.getItem('cust_phone') || localStorage.getItem('cust_mobile') || localStorage.getItem('customer_phone') || '';
-    const customerEmail = localStorage.getItem('cust_email') || '';
+    const customerProfile = getCustomerProfileForCheckout();
+    const customerName = customerProfile.name || '';
+    const customerPhone = customerProfile.phone || '';
+    const customerEmail = customerProfile.email || '';
+    const customerId = customerProfile.id || '';
+    const activeDeliveryLocation = getActiveDeliveryLocationObject() || {
+      fullAddress: address,
+      displayAddress: address
+    };
 
     return {
       id: `CBE-${Date.now()}`,
@@ -1381,13 +1931,18 @@ button {
       tax: 0,
       total: Math.round(totals.total),
       totalQty,
+      customerId,
+      customerPhone,
+      customerName,
       deliveryAddress: address,
       deliveryLocation: {
-        fullAddress: address,
-        displayAddress: address
+        ...activeDeliveryLocation,
+        fullAddress: activeDeliveryLocation.fullAddress || address,
+        displayAddress: activeDeliveryLocation.displayAddress || address
       },
       address,
       customer: {
+        id: customerId,
         name: customerName,
         phone: customerPhone,
         contact: customerPhone,
@@ -1440,6 +1995,8 @@ button {
     if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
       window.TiffinMVP.saveOrderToCloud(order).catch(error => console.warn('Order cloud sync failed', error));
     }
+
+    saveOrderToCustomerMemory(order);
 
     localStorage.removeItem(CART_KEY);
     localStorage.removeItem('checkout_snapshot');
@@ -1522,6 +2079,13 @@ button {
       return;
     }
 
+    saveSharedActiveLocation(getActiveDeliveryLocationObject() || {
+      fullAddress: address,
+      displayAddress: address,
+      source: 'cart_place_order'
+    });
+    scheduleCustomerMemorySync('cart_payment_started');
+
     const snapshot = buildCheckoutSnapshot(cart, address);
     openRazorpayPayment(snapshot);
   }
@@ -1570,10 +2134,13 @@ button {
   window.addEventListener('storage', (event) => {
     if (event.key === CART_KEY || event.key?.toLowerCase().includes('address') || event.key?.toLowerCase().includes('location')) {
       renderCart();
+      scheduleCustomerMemorySync('cart_storage_changed');
     }
   });
 
   renderCart();
+  bootCustomerMemorySync();
+  window.setTimeout(() => scheduleCustomerMemorySync('cart_page_opened'), 1200);
   continuePaymentFromAddressIfNeeded();
 })();
 </script>
