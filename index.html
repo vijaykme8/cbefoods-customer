@@ -2,13 +2,92 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Redirecting...</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
+<meta name="theme-color" content="#8806CE">
+<title>Coimbatore Foods</title>
+<link rel="manifest" id="pwa-manifest">
+
 <script>
-  window.location.href = 'menu.html';
+(function routeCustomerEntry() {
+  const LOGIN_PAGE = "login.html";
+  const MENU_PAGE = "menu.html";
+
+  function hasCustomerSession() {
+    try {
+      return localStorage.getItem("cust_auth") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function goTo(target) {
+    window.location.replace(target);
+  }
+
+  if (hasCustomerSession()) {
+    goTo(MENU_PAGE);
+    return;
+  }
+
+  goTo(LOGIN_PAGE);
+})();
 </script>
+
+<style>
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  background: #FDFDFF;
+  color: #12130F;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.redirect-card {
+  width: min(342px, calc(100vw - 48px));
+  text-align: center;
+}
+
+.redirect-title {
+  margin: 0 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.redirect-copy {
+  margin: 0;
+  color: rgba(18, 19, 15, 0.62);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.redirect-link {
+  color: #08A045;
+  font-weight: 700;
+  text-decoration: none;
+}
+</style>
 </head>
+
 <body>
-  <p>If you are not redirected, <a href="menu.html">click here</a>.</p>
+  <main class="redirect-card" aria-label="Opening Coimbatore Foods">
+    <h1 class="redirect-title">Opening Coimbatore Foods</h1>
+    <p class="redirect-copy">
+      If nothing happens, <a class="redirect-link" href="login.html">open login</a>.
+    </p>
+  </main>
 </body>
 </html>
