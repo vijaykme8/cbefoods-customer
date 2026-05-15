@@ -2209,7 +2209,7 @@ body.is-location-flow-open .floating-added-card {
             <div class="address">Loading location...</div>
           </div>
         </div>
-        <a class="avatar" href="profile.html" aria-label="Open profile"><img src="assets/menu/icons/user profile.svg" alt="User profile" /></a>
+        <a class="avatar" href="profile.html" aria-label="Open profile"><img id="menuProfileAvatarImg" src="assets/menu/icons/user profile.svg" alt="User profile" /></a>
       </div>
       <div class="hero-card">
         <div class="hero-title">
@@ -6083,6 +6083,185 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pagehide", () => {
     syncCustomerMemoryNow("pagehide");
   });
+})();
+</script>
+
+
+<script>
+(function syncMenuProfileAvatar() {
+  const DEFAULT_AVATAR_SRC = "assets/menu/icons/user profile.svg";
+  const PROFILE_KEYS = [
+    "TIFFIN_CUSTOMER_PROFILE",
+    "customerProfile",
+    "CBE_CUSTOMER_PROFILE",
+    "customer_profile",
+    "cust_profile",
+    "userProfile",
+    "profile"
+  ];
+
+  function clean(value) {
+    return value === null || value === undefined ? "" : String(value).trim();
+  }
+
+  function parseJSON(value, fallback = null) {
+    if (!value) return fallback;
+    try { return JSON.parse(value); } catch (_) { return fallback; }
+  }
+
+  function getMenuAvatarImage() {
+    return document.getElementById("menuProfileAvatarImg") || document.querySelector(".avatar img");
+  }
+
+  function readLocalProfile() {
+    for (const key of PROFILE_KEYS) {
+      const profile = parseJSON(localStorage.getItem(key), null);
+      if (profile && typeof profile === "object" && !Array.isArray(profile)) {
+        return profile;
+      }
+    }
+    return {};
+  }
+
+  function getAvatarFromProfile(profile = readLocalProfile()) {
+    return clean(
+      profile.avatarDataUrl ||
+      profile.avatar ||
+      profile.profilePhoto ||
+      profile.photoURL ||
+      profile.photoUrl ||
+      profile.image ||
+      profile.imageUrl ||
+      localStorage.getItem("customer_avatar") ||
+      localStorage.getItem("cust_avatar") ||
+      localStorage.getItem("profile_avatar") ||
+      localStorage.getItem("TIFFIN_CUSTOMER_AVATAR")
+    );
+  }
+
+  function writeProfilePatch(patch) {
+    if (!patch || typeof patch !== "object") return;
+
+    const previous = readLocalProfile();
+    const next = {
+      ...previous,
+      ...patch,
+      name: clean(patch.name || patch.displayName || patch.profileName || previous.name || previous.displayName || localStorage.getItem("customer_name") || localStorage.getItem("cust_name") || "Customer"),
+      phone: clean(patch.phone || patch.phoneNumber || previous.phone || previous.phoneNumber || localStorage.getItem("customer_phone") || localStorage.getItem("cust_phone") || ""),
+      avatarDataUrl: clean(patch.avatarDataUrl || patch.avatar || patch.profilePhoto || previous.avatarDataUrl || previous.avatar || previous.profilePhoto || "")
+    };
+
+    try {
+      localStorage.setItem("TIFFIN_CUSTOMER_PROFILE", JSON.stringify(next));
+      localStorage.setItem("customerProfile", JSON.stringify(next));
+    } catch (_) {}
+  }
+
+  function renderMenuAvatar() {
+    const img = getMenuAvatarImage();
+    if (!img) return;
+
+    const avatar = getAvatarFromProfile();
+    const nextSrc = avatar || DEFAULT_AVATAR_SRC;
+
+    if (img.getAttribute("src") !== nextSrc) {
+      img.setAttribute("src", nextSrc);
+    }
+
+    img.onerror = function () {
+      if (img.getAttribute("src") !== DEFAULT_AVATAR_SRC) {
+        img.setAttribute("src", DEFAULT_AVATAR_SRC);
+      }
+    };
+  }
+
+  function normalizePhone(value) {
+    const digits = clean(value).replace(/\D/g, "");
+    if (!digits) return "";
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+
+  function getLocalPhone() {
+    return normalizePhone(
+      localStorage.getItem("customer_phone") ||
+      localStorage.getItem("cust_phone") ||
+      localStorage.getItem("customer_mobile") ||
+      localStorage.getItem("cust_mobile") ||
+      ""
+    );
+  }
+
+  function getCustomerId() {
+    try {
+      const authUser = window.firebase && firebase.auth ? firebase.auth().currentUser : null;
+      if (authUser?.uid) return authUser.uid;
+    } catch (_) {}
+
+    return clean(
+      window.CBECustomerStore?.identity?.customerId ||
+      localStorage.getItem("cbe_active_customer_id") ||
+      localStorage.getItem("cust_uid") ||
+      ""
+    );
+  }
+
+  async function restoreAvatarFromFirebase() {
+    try {
+      if (!window.firebase || !firebase.firestore) return;
+
+      const customerId = getCustomerId();
+      if (!customerId) return;
+
+      const snapshot = await firebase.firestore().collection("customers").doc(customerId).get();
+      if (!snapshot.exists) return;
+
+      const data = snapshot.data() || {};
+      const remoteProfile = data.profile && typeof data.profile === "object" ? data.profile : {};
+      const remoteAvatar = clean(remoteProfile.avatarDataUrl || data.avatarDataUrl || data.avatar || data.profilePhoto);
+      const remoteName = clean(remoteProfile.name || data.name || data.displayName);
+      const remotePhone = normalizePhone(remoteProfile.phone || data.phoneNumber || getLocalPhone());
+
+      if (remoteAvatar || remoteName || remotePhone) {
+        writeProfilePatch({
+          name: remoteName || undefined,
+          phone: remotePhone || undefined,
+          avatarDataUrl: remoteAvatar || undefined
+        });
+        renderMenuAvatar();
+      }
+    } catch (error) {
+      console.log("Menu profile avatar restore skipped:", error);
+    }
+  }
+
+  function bootAvatarSync() {
+    renderMenuAvatar();
+    restoreAvatarFromFirebase();
+    window.setTimeout(renderMenuAvatar, 250);
+    window.setTimeout(renderMenuAvatar, 1000);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootAvatarSync, { once: true });
+  } else {
+    bootAvatarSync();
+  }
+
+  window.addEventListener("pageshow", bootAvatarSync);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) bootAvatarSync();
+  });
+
+  window.addEventListener("storage", event => {
+    if (!event.key || PROFILE_KEYS.includes(event.key) || event.key.toLowerCase().includes("avatar") || event.key.toLowerCase().includes("profile")) {
+      renderMenuAvatar();
+    }
+  });
+
+  window.CBEMenuProfileAvatar = {
+    refresh: bootAvatarSync,
+    render: renderMenuAvatar
+  };
 })();
 </script>
 
