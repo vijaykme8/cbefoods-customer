@@ -778,6 +778,8 @@ button {
 <script>
 (() => {
   const CART_KEY = 'cart';
+  const CART_CLEARED_AT_KEY = 'cbe_cart_cleared_at';
+  const CART_CLEARED_CUSTOMER_KEY = 'cbe_cart_cleared_customer_id';
   const BASE_DELIVERY_FEE = 10;
   const FREE_DISTANCE_KM = 10;
   const EXTRA_KM_DELIVERY_FEE = 2;
@@ -899,6 +901,59 @@ button {
     syncTimer: null
   };
 
+  function getCartCustomerMarkerId() {
+    return cleanText(customerMemory.identity?.docId || localStorage.getItem(CUSTOMER_MEMORY_KEYS.lastCustomer) || localStorage.getItem('cust_uid') || localStorage.getItem('customer_uid'));
+  }
+
+  function markCartClearedLocally() {
+    localStorage.setItem(CART_CLEARED_AT_KEY, new Date().toISOString());
+
+    const markerId = getCartCustomerMarkerId();
+    if (markerId) {
+      localStorage.setItem(CART_CLEARED_CUSTOMER_KEY, markerId);
+    }
+  }
+
+  function clearCartClearedMarker() {
+    localStorage.removeItem(CART_CLEARED_AT_KEY);
+    localStorage.removeItem(CART_CLEARED_CUSTOMER_KEY);
+  }
+
+  function toMillis(value) {
+    if (!value) return 0;
+    if (typeof value.toDate === 'function') return value.toDate().getTime() || 0;
+    if (value.seconds) return Number(value.seconds) * 1000;
+    const time = new Date(value).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function getLocalCartClearedMsForCustomer() {
+    const clearedAt = localStorage.getItem(CART_CLEARED_AT_KEY);
+    const clearedFor = cleanText(localStorage.getItem(CART_CLEARED_CUSTOMER_KEY));
+    const currentId = getCartCustomerMarkerId();
+
+    if (clearedFor && currentId && clearedFor !== currentId) return 0;
+    return toMillis(clearedAt);
+  }
+
+  function shouldBlockCloudCartRestore(data = {}) {
+    const localClearedMs = getLocalCartClearedMsForCustomer();
+    const remoteClearedMs = toMillis(data.lastCartClearedAt || data.currentCart?.clearedAt || data.cartClearedAt);
+    const clearedMs = Math.max(localClearedMs, remoteClearedMs);
+
+    if (!clearedMs) return false;
+
+    const remoteCartUpdatedMs = toMillis(
+      data.currentCart?.updatedAt ||
+      data.cartUpdatedAt ||
+      data.lastCartSyncAt ||
+      data.updatedAt
+    );
+
+    // If the remote cart is older than the latest clear marker, do not revive stale items.
+    return !remoteCartUpdatedMs || remoteCartUpdatedMs <= clearedMs + 1000;
+  }
+
   function phone10(value) {
     const digits = cleanText(value).replace(/\D/g, '');
     return digits.length > 10 ? digits.slice(-10) : digits;
@@ -983,6 +1038,8 @@ button {
     if (previousKey && previousKey !== nextKey) {
       const keysToClear = [
         CART_KEY,
+        CART_CLEARED_AT_KEY,
+        CART_CLEARED_CUSTOMER_KEY,
         'checkout_snapshot',
         'pending_order',
         'cust_address',
@@ -1198,12 +1255,23 @@ button {
     const cartItems = loadCartRaw().map(({ _cartIndex, ...item }) => item);
     const identity = customerMemory.identity || getCustomerIdentity();
 
+    const cartClearedAt = localStorage.getItem(CART_CLEARED_AT_KEY) || '';
+    const cartClearedCustomerId = localStorage.getItem(CART_CLEARED_CUSTOMER_KEY) || '';
+
     const payload = {
       updatedAt: new Date().toISOString(),
       lastCartSyncAt: new Date().toISOString(),
       lastCartSyncReason: reason,
       cartItems,
-      cartUpdatedAt: new Date().toISOString()
+      cart: cartItems,
+      currentCart: {
+        items: cartItems,
+        updatedAt: new Date().toISOString(),
+        clearedAt: cartClearedAt || ''
+      },
+      cartUpdatedAt: new Date().toISOString(),
+      lastCartClearedAt: cartClearedAt || '',
+      lastCartClearedCustomerId: cartClearedCustomerId || ''
     };
 
     if (identity) {
@@ -1228,15 +1296,21 @@ button {
     return payload;
   }
 
+  function syncCustomerMemoryNow(reason = 'cart_updated') {
+    if (!customerMemory.docRef || customerMemory.restoring) return Promise.resolve();
+
+    const payload = getCustomerMemoryPayload(reason);
+    return customerMemory.docRef.set(payload, { merge: true }).catch(error => {
+      console.warn('Customer cart memory sync failed', error);
+    });
+  }
+
   function scheduleCustomerMemorySync(reason = 'cart_updated') {
     if (!customerMemory.docRef || customerMemory.restoring) return;
 
     window.clearTimeout(customerMemory.syncTimer);
     customerMemory.syncTimer = window.setTimeout(() => {
-      const payload = getCustomerMemoryPayload(reason);
-      customerMemory.docRef.set(payload, { merge: true }).catch(error => {
-        console.warn('Customer cart memory sync failed', error);
-      });
+      syncCustomerMemoryNow(reason);
     }, 450);
   }
 
@@ -1274,10 +1348,15 @@ button {
       }
 
       const localCart = loadCartRaw();
-      const cloudCart = normalizeCloudCart(data.cartItems || data.cart || data.currentCart || []);
+      const cloudCart = normalizeCloudCart(data.cartItems || data.cart || data.currentCart?.items || data.currentCart || []);
+      const blockStaleCloudCart = shouldBlockCloudCartRestore(data);
 
-      if (!localCart.length && cloudCart.length) {
+      if (!localCart.length && cloudCart.length && !blockStaleCloudCart) {
         localStorage.setItem(CART_KEY, JSON.stringify(cloudCart));
+      }
+
+      if (!localCart.length && blockStaleCloudCart) {
+        localStorage.setItem(CART_KEY, JSON.stringify([]));
       }
 
       renderCart();
@@ -1370,6 +1449,7 @@ button {
     window.clearTimeout(customerMemory.syncTimer);
 
     localStorage.removeItem(CART_KEY);
+    markCartClearedLocally();
     localStorage.removeItem('checkout_snapshot');
     localStorage.removeItem('pending_order');
     sessionStorage.removeItem('cbe_checkout_after_address');
@@ -1591,7 +1671,14 @@ button {
       .map(({ _cartIndex, ...item }) => item);
 
     localStorage.setItem(CART_KEY, JSON.stringify(cleanCart));
-    scheduleCustomerMemorySync('cart_updated');
+
+    if (cleanCart.length) {
+      clearCartClearedMarker();
+      scheduleCustomerMemorySync('cart_updated');
+    } else {
+      markCartClearedLocally();
+      syncCustomerMemoryNow('cart_cleared_by_customer');
+    }
   }
 
   function getItemId(item, index = 0) {

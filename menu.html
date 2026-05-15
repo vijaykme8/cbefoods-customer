@@ -5073,13 +5073,24 @@ let cart = loadCart();
 
 function saveCart() {
 
+  const cleanCart = cart.filter(item => Number(item.qty || item.quantity || 0) > 0);
+
   localStorage.setItem(
     "cart",
-    JSON.stringify(cart)
+    JSON.stringify(cleanCart)
   );
 
+  if (cleanCart.length) {
+    localStorage.removeItem("cbe_cart_cleared_at");
+    localStorage.removeItem("cbe_cart_cleared_customer_id");
+  } else {
+    localStorage.setItem("cbe_cart_cleared_at", new Date().toISOString());
+    const customerId = window.CBECustomerStore?.identity?.customerId || localStorage.getItem("cbe_active_customer_id") || localStorage.getItem("cust_uid") || "";
+    if (customerId) localStorage.setItem("cbe_cart_cleared_customer_id", customerId);
+  }
+
   if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
-    window.CBECustomerStore.scheduleSync("cart");
+    window.CBECustomerStore.scheduleSync(cleanCart.length ? "cart" : "cart_cleared");
   }
 
 }
@@ -5497,6 +5508,8 @@ if (shouldAutoOpenLocationMap()) {
   const CUSTOMER_CACHE_VERSION_KEY = "cbe_customer_cache_version";
   const CUSTOMER_CACHE_VERSION = "customer-memory-v1";
   const SYNC_DELAY_MS = 700;
+  const CART_CLEARED_AT_KEY = "cbe_cart_cleared_at";
+  const CART_CLEARED_CUSTOMER_KEY = "cbe_cart_cleared_customer_id";
 
   const CUSTOMER_CACHE_KEYS = [
     "cust_saved_addresses",
@@ -5522,7 +5535,9 @@ if (shouldAutoOpenLocationMap()) {
     "cust_pending_lng",
 
     "cust_exact_geocode_cache",
-    "cart"
+    "cart",
+    CART_CLEARED_AT_KEY,
+    CART_CLEARED_CUSTOMER_KEY
   ];
 
   const PHONE_STORAGE_KEYS = [
@@ -5569,6 +5584,42 @@ if (shouldAutoOpenLocationMap()) {
     } catch (_) {
       return "";
     }
+  }
+
+  function toCustomerMillis(value) {
+    if (!value) return 0;
+    if (typeof value.toDate === "function") return value.toDate().getTime() || 0;
+    if (value.seconds) return Number(value.seconds) * 1000;
+    const time = new Date(value).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function getCartClearedMsForCustomer(identity = currentIdentity) {
+    const clearedAt = localStorage.getItem(CART_CLEARED_AT_KEY);
+    const clearedCustomerId = cleanCustomerText(localStorage.getItem(CART_CLEARED_CUSTOMER_KEY));
+
+    if (clearedCustomerId && identity?.customerId && clearedCustomerId !== identity.customerId) {
+      return 0;
+    }
+
+    return toCustomerMillis(clearedAt);
+  }
+
+  function shouldBlockRemoteCartRestore(remoteData = {}, identity = currentIdentity) {
+    const localClearedMs = getCartClearedMsForCustomer(identity);
+    const remoteClearedMs = toCustomerMillis(remoteData.lastCartClearedAt || remoteData.currentCart?.clearedAt || remoteData.cartClearedAt);
+    const clearedMs = Math.max(localClearedMs, remoteClearedMs);
+
+    if (!clearedMs) return false;
+
+    const remoteCartUpdatedMs = toCustomerMillis(
+      remoteData.currentCart?.updatedAt ||
+      remoteData.cartUpdatedAt ||
+      remoteData.lastCartSyncAt ||
+      remoteData.updatedAt
+    );
+
+    return !remoteCartUpdatedMs || remoteCartUpdatedMs <= clearedMs + 1000;
   }
 
   function readArrayFromStorage(keys) {
@@ -5678,7 +5729,14 @@ if (shouldAutoOpenLocationMap()) {
 
   function writeLocalCartItems(items) {
     if (!Array.isArray(items)) return;
-    localStorage.setItem("cart", safeStringify(items.filter(item => Number(item.qty || item.quantity || 0) > 0)));
+
+    const cleanItems = items.filter(item => Number(item.qty || item.quantity || 0) > 0);
+    localStorage.setItem("cart", safeStringify(cleanItems));
+
+    if (cleanItems.length) {
+      localStorage.removeItem(CART_CLEARED_AT_KEY);
+      localStorage.removeItem(CART_CLEARED_CUSTOMER_KEY);
+    }
   }
 
   function normalizePhoneForId(phone) {
@@ -5821,6 +5879,9 @@ if (shouldAutoOpenLocationMap()) {
 
   function buildLocalCustomerPayload(reason = "sync") {
     const now = new Date().toISOString();
+    const cartItems = getLocalCartItems();
+    const cartClearedAt = localStorage.getItem(CART_CLEARED_AT_KEY) || "";
+    const cartClearedCustomerId = localStorage.getItem(CART_CLEARED_CUSTOMER_KEY) || "";
 
     return {
       uid: currentIdentity?.uid || "",
@@ -5834,10 +5895,16 @@ if (shouldAutoOpenLocationMap()) {
       savedAddresses: getLocalSavedAddresses(),
       activeDeliveryLocation: getLocalActiveDeliveryLocation(),
 
+      cartItems,
+      cart: cartItems,
       currentCart: {
-        items: getLocalCartItems(),
-        updatedAt: now
+        items: cartItems,
+        updatedAt: now,
+        clearedAt: cartClearedAt
       },
+      cartUpdatedAt: now,
+      lastCartClearedAt: cartClearedAt,
+      lastCartClearedCustomerId: cartClearedCustomerId,
 
       cacheVersion: CUSTOMER_CACHE_VERSION,
       updatedAt: now,
@@ -5900,10 +5967,20 @@ if (shouldAutoOpenLocationMap()) {
       const localCartItems = getLocalCartItems();
       const remoteCartItems = Array.isArray(remoteData.currentCart?.items)
         ? remoteData.currentCart.items.filter(Boolean)
-        : [];
+        : Array.isArray(remoteData.cartItems)
+          ? remoteData.cartItems.filter(Boolean)
+          : Array.isArray(remoteData.cart)
+            ? remoteData.cart.filter(Boolean)
+            : [];
 
-      if (!localCartItems.length && remoteCartItems.length) {
+      const blockStaleRemoteCart = shouldBlockRemoteCartRestore(remoteData, identity);
+
+      if (!localCartItems.length && remoteCartItems.length && !blockStaleRemoteCart) {
         writeLocalCartItems(remoteCartItems);
+      }
+
+      if (!localCartItems.length && blockStaleRemoteCart) {
+        writeLocalCartItems([]);
       }
 
       refreshCustomerMemoryUI();
