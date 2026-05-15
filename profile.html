@@ -46,7 +46,7 @@ const PROFILE_KEYS=['TIFFIN_CUSTOMER_PROFILE','CBE_CUSTOMER_PROFILE','customerPr
 const SAVED_ADDRESS_LIST_KEYS=['cust_saved_addresses','delivery_saved_addresses','TIFFIN_SAVED_ADDRESSES','tiffin_saved_addresses','CBE_SAVED_ADDRESSES','cbe_saved_addresses','savedAddresses','saved_addresses','savedDeliveryAddresses','delivery_addresses','TIFFIN_CUSTOMER_ADDRESSES'];
 const ACTIVE_LOCATION_KEYS=['cust_location_details','delivery_location_details','cust_location','delivery_location','customer_location','user_location','userLocation','deliveryLocation','current_location','currentLocation','geo_location','geoLocation','location','TIFFIN_ACTIVE_DELIVERY_LOCATION','activeDeliveryLocation','selectedDeliveryAddress','currentDeliveryAddress','TIFFIN_SELECTED_ADDRESS','cbe_active_delivery_location','active_delivery_location'];
 const TEXT_FALLBACK_KEYS=['cust_address','customer_address','delivery_address','deliveryAddress','cust_full_address','delivery_full_address','selected_address','selectedAddress','user_address','address','cust_location_name','cust_location_address','current_address','currentAddress'];
-const ORDER_KEYS=['TIFFIN_ORDERS','TIFFIN_CUSTOMER_ORDERS','customerOrders','orders','cbeOrders','pastOrders','TIFFIN_ORDER_HISTORY'];
+const ORDER_KEYS=['order_history','current_order','TIFFIN_ORDERS','TIFFIN_CUSTOMER_ORDERS','customerOrders','orders','cbeOrders','pastOrders','TIFFIN_ORDER_HISTORY'];
 const $=s=>document.querySelector(s);const els={profileName:$('#profileName'),profilePhone:$('#profilePhone'),nameFieldValue:$('#nameFieldValue'),phoneDigits:$('#phoneDigits'),avatarCircle:$('#avatarCircle'),avatarButton:$('#avatarButton'),avatarInput:$('#avatarInput'),savedAddressList:$('#savedAddressList'),pastOrdersList:$('#pastOrdersList'),nameSheet:$('#nameSheet'),nameInput:$('#nameInput'),toast:$('#toast'),menuPopover:$('#menuPopover')};
 let profile=loadProfile();
 document.addEventListener('DOMContentLoaded',init);
@@ -58,7 +58,7 @@ function bindEvents(){
  $('#dotMenuButton').addEventListener('click',toggleMenu);els.menuPopover.addEventListener('click',e=>{if(e.target===els.menuPopover)closeMenu()});$('#refreshProfileButton').addEventListener('click',()=>{closeMenu();refreshFromStorage();showToast('Profile refreshed')});$('#goOrdersButton').addEventListener('click',()=>{location.href='track.html'});$('#logoutButton').addEventListener('click',logout);
  window.addEventListener('pageshow',refreshFromStorage);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshFromStorage()});
 }
-function refreshFromStorage(){profile=loadProfile();renderAll()}function renderAll(){renderProfile();renderAddresses();renderPastOrders()}
+function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderPastOrders()}
 function renderProfile(){const name=cleanText(profile.name)||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<span id="avatarInitial">'+escapeHtml(getInitial(name))+'</span>'}}
 function renderAddresses(){const addresses=getSavedAddresses();els.savedAddressList.innerHTML='';if(!addresses.length){els.savedAddressList.innerHTML='<div class="empty-state">No saved address yet. Add one from the map flow.</div>';return}addresses.slice(0,6).forEach((address,index)=>{const row=document.createElement('div');row.className='address-row';row.innerHTML=`<div class="inside-wrap"><div class="address-left-group"><div class="title-with-icon">${getAddressIcon(address.type||address.title||'')}<span class="address-title-text">${escapeHtml(address.title||address.type||'Saved address')}</span></div><div class="address-line">${escapeHtml(address.line||'Address details not available')}</div></div><button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title||'address')}">${editIconSvg()}<span>Edit</span></button></div>`;row.querySelector('.edit-button').addEventListener('click',()=>{localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_ID',address.id||'');localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX',String(index));location.href='menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex='+encodeURIComponent(index)});els.savedAddressList.appendChild(row);if(index<Math.min(addresses.length,6)-1){const div=document.createElement('div');div.className='divider';els.savedAddressList.appendChild(div)}})}
 function renderPastOrders(){const orders=getPastOrders();els.pastOrdersList.innerHTML='';if(!orders.length){els.pastOrdersList.innerHTML='<div class="empty-state">No past orders yet. Completed orders will appear here.</div>';return}orders.slice(0,5).forEach(order=>{const card=document.createElement('div');card.className='item-card';card.innerHTML=`<div class="order-header-card"><div class="order-left-content"><div class="item-img">${order.image?'<img alt="Order image" src="'+escapeAttribute(order.image)+'" />':foodIconSvg()}</div><div class="item-title"><div class="restaurant-name">${escapeHtml(order.restaurantName||'Coimbatore Foods')}</div><div class="order-id">Order ID #${escapeHtml(order.id||'----')}</div></div></div></div><div class="item-list">${buildItemsHtml(order.items)}</div><div class="divider" aria-hidden="true"></div><div class="cta-time-info"><button class="view-details" type="button">View details</button><div class="time-value"><div>Order placed: ${escapeHtml(formatOrderDate(order.createdAt||order.date||order.timestamp))}</div><div class="total"><span>Total value: </span><span class="amount">₹${escapeHtml(formatMoney(order.total||order.totalPaid||order.amount||0))}</span></div></div></div>`;card.querySelector('.view-details').addEventListener('click',()=>{if(order.id)localStorage.setItem('TIFFIN_SELECTED_ORDER_ID',String(order.id));location.href='track-fullscreen.html?orderId='+encodeURIComponent(order.id||'')});els.pastOrdersList.appendChild(card)})}
@@ -95,5 +95,105 @@ function getAddressIcon(type){const t=cleanText(type).toLowerCase();if(t.include
 function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3v8M9 3v8M6 7h3M17 3v18" stroke="#8806CE" stroke-width="2" stroke-linecap="round"/><path d="M13 3c3 1.5 4 4 4 7" stroke="#8806CE" stroke-width="2" stroke-linecap="round"/></svg>`}
 })();
 </script>
+
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
+<script>
+(function syncProfilePastOrdersFromFirestore() {
+  function clean(value) { return value === null || value === undefined ? "" : String(value).trim(); }
+  function parseJSON(value, fallback) { try { return JSON.parse(value); } catch (_) { return fallback; } }
+  function phone10(value) {
+    const digits = clean(value).replace(/\D/g, "");
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+  function timestampToISO(value) {
+    if (!value) return "";
+    if (typeof value.toDate === "function") return value.toDate().toISOString();
+    if (value.seconds) return new Date(value.seconds * 1000).toISOString();
+    if (typeof value === "string") return value;
+    return "";
+  }
+  function normalizeOrder(id, data) {
+    if (!data) return null;
+    return {
+      id,
+      ...data,
+      createdAt: timestampToISO(data.createdAt) || data.createdAtClient || data.createdAt || "",
+      updatedAt: timestampToISO(data.updatedAt) || data.updatedAt || "",
+      deliveredAt: timestampToISO(data.deliveredAt) || data.deliveredAt || "",
+      items: Array.isArray(data.items) ? data.items : [],
+      total: Number(data.totals?.total ?? data.total ?? data.totalPaid ?? data.amount ?? 0),
+      restaurantName: data.restaurantName || data.storeName || "Coimbatore Foods"
+    };
+  }
+  function saveAndRefresh(orders) {
+    try {
+      localStorage.setItem("order_history", JSON.stringify(orders));
+      localStorage.setItem("TIFFIN_ORDER_HISTORY", JSON.stringify(orders));
+    } catch (_) {}
+    if (typeof window.CBEProfileRefresh === "function") window.CBEProfileRefresh();
+    else if (typeof window.renderOrders === "function") window.renderOrders();
+  }
+  function boot() {
+    if (!window.firebase || !window.TIFFIN_FIREBASE_CONFIG || !window.TIFFIN_FIREBASE_CONFIG.apiKey) {
+      if (typeof window.CBEProfileRefresh === "function") window.CBEProfileRefresh();
+      return;
+    }
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+      auth.onAuthStateChanged(user => {
+        const localUid = clean(localStorage.getItem("cust_uid"));
+        const customerId = clean(user?.uid || localUid);
+        const customerPhone = phone10(user?.phoneNumber || localStorage.getItem("cust_phone") || localStorage.getItem("customer_phone") || "");
+        if (!customerId && !customerPhone) {
+          if (typeof window.CBEProfileRefresh === "function") window.CBEProfileRefresh();
+          return;
+        }
+        let latestByUid = [];
+        let latestByPhone = [];
+        function mergeAndRender() {
+          const map = new Map();
+          [...latestByPhone, ...latestByUid].forEach(order => {
+            if (!order || !order.id) return;
+            map.set(order.id, order);
+          });
+          const orders = Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+          saveAndRefresh(orders);
+        }
+        if (customerId) {
+          db.collection("orders")
+            .where("customerId", "==", customerId)
+            .orderBy("createdAt", "desc")
+            .limit(30)
+            .onSnapshot(snapshot => {
+              latestByUid = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
+              mergeAndRender();
+            }, error => console.warn("Profile order history UID sync failed", error));
+        }
+        if (customerPhone) {
+          db.collection("orders")
+            .where("customerPhone", "==", customerPhone)
+            .orderBy("createdAt", "desc")
+            .limit(30)
+            .onSnapshot(snapshot => {
+              latestByPhone = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
+              mergeAndRender();
+            }, error => console.warn("Profile order history phone sync failed", error));
+        }
+      });
+    } catch (error) {
+      console.warn("Profile order history sync failed", error);
+      if (typeof window.CBEProfileRefresh === "function") window.CBEProfileRefresh();
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot, { once: true });
+  else boot();
+})();
+</script>
+
 </body>
 </html>
