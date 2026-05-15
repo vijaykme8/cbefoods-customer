@@ -3192,8 +3192,19 @@ function saveLocationState(locationState) {
     savedAt: new Date().toISOString()
   };
 
-  localStorage.setItem("cust_location_details", JSON.stringify(savedLocation));
-  localStorage.setItem("delivery_location_details", JSON.stringify(savedLocation));
+  const serializedLocation = JSON.stringify(savedLocation);
+
+  localStorage.setItem("cust_location_details", serializedLocation);
+  localStorage.setItem("delivery_location_details", serializedLocation);
+
+  /*
+    Customer-memory compatibility keys:
+    keep the current menu/cart keys, but also expose one clear active location key
+    for profile.html and future shared customer storage.
+  */
+  localStorage.setItem("activeDeliveryLocation", serializedLocation);
+  localStorage.setItem("customer_active_delivery_location", serializedLocation);
+
   localStorage.setItem("cust_address", shortAddress);
   localStorage.setItem("delivery_address", shortAddress);
   localStorage.setItem("cust_full_address", fullAddress);
@@ -3213,6 +3224,10 @@ function saveLocationState(locationState) {
 
   renderDeliveryLocation(false);
   renderSavedAddressList();
+
+  if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
+    window.CBECustomerStore.scheduleSync("active_delivery_location");
+  }
 }
 
 function escapeHtml(value) {
@@ -3228,6 +3243,7 @@ function getSavedAddressesArray() {
   const savedList =
     parseSavedValue(localStorage.getItem("cust_saved_addresses")) ||
     parseSavedValue(localStorage.getItem("delivery_saved_addresses")) ||
+    parseSavedValue(localStorage.getItem("savedAddresses")) ||
     [];
 
   return Array.isArray(savedList) ? savedList.filter(Boolean) : [];
@@ -3235,8 +3251,21 @@ function getSavedAddressesArray() {
 
 function saveSavedAddressesArray(addresses) {
   const safeList = Array.isArray(addresses) ? addresses.filter(Boolean) : [];
-  localStorage.setItem("cust_saved_addresses", JSON.stringify(safeList));
-  localStorage.setItem("delivery_saved_addresses", JSON.stringify(safeList));
+  const serializedList = JSON.stringify(safeList);
+
+  localStorage.setItem("cust_saved_addresses", serializedList);
+  localStorage.setItem("delivery_saved_addresses", serializedList);
+
+  /*
+    Customer-memory compatibility key:
+    profile.html and future shared customer storage can read the same saved addresses
+    without creating a separate address system.
+  */
+  localStorage.setItem("savedAddresses", serializedList);
+
+  if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
+    window.CBECustomerStore.scheduleSync("saved_addresses");
+  }
 }
 
 function getSavedAddressKey(address) {
@@ -5045,6 +5074,10 @@ function saveCart() {
     JSON.stringify(cart)
   );
 
+  if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
+    window.CBECustomerStore.scheduleSync("cart");
+  }
+
 }
 
 function getCartSummary() {
@@ -5440,6 +5473,537 @@ if (shouldAutoOpenLocationMap()) {
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
 <script src="firebase-mvp.js"></script>
+
+<script>
+(function installCBECustomerStore() {
+  /*
+    Customer memory foundation
+    ----------------------------------------
+    Phone login / Firebase UID = customer identity.
+    Firebase = real customer memory.
+    localStorage = fast page cache only.
+
+    This script is intentionally UI-safe:
+    - no layout changes
+    - no track/order changes
+    - no unpaid order reading/writing
+  */
+
+  const CUSTOMER_ID_KEY = "cbe_active_customer_id";
+  const CUSTOMER_CACHE_VERSION_KEY = "cbe_customer_cache_version";
+  const CUSTOMER_CACHE_VERSION = "customer-memory-v1";
+  const SYNC_DELAY_MS = 700;
+
+  const CUSTOMER_CACHE_KEYS = [
+    "cust_saved_addresses",
+    "delivery_saved_addresses",
+    "savedAddresses",
+
+    "cust_location_details",
+    "delivery_location_details",
+    "activeDeliveryLocation",
+    "customer_active_delivery_location",
+
+    "cust_address",
+    "delivery_address",
+    "cust_full_address",
+    "delivery_full_address",
+    "cust_location",
+    "cust_lat",
+    "cust_lng",
+
+    "cust_pending_location_details",
+    "delivery_pending_location_details",
+    "cust_pending_lat",
+    "cust_pending_lng",
+
+    "cust_exact_geocode_cache",
+    "cart"
+  ];
+
+  const PHONE_STORAGE_KEYS = [
+    "customer_phone",
+    "cust_phone",
+    "cbe_customer_phone",
+    "tiffin_customer_phone",
+    "loggedInPhone",
+    "logged_in_phone",
+    "phoneNumber",
+    "phone_number",
+    "mobile",
+    "user_phone"
+  ];
+
+  let firestoreDb = null;
+  let currentIdentity = null;
+  let syncTimer = 0;
+  let isRestoringRemote = false;
+  let lastSyncedSnapshot = "";
+
+  function cleanCustomerText(value) {
+    if (value === null || value === undefined) return "";
+    return String(value).trim();
+  }
+
+  function safeParseCustomerJson(value, fallbackValue = null) {
+    if (!value) return fallbackValue;
+
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    try {
+      return JSON.parse(value);
+    } catch (_) {
+      return fallbackValue;
+    }
+  }
+
+  function safeStringify(value) {
+    try {
+      return JSON.stringify(value);
+    } catch (_) {
+      return "";
+    }
+  }
+
+  function readArrayFromStorage(keys) {
+    for (const key of keys) {
+      const parsed = safeParseCustomerJson(localStorage.getItem(key), null);
+      if (Array.isArray(parsed)) {
+        return parsed.filter(Boolean);
+      }
+    }
+
+    return [];
+  }
+
+  function readObjectFromStorage(keys) {
+    for (const key of keys) {
+      const parsed = safeParseCustomerJson(localStorage.getItem(key), null);
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        return parsed;
+      }
+    }
+
+    return null;
+  }
+
+  function getLocalSavedAddresses() {
+    return readArrayFromStorage([
+      "cust_saved_addresses",
+      "delivery_saved_addresses",
+      "savedAddresses"
+    ]);
+  }
+
+  function writeLocalSavedAddresses(addresses) {
+    const safeAddresses = Array.isArray(addresses) ? addresses.filter(Boolean) : [];
+    const serialized = safeStringify(safeAddresses);
+
+    if (!serialized) return;
+
+    localStorage.setItem("cust_saved_addresses", serialized);
+    localStorage.setItem("delivery_saved_addresses", serialized);
+    localStorage.setItem("savedAddresses", serialized);
+  }
+
+  function getLocalActiveDeliveryLocation() {
+    return readObjectFromStorage([
+      "activeDeliveryLocation",
+      "customer_active_delivery_location",
+      "cust_location_details",
+      "delivery_location_details",
+      "cust_location"
+    ]);
+  }
+
+  function writeLocalActiveDeliveryLocation(location) {
+    if (!location || typeof location !== "object") return;
+
+    const serialized = safeStringify(location);
+    if (!serialized) return;
+
+    localStorage.setItem("activeDeliveryLocation", serialized);
+    localStorage.setItem("customer_active_delivery_location", serialized);
+    localStorage.setItem("cust_location_details", serialized);
+    localStorage.setItem("delivery_location_details", serialized);
+
+    const shortAddress = cleanCustomerText(
+      location.displayAddress ||
+      location.display ||
+      localStorage.getItem("cust_address")
+    );
+
+    const fullAddress = cleanCustomerText(
+      location.fullAddress ||
+      location.full ||
+      location.address ||
+      localStorage.getItem("cust_full_address")
+    );
+
+    if (shortAddress) {
+      localStorage.setItem("cust_address", shortAddress);
+      localStorage.setItem("delivery_address", shortAddress);
+    }
+
+    if (fullAddress) {
+      localStorage.setItem("cust_full_address", fullAddress);
+      localStorage.setItem("delivery_full_address", fullAddress);
+    }
+
+    if (location.lat && location.lng) {
+      localStorage.setItem("cust_location", serialized);
+      localStorage.setItem("cust_lat", String(location.lat));
+      localStorage.setItem("cust_lng", String(location.lng));
+    }
+  }
+
+  function getLocalCartItems() {
+    const cartValue = safeParseCustomerJson(localStorage.getItem("cart"), []);
+    if (Array.isArray(cartValue)) {
+      return cartValue.filter(item => item && Number(item.qty || item.quantity || 0) > 0);
+    }
+
+    if (cartValue && typeof cartValue === "object") {
+      return Object.values(cartValue).filter(item => item && Number(item.qty || item.quantity || 0) > 0);
+    }
+
+    return [];
+  }
+
+  function writeLocalCartItems(items) {
+    if (!Array.isArray(items)) return;
+    localStorage.setItem("cart", safeStringify(items.filter(item => Number(item.qty || item.quantity || 0) > 0)));
+  }
+
+  function normalizePhoneForId(phone) {
+    const digits = cleanCustomerText(phone).replace(/\D/g, "");
+    if (!digits) return "";
+    return `phone_${digits}`;
+  }
+
+  function readPhoneFromLocalStorage() {
+    for (const key of PHONE_STORAGE_KEYS) {
+      const value = cleanCustomerText(localStorage.getItem(key));
+      if (value) return value;
+    }
+
+    const authValue = safeParseCustomerJson(localStorage.getItem("cust_auth_user"), null);
+    if (authValue && typeof authValue === "object") {
+      return cleanCustomerText(authValue.phoneNumber || authValue.phone || authValue.mobile);
+    }
+
+    return "";
+  }
+
+  function getFirebaseAuthUser() {
+    try {
+      if (!window.firebase || !firebase.auth) return null;
+      return firebase.auth().currentUser || null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function buildCustomerIdentity() {
+    const authUser = getFirebaseAuthUser();
+    const firebaseUid = cleanCustomerText(authUser?.uid);
+    const firebasePhone = cleanCustomerText(authUser?.phoneNumber);
+    const phoneNumber = firebasePhone || readPhoneFromLocalStorage();
+
+    const customerId = firebaseUid || normalizePhoneForId(phoneNumber);
+
+    if (!customerId) {
+      return null;
+    }
+
+    return {
+      customerId,
+      uid: firebaseUid,
+      phoneNumber,
+      source: firebaseUid ? "firebase_auth_uid" : "phone_local_storage"
+    };
+  }
+
+  function getFirestoreDb() {
+    if (firestoreDb) return firestoreDb;
+
+    try {
+      if (!window.firebase || !firebase.firestore) return null;
+      firestoreDb = firebase.firestore();
+      return firestoreDb;
+    } catch (error) {
+      console.log("Customer memory Firestore unavailable:", error);
+      return null;
+    }
+  }
+
+  function makeAddressMergeKey(address) {
+    if (!address || typeof address !== "object") return "";
+
+    return [
+      cleanCustomerText(address.id),
+      cleanCustomerText(address.label || address.title),
+      cleanCustomerText(address.fullAddress || address.full || address.displayAddress || address.display),
+      cleanCustomerText(address.doorNo),
+      cleanCustomerText(address.lat),
+      cleanCustomerText(address.lng)
+    ].join("|").toLowerCase();
+  }
+
+  function mergeSavedAddresses(primaryList, secondaryList) {
+    const merged = [];
+    const seen = new Set();
+
+    [primaryList, secondaryList].forEach(list => {
+      if (!Array.isArray(list)) return;
+
+      list.filter(Boolean).forEach(address => {
+        const key = makeAddressMergeKey(address);
+        const idKey = cleanCustomerText(address?.id).toLowerCase();
+
+        if ((key && seen.has(key)) || (idKey && seen.has(`id:${idKey}`))) return;
+
+        if (key) seen.add(key);
+        if (idKey) seen.add(`id:${idKey}`);
+
+        merged.push(address);
+      });
+    });
+
+    return merged;
+  }
+
+  function clearGenericCustomerCacheForDifferentUser() {
+    CUSTOMER_CACHE_KEYS.forEach(key => {
+      try {
+        localStorage.removeItem(key);
+      } catch (_) {}
+    });
+  }
+
+  function refreshCustomerMemoryUI() {
+    try {
+      if (typeof window.renderDeliveryLocation === "function") {
+        window.renderDeliveryLocation(false);
+      }
+    } catch (_) {}
+
+    try {
+      if (typeof window.renderSavedAddressList === "function") {
+        window.renderSavedAddressList();
+      }
+    } catch (_) {}
+
+    try {
+      if (typeof window.renderAllCartButtons === "function") {
+        window.renderAllCartButtons();
+      }
+    } catch (_) {}
+
+    try {
+      if (typeof window.updateCartCount === "function") {
+        window.updateCartCount();
+      }
+    } catch (_) {}
+
+    try {
+      if (window.CBEFloatingAddedCard && typeof window.CBEFloatingAddedCard.refresh === "function") {
+        window.CBEFloatingAddedCard.refresh();
+      }
+    } catch (_) {}
+  }
+
+  function buildLocalCustomerPayload(reason = "sync") {
+    const now = new Date().toISOString();
+
+    return {
+      uid: currentIdentity?.uid || "",
+      phoneNumber: currentIdentity?.phoneNumber || "",
+      customerId: currentIdentity?.customerId || "",
+      identitySource: currentIdentity?.source || "",
+      app: "coimbatore-foods-customer-pwa",
+      sourcePage: "menu.html",
+      syncReason: reason,
+
+      savedAddresses: getLocalSavedAddresses(),
+      activeDeliveryLocation: getLocalActiveDeliveryLocation(),
+
+      currentCart: {
+        items: getLocalCartItems(),
+        updatedAt: now
+      },
+
+      cacheVersion: CUSTOMER_CACHE_VERSION,
+      updatedAt: now,
+      lastSeenAt: now
+    };
+  }
+
+  function getCustomerDocRef(identity = currentIdentity) {
+    const db = getFirestoreDb();
+
+    if (!db || !identity || !identity.customerId) {
+      return null;
+    }
+
+    return db.collection("customers").doc(identity.customerId);
+  }
+
+  async function restoreCustomerMemoryFromFirebase(identity) {
+    const ref = getCustomerDocRef(identity);
+    if (!ref) return;
+
+    isRestoringRemote = true;
+
+    try {
+      const previousCustomerId = cleanCustomerText(localStorage.getItem(CUSTOMER_ID_KEY));
+      const isDifferentCustomer = previousCustomerId && previousCustomerId !== identity.customerId;
+
+      if (isDifferentCustomer) {
+        clearGenericCustomerCacheForDifferentUser();
+      }
+
+      localStorage.setItem(CUSTOMER_ID_KEY, identity.customerId);
+      localStorage.setItem(CUSTOMER_CACHE_VERSION_KEY, CUSTOMER_CACHE_VERSION);
+
+      const snapshot = await ref.get();
+      const remoteData = snapshot.exists ? (snapshot.data() || {}) : {};
+
+      const localAddresses = getLocalSavedAddresses();
+      const remoteAddresses = Array.isArray(remoteData.savedAddresses)
+        ? remoteData.savedAddresses.filter(Boolean)
+        : [];
+
+      const mergedAddresses = isDifferentCustomer
+        ? remoteAddresses
+        : mergeSavedAddresses(localAddresses, remoteAddresses);
+
+      if (mergedAddresses.length) {
+        writeLocalSavedAddresses(mergedAddresses);
+      }
+
+      const localActiveLocation = getLocalActiveDeliveryLocation();
+      const remoteActiveLocation = remoteData.activeDeliveryLocation && typeof remoteData.activeDeliveryLocation === "object"
+        ? remoteData.activeDeliveryLocation
+        : null;
+
+      if (!localActiveLocation && remoteActiveLocation) {
+        writeLocalActiveDeliveryLocation(remoteActiveLocation);
+      }
+
+      const localCartItems = getLocalCartItems();
+      const remoteCartItems = Array.isArray(remoteData.currentCart?.items)
+        ? remoteData.currentCart.items.filter(Boolean)
+        : [];
+
+      if (!localCartItems.length && remoteCartItems.length) {
+        writeLocalCartItems(remoteCartItems);
+      }
+
+      refreshCustomerMemoryUI();
+
+      currentIdentity = identity;
+      await syncCustomerMemoryNow("login_restore");
+
+    } catch (error) {
+      console.log("Customer memory restore skipped:", error);
+    } finally {
+      isRestoringRemote = false;
+    }
+  }
+
+  async function syncCustomerMemoryNow(reason = "manual") {
+    if (isRestoringRemote) return;
+
+    currentIdentity = buildCustomerIdentity() || currentIdentity;
+    const ref = getCustomerDocRef(currentIdentity);
+
+    if (!ref) return;
+
+    const payload = buildLocalCustomerPayload(reason);
+    const nextSnapshot = safeStringify(payload);
+
+    if (nextSnapshot && nextSnapshot === lastSyncedSnapshot) {
+      return;
+    }
+
+    try {
+      await ref.set(payload, { merge: true });
+      lastSyncedSnapshot = nextSnapshot;
+    } catch (error) {
+      console.log("Customer memory sync skipped:", error);
+    }
+  }
+
+  function scheduleSync(reason = "local_change") {
+    if (isRestoringRemote) return;
+
+    window.clearTimeout(syncTimer);
+    syncTimer = window.setTimeout(() => {
+      syncCustomerMemoryNow(reason);
+    }, SYNC_DELAY_MS);
+  }
+
+  function bootCustomerStore() {
+    currentIdentity = buildCustomerIdentity();
+
+    if (!currentIdentity) {
+      window.CBECustomerStore.status = "waiting_for_customer_identity";
+      return;
+    }
+
+    window.CBECustomerStore.status = "ready";
+    window.CBECustomerStore.identity = currentIdentity;
+
+    restoreCustomerMemoryFromFirebase(currentIdentity);
+  }
+
+  function bootWhenFirebaseIsReady() {
+    try {
+      if (window.firebase && firebase.auth && typeof firebase.auth().onAuthStateChanged === "function") {
+        let didBoot = false;
+
+        firebase.auth().onAuthStateChanged(() => {
+          if (didBoot) return;
+          didBoot = true;
+          bootCustomerStore();
+        });
+
+        window.setTimeout(() => {
+          if (didBoot) return;
+          didBoot = true;
+          bootCustomerStore();
+        }, 1200);
+
+        return;
+      }
+    } catch (_) {}
+
+    bootCustomerStore();
+  }
+
+  window.CBECustomerStore = {
+    status: "booting",
+    identity: null,
+    scheduleSync,
+    syncNow: syncCustomerMemoryNow,
+    restore: bootCustomerStore,
+    readLocal: () => buildLocalCustomerPayload("read_local")
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootWhenFirebaseIsReady, { once: true });
+  } else {
+    bootWhenFirebaseIsReady();
+  }
+
+  window.addEventListener("pagehide", () => {
+    syncCustomerMemoryNow("pagehide");
+  });
+})();
+</script>
 
 <script>
 (function forceOpenMapAddressFromCart() {
