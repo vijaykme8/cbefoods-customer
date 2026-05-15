@@ -309,6 +309,25 @@ a { color: inherit; text-decoration: none; }
   font-weight: 600;
   line-height: 24px;
 }
+
+.profile-view-details-button {
+  width: auto;
+  min-height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-radius: 0;
+  color: var(--green);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 19.6px;
+}
+
+.profile-view-details-button:active {
+  opacity: 0.82;
+}
 .order-time-value {
   width: 100%;
   min-height: 36px;
@@ -650,7 +669,7 @@ a { color: inherit; text-decoration: none; }
     const [label] = statusCopy(order);
     const isPast = type === 'past';
     const buttonHtml = isPast
-      ? `<button class="track-order-button" type="button" data-view-past-order="${escapeHtml(id)}">View details</button>`
+      ? `<button class="profile-view-details-button" type="button" data-view-past-order="${escapeHtml(id)}">View details</button>`
       : `<button class="track-order-button" type="button" data-track-order="${escapeHtml(id)}">Track order</button>`;
 
     return `
