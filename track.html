@@ -180,6 +180,41 @@ button {
 .track-order-placed-time { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-order-total-value { flex: 0 0 auto; white-space: nowrap; }
 
+/* Responsive frame sizing: Figma used 844 as design reference only.
+   The live PWA must grow with content and device height. */
+.track-page-shell {
+  padding-bottom: calc(190px + env(safe-area-inset-bottom));
+}
+#trackEmptyRaw,
+#trackAddedRaw {
+  overflow: visible !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
+}
+#trackEmptyRaw > [data-layer="Frame 82"],
+#trackAddedRaw > [data-layer="Frame 84"] {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 390px !important;
+  max-width: 100vw !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  justify-content: flex-start !important;
+  padding-bottom: calc(210px + env(safe-area-inset-bottom)) !important;
+}
+#trackEmptyRaw [data-layer="Frame 83"],
+#trackAddedRaw [data-layer="Frame 81"],
+#trackEmptyRaw [data-layer="empty-tract-content"],
+#trackAddedRaw [data-layer="empty-tract-content"] {
+  overflow: visible !important;
+}
+#trackEmptyRaw [data-layer="empty-tract-content"],
+#trackAddedRaw [data-layer="empty-tract-content"] {
+  padding-bottom: calc(140px + env(safe-area-inset-bottom)) !important;
+}
+
 
 /* Past orders section added without changing original 1.1 / 1.2 track screen structure */
 .track-past-orders-section {
@@ -194,7 +229,7 @@ button {
 }
 
 #trackEmptyRaw .track-past-orders-section {
-  margin-top: 56px;
+  margin-top: 76px;
 }
 
 .track-past-orders-title {
@@ -616,7 +651,6 @@ button {
   </section>
 </main>
 
-<section id="trackPastOrdersMount" class="track-past-orders-mount" aria-label="Past orders"></section>
 
 <div id="bottomNavMount"></div>
 <script src="components/bottom-nav.js?v=menunav1"></script>
@@ -871,12 +905,16 @@ button {
   }
 
   function renderPastOrdersForVisibleState() {
-    const mount = document.getElementById('trackPastOrdersMount');
-    if (!mount) return;
-
     document.querySelectorAll('[data-track-past-orders-section]').forEach(section => section.remove());
-    mount.innerHTML = '';
-    mount.appendChild(buildPastOrdersSection());
+
+    const targetRoot = addedScreen.classList.contains('is-active')
+      ? document.getElementById('trackAddedRaw')
+      : document.getElementById('trackEmptyRaw');
+
+    const content = targetRoot?.querySelector('[data-layer="empty-tract-content"]');
+    if (!content) return;
+
+    content.appendChild(buildPastOrdersSection());
   }
 
   function getItems(order) {
