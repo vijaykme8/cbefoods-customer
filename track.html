@@ -433,6 +433,8 @@ a { color: inherit; text-decoration: none; }
 
   const ACTIVE_EXCLUDED = new Set(['delivered', 'completed', 'cancelled', 'canceled', 'payment_failed']);
   const PAST_STATUSES = new Set(['delivered', 'completed', 'cancelled', 'canceled', 'payment_failed']);
+  const PRE_PAYMENT_STATUSES = new Set(['checkout_ready', 'payment_pending', 'pending_payment', 'awaiting_payment', 'payment_initiated']);
+  const BLOCKED_PAYMENT_STATUSES = new Set(['pending', 'unpaid', 'failed', 'cancelled', 'canceled', 'created']);
 
   function readJSON(key) {
     try {
@@ -461,8 +463,7 @@ a { color: inherit; text-decoration: none; }
       'TIFFIN_CUSTOMER_ORDERS',
       'customerOrders',
       'pastOrders',
-      'TIFFIN_ORDER_HISTORY',
-      'pending_order'
+      'TIFFIN_ORDER_HISTORY'
     ];
 
     const orders = [];
@@ -512,6 +513,33 @@ a { color: inherit; text-decoration: none; }
       .replace(/[\s-]+/g, '_');
   }
 
+  function getPaymentStatus(order) {
+    return clean(order?.paymentStatus || order?.payment_status || order?.payment?.status || order?.razorpayStatus || '')
+      .toLowerCase()
+      .replace(/[\s-]+/g, '_');
+  }
+
+  function isPrePaymentOrder(order) {
+    const status = getStatus(order);
+    const paymentStatus = getPaymentStatus(order);
+
+    if (PRE_PAYMENT_STATUSES.has(status)) return true;
+    if (BLOCKED_PAYMENT_STATUSES.has(paymentStatus)) return true;
+
+    // Cart creates checkout snapshots before Razorpay is paid. Those must never appear in Track orders.
+    if (order?.receipt && status === 'checkout_ready' && !['paid', 'success', 'captured'].includes(paymentStatus)) return true;
+
+    return false;
+  }
+
+  function cleanupUnpaidCheckoutState() {
+    const pending = readJSON('pending_order');
+    if (pending && isPrePaymentOrder(pending)) localStorage.removeItem('pending_order');
+
+    const checkout = readJSON('checkout_snapshot');
+    if (checkout && isPrePaymentOrder(checkout)) localStorage.removeItem('checkout_snapshot');
+  }
+
   function isPastOrder(order) {
     const status = getStatus(order);
     return PAST_STATUSES.has(status) || Boolean(order?.deliveredAt || order?.completedAt || order?.cancelledAt || order?.canceledAt);
@@ -520,6 +548,7 @@ a { color: inherit; text-decoration: none; }
   function getActiveOrders() {
     const seen = new Set();
     return getAllOrderCandidates()
+      .filter(order => !isPrePaymentOrder(order))
       .filter(order => !ACTIVE_EXCLUDED.has(getStatus(order)))
       .filter(order => {
         const id = getOrderId(order);
@@ -534,6 +563,7 @@ a { color: inherit; text-decoration: none; }
     const activeIds = new Set(getActiveOrders().map(getOrderId));
     const seen = new Set();
     return getAllOrderCandidates()
+      .filter(order => !isPrePaymentOrder(order))
       .filter(isPastOrder)
       .filter(order => !activeIds.has(getOrderId(order)))
       .filter(order => {
@@ -707,6 +737,7 @@ a { color: inherit; text-decoration: none; }
   }
 
   function render() {
+    cleanupUnpaidCheckoutState();
     const activeOrders = getActiveOrders();
     const pastOrders = getPastOrders();
 
@@ -763,7 +794,8 @@ a { color: inherit; text-decoration: none; }
       localStorage.getItem('customer_orders') || '',
       localStorage.getItem('TIFFIN_ORDERS') || '',
       localStorage.getItem('TIFFIN_CUSTOMER_ORDERS') || '',
-      localStorage.getItem('pending_order') || ''
+      localStorage.getItem('pending_order') || '',
+      localStorage.getItem('checkout_snapshot') || ''
     ].join('|');
     if (snapshot !== lastSnapshot) {
       lastSnapshot = snapshot;
