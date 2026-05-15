@@ -1453,16 +1453,19 @@ button {
   function openRazorpayPayment(snapshot) {
     const key = getRazorpayKeyId();
 
-    localStorage.setItem('checkout_snapshot', JSON.stringify(snapshot));
-    localStorage.setItem('pending_order', JSON.stringify(snapshot));
+    // Do not store unpaid payment attempts as orders. Only save after Razorpay success.
 
     if (!key) {
+      localStorage.removeItem('pending_order');
+      localStorage.removeItem('checkout_snapshot');
       setPlaceOrderLoading(false);
       showToast('Razorpay key is missing. Add your Razorpay key before testing payment.');
       return;
     }
 
     if (!window.Razorpay) {
+      localStorage.removeItem('pending_order');
+      localStorage.removeItem('checkout_snapshot');
       setPlaceOrderLoading(false);
       showToast('Razorpay checkout did not load. Check internet and try again.');
       return;
@@ -1492,6 +1495,8 @@ button {
       },
       modal: {
         ondismiss() {
+          localStorage.removeItem('pending_order');
+          localStorage.removeItem('checkout_snapshot');
           setPlaceOrderLoading(false);
           showToast('Payment was closed. Your order is not placed yet.');
         }

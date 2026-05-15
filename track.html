@@ -180,41 +180,6 @@ button {
 .track-order-placed-time { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-order-total-value { flex: 0 0 auto; white-space: nowrap; }
 
-/* Responsive frame sizing: Figma used 844 as design reference only.
-   The live PWA must grow with content and device height. */
-.track-page-shell {
-  padding-bottom: calc(190px + env(safe-area-inset-bottom));
-}
-#trackEmptyRaw,
-#trackAddedRaw {
-  overflow: visible !important;
-  min-height: 100dvh !important;
-  height: auto !important;
-  padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
-}
-#trackEmptyRaw > [data-layer="Frame 82"],
-#trackAddedRaw > [data-layer="Frame 84"] {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  width: 390px !important;
-  max-width: 100vw !important;
-  min-height: 100dvh !important;
-  height: auto !important;
-  justify-content: flex-start !important;
-  padding-bottom: calc(210px + env(safe-area-inset-bottom)) !important;
-}
-#trackEmptyRaw [data-layer="Frame 83"],
-#trackAddedRaw [data-layer="Frame 81"],
-#trackEmptyRaw [data-layer="empty-tract-content"],
-#trackAddedRaw [data-layer="empty-tract-content"] {
-  overflow: visible !important;
-}
-#trackEmptyRaw [data-layer="empty-tract-content"],
-#trackAddedRaw [data-layer="empty-tract-content"] {
-  padding-bottom: calc(140px + env(safe-area-inset-bottom)) !important;
-}
-
 
 /* Past orders section added without changing original 1.1 / 1.2 track screen structure */
 .track-past-orders-section {
@@ -229,7 +194,7 @@ button {
 }
 
 #trackEmptyRaw .track-past-orders-section {
-  margin-top: 76px;
+  margin-top: 56px;
 }
 
 .track-past-orders-title {
@@ -454,32 +419,6 @@ button {
   text-align: center;
 }
 
-
-/* Past orders are mounted outside raw Figma frames so they can scroll. */
-.track-past-orders-mount {
-  width: 390px;
-  max-width: 100vw;
-  margin: 0 auto;
-  padding: 76px 24px calc(124px + env(safe-area-inset-bottom, 0px));
-  background: #FDFDFF;
-}
-
-.track-past-orders-mount:empty {
-  display: none;
-}
-
-.track-past-orders-mount .track-past-orders-section {
-  width: 342px;
-  max-width: calc(100vw - 48px);
-  margin: 0 auto;
-}
-
-@media (max-width: 389px) {
-  .track-past-orders-mount {
-    width: 100%;
-  }
-}
-
 </style>
 </head>
 
@@ -651,7 +590,6 @@ button {
   </section>
 </main>
 
-
 <div id="bottomNavMount"></div>
 <script src="components/bottom-nav.js?v=menunav1"></script>
 
@@ -718,8 +656,6 @@ button {
   }
 
   function getOrders() {
-    localStorage.removeItem('pending_order');
-    localStorage.removeItem('checkout_snapshot');
     const orders = [];
     const current = readJSON('current_order');
     const history = normalizeOrders(readJSON('order_history'));
@@ -907,14 +843,12 @@ button {
   function renderPastOrdersForVisibleState() {
     document.querySelectorAll('[data-track-past-orders-section]').forEach(section => section.remove());
 
-    const targetRoot = addedScreen.classList.contains('is-active')
-      ? document.getElementById('trackAddedRaw')
-      : document.getElementById('trackEmptyRaw');
+    const target = addedScreen.classList.contains('is-active')
+      ? document.querySelector('#trackAddedRaw [data-layer="empty-tract-content"]')
+      : document.querySelector('#trackEmptyRaw [data-layer="empty-tract-content"]');
 
-    const content = targetRoot?.querySelector('[data-layer="empty-tract-content"]');
-    if (!content) return;
-
-    content.appendChild(buildPastOrdersSection());
+    if (!target) return;
+    target.appendChild(buildPastOrdersSection());
   }
 
   function getItems(order) {
@@ -1267,7 +1201,7 @@ button {
   window.renderOrders = render;
 
   window.addEventListener('storage', function(event) {
-    if (['current_order', 'order_history', 'previous_orders', 'orders', 'customer_orders', 'pending_order', 'checkout_snapshot'].includes(event.key)) render();
+    if (['current_order', 'order_history', 'previous_orders', 'orders', 'customer_orders'].includes(event.key)) render();
   });
 
   render();
@@ -1279,9 +1213,7 @@ button {
       localStorage.getItem('order_history') || '',
       localStorage.getItem('previous_orders') || '',
       localStorage.getItem('orders') || '',
-      localStorage.getItem('customer_orders') || '',
-      localStorage.getItem('pending_order') || '',
-      localStorage.getItem('checkout_snapshot') || ''
+      localStorage.getItem('customer_orders') || ''
     ].join('|');
 
     if (snapshot !== lastSnapshot) {
