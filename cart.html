@@ -1362,6 +1362,37 @@ button {
     });
   }
 
+  function clearCartAfterPaidOrder(order = {}) {
+    /*
+      Payment success must clear BOTH local cache and Firebase customer memory.
+      Otherwise cart.html can restore old cartItems from customers/{uid} after redirect/refresh.
+    */
+    window.clearTimeout(customerMemory.syncTimer);
+
+    localStorage.removeItem(CART_KEY);
+    localStorage.removeItem('checkout_snapshot');
+    localStorage.removeItem('pending_order');
+    sessionStorage.removeItem('cbe_checkout_after_address');
+
+    if (!customerMemory.docRef) return;
+
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
+
+    customerMemory.docRef.set({
+      cartItems: [],
+      cart: [],
+      currentCart: [],
+      cartUpdatedAt: new Date().toISOString(),
+      lastCartClearedAt: new Date().toISOString(),
+      lastCartSyncAt: new Date().toISOString(),
+      lastCartSyncReason: 'payment_success_cart_cleared',
+      lastOrderId: orderId || firebase.firestore.FieldValue.delete?.() || '',
+      updatedAt: new Date().toISOString()
+    }, { merge: true }).catch(error => {
+      console.warn('Customer cart clear sync failed', error);
+    });
+  }
+
 
 
   function getNumberValue(value) {
@@ -1997,11 +2028,7 @@ button {
     }
 
     saveOrderToCustomerMemory(order);
-
-    localStorage.removeItem(CART_KEY);
-    localStorage.removeItem('checkout_snapshot');
-    localStorage.removeItem('pending_order');
-    sessionStorage.removeItem('cbe_checkout_after_address');
+    clearCartAfterPaidOrder(order);
     renderCart();
 
     window.location.href = 'order_placed.html';
