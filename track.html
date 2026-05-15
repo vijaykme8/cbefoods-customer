@@ -179,6 +179,246 @@ button {
 #trackAddedRaw [data-layer="time & value"] { flex-direction: row !important; align-items: center !important; justify-content: space-between !important; gap: 8px !important; flex-wrap: nowrap !important; }
 .track-order-placed-time { min-width: 0; flex: 1 1 auto; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .track-order-total-value { flex: 0 0 auto; white-space: nowrap; }
+
+
+/* Past orders section added without changing original 1.1 / 1.2 track screen structure */
+.track-past-orders-section {
+  width: 342px;
+  max-width: calc(100vw - 48px);
+  margin-top: 76px;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+#trackEmptyRaw .track-past-orders-section {
+  margin-top: 56px;
+}
+
+.track-past-orders-title {
+  width: 100%;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 19.60px;
+}
+
+.track-past-orders-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.track-past-order-card {
+  width: 100%;
+  padding: 4px;
+  background: #FDFDFF;
+  border: 1px solid rgba(18, 19, 15, 0.12);
+  box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.06);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.track-past-order-header {
+  width: 100%;
+  min-height: 54px;
+  padding: 12px;
+  background: rgba(18, 19, 15, 0.04);
+  border-radius: 10px 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.track-past-left {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-past-shop-icon {
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(136, 6, 206, 0.14), rgba(8, 160, 69, 0.14)), #F0EEF4;
+  display: grid;
+  place-items: center;
+  color: #8806CE;
+  flex: 0 0 auto;
+}
+
+.track-past-title-wrap {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.track-past-restaurant {
+  color: #12130F;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 14.40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-past-order-id {
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 14.40px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-past-status {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #08A045;
+  font-size: 12px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 14.40px;
+  letter-spacing: 0.24px;
+  white-space: nowrap;
+}
+
+.track-past-status-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 40px;
+  background: #08A045;
+  display: grid;
+  place-items: center;
+  color: #FDFDFF;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.track-past-items {
+  width: 100%;
+  padding: 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  color: #000000;
+  font-size: 10px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.track-past-item-chip {
+  min-height: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.track-past-item-count {
+  min-width: 20px;
+  height: 20px;
+  padding: 4px;
+  background: rgba(18, 19, 15, 0.06);
+  border-radius: 30px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  color: #000000;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.track-past-divider {
+  width: 100%;
+  height: 1px;
+  background: rgba(18, 19, 15, 0.12);
+}
+
+.track-past-cta-time {
+  width: 100%;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.track-past-view-details {
+  color: #08A045;
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 19.60px;
+  padding: 0;
+  background: transparent;
+}
+
+.track-past-time-value {
+  width: 100%;
+  padding: 12px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 10px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 12px;
+}
+
+.track-past-time {
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.track-past-total {
+  flex: 0 0 auto;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.track-past-total strong {
+  color: #12130F;
+  font-weight: 600;
+}
+
+.track-past-empty {
+  width: 100%;
+  padding: 16px 14px;
+  border: 1px dashed rgba(18, 19, 15, 0.16);
+  border-radius: 14px;
+  background: rgba(18, 19, 15, 0.02);
+  color: rgba(18, 19, 15, 0.50);
+  font-size: 14px;
+  font-family: General Sans;
+  font-weight: 500;
+  line-height: 19.60px;
+  text-align: center;
+}
+
 </style>
 </head>
 
@@ -475,6 +715,144 @@ button {
       });
   }
 
+
+
+  function isPaidOrder(order) {
+    const paymentStatus = String(
+      order?.paymentStatus ||
+      order?.payment?.status ||
+      order?.razorpayPaymentStatus ||
+      ''
+    ).toLowerCase().trim();
+
+    if (['paid', 'success', 'captured', 'completed'].includes(paymentStatus)) return true;
+    if (order?.paidAt || order?.paymentId || order?.razorpayPaymentId) return true;
+    return false;
+  }
+
+  function getPastOrders() {
+    const orders = [];
+    const current = readJSON('current_order');
+    const history = normalizeOrders(readJSON('order_history'));
+    const previous = normalizeOrders(readJSON('previous_orders'));
+    const ordersList = normalizeOrders(readJSON('orders'));
+    const customerOrders = normalizeOrders(readJSON('customer_orders'));
+
+    if (current && typeof current === 'object') orders.push(current);
+    history.forEach(order => orders.push(order));
+    previous.forEach(order => orders.push(order));
+    ordersList.forEach(order => orders.push(order));
+    customerOrders.forEach(order => orders.push(order));
+
+    const activeIds = new Set(getOrders().map(order => getOrderId(order)));
+    const seen = new Set();
+
+    return orders
+      .filter(order => order && typeof order === 'object')
+      .filter(order => {
+        const status = getAdminOrderStatus(order);
+        const isPastStatus = ['delivered', 'completed', 'cancelled', 'canceled'].includes(status) || order?.deliveredAt || order?.completedAt;
+        if (!isPastStatus) return false;
+        if (activeIds.has(getOrderId(order))) return false;
+        if (!isPaidOrder(order) && !['cancelled', 'canceled'].includes(status)) return false;
+        return true;
+      })
+      .filter(order => {
+        const id = getOrderId(order);
+        if (seen.has(id)) return false;
+        seen.add(id);
+        return true;
+      })
+      .sort((a, b) => {
+        const dateA = toDate(getDateSource(a)) || new Date(0);
+        const dateB = toDate(getDateSource(b)) || new Date(0);
+        return dateB - dateA;
+      });
+  }
+
+  function pastStatusLabel(order) {
+    const status = getAdminOrderStatus(order);
+    if (['cancelled', 'canceled'].includes(status)) return 'Cancelled';
+    return 'Delivered';
+  }
+
+  function renderPastOrderItems(order) {
+    const items = getItems(order);
+    if (!items.length) {
+      return '<div class="track-past-item-chip"><span>Order item</span><span class="track-past-item-count">1</span></div>';
+    }
+    return items.slice(0, 5).map(item => `
+      <div class="track-past-item-chip">
+        <span>${getItemName(item)}</span>
+        <span class="track-past-item-count">${getItemQty(item)}</span>
+      </div>
+    `).join('');
+  }
+
+  function renderPastOrderCard(order) {
+    const id = getOrderId(order);
+    const total = money(computedTotalForOrder(order));
+    const placed = formatDateTime(order);
+    const statusLabel = pastStatusLabel(order);
+    return `
+      <article class="track-past-order-card" data-track-past-order-card="${id}">
+        <div class="track-past-order-header">
+          <div class="track-past-left">
+            <div class="track-past-shop-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 10.5L12 4L20 10.5V20H14.5V14H9.5V20H4V10.5Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="track-past-title-wrap">
+              <div class="track-past-restaurant">Coimbatore Foods</div>
+              <div class="track-past-order-id">Order ID #${id.replace(/^CBE-/, '')}</div>
+            </div>
+          </div>
+          <div class="track-past-status">
+            <span>${statusLabel}</span>
+            <span class="track-past-status-dot">✓</span>
+          </div>
+        </div>
+        <div class="track-past-items">${renderPastOrderItems(order)}</div>
+        <div class="track-past-divider" aria-hidden="true"></div>
+        <div class="track-past-cta-time">
+          <button class="track-past-view-details" type="button" data-track-past-details="${id}">View details</button>
+          <div class="track-past-time-value">
+            <div class="track-past-time">Order placed: ${placed}</div>
+            <div class="track-past-total"><span>Total value: </span><strong>${total}</strong></div>
+          </div>
+        </div>
+      </article>
+    `;
+  }
+
+  function buildPastOrdersSection() {
+    const pastOrders = getPastOrders();
+    const body = pastOrders.length
+      ? `<div class="track-past-orders-list">${pastOrders.slice(0, 5).map(renderPastOrderCard).join('')}</div>`
+      : '<div class="track-past-empty">No past orders yet. Completed orders will appear here.</div>';
+
+    const section = document.createElement('section');
+    section.className = 'track-past-orders-section';
+    section.setAttribute('data-track-past-orders-section', '1');
+    section.innerHTML = `
+      <div class="track-past-orders-title">Past orders</div>
+      ${body}
+    `;
+    return section;
+  }
+
+  function renderPastOrdersForVisibleState() {
+    document.querySelectorAll('[data-track-past-orders-section]').forEach(section => section.remove());
+
+    const target = addedScreen.classList.contains('is-active')
+      ? document.querySelector('#trackAddedRaw [data-layer="empty-tract-content"]')
+      : document.querySelector('#trackEmptyRaw [data-layer="empty-tract-content"]');
+
+    if (!target) return;
+    target.appendChild(buildPastOrdersSection());
+  }
+
   function getItems(order) {
     const items = order?.items || order?.cartItems || order?.orderItems || [];
     if (Array.isArray(items)) return items.filter(Boolean);
@@ -747,6 +1125,7 @@ button {
   function showEmpty() {
     emptyScreen.classList.add('is-active');
     addedScreen.classList.remove('is-active');
+    renderPastOrdersForVisibleState();
   }
 
   function showAdded(orders) {
@@ -769,6 +1148,8 @@ button {
       content.appendChild(card);
       updateCard(card, order);
     });
+
+    renderPastOrdersForVisibleState();
   }
 
   function render() {
@@ -783,6 +1164,17 @@ button {
   }
 
   document.addEventListener('click', function(event) {
+    const pastBtn = event.target.closest('[data-track-past-details]');
+    if (pastBtn) {
+      const id = pastBtn.getAttribute('data-track-past-details');
+      const selected = getPastOrders().find(order => getOrderId(order) === id);
+      if (selected) {
+        localStorage.setItem('cbe_track_selected_order', JSON.stringify(selected));
+        localStorage.setItem('TIFFIN_SELECTED_ORDER_ID', String(id));
+      }
+      window.location.href = `track-fullscreen.html?orderId=${encodeURIComponent(id || '')}`;
+      return;
+    }
     if (event.target.closest('[data-layer="browsemenu-button"]')) {
       window.location.href = 'menu.html';
       return;
