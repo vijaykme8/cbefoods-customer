@@ -395,23 +395,90 @@ button {
     }
   }
 
+  function clean(value) {
+    return value === null || value === undefined ? '' : String(value).trim();
+  }
+
+  function normalizePaymentStatus(order) {
+    return clean(
+      order?.paymentStatus ||
+      order?.payment_status ||
+      order?.payment?.status ||
+      order?.razorpayStatus ||
+      ''
+    ).toLowerCase();
+  }
+
+  function normalizeOrderStatus(order) {
+    return clean(
+      order?.status ||
+      order?.orderStatus ||
+      order?.order_status ||
+      ''
+    ).toLowerCase();
+  }
+
+  function isPaidConfirmedOrder(order) {
+    if (!order || typeof order !== 'object') return false;
+
+    const paymentStatus = normalizePaymentStatus(order);
+    const orderStatus = normalizeOrderStatus(order);
+
+    const hasPaymentId = Boolean(
+      clean(order.paymentId) ||
+      clean(order.razorpayPaymentId) ||
+      clean(order.razorpay_payment_id) ||
+      clean(order.payment?.id)
+    );
+
+    const paidStatus = [
+      'paid',
+      'captured',
+      'success',
+      'successful',
+      'payment_success',
+      'payment_successful'
+    ].includes(paymentStatus);
+
+    const confirmedStatus = [
+      'confirmed',
+      'accepted',
+      'preparing',
+      'out_for_delivery',
+      'reached',
+      'delivered',
+      'completed'
+    ].includes(orderStatus);
+
+    return paidStatus || hasPaymentId || (confirmedStatus && paymentStatus !== 'failed' && paymentStatus !== 'unpaid');
+  }
+
+  function getOrderListFromHistory(value) {
+    if (Array.isArray(value)) return value;
+    if (value && typeof value === 'object') return Object.values(value);
+    return [];
+  }
+
   function firstUsableOrder() {
+    /*
+      Checkpoint #0987 safety:
+      - Do not read pending_order.
+      - Do not read checkout_snapshot.
+      - This page should show only paid/confirmed orders.
+    */
+    localStorage.removeItem('pending_order');
+    localStorage.removeItem('checkout_snapshot');
+
     const currentOrder = readJSON('current_order');
-    if (currentOrder && typeof currentOrder === 'object') return currentOrder;
+    if (isPaidConfirmedOrder(currentOrder)) return currentOrder;
 
-    const orderHistory = readJSON('order_history');
-    if (Array.isArray(orderHistory) && orderHistory[0]) return orderHistory[0];
+    const orderHistory = getOrderListFromHistory(readJSON('order_history'));
+    const paidHistoryOrder = orderHistory.find(isPaidConfirmedOrder);
+    if (paidHistoryOrder) return paidHistoryOrder;
 
-    const pendingOrder = readJSON('pending_order');
-    if (pendingOrder && typeof pendingOrder === 'object') return pendingOrder;
-
-    const checkoutSnapshot = readJSON('checkout_snapshot');
-    if (checkoutSnapshot && typeof checkoutSnapshot === 'object') return checkoutSnapshot;
-
-    if (orderHistory && typeof orderHistory === 'object') {
-      const values = Object.values(orderHistory);
-      if (values[0]) return values[0];
-    }
+    const tiffinOrderHistory = getOrderListFromHistory(readJSON('TIFFIN_ORDER_HISTORY'));
+    const paidTiffinOrder = tiffinOrderHistory.find(isPaidConfirmedOrder);
+    if (paidTiffinOrder) return paidTiffinOrder;
 
     return {};
   }
@@ -452,7 +519,8 @@ button {
       order.order_id ||
       order.receipt ||
       order.razorpayOrderId ||
-      'CBE-17785098765'
+      order.razorpay_order_id ||
+      '—'
     );
   }
 
@@ -461,6 +529,13 @@ button {
   document.getElementById('orderId').textContent = getOrderId(order);
   document.getElementById('totalPaid').textContent = money(getTotal(order));
   document.getElementById('estTime').textContent = getEta(order);
+
+  const trackOrderButton = document.getElementById('trackOrderButton');
+  const orderId = getOrderId(order);
+
+  if (trackOrderButton && orderId && orderId !== '—') {
+    trackOrderButton.href = 'track.html?orderId=' + encodeURIComponent(orderId);
+  }
 
   document.getElementById('closeButton').addEventListener('click', () => {
     window.location.href = 'menu.html';
