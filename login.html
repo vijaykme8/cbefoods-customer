@@ -653,6 +653,15 @@ import {
 }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  setDoc,
+  serverTimestamp
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAD9wuVrTkEDB5adQc3jd_xkAYjEbgFkdw",
   authDomain: "tiffin-manager-73e96.firebaseapp.com",
@@ -666,6 +675,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 getDatabase(app);
 
@@ -679,6 +689,99 @@ let pendingLoginPhone = "";
 let verifiedLoginUid = "";
 
 const CUSTOMER_PROFILE_REGISTRY_KEY = "customer_profiles_by_phone";
+
+const ACTIVE_CUSTOMER_KEY = "CBE_ACTIVE_CUSTOMER_ID";
+const CUSTOMER_CACHE_KEYS_TO_CLEAR = [
+  "cart",
+  "current_order",
+  "order_history",
+  "TIFFIN_ORDER_HISTORY",
+  "customerOrders",
+  "orders",
+  "pastOrders",
+  "cust_saved_addresses",
+  "delivery_saved_addresses",
+  "savedAddresses",
+  "saved_addresses",
+  "TIFFIN_SAVED_ADDRESSES",
+  "CBE_SAVED_ADDRESSES",
+  "activeDeliveryLocation",
+  "customer_active_delivery_location",
+  "active_delivery_location",
+  "selectedDeliveryLocation",
+  "selected_delivery_location",
+  "cust_location_details",
+  "delivery_location_details",
+  "cust_location",
+  "delivery_location",
+  "customer_location",
+  "user_location",
+  "userLocation",
+  "deliveryLocation",
+  "current_location",
+  "currentLocation",
+  "geo_location",
+  "geoLocation",
+  "location",
+  "cust_address",
+  "delivery_address",
+  "customer_address",
+  "deliveryAddress",
+  "cust_full_address",
+  "delivery_full_address",
+  "selected_address",
+  "selectedAddress",
+  "user_address",
+  "address",
+  "cust_lat",
+  "cust_lng",
+  "user_lat",
+  "user_lng",
+  "delivery_lat",
+  "delivery_lng",
+  "latitude",
+  "longitude",
+  "checkout_snapshot",
+  "pending_order"
+];
+const CUSTOMER_PROFILE_KEYS_TO_CLEAR = [
+  "cust_name",
+  "customer_name",
+  "user_name",
+  "name",
+  "cust_profile_ready",
+  "customer_profile",
+  "TIFFIN_CUSTOMER_PROFILE",
+  "CBE_CUSTOMER_PROFILE",
+  "customerProfile",
+  "cust_profile",
+  "userProfile",
+  "profile"
+];
+const CUSTOMER_SAVED_ADDRESS_KEYS = [
+  "cust_saved_addresses",
+  "delivery_saved_addresses",
+  "savedAddresses",
+  "saved_addresses",
+  "TIFFIN_SAVED_ADDRESSES",
+  "CBE_SAVED_ADDRESSES"
+];
+const CUSTOMER_ACTIVE_LOCATION_KEYS = [
+  "activeDeliveryLocation",
+  "customer_active_delivery_location",
+  "active_delivery_location",
+  "cust_location_details",
+  "delivery_location_details",
+  "cust_location",
+  "delivery_location",
+  "customer_location",
+  "user_location",
+  "userLocation",
+  "deliveryLocation",
+  "current_location",
+  "currentLocation",
+  "location"
+];
 
 onAuthStateChanged(auth, async (user) => {
 
@@ -694,9 +797,12 @@ onAuthStateChanged(auth, async (user) => {
     if (localAuth === '1') {
 
       const phone = getVerifiedPhoneForCurrentSession(user);
+      saveBaseCustomerAuth(user.uid, phone);
       const profile = restoreSavedCustomerProfile(phone, user.uid);
+      const memoryProfile = await ensureCustomerMemory(user.uid, phone, profile || {});
+      const finalName = cleanText(memoryProfile?.name || profile?.name || getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"]));
 
-      if (!profile?.name && !getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"])) {
+      if (!finalName) {
         showNameScreen(phone, user.uid);
         return;
       }
@@ -940,8 +1046,9 @@ window.verifyOTP = async () => {
     saveBaseCustomerAuth(result.user.uid, verifiedPhone);
 
     const existingProfile = restoreSavedCustomerProfile(verifiedPhone, result.user.uid);
+    const memoryProfile = await ensureCustomerMemory(result.user.uid, verifiedPhone, existingProfile || {});
 
-    if (existingProfile?.name) {
+    if (memoryProfile?.name || existingProfile?.name) {
       await requestPermissionsBeforeRedirect();
       window.location.href = 'index.html';
       return;
@@ -1118,6 +1225,214 @@ function restoreSavedCustomerProfile(phone, uid = "") {
   return null;
 }
 
+
+function safeReadJSON(key) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (error) {
+    return null;
+  }
+}
+
+function safeWriteJSON(key, value) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.warn("Could not write local customer cache", key, error);
+  }
+}
+
+function firstParsedValue(keys) {
+  for (const key of keys) {
+    const parsed = safeReadJSON(key);
+    if (parsed !== null && parsed !== undefined) return parsed;
+
+    const raw = localStorage.getItem(key);
+    if (cleanText(raw)) return raw;
+  }
+  return null;
+}
+
+function firstArrayValue(keys) {
+  for (const key of keys) {
+    const value = firstParsedValue([key]);
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (value && typeof value === "object") {
+      if (Array.isArray(value.savedAddresses)) return value.savedAddresses.filter(Boolean);
+      if (Array.isArray(value.addresses)) return value.addresses.filter(Boolean);
+      if (Array.isArray(value.items)) return value.items.filter(Boolean);
+    }
+  }
+  return [];
+}
+
+function getCustomerSessionId(uid, phone) {
+  const cleanUid = cleanText(uid);
+  const cleanPhone = normalizeCustomerPhone(phone);
+  return cleanUid || (cleanPhone ? `phone_${cleanPhone}` : "");
+}
+
+function clearGenericCustomerCacheForSwitch(nextSessionId) {
+  const previousSessionId = cleanText(localStorage.getItem(ACTIVE_CUSTOMER_KEY));
+  const currentSessionId = cleanText(nextSessionId);
+
+  if (!currentSessionId) return;
+
+  if (previousSessionId && previousSessionId !== currentSessionId) {
+    [...CUSTOMER_CACHE_KEYS_TO_CLEAR, ...CUSTOMER_PROFILE_KEYS_TO_CLEAR].forEach(key => {
+      try { localStorage.removeItem(key); } catch (_) {}
+    });
+  }
+
+  localStorage.setItem(ACTIVE_CUSTOMER_KEY, currentSessionId);
+  localStorage.setItem("TIFFIN_ACTIVE_CUSTOMER_ID", currentSessionId);
+}
+
+function collectLocalCustomerMemory(profilePatch = {}) {
+  const savedAddresses = firstArrayValue(CUSTOMER_SAVED_ADDRESS_KEYS);
+  const activeDeliveryLocation = firstParsedValue(CUSTOMER_ACTIVE_LOCATION_KEYS);
+  const cartItems = firstArrayValue(["cart"]);
+  const name = cleanText(
+    profilePatch.name ||
+    getFirstLocalValue(["cust_name", "customer_name", "user_name", "name"])
+  );
+
+  const localMemory = {};
+
+  if (name) localMemory.name = name;
+  if (savedAddresses.length) localMemory.savedAddresses = savedAddresses;
+  if (activeDeliveryLocation && typeof activeDeliveryLocation === "object") {
+    localMemory.activeDeliveryLocation = activeDeliveryLocation;
+  }
+  if (cartItems.length) localMemory.cartItems = cartItems;
+
+  return localMemory;
+}
+
+function writeCustomerMemoryToLocalCache(memory = {}, uid = "", phone = "") {
+  if (!memory || typeof memory !== "object") return;
+
+  const normalizedPhone = normalizeCustomerPhone(phone || memory.phoneNumber || memory.customerPhone || memory.phone);
+  const name = cleanText(memory.name || memory.displayName);
+
+  if (name && normalizedPhone) {
+    saveCustomerProfileLocally({
+      name,
+      phone: normalizedPhone,
+      uid: uid || memory.uid || localStorage.getItem("cust_uid") || ""
+    });
+  }
+
+  if (Array.isArray(memory.savedAddresses)) {
+    CUSTOMER_SAVED_ADDRESS_KEYS.forEach(key => safeWriteJSON(key, memory.savedAddresses));
+  }
+
+  const activeLocation =
+    memory.activeDeliveryLocation ||
+    memory.deliveryLocation ||
+    memory.currentDeliveryAddress ||
+    null;
+
+  if (activeLocation && typeof activeLocation === "object") {
+    [
+      "activeDeliveryLocation",
+      "customer_active_delivery_location",
+      "active_delivery_location",
+      "cust_location_details",
+      "delivery_location_details",
+      "cust_location",
+      "delivery_location"
+    ].forEach(key => safeWriteJSON(key, activeLocation));
+
+    const fullAddress = cleanText(
+      activeLocation.displayAddress ||
+      activeLocation.fullAddress ||
+      activeLocation.address ||
+      activeLocation.full ||
+      activeLocation.line
+    );
+
+    if (fullAddress) {
+      localStorage.setItem("cust_address", fullAddress);
+      localStorage.setItem("delivery_address", fullAddress);
+      localStorage.setItem("cust_full_address", fullAddress);
+      localStorage.setItem("delivery_full_address", fullAddress);
+    }
+
+    if (activeLocation.lat && activeLocation.lng) {
+      localStorage.setItem("cust_lat", String(activeLocation.lat));
+      localStorage.setItem("cust_lng", String(activeLocation.lng));
+      localStorage.setItem("delivery_lat", String(activeLocation.lat));
+      localStorage.setItem("delivery_lng", String(activeLocation.lng));
+    }
+  }
+
+  if (Array.isArray(memory.cartItems)) {
+    safeWriteJSON("cart", memory.cartItems);
+  }
+}
+
+async function ensureCustomerMemory(uid, phone, profilePatch = {}) {
+  const normalizedPhone = normalizeCustomerPhone(phone);
+  const sessionId = getCustomerSessionId(uid, normalizedPhone);
+
+  if (!sessionId) return profilePatch || null;
+
+  clearGenericCustomerCacheForSwitch(sessionId);
+  saveBaseCustomerAuth(uid, normalizedPhone);
+
+  const localMemory = collectLocalCustomerMemory(profilePatch);
+
+  try {
+    const customerRef = doc(db, "customers", sessionId);
+    const snapshot = await getDoc(customerRef);
+    const cloudMemory = snapshot.exists() ? (snapshot.data() || {}) : {};
+
+    const mergedForLocal = {
+      ...localMemory,
+      ...cloudMemory,
+      uid: uid || cloudMemory.uid || sessionId,
+      phoneNumber: normalizedPhone,
+      customerPhone: normalizedPhone,
+      name: cleanText(cloudMemory.name || localMemory.name || profilePatch.name)
+    };
+
+    const payload = {
+      uid: uid || cloudMemory.uid || sessionId,
+      phoneNumber: normalizedPhone,
+      customerPhone: normalizedPhone,
+      updatedAt: serverTimestamp(),
+      lastLoginAt: serverTimestamp()
+    };
+
+    if (!snapshot.exists()) payload.createdAt = serverTimestamp();
+    if (mergedForLocal.name) payload.name = mergedForLocal.name;
+
+    if (!Array.isArray(cloudMemory.savedAddresses) && Array.isArray(localMemory.savedAddresses) && localMemory.savedAddresses.length) {
+      payload.savedAddresses = localMemory.savedAddresses;
+    }
+
+    if (!cloudMemory.activeDeliveryLocation && localMemory.activeDeliveryLocation) {
+      payload.activeDeliveryLocation = localMemory.activeDeliveryLocation;
+    }
+
+    if (!Array.isArray(cloudMemory.cartItems) && Array.isArray(localMemory.cartItems) && localMemory.cartItems.length) {
+      payload.cartItems = localMemory.cartItems;
+    }
+
+    await setDoc(customerRef, payload, { merge: true });
+
+    writeCustomerMemoryToLocalCache(mergedForLocal, uid, normalizedPhone);
+    return mergedForLocal;
+  } catch (error) {
+    console.warn("Customer memory restore failed. Continuing with local login.", error);
+    writeCustomerMemoryToLocalCache({ ...localMemory, ...profilePatch }, uid, normalizedPhone);
+    return { ...localMemory, ...profilePatch, phoneNumber: normalizedPhone, uid };
+  }
+}
+
 function showNameScreen(phone = "", uid = "") {
   pendingLoginPhone = normalizeCustomerPhone(phone) || getPendingLoginPhone();
   verifiedLoginUid = uid || verifiedLoginUid || localStorage.getItem("cust_uid") || "";
@@ -1158,7 +1473,8 @@ window.saveCustomerNameAndContinue = async () => {
   btn.disabled = true;
 
   saveBaseCustomerAuth(uid, phone);
-  saveCustomerProfileLocally({ name, phone, uid });
+  const profile = saveCustomerProfileLocally({ name, phone, uid });
+  await ensureCustomerMemory(uid, phone, profile || { name, phone, uid });
 
   await requestPermissionsBeforeRedirect();
 
