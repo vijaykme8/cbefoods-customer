@@ -420,20 +420,21 @@ button {
 }
 
 
-
-/* Bottom space for scrollable track frames: keeps Past orders above bottom nav on all devices */
+/* Bottom nav scroll safety: apply 20dvh padding to both original track screens */
 #trackEmptyRaw,
 #trackAddedRaw {
+  overflow: visible !important;
+  padding-bottom: 20dvh !important;
+}
+
+#trackEmptyRaw > [data-layer="Frame 82"],
+#trackAddedRaw > [data-layer="Frame 84"] {
   padding-bottom: 20dvh !important;
 }
 
 #trackEmptyRaw [data-layer="empty-tract-content"],
 #trackAddedRaw [data-layer="empty-tract-content"] {
   padding-bottom: 20dvh !important;
-}
-
-.track-past-orders-section {
-  padding-bottom: 20dvh;
 }
 
 </style>
