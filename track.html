@@ -632,6 +632,220 @@ button {
     return [];
   }
 
+  const TRACK_ORDER_KEYS = [
+    'current_order',
+    'order_history',
+    'previous_orders',
+    'orders',
+    'customer_orders',
+    'TIFFIN_ORDER_HISTORY',
+    'TIFFIN_CUSTOMER_ORDERS',
+    'customerOrders',
+    'cbeOrders',
+    'pastOrders',
+    'CBE_TRACK_CUSTOMER_ORDERS'
+  ];
+
+  function cleanText(value) {
+    return value === null || value === undefined ? '' : String(value).trim();
+  }
+
+  function phone10(value) {
+    const digits = cleanText(value).replace(/\D/g, '');
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+
+  function readProfileObject() {
+    const keys = [
+      'TIFFIN_CUSTOMER_PROFILE',
+      'CBE_CUSTOMER_PROFILE',
+      'customerProfile',
+      'cust_profile',
+      'userProfile',
+      'profile',
+      'customer'
+    ];
+
+    for (const key of keys) {
+      const value = readJSON(key);
+      if (value && typeof value === 'object' && !Array.isArray(value)) return value;
+    }
+
+    return {};
+  }
+
+  function getCurrentCustomerIdentity() {
+    const profile = readProfileObject();
+    const auth = readJSON('cust_auth') || readJSON('customerAuth') || {};
+    const authObj = auth && typeof auth === 'object' ? auth : {};
+
+    const uid = cleanText(
+      localStorage.getItem('cust_uid') ||
+      localStorage.getItem('customer_uid') ||
+      localStorage.getItem('TIFFIN_CUSTOMER_UID') ||
+      localStorage.getItem('firebase_uid') ||
+      localStorage.getItem('uid') ||
+      authObj.uid ||
+      authObj.userId ||
+      authObj.customerId ||
+      profile.uid ||
+      profile.customerId ||
+      profile.id ||
+      ''
+    );
+
+    const phone = phone10(
+      localStorage.getItem('cust_phone') ||
+      localStorage.getItem('cust_mobile') ||
+      localStorage.getItem('customer_phone') ||
+      localStorage.getItem('customer_mobile') ||
+      localStorage.getItem('TIFFIN_CUSTOMER_PHONE') ||
+      localStorage.getItem('mobile') ||
+      authObj.phone ||
+      authObj.mobile ||
+      authObj.phoneNumber ||
+      profile.phone ||
+      profile.mobile ||
+      profile.phoneNumber ||
+      ''
+    );
+
+    return { uid, phone };
+  }
+
+  function getOrderUidValues(order) {
+    return [
+      order?.customerId,
+      order?.customerUID,
+      order?.customerUid,
+      order?.uid,
+      order?.userId,
+      order?.firebaseUid,
+      order?.customer?.id,
+      order?.customer?.uid,
+      order?.customer?.customerId,
+      order?.user?.uid,
+      order?.user?.id
+    ].map(cleanText).filter(Boolean);
+  }
+
+  function getOrderPhone(order) {
+    return phone10(
+      order?.customerPhone ||
+      order?.customerMobile ||
+      order?.phone ||
+      order?.mobile ||
+      order?.contact ||
+      order?.customer?.phone ||
+      order?.customer?.mobile ||
+      order?.customer?.contact ||
+      order?.user?.phone ||
+      order?.user?.mobile ||
+      ''
+    );
+  }
+
+  function orderBelongsToCurrentCustomer(order) {
+    const identity = getCurrentCustomerIdentity();
+
+    /*
+      If auth details are not available yet, keep local paid orders visible.
+      Once Firebase/auth restores uid or phone, filtering becomes strict.
+    */
+    if (!identity.uid && !identity.phone) return true;
+
+    const uidValues = getOrderUidValues(order);
+    const orderPhone = getOrderPhone(order);
+    const hasCustomerMarker = uidValues.length > 0 || Boolean(orderPhone);
+
+    if (identity.uid && uidValues.includes(identity.uid)) return true;
+    if (identity.phone && orderPhone && orderPhone === identity.phone) return true;
+
+    /*
+      Legacy orders without customer markers can leak between phone accounts.
+      From customer-memory foundation onward, Track should show only orders tied
+      to the logged-in phone/uid. This keeps one customer’s order private from another.
+    */
+    if (!hasCustomerMarker) return false;
+
+    return false;
+  }
+
+  function getPaymentStatus(order) {
+    return String(
+      order?.paymentStatus ||
+      order?.payment?.status ||
+      order?.razorpayPaymentStatus ||
+      ''
+    ).toLowerCase().trim().replace(/[\s-]+/g, '_');
+  }
+
+  function isPaymentBlocked(order) {
+    const status = getAdminOrderStatus(order);
+    const paymentStatus = getPaymentStatus(order);
+
+    const blockedStatus = [
+      'checkout_ready',
+      'payment_pending',
+      'pending_payment',
+      'payment_initiated',
+      'awaiting_payment',
+      'created'
+    ];
+
+    const blockedPayment = [
+      'pending',
+      'unpaid',
+      'failed',
+      'cancelled',
+      'canceled',
+      'created'
+    ];
+
+    if (blockedStatus.includes(status)) return true;
+    if (blockedPayment.includes(paymentStatus)) return true;
+    return false;
+  }
+
+  function isPaidOrder(order) {
+    const paymentStatus = getPaymentStatus(order);
+    const paymentMethod = String(
+      order?.paymentMethod ||
+      order?.payment?.method ||
+      order?.method ||
+      ''
+    ).toLowerCase().trim().replace(/[\s-]+/g, '_');
+
+    if (['paid', 'success', 'captured', 'completed', 'payment_success'].includes(paymentStatus)) return true;
+    if (order?.paidAt || order?.paymentId || order?.razorpayPaymentId || order?.razorpay_payment_id) return true;
+
+    /*
+      Keep COD-compatible, but Razorpay/card/UPI attempts still require success.
+    */
+    if (['cod', 'cash', 'cash_on_delivery'].includes(paymentMethod) && !isPaymentBlocked(order)) return true;
+
+    return false;
+  }
+
+  function collectTrackOrders() {
+    const orders = [];
+
+    TRACK_ORDER_KEYS.forEach(key => {
+      const value = key === 'current_order' ? readJSON(key) : normalizeOrders(readJSON(key));
+
+      if (key === 'current_order') {
+        if (value && typeof value === 'object') orders.push({ ...value, __trackSourceKey: key });
+        return;
+      }
+
+      normalizeOrders(value).forEach(order => {
+        if (order && typeof order === 'object') orders.push({ ...order, __trackSourceKey: key });
+      });
+    });
+
+    return orders;
+  }
+
   function getOrderId(order) {
     const direct = order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || order?.paymentId || order?.payment?.id || '';
     if (direct) return String(direct);
@@ -674,53 +888,15 @@ button {
   }
 
   function getOrders() {
-    const orders = [];
-    const current = readJSON('current_order');
-    const history = normalizeOrders(readJSON('order_history'));
-    const previous = normalizeOrders(readJSON('previous_orders'));
-    const ordersList = normalizeOrders(readJSON('orders'));
-    const customerOrders = normalizeOrders(readJSON('customer_orders'));
-
-    if (current && typeof current === 'object') orders.push(current);
-    history.forEach(order => orders.push(order));
-    previous.forEach(order => orders.push(order));
-    ordersList.forEach(order => orders.push(order));
-    customerOrders.forEach(order => orders.push(order));
-
     const seen = new Set();
 
-    return orders
+    return collectTrackOrders()
       .filter(order => order && typeof order === 'object')
+      .filter(order => orderBelongsToCurrentCustomer(order))
+      .filter(order => isPaidOrder(order))
       .filter(order => {
         const status = getAdminOrderStatus(order);
-        const paymentStatus = String(
-          order?.paymentStatus ||
-          order?.payment?.status ||
-          order?.razorpayPaymentStatus ||
-          ''
-        ).toLowerCase().trim();
-
-        const blockedStatus = [
-          'checkout_ready',
-          'payment_pending',
-          'pending_payment',
-          'payment_initiated',
-          'awaiting_payment',
-          'created'
-        ];
-
-        const blockedPayment = [
-          'pending',
-          'unpaid',
-          'failed',
-          'cancelled',
-          'canceled',
-          'created'
-        ];
-
-        if (blockedStatus.includes(status)) return false;
-        if (blockedPayment.includes(paymentStatus)) return false;
-
+        if (isPaymentBlocked(order)) return false;
         return !['delivered', 'completed', 'cancelled', 'canceled'].includes(status);
       })
       .filter(order => {
@@ -728,49 +904,38 @@ button {
         if (seen.has(id)) return false;
         seen.add(id);
         return true;
+      })
+      .sort((a, b) => {
+        const dateA = toDate(getDateSource(a)) || new Date(0);
+        const dateB = toDate(getDateSource(b)) || new Date(0);
+        return dateB - dateA;
       });
   }
 
-
-
-  function isPaidOrder(order) {
-    const paymentStatus = String(
-      order?.paymentStatus ||
-      order?.payment?.status ||
-      order?.razorpayPaymentStatus ||
-      ''
-    ).toLowerCase().trim();
-
-    if (['paid', 'success', 'captured', 'completed'].includes(paymentStatus)) return true;
-    if (order?.paidAt || order?.paymentId || order?.razorpayPaymentId) return true;
-    return false;
-  }
-
   function getPastOrders() {
-    const orders = [];
-    const current = readJSON('current_order');
-    const history = normalizeOrders(readJSON('order_history'));
-    const previous = normalizeOrders(readJSON('previous_orders'));
-    const ordersList = normalizeOrders(readJSON('orders'));
-    const customerOrders = normalizeOrders(readJSON('customer_orders'));
-
-    if (current && typeof current === 'object') orders.push(current);
-    history.forEach(order => orders.push(order));
-    previous.forEach(order => orders.push(order));
-    ordersList.forEach(order => orders.push(order));
-    customerOrders.forEach(order => orders.push(order));
-
     const activeIds = new Set(getOrders().map(order => getOrderId(order)));
     const seen = new Set();
 
-    return orders
+    return collectTrackOrders()
       .filter(order => order && typeof order === 'object')
+      .filter(order => orderBelongsToCurrentCustomer(order))
       .filter(order => {
         const status = getAdminOrderStatus(order);
-        const isPastStatus = ['delivered', 'completed', 'cancelled', 'canceled'].includes(status) || order?.deliveredAt || order?.completedAt;
+        const isPastStatus =
+          ['delivered', 'completed', 'cancelled', 'canceled'].includes(status) ||
+          order?.deliveredAt ||
+          order?.completedAt;
+
         if (!isPastStatus) return false;
         if (activeIds.has(getOrderId(order))) return false;
-        if (!isPaidOrder(order) && !['cancelled', 'canceled'].includes(status)) return false;
+
+        /*
+          Past orders must still be real paid/confirmed orders.
+          Unpaid Razorpay attempts and cancelled payment attempts must never appear.
+        */
+        if (!isPaidOrder(order)) return false;
+        if (isPaymentBlocked(order) && !['cancelled', 'canceled'].includes(status)) return false;
+
         return true;
       })
       .filter(order => {
@@ -1219,20 +1384,16 @@ button {
   window.renderOrders = render;
 
   window.addEventListener('storage', function(event) {
-    if (['current_order', 'order_history', 'previous_orders', 'orders', 'customer_orders'].includes(event.key)) render();
+    if (TRACK_ORDER_KEYS.includes(event.key)) render();
   });
 
   render();
 
   let lastSnapshot = '';
   setInterval(function() {
-    const snapshot = [
-      localStorage.getItem('current_order') || '',
-      localStorage.getItem('order_history') || '',
-      localStorage.getItem('previous_orders') || '',
-      localStorage.getItem('orders') || '',
-      localStorage.getItem('customer_orders') || ''
-    ].join('|');
+    const snapshot = TRACK_ORDER_KEYS
+      .map(key => localStorage.getItem(key) || '')
+      .join('|');
 
     if (snapshot !== lastSnapshot) {
       lastSnapshot = snapshot;
@@ -1247,6 +1408,328 @@ button {
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-firestore-compat.js"></script>
 <script src="firebase-mvp.js"></script>
+
+<script>
+(function syncTrackCustomerOrdersFromFirebase() {
+  function clean(value) {
+    return value === null || value === undefined ? "" : String(value).trim();
+  }
+
+  function parseJSON(value, fallback) {
+    try {
+      return value ? JSON.parse(value) : fallback;
+    } catch (_) {
+      return fallback;
+    }
+  }
+
+  function phone10(value) {
+    const digits = clean(value).replace(/\D/g, "");
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+
+  function timestampToISO(value) {
+    if (!value) return "";
+    if (typeof value.toDate === "function") return value.toDate().toISOString();
+    if (value.seconds) return new Date(value.seconds * 1000).toISOString();
+    if (typeof value === "string") return value;
+    return "";
+  }
+
+  function getLocalProfile() {
+    const keys = [
+      "TIFFIN_CUSTOMER_PROFILE",
+      "CBE_CUSTOMER_PROFILE",
+      "customerProfile",
+      "cust_profile",
+      "userProfile",
+      "profile"
+    ];
+
+    for (const key of keys) {
+      const value = parseJSON(localStorage.getItem(key), null);
+      if (value && typeof value === "object" && !Array.isArray(value)) return value;
+    }
+
+    return {};
+  }
+
+  function getLocalIdentity(user) {
+    const profile = getLocalProfile();
+    const auth = parseJSON(localStorage.getItem("cust_auth"), {}) || {};
+
+    const uid = clean(
+      user?.uid ||
+      localStorage.getItem("cust_uid") ||
+      localStorage.getItem("customer_uid") ||
+      localStorage.getItem("TIFFIN_CUSTOMER_UID") ||
+      auth.uid ||
+      auth.customerId ||
+      profile.uid ||
+      profile.customerId ||
+      profile.id ||
+      ""
+    );
+
+    const phone = phone10(
+      user?.phoneNumber ||
+      localStorage.getItem("cust_phone") ||
+      localStorage.getItem("cust_mobile") ||
+      localStorage.getItem("customer_phone") ||
+      localStorage.getItem("customer_mobile") ||
+      localStorage.getItem("TIFFIN_CUSTOMER_PHONE") ||
+      localStorage.getItem("mobile") ||
+      auth.phone ||
+      auth.mobile ||
+      auth.phoneNumber ||
+      profile.phone ||
+      profile.mobile ||
+      profile.phoneNumber ||
+      ""
+    );
+
+    if (uid) localStorage.setItem("cust_uid", uid);
+    if (phone) localStorage.setItem("cust_phone", phone);
+
+    return { uid, phone };
+  }
+
+  function normalizeOrder(id, data, fallbackCustomer = {}) {
+    if (!data || typeof data !== "object") return null;
+
+    const createdAt =
+      timestampToISO(data.createdAt) ||
+      timestampToISO(data.created_at) ||
+      data.createdAtClient ||
+      data.createdAt ||
+      data.date ||
+      "";
+
+    const updatedAt =
+      timestampToISO(data.updatedAt) ||
+      timestampToISO(data.updated_at) ||
+      data.updatedAt ||
+      "";
+
+    const deliveredAt =
+      timestampToISO(data.deliveredAt) ||
+      timestampToISO(data.completedAt) ||
+      data.deliveredAt ||
+      data.completedAt ||
+      "";
+
+    return {
+      id: clean(data.id || data.orderId || id),
+      ...data,
+      customerId: clean(data.customerId || data.customerUID || data.customerUid || data.customer?.uid || fallbackCustomer.uid || ""),
+      customerPhone: phone10(data.customerPhone || data.customerMobile || data.phone || data.customer?.phone || fallbackCustomer.phone || ""),
+      createdAt,
+      updatedAt,
+      deliveredAt,
+      items: Array.isArray(data.items) ? data.items : Array.isArray(data.cartItems) ? data.cartItems : [],
+      total: Number(data.totals?.total ?? data.total ?? data.totalPaid ?? data.amount ?? data.grandTotal ?? 0),
+      restaurantName: data.restaurantName || data.storeName || "Coimbatore Foods"
+    };
+  }
+
+  function getPaymentStatus(order) {
+    return clean(order?.paymentStatus || order?.payment?.status || order?.razorpayPaymentStatus || "")
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_");
+  }
+
+  function getAdminStatus(order) {
+    return clean(order?.adminStatus || order?.orderStatus || order?.deliveryStatus || order?.riderStatus || order?.status || "")
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_");
+  }
+
+  function isPaymentConfirmed(order) {
+    const paymentStatus = getPaymentStatus(order);
+    const paymentMethod = clean(order?.paymentMethod || order?.payment?.method || order?.method || "")
+      .toLowerCase()
+      .replace(/[\s-]+/g, "_");
+
+    const blockedStatus = [
+      "checkout_ready",
+      "payment_pending",
+      "pending_payment",
+      "payment_initiated",
+      "awaiting_payment",
+      "created"
+    ];
+
+    const blockedPayment = [
+      "pending",
+      "unpaid",
+      "failed",
+      "cancelled",
+      "canceled",
+      "created"
+    ];
+
+    if (blockedStatus.includes(getAdminStatus(order))) return false;
+    if (blockedPayment.includes(paymentStatus)) return false;
+    if (["paid", "success", "captured", "completed", "payment_success"].includes(paymentStatus)) return true;
+    if (order?.paidAt || order?.paymentId || order?.razorpayPaymentId || order?.razorpay_payment_id) return true;
+    if (["cod", "cash", "cash_on_delivery"].includes(paymentMethod)) return true;
+
+    return false;
+  }
+
+  function saveAndRefreshOrders(orderGroups) {
+    const merged = new Map();
+
+    orderGroups.flat().filter(Boolean).forEach(order => {
+      if (!isPaymentConfirmed(order)) return;
+
+      const id = clean(order.id || order.orderId || order.paymentId || order.createdAt || JSON.stringify(order).slice(0, 60));
+      if (!id) return;
+
+      merged.set(id, {
+        ...order,
+        id
+      });
+    });
+
+    const orders = Array.from(merged.values()).sort((a, b) => {
+      return new Date(b.createdAt || b.paidAt || 0) - new Date(a.createdAt || a.paidAt || 0);
+    });
+
+    try {
+      localStorage.setItem("CBE_TRACK_CUSTOMER_ORDERS", JSON.stringify(orders));
+    } catch (_) {}
+
+    if (typeof window.renderTrack === "function") window.renderTrack();
+    else if (typeof window.renderOrders === "function") window.renderOrders();
+  }
+
+  async function loadCustomerDocumentOrders(db, identity) {
+    if (!identity.uid) return [];
+
+    try {
+      const doc = await db.collection("customers").doc(identity.uid).get();
+      if (!doc.exists) return [];
+
+      const data = doc.data() || {};
+      const list = []
+        .concat(Array.isArray(data.orders) ? data.orders : [])
+        .concat(Array.isArray(data.orderHistory) ? data.orderHistory : [])
+        .concat(Array.isArray(data.paidOrders) ? data.paidOrders : []);
+
+      return list.map((order, index) => normalizeOrder(order.id || `customer_doc_${index}`, order, identity)).filter(Boolean);
+    } catch (error) {
+      console.warn("Track customer document order sync failed", error);
+      return [];
+    }
+  }
+
+  function listenQuery(query, normalizer, onUpdate) {
+    try {
+      return query.onSnapshot(snapshot => {
+        onUpdate(snapshot.docs.map(doc => normalizer(doc.id, doc.data())).filter(Boolean));
+      }, error => {
+        console.warn("Track order query sync failed", error);
+      });
+    } catch (error) {
+      console.warn("Track order query setup failed", error);
+      return function noop() {};
+    }
+  }
+
+  function boot() {
+    if (!window.firebase || !window.TIFFIN_FIREBASE_CONFIG || !window.TIFFIN_FIREBASE_CONFIG.apiKey) {
+      if (typeof window.renderTrack === "function") window.renderTrack();
+      return;
+    }
+
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+
+      const auth = firebase.auth();
+      const db = firebase.firestore();
+
+      let unsubscribers = [];
+
+      function clearListeners() {
+        unsubscribers.forEach(unsubscribe => {
+          try { unsubscribe(); } catch (_) {}
+        });
+        unsubscribers = [];
+      }
+
+      auth.onAuthStateChanged(async user => {
+        clearListeners();
+
+        const identity = getLocalIdentity(user);
+
+        if (!identity.uid && !identity.phone) {
+          try { localStorage.setItem("CBE_TRACK_CUSTOMER_ORDERS", "[]"); } catch (_) {}
+          if (typeof window.renderTrack === "function") window.renderTrack();
+          return;
+        }
+
+        let customerDocOrders = await loadCustomerDocumentOrders(db, identity);
+        let customerSubcollectionOrders = [];
+        let globalUidOrders = [];
+        let globalPhoneOrders = [];
+
+        function mergeAndRender() {
+          saveAndRefreshOrders([
+            customerDocOrders,
+            customerSubcollectionOrders,
+            globalUidOrders,
+            globalPhoneOrders
+          ]);
+        }
+
+        mergeAndRender();
+
+        if (identity.uid) {
+          unsubscribers.push(listenQuery(
+            db.collection("customers").doc(identity.uid).collection("orders").limit(50),
+            (id, data) => normalizeOrder(id, data, identity),
+            orders => {
+              customerSubcollectionOrders = orders;
+              mergeAndRender();
+            }
+          ));
+
+          unsubscribers.push(listenQuery(
+            db.collection("orders").where("customerId", "==", identity.uid).limit(50),
+            (id, data) => normalizeOrder(id, data, identity),
+            orders => {
+              globalUidOrders = orders;
+              mergeAndRender();
+            }
+          ));
+        }
+
+        if (identity.phone) {
+          unsubscribers.push(listenQuery(
+            db.collection("orders").where("customerPhone", "==", identity.phone).limit(50),
+            (id, data) => normalizeOrder(id, data, identity),
+            orders => {
+              globalPhoneOrders = orders;
+              mergeAndRender();
+            }
+          ));
+        }
+      });
+    } catch (error) {
+      console.warn("Track Firebase customer order sync failed", error);
+      if (typeof window.renderTrack === "function") window.renderTrack();
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot, { once: true });
+  } else {
+    boot();
+  }
+})();
+</script>
+
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
