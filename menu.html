@@ -1037,16 +1037,18 @@ body.map-screen-open {
   height: 100dvh;
   min-height: 100dvh;
   position: relative;
-  background: #FFFFFF;
+  background: #FDFDFF;
   overflow: hidden;
 }
 
 .map-address-canvas {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  background: #F5F5F7;
+  width: 390px;
+  max-width: 100%;
+  height: 844px;
+  min-height: 100dvh;
+  background: #FDFDFF;
 }
 
 .map-address-canvas .maplibregl-ctrl-bottom-left,
@@ -1064,6 +1066,7 @@ body.map-screen-open {
   text-align: center;
   color: rgba(18, 19, 15, 0.62);
   font-size: 13px;
+  font-family: General Sans;
   font-weight: 600;
   line-height: 17px;
   pointer-events: none;
@@ -1085,6 +1088,7 @@ body.map-screen-open {
   padding: 40px 24px 100px;
   background: linear-gradient(180deg, rgba(18, 19, 15, 0.08) 0%, rgba(18, 19, 15, 0) 100%);
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   z-index: 8;
@@ -1096,12 +1100,13 @@ body.map-screen-open {
   height: 48px;
   padding: 12px;
   border: 0;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  box-shadow: 1px 4px 8px rgba(253, 253, 255, 0.12);
   border-radius: 50px;
-  background: #FDFDFF;
-  box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16);
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
   cursor: pointer;
   pointer-events: auto;
 }
@@ -1119,23 +1124,23 @@ body.map-screen-open {
 .map-address-center-pin {
   position: absolute;
   left: 50%;
-  top: 44%;
-  width: 42px;
-  height: 56px;
-  transform: translate(-50%, -100%);
+  top: calc(50% - 184px);
+  width: 40px;
+  height: 54px;
+  transform: translate(-50%, -50%);
   z-index: 7;
   pointer-events: none;
-  filter: drop-shadow(0 10px 14px rgba(18, 19, 15, 0.26));
+  filter: none;
   transition: transform 0.18s ease;
 }
 
 .map-address-shell.is-moving .map-address-center-pin {
-  transform: translate(-50%, calc(-100% - 8px));
+  transform: translate(-50%, calc(-50% - 8px));
 }
 
 .map-address-center-pin svg {
-  width: 42px;
-  height: 56px;
+  width: 40px;
+  height: 54px;
   display: block;
 }
 
@@ -1145,6 +1150,7 @@ body.map-screen-open {
   bottom: calc(-162px + env(safe-area-inset-bottom));
   width: 390px;
   max-width: 100vw;
+  height: 501px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1166,6 +1172,7 @@ body.map-screen-open {
 
 .map-address-wrap {
   width: 342px;
+  height: 211px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1174,20 +1181,21 @@ body.map-screen-open {
 }
 
 .gps-button {
+  width: 198px;
   height: 36px;
   padding: 6px 10px 6px 8px;
   border: 0;
-  background: #FFFFFF;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   border-radius: 30px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
   color: #08A045;
-  font-family: 'General Sans', sans-serif;
+  font-family: General Sans;
   font-size: 16px;
   font-weight: 500;
   line-height: 20.80px;
-  box-shadow: 0 8px 22px rgba(18, 19, 15, 0.10);
+  box-shadow: none;
   cursor: pointer;
 }
 
@@ -1195,6 +1203,7 @@ body.map-screen-open {
   width: 24px;
   height: 24px;
   display: block;
+  flex: none;
 }
 
 .gps-button:active {
@@ -1203,9 +1212,9 @@ body.map-screen-open {
 
 .captured-add-wrap {
   width: 342px;
-  min-height: 112px;
+  height: 100px;
   padding: 20px 24px;
-  background: #FFFFFF;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
   overflow: hidden;
   border-radius: 14px;
@@ -1217,7 +1226,8 @@ body.map-screen-open {
 }
 
 .captured-address {
-  width: 100%;
+  width: 294px;
+  height: 60px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1225,8 +1235,8 @@ body.map-screen-open {
 }
 
 .icon-doorno {
-  width: 100%;
-  min-height: 24px;
+  width: 294px;
+  height: 24px;
   display: inline-flex;
   justify-content: flex-start;
   align-items: center;
@@ -1237,6 +1247,7 @@ body.map-screen-open {
   width: 18px;
   height: 24px;
   flex-shrink: 0;
+  overflow: hidden;
 }
 
 .pin-icon svg {
@@ -1246,7 +1257,10 @@ body.map-screen-open {
 }
 
 .captured-doorno {
-  color: #12130F;
+  width: auto;
+  max-width: 270px;
+  height: 21px;
+  color: #FDFDFF;
   font-size: 16px;
   font-family: General Sans;
   font-weight: 600;
@@ -1258,15 +1272,16 @@ body.map-screen-open {
 }
 
 .captured-full-address {
-  width: 100%;
-  color: #12130F;
+  width: 294px;
+  height: 34px;
+  color: #FDFDFF;
   font-size: 14px;
   font-family: General Sans;
   font-weight: 400;
   line-height: 16.80px;
   word-wrap: break-word;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -1282,6 +1297,7 @@ body.map-screen-open {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  gap: 10px;
   color: #FDFDFF;
   font-size: 18px;
   font-family: General Sans;
@@ -1303,10 +1319,10 @@ body.map-screen-open {
   max-width: 100vw;
   height: 280px;
   padding: 20px 24px;
-  background: #FFFFFF;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
   overflow: hidden;
-  border-radius: 34px 34px 0px 0px;
+  border-radius: 34px 34px 0 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1325,7 +1341,7 @@ body.map-screen-open {
   right: 0;
   bottom: 0;
   height: 42px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0), #FFFFFF 78%);
+  background: linear-gradient(180deg, rgba(18, 19, 15, 0), #12130F 78%);
   pointer-events: none;
   opacity: 1;
   transition: opacity 0.18s ease;
@@ -1358,7 +1374,7 @@ body.map-screen-open {
 .drawer-handle-wide {
   width: 60px;
   height: 6px;
-  background: #D9D9D9;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.16), rgba(253, 253, 255, 0.16)), #12130F;
   border-radius: 10px;
   flex-shrink: 0;
   cursor: grab;
@@ -1370,7 +1386,8 @@ body.map-screen-open {
 
 .saved-address-title {
   width: 342px;
-  color: rgba(18, 19, 15, 0.50);
+  height: 14px;
+  color: rgba(253, 253, 255, 0.50);
   font-size: 14px;
   font-family: General Sans;
   font-weight: 500;
@@ -1401,7 +1418,7 @@ body.map-screen-open {
   width: 342px;
   height: 60px;
   padding: 10px 16px;
-  background: rgba(18, 19, 15, 0.04);
+  background: rgba(253, 253, 255, 0.04);
   border-radius: 10px;
   display: flex;
   flex-direction: column;
@@ -1449,7 +1466,7 @@ body.map-screen-open {
 }
 
 .saved-address-label {
-  color: #12130F;
+  color: #FDFDFF;
   font-size: 16px;
   font-family: General Sans;
   font-weight: 600;
@@ -1482,7 +1499,7 @@ body.map-screen-open {
 
 .saved-address-line {
   width: 100%;
-  color: #12130F;
+  color: #FDFDFF;
   font-size: 14px;
   font-family: General Sans;
   font-weight: 400;
@@ -1528,9 +1545,9 @@ body.map-screen-open {
   width: 342px;
   min-height: 60px;
   padding: 12px 16px;
-  background: rgba(18, 19, 15, 0.04);
+  background: rgba(253, 253, 255, 0.04);
   border-radius: 10px;
-  color: rgba(18, 19, 15, 0.56);
+  color: rgba(253, 253, 255, 0.60);
   font-size: 14px;
   font-family: General Sans;
   font-weight: 500;
@@ -1556,8 +1573,13 @@ body.map-screen-open {
   .saved-address-empty {
     width: calc(100vw - 48px);
   }
-}
 
+  .captured-address,
+  .icon-doorno,
+  .captured-full-address {
+    width: calc(100vw - 96px);
+  }
+}
 
 /* =========================
    LOCATION ADDRESS DETAILS SCREEN
@@ -3270,40 +3292,38 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 </div>
 
 <div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
-  <div class="map-address-shell" id="mapAddressShell" role="dialog" aria-modal="true" aria-label="Choose delivery location">
-    <div id="locationOlaMap" class="map-address-canvas" aria-label="Ola Maps delivery location map"></div>
+  <div class="map-address-shell 1MapAddress" id="mapAddressShell" role="dialog" aria-modal="true" aria-label="Choose delivery location" data-layer="2.1 map address">
+    <div id="locationOlaMap" class="map-address-canvas OlamapView" aria-label="Ola Maps delivery location map" data-layer="olamap-view"></div>
 
     <div class="map-address-empty-state" id="mapEmptyState">
       <div id="mapEmptyCopy">Loading secure map view...</div>
     </div>
 
-    <div class="map-address-top-bar">
-      <button class="map-round-button" type="button" id="closeLocationMapBtn" aria-label="Back to menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" stroke="#12130F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+    <div class="map-address-top-bar TopBar" data-layer="top-bar">
+      <button class="map-round-button BackButton" type="button" id="closeLocationMapBtn" aria-label="Back to menu" data-layer="back-button">
+        <svg class="ChevIcon" data-layer="chev-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" stroke="#FDFDFF" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
 
-      <button class="map-round-button" type="button" id="searchLocationBtn" aria-label="Search location">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697ZM20.25 11.5C20.25 6.6675 16.3325 2.75 11.5 2.75C6.6675 2.75 2.75 6.6675 2.75 11.5C2.75 16.3325 6.6675 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5ZM21.75 11.5C21.75 17.1609 17.1609 21.75 11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5Z" fill="#12130F"/>
+      <button class="map-round-button SearchIcon" type="button" id="searchLocationBtn" aria-label="Search location" data-layer="search-icon">
+        <svg class="ChevVector" data-layer="chev-vector" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697ZM20.25 11.5C20.25 6.6675 16.3325 2.75 11.5 2.75C6.6675 2.75 2.75 6.6675 2.75 11.5C2.75 16.3325 6.6675 20.25 11.5 20.25C16.3325 20.25 20.25 16.3325 20.25 11.5ZM21.75 11.5C21.75 17.1609 17.1609 21.75 11.5 21.75C5.83908 21.75 1.25 17.1609 1.25 11.5C1.25 5.83908 5.83908 1.25 11.5 1.25C17.1609 1.25 21.75 5.83908 21.75 11.5Z" fill="#FDFDFF"/>
         </svg>
       </button>
     </div>
 
-    <div class="map-address-center-pin" id="mapCenterPin" aria-hidden="true">
-      <svg width="42" height="56" viewBox="0 0 42 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="21" cy="49" rx="10" ry="4" fill="#12130F" fill-opacity="0.18"/>
-        <path d="M36.75 19.7167C34.8056 11.1607 27.3423 7.30615 20.7857 7.30615H20.7673C14.2292 7.30615 6.74735 11.1421 4.80298 19.6982C2.63639 29.2549 8.48861 37.3486 13.7846 42.4397C15.7475 44.3286 18.2661 45.2729 20.7857 45.2729C23.3053 45.2729 25.8239 44.3286 27.7683 42.4397C33.0642 37.3486 38.9165 29.2735 36.75 19.7167Z" fill="#8806CE"/>
-        <circle cx="20.7857" cy="23.1839" r="6.33852" fill="#FDFDFF"/>
-        <circle cx="20.7857" cy="23.1839" r="2.68168" fill="#8806CE"/>
+    <div class="map-address-center-pin PinIcon" id="mapCenterPin" data-layer="pin-icon" aria-hidden="true">
+      <svg width="40" height="54" viewBox="0 0 40 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M39.44 19.584C37.356 10.716 29.356 6.72 22.328 6.72H22.308C15.3 6.72 7.28 10.696 5.196 19.564C2.874 29.468 9.146 37.86 14.824 43.136C16.928 45.092 19.628 46.07 22.328 46.07C25.028 46.07 27.728 45.092 29.812 43.136C35.49 37.86 41.762 29.488 39.44 19.584Z" fill="#8806CE"/>
+        <path d="M20 30.29C23.866 30.29 27 27.116 27 23.2C27 19.284 23.866 16.11 20 16.11C16.134 16.11 13 19.284 13 23.2C13 27.116 16.134 30.29 20 30.29Z" fill="#FDFDFF"/>
       </svg>
     </div>
 
-    <div class="map-address-bottom-section" id="mapAddressBottomSection">
-      <div class="map-address-wrap">
-        <button class="gps-button" type="button" id="refreshLocationBtn">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <div class="map-address-bottom-section BottomSection" id="mapAddressBottomSection" data-layer="bottom-section">
+      <div class="map-address-wrap AddressWrap" data-layer="address-wrap">
+        <button class="gps-button GpsButton" type="button" id="refreshLocationBtn" data-layer="gps-button">
+          <svg class="GpsIcon" data-layer="gps-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M12 20.25C7.45 20.25 3.75 16.55 3.75 12C3.75 7.45 7.45 3.75 12 3.75C16.55 3.75 20.25 7.45 20.25 12C20.25 16.55 16.55 20.25 12 20.25ZM12 5.25C8.28 5.25 5.25 8.28 5.25 12C5.25 15.72 8.28 18.75 12 18.75C15.72 18.75 18.75 15.72 18.75 12C18.75 8.28 15.72 5.25 12 5.25Z" fill="#08A045"/>
             <path d="M12 15.75C9.93 15.75 8.25 14.07 8.25 12C8.25 9.93 9.93 8.25 12 8.25C14.07 8.25 15.75 9.93 15.75 12C15.75 14.07 14.07 15.75 12 15.75ZM12 9.75C10.76 9.75 9.75 10.76 9.75 12C9.75 13.24 10.76 14.25 12 14.25C13.24 14.25 14.25 13.24 14.25 12C14.25 10.76 13.24 9.75 12 9.75Z" fill="#08A045"/>
             <path d="M12 4.75C11.59 4.75 11.25 4.41 11.25 4V2C11.25 1.59 11.59 1.25 12 1.25C12.41 1.25 12.75 1.59 12.75 2V4C12.75 4.41 12.41 4.75 12 4.75Z" fill="#08A045"/>
@@ -3311,31 +3331,31 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
             <path d="M12 22.75C11.59 22.75 11.25 22.41 11.25 22V20C11.25 19.59 11.59 19.25 12 19.25C12.41 19.25 12.75 19.59 12.75 20V22C12.75 22.41 12.41 22.75 12 22.75Z" fill="#08A045"/>
             <path d="M22 12.75H20C19.59 12.75 19.25 12.41 19.25 12C19.25 11.59 19.59 11.25 20 11.25H22C22.41 11.25 22.75 11.59 22.75 12C22.75 12.41 22.41 12.75 22 12.75Z" fill="#08A045"/>
           </svg>
-          Use current location
+          <span class="UseCurrentLocation" data-layer="Use current location">Use current location</span>
         </button>
 
-        <div class="captured-add-wrap">
-          <div class="captured-address">
-            <div class="icon-doorno">
-              <div class="pin-icon" aria-hidden="true">
+        <div class="captured-add-wrap CapturedAddWrap" data-layer="captured-add-wrap">
+          <div class="captured-address CapturedAddress" data-layer="captured-address">
+            <div class="icon-doorno IconDoorno" data-layer="icon-doorno">
+              <div class="pin-icon PinIcon" data-layer="pin-icon" aria-hidden="true">
                 <svg width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path opacity="0.4" d="M17.5 8.45C16.45 3.83 12.42 1.75 8.87998 1.75C8.87998 1.75 8.87998 1.75 8.86998 1.75C5.33998 1.75 1.29998 3.82 0.249978 8.44C-0.920022 13.6 2.23998 17.97 5.09998 20.72C6.15998 21.74 7.51998 22.25 8.87998 22.25C10.24 22.25 11.6 21.74 12.65 20.72C15.51 17.97 18.67 13.61 17.5 8.45Z" fill="#8806CE"/>
+                  <path opacity="0.5" d="M17.5 8.45C16.45 3.83 12.42 1.75 8.87998 1.75H8.86998C5.33998 1.75 1.29998 3.82 0.249978 8.44C-0.920022 13.6 2.23998 17.97 5.09998 20.72C6.15998 21.74 7.51998 22.25 8.87998 22.25C10.24 22.25 11.6 21.74 12.65 20.72C15.51 17.97 18.67 13.61 17.5 8.45Z" fill="#FDFDFF"/>
                   <path d="M8.87998 13.4602C10.6197 13.4602 12.03 12.0499 12.03 10.3102C12.03 8.57046 10.6197 7.16016 8.87998 7.16016C7.14028 7.16016 5.72998 8.57046 5.72998 10.3102C5.72998 12.0499 7.14028 13.4602 8.87998 13.4602Z" fill="#8806CE"/>
                 </svg>
               </div>
-              <div class="captured-doorno" id="capturedDoorNoText">Pinned location</div>
+              <div class="captured-doorno 34" id="capturedDoorNoText" data-layer="9/34,">Pinned location</div>
             </div>
-            <div class="captured-full-address" id="capturedAddressText">Move the map so the pin sits exactly on your delivery spot.</div>
+            <div class="captured-full-address IndiraNagarPeriyarNagarKalapattiCoimbatoreTamilnaduIndia" id="capturedAddressText" data-layer="indira nagar, periyar nagar, kalapatti, coimbatore, Tamilnadu, India.">Move the map so the pin sits exactly on your delivery spot.</div>
           </div>
         </div>
 
-        <button class="continue-button" type="button" id="continueLocationBtn">Continue</button>
+        <button class="continue-button ContinueButton" type="button" id="continueLocationBtn" data-layer="continue-button">Continue</button>
       </div>
 
-      <div class="saved-add-drawer">
-        <div class="drawer-handle-wide" aria-hidden="true"></div>
-        <div class="saved-address-title">Saved Address</div>
-        <div class="saved-add-group" id="savedAddressList"></div>
+      <div class="saved-add-drawer SavedAddDrawer" data-layer="saved-add-drawer">
+        <div class="drawer-handle-wide DrawerHandle" data-layer="drawer-handle" aria-hidden="true"></div>
+        <div class="saved-address-title SavedAddress" data-layer="Saved Address">Saved Address</div>
+        <div class="saved-add-group SavedAddGroup" id="savedAddressList" data-layer="saved-add-group"></div>
       </div>
     </div>
   </div>
