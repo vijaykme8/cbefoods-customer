@@ -2823,6 +2823,60 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   background: transparent !important;
 }
 
+
+
+/* Final menu listing spacing + divider + exact icon fixes */
+.cf-figma-menu-root .MenuListings {
+  gap: 24px !important;
+}
+.cf-figma-menu-root .MenuListings .DividerFrame {
+  align-self: stretch !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.cf-figma-menu-root .MenuListings .DividerFrame .Div {
+  align-self: stretch !important;
+  width: 100% !important;
+  height: 0 !important;
+  border-top: 1px solid rgba(253, 253, 255, 0.16) !important;
+  outline: 0 !important;
+  box-sizing: border-box !important;
+}
+.cf-figma-menu-root .BestSellingSection,
+.cf-figma-menu-root .ProteinPackSection,
+.cf-figma-menu-root .RegularPackSection {
+  gap: 18px !important;
+}
+.cf-figma-menu-root .ProteinPackSection > .ListingCards,
+.cf-figma-menu-root .RegularPackSection > .ListingCards {
+  gap: 18px !important;
+}
+.cf-figma-menu-root .BestSellingSection > .ListingCards {
+  gap: 10px !important;
+}
+.cf-figma-menu-root .PenIcon {
+  width: 20px !important;
+  height: 20px !important;
+  overflow: visible !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+.cf-figma-menu-root .PenIcon img,
+.cf-figma-menu-root .PenIconImg {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+  object-fit: contain !important;
+  background: transparent !important;
+  border: 0 !important;
+  outline: 0 !important;
+  filter: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -2838,8 +2892,8 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 <div class="DelivertoChange" data-layer="deliverto&amp;change" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
 <div class="DeliverTo" data-layer="Deliver to" style="opacity: 0.50; color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Deliver to</div>
 <div class="ChangeButton" data-layer="change button" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
-<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden; flex: 0 0 auto;">
-<img alt="" aria-hidden="true" src="assets/menu/icons/pen-icon.svg" style="width:20px;height:20px;display:block;object-fit:contain;"/>
+<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: visible; flex: 0 0 auto; background: transparent;">
+<img alt="" aria-hidden="true" class="PenIconImg" src="assets/menu/icons/pen-icon.svg?v=pen-exact-20260520" style="width:20px;height:20px;display:block;object-fit:contain;background:transparent;border:0;filter:none;"/>
 </div>
 <div class="Change" data-layer="Change" style="color: #08A045; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Change</div>
 </div>
@@ -2886,7 +2940,7 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 </div>
 </div>
 </div>
-<div class="MenuListings" data-layer="menu listings" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex">
+<div class="MenuListings" data-layer="menu listings" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
 <div class="BestSellingSection section" data-layer="best selling section" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
 <div class="TextGroup" data-layer="text group" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
 <div class="BestSelling" data-layer="Best selling" style="transform: rotate(-5deg); transform-origin: top left; color: #8806CE; font-size: 26px; font-family: Chillax; font-weight: 600; line-height: 31.20px; word-wrap: break-word">Best selling</div>
@@ -2960,7 +3014,9 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 </div>
 </div>
 </div>
-<div class="Div" data-layer="div" style="align-self: stretch; height: 0px; outline: 1px rgba(253, 253, 255, 0.16) solid; outline-offset: -0.50px"></div>
+<div class="DividerFrame" data-layer="divider-frame" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; box-sizing: border-box;">
+  <div class="Div" data-layer="div" style="align-self: stretch; height: 0px; border-top: 1px solid rgba(253, 253, 255, 0.16); box-sizing: border-box;"></div>
+</div>
 <div class="ProteinPackSection section" data-layer="protein pack section" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
 <div class="TextGroup" data-layer="text group" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
 <div class="ProteinPack" data-layer="Protein Pack" style="transform: rotate(-5deg); transform-origin: top left; color: #E23009; font-size: 26px; font-family: Chillax; font-weight: 600; line-height: 31.20px; word-wrap: break-word">Protein Pack</div>
@@ -3021,7 +3077,9 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 </div>
 </div>
 </div>
-<div class="Div" data-layer="div" style="align-self: stretch; height: 0px; outline: 1px rgba(253, 253, 255, 0.16) solid; outline-offset: -0.50px"></div>
+<div class="DividerFrame" data-layer="divider-frame" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; box-sizing: border-box;">
+  <div class="Div" data-layer="div" style="align-self: stretch; height: 0px; border-top: 1px solid rgba(253, 253, 255, 0.16); box-sizing: border-box;"></div>
+</div>
 <div class="RegularPackSection section" data-layer="regular pack section" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
 <div class="TextGroup" data-layer="text group" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: flex">
 <div class="RegularPacks" data-layer="Regular packs" style="transform: rotate(-5deg); transform-origin: top left; color: #08A045; font-size: 26px; font-family: Chillax; font-weight: 600; line-height: 31.20px; word-wrap: break-word">Regular packs</div>
@@ -3082,7 +3140,9 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 </div>
 </div>
 </div>
-<div class="Div" data-layer="div" style="align-self: stretch; height: 0px; outline: 1px rgba(253, 253, 255, 0.16) solid; outline-offset: -0.50px"></div>
+<div class="DividerFrame" data-layer="divider-frame" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; box-sizing: border-box;">
+  <div class="Div" data-layer="div" style="align-self: stretch; height: 0px; border-top: 1px solid rgba(253, 253, 255, 0.16); box-sizing: border-box;"></div>
+</div>
 </div>
 </div>
 <div aria-label="Open cart" class="FloatingAddedCard floating-cart-card floating-added-card" data-layer="floating-added-card" id="floatingCartCard" role="button" style="width: 342px; padding-left: 20px; padding-right: 20px; padding-top: 16px; padding-bottom: 16px; background: linear-gradient(90deg, #08A045 0%, #8806CE 100%); box-shadow: 0px 0px 4px #089E44; border-radius: 16px; justify-content: space-between; align-items: center; display: inline-flex" tabindex="0">
