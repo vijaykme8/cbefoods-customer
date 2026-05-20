@@ -657,6 +657,152 @@ button {
   display: flex;
 }
 
+
+/* 1.1 cart-empty refinement */
+body {
+  background: #12130F;
+}
+
+.top-bar {
+  height: 117px;
+  padding: 50px 24px 20px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.08), rgba(253, 253, 255, 0.08)), #12130F;
+}
+
+.left-group {
+  height: 47px;
+  gap: 4px;
+}
+
+.cart-title-icon {
+  color: #FDFDFF;
+  opacity: 0.5;
+}
+
+.title-text {
+  color: #FDFDFF;
+  font-size: 20px;
+  line-height: 120%;
+  font-weight: 600;
+}
+
+.items-count {
+  color: #08A045;
+  font-size: 16px;
+  line-height: 120%;
+  font-weight: 500;
+}
+
+.right-group {
+  width: 188px;
+  height: 47px;
+  gap: 4px;
+}
+
+.deliver-info {
+  max-width: 188px;
+  gap: 4px;
+}
+
+.deliver-label {
+  font-size: 14px;
+  line-height: 120%;
+  color: rgba(253, 253, 255, 0.50);
+}
+
+.deliver-address {
+  max-width: 119px;
+  font-size: 14px;
+  line-height: 120%;
+  color: #FDFDFF;
+}
+
+.change-button {
+  height: 26px;
+  padding: 2px 0;
+  gap: 2px;
+  color: #08A045;
+}
+
+.change-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.change-button span {
+  font-size: 16px;
+  line-height: 120%;
+  font-weight: 500;
+}
+
+.empty-state {
+  top: 117px;
+  bottom: 64px;
+  padding: 50px 24px 24px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  align-items: center;
+}
+
+.empty-img {
+  width: 180px;
+  height: 180px;
+  margin: 0 0 20px;
+}
+
+.info-cta-group {
+  width: 342px;
+  max-width: 100%;
+  height: 147px;
+  gap: 16px;
+}
+
+.info-group {
+  width: 342px;
+  max-width: 100%;
+  height: 76px;
+}
+
+.empty-title {
+  width: 342px;
+  max-width: 100%;
+  height: 34px;
+  color: #FDFDFF;
+  font-size: 24px;
+  line-height: 140%;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.empty-copy {
+  width: 342px;
+  max-width: 100%;
+  height: 42px;
+  color: #FDFDFF;
+  font-size: 14px;
+  line-height: 150%;
+  font-weight: 400;
+}
+
+.browse-menu-button {
+  width: 196px;
+  height: 55px;
+  padding: 14px 40px;
+  border: 1px solid #08A045;
+  border-radius: 10px;
+  color: #08A045;
+  font-size: 18px;
+  line-height: 26px;
+  font-weight: 600;
+}
+
+.cart-shell.is-empty {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+}
+
+.cart-shell.is-empty .empty-state {
+  display: flex;
+}
+
 @media (max-width: 360px) {
   .top-bar,
   .cart-content,
