@@ -3026,6 +3026,64 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 }
 
 </style>
+
+
+<style id="cf-menu-gradient-correction-20260520">
+/* Correction: moving gradient only for floating added card, using only #08A045 and #8806CE. */
+@keyframes cfFloatingCartTwoColorGradient {
+  0% { background-position: 0% 50%; box-shadow: 0px 0px 4px rgba(8, 160, 69, 0.72), 0px 8px 22px rgba(136, 6, 206, 0.18); }
+  50% { background-position: 100% 50%; box-shadow: 0px 0px 10px rgba(136, 6, 206, 0.52), 0px 8px 22px rgba(8, 160, 69, 0.20); }
+  100% { background-position: 0% 50%; box-shadow: 0px 0px 4px rgba(8, 160, 69, 0.72), 0px 8px 22px rgba(136, 6, 206, 0.18); }
+}
+
+@keyframes cfFloatingCartTwoColorGlow {
+  0% { transform: translate3d(-28%, -16%, 0) rotate(0deg); opacity: 0.50; }
+  50% { transform: translate3d(20%, 10%, 0) rotate(160deg); opacity: 0.78; }
+  100% { transform: translate3d(-28%, -16%, 0) rotate(360deg); opacity: 0.50; }
+}
+
+.cf-figma-menu-root .FloatingAddedCard {
+  background: linear-gradient(110deg, #08A045 0%, #8806CE 50%, #08A045 100%) !important;
+  background-size: 220% 220% !important;
+  animation: cfFloatingCartTwoColorGradient 4.2s ease-in-out infinite !important;
+  position: fixed !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard::before {
+  content: "";
+  position: absolute;
+  inset: -70%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(253, 253, 255, 0.24) 0%, rgba(253, 253, 255, 0.08) 17%, transparent 34%),
+    radial-gradient(circle at 72% 58%, rgba(136, 6, 206, 0.52) 0%, rgba(136, 6, 206, 0.18) 22%, transparent 43%),
+    radial-gradient(circle at 40% 78%, rgba(8, 160, 69, 0.42) 0%, rgba(8, 160, 69, 0.14) 20%, transparent 42%);
+  filter: blur(12px);
+  animation: cfFloatingCartTwoColorGlow 6.5s linear infinite;
+}
+
+.cf-figma-menu-root .FloatingAddedCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* No moving gradient animation for section headings. Keep their normal/static gradient text only. */
+.cf-figma-menu-root .BestSelling,
+.cf-figma-menu-root .ProteinPackSection > .TextGroup > .ProteinPack,
+.cf-figma-menu-root .RegularPacks {
+  animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-figma-menu-root .FloatingAddedCard,
+  .cf-figma-menu-root .FloatingAddedCard::before {
+    animation: none !important;
+  }
+}
+</style>
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(136px + env(safe-area-inset-bottom));">
