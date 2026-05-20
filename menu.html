@@ -2877,6 +2877,17 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   filter: none !important;
 }
 
+/* Tab active-state fix: inline Figma background on All tab must not stay active after filtering. */
+.cf-figma-menu-root .FlotaingTabs .pill {
+  background: transparent !important;
+}
+.cf-figma-menu-root .FlotaingTabs .pill.pill-active {
+  background: rgba(253, 253, 255, 0.16) !important;
+}
+.cf-figma-menu-root .MenuListings.is-filtered .DividerFrame {
+  display: none !important;
+}
+
 </style>
 </head>
 <body>
@@ -5594,68 +5605,105 @@ How:
 const pills = document.querySelectorAll(".pill");
 
 const bestSellingSection =
-  document.querySelectorAll(".section")[0];
+  document.querySelector(".BestSellingSection");
 
 const proteinSection =
-  document.querySelectorAll(".section")[1];
+  document.querySelector(".ProteinPackSection");
 
 const regularSection =
-  document.querySelectorAll(".section")[2];
+  document.querySelector(".RegularPackSection");
+
+const menuListings =
+  document.querySelector(".MenuListings");
+
+const dividerFrames = menuListings
+  ? menuListings.querySelectorAll(".DividerFrame")
+  : [];
+
+function setActivePill(activePill) {
+
+  pills.forEach(pill => {
+    pill.classList.remove("pill-active");
+    pill.setAttribute("aria-selected", "false");
+
+    /*
+    Figma export had inline background on All tab.
+    Clear inline background so only the clicked tab stays highlighted.
+    */
+    pill.style.background = "transparent";
+  });
+
+  activePill.classList.add("pill-active");
+  activePill.setAttribute("aria-selected", "true");
+  activePill.style.background = "rgba(253, 253, 255, 0.16)";
+
+}
+
+function setDividerMode(mode) {
+
+  /*
+  All view: keep dividers between menu groups.
+  Filtered view: hide dividers above/below the visible listing.
+  */
+  const shouldHideDividers = mode !== "all";
+
+  if (menuListings) {
+    menuListings.classList.toggle("is-filtered", shouldHideDividers);
+  }
+
+  dividerFrames.forEach(divider => {
+    divider.style.display = shouldHideDividers ? "none" : "flex";
+  });
+
+}
+
+function setMenuFilter(mode) {
+
+  if (mode === "protein") {
+    if (bestSellingSection) bestSellingSection.style.display = "none";
+    if (proteinSection) proteinSection.style.display = "flex";
+    if (regularSection) regularSection.style.display = "none";
+    setDividerMode("protein");
+    return;
+  }
+
+  if (mode === "regular") {
+    if (bestSellingSection) bestSellingSection.style.display = "none";
+    if (proteinSection) proteinSection.style.display = "none";
+    if (regularSection) regularSection.style.display = "flex";
+    setDividerMode("regular");
+    return;
+  }
+
+  if (bestSellingSection) bestSellingSection.style.display = "flex";
+  if (proteinSection) proteinSection.style.display = "flex";
+  if (regularSection) regularSection.style.display = "flex";
+  setDividerMode("all");
+
+}
+
+const filterModes = ["all", "protein", "regular"];
 
 pills.forEach((pill, index) => {
 
+  pill.setAttribute("aria-selected", pill.classList.contains("pill-active") ? "true" : "false");
+
   pill.addEventListener("click", () => {
 
-    /*
-    Remove active state from all pills
-    */
-    pills.forEach(p => {
-      p.classList.remove("pill-active");
-    });
-
-    /*
-    Activate clicked pill
-    */
-    pill.classList.add("pill-active");
-
-    /*
-    FILTERING LOGIC
-    */
-
-    /*
-    ALL
-    */
-    if (index === 0) {
-
-      bestSellingSection.style.display = "flex";
-      proteinSection.style.display = "flex";
-      regularSection.style.display = "flex";
-    }
-
-    /*
-    PROTEIN
-    */
-    else if (index === 1) {
-
-      bestSellingSection.style.display = "none";
-      proteinSection.style.display = "flex";
-      regularSection.style.display = "none";
-    }
-
-    /*
-    REGULAR
-    */
-    else if (index === 2) {
-
-      bestSellingSection.style.display = "none";
-      proteinSection.style.display = "none";
-      regularSection.style.display = "flex";
-    }
+    setActivePill(pill);
+    setMenuFilter(filterModes[index] || "all");
 
   });
 
 });
 
+/*
+Initial state: keep only All tab highlighted and show all sections/dividers.
+*/
+if (pills[0]) {
+  setActivePill(pills[0]);
+}
+setMenuFilter("all");
 
 /*
 ========================================
