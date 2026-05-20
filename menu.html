@@ -5022,6 +5022,56 @@ function completeLocationReturnIfNeeded() {
   return true;
 }
 
+function getLocationBackTarget() {
+  const params = new URLSearchParams(window.location.search);
+  const queryReturn = params.get("returnTo");
+  const savedReturn = sessionStorage.getItem("cbe_location_return_to");
+
+  if (savedReturn === "cart-payment" || queryReturn === "cart-payment") {
+    return "cart.html";
+  }
+
+  if (savedReturn === "cart" || savedReturn === "cart.html" || queryReturn === "cart") {
+    return "cart.html";
+  }
+
+  if (savedReturn === "profile" || savedReturn === "profile.html" || queryReturn === "profile") {
+    return "profile.html";
+  }
+
+  return "";
+}
+
+function clearLocationReturnState() {
+  sessionStorage.removeItem("cbe_open_location_map");
+  sessionStorage.removeItem("cbe_location_return_to");
+  sessionStorage.removeItem("cbe_checkout_after_address");
+}
+
+function removeLocationQueryParams() {
+  const url = new URL(window.location.href);
+  let changed = false;
+  ["openLocation", "forceLocation", "returnTo"].forEach(key => {
+    if (url.searchParams.has(key)) {
+      url.searchParams.delete(key);
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    const nextUrl = `${url.pathname}${url.search ? `?${url.searchParams.toString()}` : ""}${url.hash || ""}`;
+    window.history.replaceState({}, document.title, nextUrl);
+  }
+}
+
+function refreshCommonBottomNav() {
+  window.requestAnimationFrame(() => {
+    if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.refresh === "function") {
+      window.CoimbatoreFoodsBottomNav.refresh();
+    }
+  });
+}
+
 function shouldAutoOpenLocationMap() {
   const params = new URLSearchParams(window.location.search);
   return (
@@ -5055,7 +5105,18 @@ function openLocationMapScreen() {
   }, 80);
 }
 
-function closeLocationMapScreen() {
+function closeLocationMapScreen(options = {}) {
+  const opts = options && typeof options === "object" ? options : {};
+
+  if (opts.returnToSource !== false) {
+    const backTarget = getLocationBackTarget();
+    if (backTarget) {
+      clearLocationReturnState();
+      window.location.href = backTarget;
+      return;
+    }
+  }
+
   if (!locationMapScreen) return;
 
   locationMapScreen.classList.remove("is-open");
@@ -5063,6 +5124,9 @@ function closeLocationMapScreen() {
   document.body.classList.remove("map-screen-open");
   closeMapSearch(false);
   showLocationMapStep();
+  clearLocationReturnState();
+  removeLocationQueryParams();
+  refreshCommonBottomNav();
 }
 
 function showLocationMapStep() {
@@ -7959,7 +8023,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_stateicons_badge1"></script>
+<script src="components/bottom-nav.js?v=20260520_navbackfix1"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 
