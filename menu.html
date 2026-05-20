@@ -2811,14 +2811,10 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   width: 20px;
   height: 20px;
   flex: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #888987;
-  font-size: 16px;
-  line-height: 20px;
+  display: block;
+  object-fit: contain;
 }
-.saveas-chip.is-selected .saveas-icon { color: #FDFDFF; }
+.saveas-chip.is-selected .saveas-icon { opacity: 1; }
 
 </style>
 <script>
@@ -3649,15 +3645,15 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
           <div class="details-field-label">Save as</div>
           <div class="saveas-chips-group" id="saveAsChipsGroup">
             <button class="saveas-chip is-selected" type="button" data-save-label="Home">
-              <span class="saveas-icon" aria-hidden="true">⌂</span>
+              <img class="saveas-icon" src="assets/add-address/home-icon.svg?v=addaddr1" alt="" aria-hidden="true">
               Home
             </button>
             <button class="saveas-chip" type="button" data-save-label="Office">
-              <span class="saveas-icon" aria-hidden="true">▣</span>
+              <img class="saveas-icon" src="assets/add-address/suitcase-icon.svg?v=addaddr1" alt="" aria-hidden="true">
               Office
             </button>
             <button class="saveas-chip" type="button" data-save-label="Gym">
-              <span class="saveas-icon" aria-hidden="true">—</span>
+              <img class="saveas-icon" src="assets/add-address/dumbell-icon.svg?v=addaddr1" alt="" aria-hidden="true">
               Gym
             </button>
             <button class="saveas-chip" type="button" data-save-label="Other">Other</button>
