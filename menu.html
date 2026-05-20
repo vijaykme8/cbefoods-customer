@@ -1121,6 +1121,168 @@ body.map-screen-open {
   display: block;
 }
 
+.map-search-overlay {
+  position: absolute;
+  left: 50%;
+  top: 40px;
+  transform: translateX(-50%) translateY(-10px);
+  width: 342px;
+  max-width: calc(100vw - 48px);
+  z-index: 12;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.map-search-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+.map-search-card {
+  width: 342px;
+  max-width: 100%;
+  height: 48px;
+  padding: 0 8px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  box-shadow: 1px 4px 12px rgba(253, 253, 255, 0.12);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-search-back,
+.map-search-clear,
+.map-search-submit {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  background: transparent;
+  color: #FDFDFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+}
+
+.map-search-submit {
+  color: #08A045;
+}
+
+.map-search-back:active,
+.map-search-clear:active,
+.map-search-submit:active {
+  transform: scale(0.94);
+}
+
+.map-search-input {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #FDFDFF;
+  font-family: General Sans;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20.8px;
+  padding: 0;
+}
+
+.map-search-input::placeholder {
+  color: rgba(253, 253, 255, 0.50);
+}
+
+.map-search-results {
+  width: 342px;
+  max-width: 100%;
+  margin-top: 10px;
+  padding: 8px;
+  border-radius: 14px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  box-shadow: 0px 6px 24px rgba(0, 0, 0, 0.18);
+  max-height: min(310px, calc(100dvh - 170px));
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: none;
+}
+
+.map-search-results.is-visible {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-search-result-item {
+  width: 100%;
+  min-height: 58px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(253, 253, 255, 0.04);
+  padding: 10px 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-search-result-item:active {
+  transform: scale(0.99);
+}
+
+.map-search-result-pin {
+  width: 18px;
+  height: 24px;
+  flex: none;
+  margin-top: 1px;
+}
+
+.map-search-result-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-search-result-title {
+  color: #FDFDFF;
+  font-family: General Sans;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 19.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.map-search-result-line {
+  color: rgba(253, 253, 255, 0.55);
+  font-family: General Sans;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15.6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.map-search-state {
+  padding: 12px;
+  color: rgba(253, 253, 255, 0.62);
+  font-family: General Sans;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18.2px;
+}
+
 .map-address-center-pin {
   position: absolute;
   left: 50%;
@@ -3313,6 +3475,29 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
       </button>
     </div>
 
+    <div class="map-search-overlay" id="mapSearchOverlay" aria-hidden="true">
+      <div class="map-search-card" role="search" aria-label="Search delivery location">
+        <button class="map-search-back" type="button" id="mapSearchCloseBtn" aria-label="Close search">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M15 19.9201L8.47997 13.4001C7.70997 12.6301 7.70997 11.3701 8.47997 10.6001L15 4.08008" stroke="#FDFDFF" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <input class="map-search-input" id="mapSearchInput" type="search" inputmode="search" autocomplete="street-address" placeholder="Search area, street, apartment" aria-label="Search area, street, apartment">
+        <button class="map-search-clear" type="button" id="mapSearchClearBtn" aria-label="Clear search">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M18 6L6 18M6 6L18 18" stroke="rgba(253,253,255,0.72)" stroke-width="1.7" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button class="map-search-submit" type="button" id="mapSearchSubmitBtn" aria-label="Search">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M19.4697 19.4697C19.7626 19.1768 20.2374 19.1768 20.5303 19.4697L22.5303 21.4697C22.8232 21.7626 22.8232 22.2374 22.5303 22.5303C22.2374 22.8232 21.7626 22.8232 21.4697 22.5303L19.4697 20.5303C19.1768 20.2374 19.1768 19.7626 19.4697 19.4697Z" fill="#08A045"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M10.75 2.5C6.19365 2.5 2.5 6.19365 2.5 10.75C2.5 15.3063 6.19365 19 10.75 19C15.3063 19 19 15.3063 19 10.75C19 6.19365 15.3063 2.5 10.75 2.5ZM4 10.75C4 7.02208 7.02208 4 10.75 4C14.4779 4 17.5 7.02208 17.5 10.75C17.5 14.4779 14.4779 17.5 10.75 17.5C7.02208 17.5 4 14.4779 4 10.75Z" fill="#08A045"/>
+          </svg>
+        </button>
+      </div>
+      <div class="map-search-results" id="mapSearchResults" aria-live="polite"></div>
+    </div>
+
     <div class="map-address-center-pin PinIcon" id="mapCenterPin" data-layer="pin-icon" aria-hidden="true">
       <svg width="40" height="54" viewBox="0 0 40 54" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M39.44 19.584C37.356 10.716 29.356 6.72 22.328 6.72H22.308C15.3 6.72 7.28 10.696 5.196 19.564C2.874 29.468 9.146 37.86 14.824 43.136C16.928 45.092 19.628 46.07 22.328 46.07C25.028 46.07 27.728 45.092 29.812 43.136C35.49 37.86 41.762 29.488 39.44 19.584Z" fill="#8806CE"/>
@@ -3483,6 +3668,12 @@ const locationMapScreen = document.getElementById("locationMapScreen");
 const mapAddressShell = document.getElementById("mapAddressShell");
 const closeLocationMapBtn = document.getElementById("closeLocationMapBtn");
 const searchLocationBtn = document.getElementById("searchLocationBtn");
+const mapSearchOverlay = document.getElementById("mapSearchOverlay");
+const mapSearchInput = document.getElementById("mapSearchInput");
+const mapSearchCloseBtn = document.getElementById("mapSearchCloseBtn");
+const mapSearchClearBtn = document.getElementById("mapSearchClearBtn");
+const mapSearchSubmitBtn = document.getElementById("mapSearchSubmitBtn");
+const mapSearchResults = document.getElementById("mapSearchResults");
 const refreshLocationBtn = document.getElementById("refreshLocationBtn");
 const continueLocationBtn = document.getElementById("continueLocationBtn");
 const locationOlaMapCanvas = document.getElementById("locationOlaMap");
@@ -3518,6 +3709,8 @@ let locationOlaMapInstance = null;
 let locationReverseTimer = null;
 let locationReverseRequestId = 0;
 let isResolvingAddress = false;
+let mapSearchDebounceTimer = null;
+let mapSearchRequestId = 0;
 let currentLocationState = null;
 let detailsPreviewMapInstance = null;
 
@@ -4806,6 +4999,7 @@ function closeLocationMapScreen() {
   locationMapScreen.classList.remove("is-open");
   locationMapScreen.setAttribute("aria-hidden", "true");
   document.body.classList.remove("map-screen-open");
+  closeMapSearch(false);
   showLocationMapStep();
 }
 
@@ -5447,14 +5641,193 @@ function setupSavedAddressDrawerGesture() {
   });
 }
 
-function handleSearchLocation() {
-  const query = window.prompt("Search area, apartment, street or landmark");
+function openMapSearch() {
+  if (!mapSearchOverlay) return;
+
+  mapSearchOverlay.classList.add("is-open");
+  mapSearchOverlay.setAttribute("aria-hidden", "false");
+
+  if (mapSearchResults && !mapSearchInput?.value) {
+    mapSearchResults.classList.remove("is-visible");
+    mapSearchResults.innerHTML = "";
+  }
+
+  setTimeout(() => {
+    if (mapSearchInput) mapSearchInput.focus();
+  }, 60);
+}
+
+function closeMapSearch(shouldClear = false) {
+  if (!mapSearchOverlay) return;
+
+  mapSearchOverlay.classList.remove("is-open");
+  mapSearchOverlay.setAttribute("aria-hidden", "true");
+
+  clearTimeout(mapSearchDebounceTimer);
+
+  if (shouldClear && mapSearchInput) {
+    mapSearchInput.value = "";
+  }
+}
+
+function setMapSearchResultsState(message = "") {
+  if (!mapSearchResults) return;
+
+  if (!message) {
+    mapSearchResults.classList.remove("is-visible");
+    mapSearchResults.innerHTML = "";
+    return;
+  }
+
+  mapSearchResults.classList.add("is-visible");
+  mapSearchResults.innerHTML = `<div class="map-search-state">${escapeHtml(message)}</div>`;
+}
+
+function makeMapSearchPinSvg() {
+  return `
+    <svg class="map-search-result-pin" width="18" height="24" viewBox="0 0 18 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8.875 22.25C8.875 22.25 17.75 14.4 17.75 8.9C17.75 4.96 13.78 1.75 8.875 1.75C3.97 1.75 0 4.96 0 8.9C0 14.4 8.875 22.25 8.875 22.25Z" fill="#C381E7"/>
+      <circle cx="8.875" cy="8.9" r="3.15" fill="#8806CE"/>
+    </svg>`;
+}
+
+function normalizeLocationSearchQuery(query) {
+  const cleaned = cleanText(query);
+  if (!cleaned) return "";
+
+  if (/coimbatore|cbe|tamil\s*nadu|india/i.test(cleaned)) {
+    return cleaned;
+  }
+
+  return `${cleaned}, Coimbatore, Tamil Nadu, India`;
+}
+
+function parseSearchDisplayName(item = {}) {
+  const displayName = cleanText(item.display_name || item.name);
+  if (!displayName) {
+    return { title: "Selected location", line: "Coimbatore, Tamil Nadu" };
+  }
+
+  const parts = displayName.split(",").map(part => cleanText(part)).filter(Boolean);
+  const title = parts[0] || "Selected location";
+  const line = parts.slice(1).join(", ") || displayName;
+
+  return { title, line, full: displayName };
+}
+
+async function fetchMapSearchResults(query) {
+  const searchQuery = normalizeLocationSearchQuery(query);
+  if (!searchQuery) return [];
+
+  const url =
+    "https://nominatim.openstreetmap.org/search" +
+    "?format=jsonv2" +
+    "&addressdetails=1" +
+    "&limit=6" +
+    "&accept-language=en" +
+    `&q=${encodeURIComponent(searchQuery)}`;
+
+  const response = await fetch(url, {
+    headers: {
+      "Accept": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Location search failed: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return Array.isArray(data) ? data : [];
+}
+
+function renderMapSearchResults(items = []) {
+  if (!mapSearchResults) return;
+
+  if (!items.length) {
+    setMapSearchResultsState("No matching location found. Try nearby area, street, or landmark.");
+    return;
+  }
+
+  mapSearchResults.classList.add("is-visible");
+  mapSearchResults.innerHTML = items.map((item, index) => {
+    const display = parseSearchDisplayName(item);
+    return `
+      <button class="map-search-result-item" type="button" data-map-search-index="${index}">
+        ${makeMapSearchPinSvg()}
+        <span class="map-search-result-copy">
+          <span class="map-search-result-title">${escapeHtml(display.title)}</span>
+          <span class="map-search-result-line">${escapeHtml(display.line)}</span>
+        </span>
+      </button>
+    `;
+  }).join("");
+
+  mapSearchResults.querySelectorAll("[data-map-search-index]").forEach(button => {
+    button.addEventListener("click", () => {
+      const item = items[Number(button.getAttribute("data-map-search-index"))];
+      selectMapSearchResult(item);
+    });
+  });
+}
+
+async function runMapLocationSearch(query = mapSearchInput?.value) {
   const cleanedQuery = cleanText(query);
 
-  if (!cleanedQuery) return;
+  if (!cleanedQuery) {
+    setMapSearchResultsState("");
+    return;
+  }
 
+  const requestId = ++mapSearchRequestId;
   localStorage.setItem("cust_location_search_query", cleanedQuery);
-  updateCapturedAddressCard(currentLocationState, `Search saved: ${cleanedQuery}. Search result screen will be connected next.`);
+  setMapSearchResultsState("Searching location...");
+
+  try {
+    const results = await fetchMapSearchResults(cleanedQuery);
+    if (requestId !== mapSearchRequestId) return;
+    renderMapSearchResults(results);
+  } catch (error) {
+    if (requestId !== mapSearchRequestId) return;
+    console.log("Location search failed:", error);
+    setMapSearchResultsState("Search could not load. Move the map manually or use current location.");
+  }
+}
+
+function selectMapSearchResult(item = {}) {
+  const lat = Number(item.lat);
+  const lng = Number(item.lon);
+
+  if (!item || Number.isNaN(lat) || Number.isNaN(lng)) return;
+
+  const display = parseSearchDisplayName(item);
+
+  currentLocationState = {
+    ...(currentLocationState || {}),
+    lat,
+    lng,
+    doorNo: "",
+    display: compactAddress(display.full || display.title),
+    displayAddress: compactAddress(display.full || display.title),
+    full: display.full || display.line || display.title,
+    fullAddress: display.full || display.line || display.title,
+    source: "customer_location_search",
+    pinnedByUser: true
+  };
+
+  updateCapturedAddressCard(currentLocationState);
+  closeMapSearch(false);
+
+  if (locationOlaMapInstance) {
+    easeMapToPin(lat, lng, { zoom: 17, duration: 520 });
+    setTimeout(() => scheduleReverseForCurrentMap("customer_location_search"), 620);
+  } else {
+    updateMapPreview(lat, lng, true);
+  }
+}
+
+function handleSearchLocation() {
+  openMapSearch();
 }
 
 function handleContinueLocation() {
@@ -5589,6 +5962,54 @@ if (searchLocationBtn) {
   searchLocationBtn.addEventListener("click", handleSearchLocation);
 }
 
+if (mapSearchCloseBtn) {
+  mapSearchCloseBtn.addEventListener("click", () => closeMapSearch(false));
+}
+
+if (mapSearchClearBtn) {
+  mapSearchClearBtn.addEventListener("click", () => {
+    if (mapSearchInput) {
+      mapSearchInput.value = "";
+      mapSearchInput.focus();
+    }
+    setMapSearchResultsState("");
+  });
+}
+
+if (mapSearchSubmitBtn) {
+  mapSearchSubmitBtn.addEventListener("click", () => runMapLocationSearch());
+}
+
+if (mapSearchInput) {
+  mapSearchInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      runMapLocationSearch();
+    }
+
+    if (event.key === "Escape") {
+      closeMapSearch(false);
+    }
+  });
+
+  mapSearchInput.addEventListener("input", () => {
+    clearTimeout(mapSearchDebounceTimer);
+    const value = cleanText(mapSearchInput.value);
+
+    if (!value) {
+      setMapSearchResultsState("");
+      return;
+    }
+
+    if (value.length < 3) {
+      setMapSearchResultsState("Type at least 3 letters to search.");
+      return;
+    }
+
+    mapSearchDebounceTimer = setTimeout(() => runMapLocationSearch(value), 520);
+  });
+}
+
 if (continueLocationBtn) {
   continueLocationBtn.addEventListener("click", handleContinueLocation);
 }
@@ -5638,6 +6059,11 @@ if (detailsLandmarkInput) {
 setupSavedAddressDrawerGesture();
 
 window.addEventListener("keydown", event => {
+  if (event.key === "Escape" && mapSearchOverlay && mapSearchOverlay.classList.contains("is-open")) {
+    closeMapSearch(false);
+    return;
+  }
+
   if (event.key === "Escape" && locationMapScreen && locationMapScreen.classList.contains("is-open")) {
     closeLocationMapScreen();
   }
