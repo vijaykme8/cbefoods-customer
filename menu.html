@@ -2511,17 +2511,41 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 }
 
 
-/* Final refinement: floating tabs gap + quantity button background */
+/* Final refinement: floating tabs gap + equal Add / quantity button sizing */
 .cf-figma-menu-root .FlotaingTabs {
   gap: 16px !important;
+}
+
+/* Keep Add and quantity states exactly the same outer size. */
+.cf-figma-menu-root .product-list-action {
+  box-sizing: border-box !important;
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  height: 29px !important;
+  min-height: 29px !important;
+  max-height: 29px !important;
+  padding: 6px 22px !important;
+  flex: 0 0 72px !important;
 }
 
 .cf-figma-menu-root .product-list-action.qty-button,
 .action-btn.qty-button,
 .product-list-action.qty-button {
+  box-sizing: border-box !important;
+  width: 72px !important;
+  min-width: 72px !important;
+  max-width: 72px !important;
+  height: 29px !important;
+  min-height: 29px !important;
+  max-height: 29px !important;
+  padding: 6px 10px !important;
   background: rgba(253, 253, 255, 0.06) !important;
-  border: 1px solid rgba(253, 253, 255, 0.12) !important;
+  border: 1px solid #08A045 !important;
+  justify-content: space-between !important;
+  align-items: center !important;
   color: #FDFDFF !important;
+  flex: 0 0 72px !important;
 }
 
 .cf-figma-menu-root .product-list-action.qty-button .qty-control,
