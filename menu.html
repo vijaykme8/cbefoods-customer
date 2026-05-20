@@ -4992,19 +4992,13 @@ function getLocationReturnTarget() {
   const savedReturn = sessionStorage.getItem("cbe_location_return_to");
   const checkoutAfterAddress = sessionStorage.getItem("cbe_checkout_after_address") === "1";
 
-  if (checkoutAfterAddress || savedReturn === "cart-payment" || queryReturn === "cart-payment") {
-    return "cart.html?startPayment=1";
-  }
+  if (checkoutAfterAddress) return "cart.html?startPayment=1";
 
-  if (savedReturn === "cart" || savedReturn === "cart.html" || queryReturn === "cart") {
-    return "cart.html";
-  }
-
-  if (savedReturn === "profile" || savedReturn === "profile.html" || queryReturn === "profile") {
-    return "profile.html";
-  }
-
-  return "";
+  return (
+    targetFromFlowRouteName(savedReturn, "save") ||
+    targetFromFlowRouteName(queryReturn, "save") ||
+    ""
+  );
 }
 
 function completeLocationReturnIfNeeded() {
@@ -5018,28 +5012,81 @@ function completeLocationReturnIfNeeded() {
     sessionStorage.removeItem("cbe_checkout_after_address");
   }
 
-  window.location.href = target;
+  window.location.replace(target);
   return true;
+}
+
+
+function normalizeFlowRouteName(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+/, "")
+    .replace(/\.html(?:\?.*)?$/, "")
+    .replace(/\?.*$/, "");
+}
+
+function routeFromReferrer() {
+  try {
+    if (!document.referrer) return "";
+    const refUrl = new URL(document.referrer, window.location.href);
+    if (refUrl.origin !== window.location.origin) return "";
+    return normalizeFlowRouteName(refUrl.pathname.split("/").pop() || "");
+  } catch (error) {
+    return "";
+  }
+}
+
+function rememberLocationFlowSource() {
+  const params = new URLSearchParams(window.location.search);
+  const queryReturn = normalizeFlowRouteName(params.get("returnTo"));
+  const savedReturn = normalizeFlowRouteName(sessionStorage.getItem("cbe_location_return_to"));
+  const refReturn = routeFromReferrer();
+
+  if (queryReturn === "cart-payment") {
+    sessionStorage.setItem("cbe_location_return_to", "cart-payment");
+    return;
+  }
+
+  if (["cart", "profile"].includes(queryReturn)) {
+    sessionStorage.setItem("cbe_location_return_to", queryReturn);
+    return;
+  }
+
+  if (["cart", "profile", "cart-payment"].includes(savedReturn)) return;
+
+  if (["cart", "profile"].includes(refReturn)) {
+    sessionStorage.setItem("cbe_location_return_to", refReturn);
+    return;
+  }
+
+  sessionStorage.setItem("cbe_location_return_to", "menu");
+}
+
+function targetFromFlowRouteName(routeName, mode = "back") {
+  const route = normalizeFlowRouteName(routeName);
+
+  if (route === "cart-payment") return mode === "save" ? "cart.html?startPayment=1" : "cart.html";
+  if (route === "cart") return "cart.html";
+  if (route === "profile") return "profile.html";
+  if (route === "track") return "track.html";
+  if (route === "menu") return "";
+
+  return "";
 }
 
 function getLocationBackTarget() {
   const params = new URLSearchParams(window.location.search);
   const queryReturn = params.get("returnTo");
   const savedReturn = sessionStorage.getItem("cbe_location_return_to");
+  const refReturn = routeFromReferrer();
 
-  if (savedReturn === "cart-payment" || queryReturn === "cart-payment") {
-    return "cart.html";
-  }
-
-  if (savedReturn === "cart" || savedReturn === "cart.html" || queryReturn === "cart") {
-    return "cart.html";
-  }
-
-  if (savedReturn === "profile" || savedReturn === "profile.html" || queryReturn === "profile") {
-    return "profile.html";
-  }
-
-  return "";
+  return (
+    targetFromFlowRouteName(savedReturn, "back") ||
+    targetFromFlowRouteName(queryReturn, "back") ||
+    targetFromFlowRouteName(refReturn, "back") ||
+    ""
+  );
 }
 
 function clearLocationReturnState() {
@@ -5112,7 +5159,7 @@ function closeLocationMapScreen(options = {}) {
     const backTarget = getLocationBackTarget();
     if (backTarget) {
       clearLocationReturnState();
-      window.location.href = backTarget;
+      window.location.replace(backTarget);
       return;
     }
   }
@@ -6836,6 +6883,7 @@ window.setTimeout(updateCartCount, 250);
 window.setTimeout(updateCartCount, 900);
 
 if (shouldAutoOpenLocationMap()) {
+  rememberLocationFlowSource();
   sessionStorage.removeItem("cbe_open_location_map");
 
   /*
@@ -8023,7 +8071,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_navbackfix1"></script>
+<script src="components/bottom-nav.js?v=20260520_flowback2"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 

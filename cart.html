@@ -2409,7 +2409,7 @@ body {
     }, 350);
   }
 
-  document.getElementById('changeLocationBtn').addEventListener('click', openLocationFlow);
+  document.getElementById('changeLocationBtn').addEventListener('click', () => openLocationFlow('cart')); 
   document.getElementById('placeOrderBtn').addEventListener('click', handlePlaceOrder);
 
   itemCardsEl.addEventListener('click', (event) => {
@@ -2437,7 +2437,7 @@ body {
 })();
 </script>
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_navbackfix1"></script>
+<script src="components/bottom-nav.js?v=20260520_flowback2"></script>
 
 <script id="cf-mobile-zoom-lock-script">
   (function () {
