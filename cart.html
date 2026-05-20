@@ -803,6 +803,175 @@ body {
   display: flex;
 }
 
+
+
+/* 1.2 cart-added refinement */
+.cart-shell {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+}
+
+.cart-content {
+  top: 137px;
+  bottom: 132px;
+  padding: 0 24px 18px;
+}
+
+.cart-content-inner {
+  gap: 20px;
+}
+
+.section-group {
+  gap: 14px;
+}
+
+.section-title {
+  min-height: 19px;
+  color: #FDFDFF;
+  font-size: 16px;
+  line-height: 120%;
+  font-weight: 600;
+}
+
+.item-cards,
+.payment-card {
+  background: rgba(253, 253, 255, 0.12);
+  border: 1px solid rgba(253, 253, 255, 0.08);
+  border-radius: 10px;
+}
+
+.item-cards {
+  padding: 12px;
+  gap: 10px;
+}
+
+.item-card {
+  min-height: 40px;
+  align-items: center;
+}
+
+.item-img-wrap {
+  border-radius: 14px;
+  background: rgba(253, 253, 255, 0.08);
+}
+
+.item-details {
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+}
+
+.item-title {
+  font-size: 14px;
+  line-height: 120%;
+  font-weight: 400;
+  color: #FDFDFF;
+}
+
+.protein-details {
+  display: none;
+}
+
+.qty-control {
+  width: 68px;
+  height: 26px;
+  padding: 6px 12px;
+  background: rgba(18, 19, 15, 0.24);
+  border: 1px solid #08A045;
+  border-radius: 8px;
+  color: #FDFDFF;
+}
+
+.qty-btn,
+.qty-number {
+  color: #FDFDFF;
+}
+
+.item-price {
+  font-size: 14px;
+  line-height: 120%;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: #FDFDFF;
+}
+
+.payment-card {
+  padding: 12px 12px 14px;
+  gap: 12px;
+}
+
+.payment-lines {
+  gap: 10px;
+}
+
+.bill-row,
+.to-pay-row {
+  min-height: 17px;
+}
+
+.bill-row span:first-child,
+.to-pay-row span:first-child,
+.bill-row span:last-child,
+.to-pay-row span:last-child {
+  font-size: 14px;
+  line-height: 120%;
+  color: #FDFDFF;
+}
+
+.bill-row span:first-child,
+.bill-row span:last-child {
+  font-weight: 400;
+}
+
+.to-pay-row span:first-child,
+.to-pay-row span:last-child {
+  font-weight: 500;
+}
+
+.divider {
+  background: rgba(253, 253, 255, 0.12);
+}
+
+.placeorder-section {
+  height: 68px;
+  padding: 10px 24px 0;
+  align-items: flex-start;
+  gap: 40px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.06), rgba(253, 253, 255, 0.06)), #12130F;
+  border-top: 1px solid rgba(253, 253, 255, 0.16);
+}
+
+.total-info {
+  width: 84px;
+  gap: 1px;
+}
+
+.total-price {
+  font-size: 16px;
+  line-height: 140%;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  color: #FDFDFF;
+}
+
+.total-label {
+  font-size: 14px;
+  line-height: 120%;
+  letter-spacing: 0;
+  font-weight: 400;
+  color: #FDFDFF;
+  opacity: 0.8;
+}
+
+.placeorder-button {
+  min-width: 171px;
+  height: 48px;
+  padding: 12px 42px;
+  border-radius: 10px;
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 600;
+}
+
 @media (max-width: 360px) {
   .top-bar,
   .cart-content,
@@ -906,6 +1075,10 @@ body {
               <span id="itemTotal">₹0</span>
             </div>
             <div class="bill-row">
+              <span>Packaging charges</span>
+              <span id="packagingCharges">₹0</span>
+            </div>
+            <div class="bill-row">
               <span>Delivery fee</span>
               <span id="deliveryFee">₹0</span>
             </div>
@@ -961,12 +1134,14 @@ body {
   const BASE_DELIVERY_FEE = 10;
   const FREE_DISTANCE_KM = 10;
   const EXTRA_KM_DELIVERY_FEE = 2;
+  const PACKAGING_FEE = 6;
 
   const cartShell = document.getElementById('cartShell');
   const itemsCountEl = document.getElementById('itemsCount');
   const deliveryAddressEl = document.getElementById('deliveryAddress');
   const itemCardsEl = document.getElementById('itemCards');
   const itemTotalEl = document.getElementById('itemTotal');
+  const packagingChargesEl = document.getElementById('packagingCharges');
   const deliveryFeeEl = document.getElementById('deliveryFee');
   const taxChargesEl = document.getElementById('taxCharges');
   const toPayEl = document.getElementById('toPay');
@@ -1934,11 +2109,12 @@ body {
       reason: 'empty_cart'
     };
     const deliveryFee = deliveryFeeInfo.deliveryFee;
+    const packagingFee = cart.length ? PACKAGING_FEE : 0;
     const tax = 0;
-    const total = itemTotal + deliveryFee + tax;
+    const total = itemTotal + packagingFee + deliveryFee + tax;
     const qtyTotal = cart.reduce((sum, item) => sum + Number(item.qty || 0), 0);
 
-    return { itemTotal, deliveryFee, tax, total, qtyTotal, deliveryFeeInfo };
+    return { itemTotal, packagingFee, deliveryFee, tax, total, qtyTotal, deliveryFeeInfo };
   }
 
   function truncateAddress(value, max = 24) {
@@ -2136,6 +2312,7 @@ body {
     itemCardsEl.innerHTML = cart.map(renderItem).join('');
 
     itemTotalEl.textContent = money(totals.itemTotal);
+    if (packagingChargesEl) packagingChargesEl.textContent = cart.length ? money(totals.packagingFee) : '₹0';
     deliveryFeeEl.textContent = cart.length ? money(totals.deliveryFee) : '₹0';
     taxChargesEl.textContent = '-';
     toPayEl.textContent = money(totals.total);
