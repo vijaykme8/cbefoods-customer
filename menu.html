@@ -2224,6 +2224,12 @@ body[data-bottom-nav="off"] {
   object-fit: cover;
 }
 
+.cf-figma-menu-root .IconLocationPin img,
+.cf-figma-menu-root .UserProfile img,
+.cf-figma-menu-root .NavAssetIcon {
+  flex: 0 0 auto;
+}
+
 .cf-figma-menu-root .Tab1,
 .cf-figma-menu-root .Tab2,
 .cf-figma-menu-root .Tab3 {
@@ -2495,8 +2501,7 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 <div class="TopBar" data-layer="top bar" style="width: 342px; justify-content: space-between; align-items: flex-start; display: inline-flex">
 <div aria-label="Update delivery location" class="UserLocation location" data-layer="user location" role="button" style="justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex" tabindex="0">
 <div class="IconLocationPin" data-layer="icon-location-pin" style="width: 34px; height: 34px; position: relative; overflow: hidden">
-<div class="Vector" data-layer="Vector" style="width: 34px; height: 34px; left: 0px; top: 0px; position: absolute; background: black"></div>
-<div class="Vector" data-layer="Vector" style="width: 25.15px; height: 29.04px; left: 4.42px; top: 2.48px; position: absolute; background: #8806CE"></div>
+<img alt="Delivery location" src="assets/menu/icons/icon-location-pin.svg" style="width:34px;height:34px;display:block;object-fit:contain;"/>
 </div>
 <div class="TextGroupLocation" data-layer="text group-location" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
 <div class="DelivertoChange" data-layer="deliverto&amp;change" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
@@ -2761,19 +2766,19 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 <div class="BottomNavBar" data-layer="bottom nav bar" style="align-self: stretch; height: 64px; padding-top: 10px; padding-left: 24px; padding-right: 24px; background: #12130F; box-shadow: 0px -2px 16px rgba(255, 255, 255, 0.10); border-top: 1px rgba(253, 253, 255, 0.16) solid; justify-content: center; align-items: flex-start; gap: 40px; display: inline-flex">
 <div class="Nav1 nav-item" data-layer="nav 1" onclick="window.location.href='menu.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='menu.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
 <div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<div class="Vector" data-layer="vector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #8806CE"></div>
+<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#8806CE;-webkit-mask:url('assets/menu/icons/search-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/search-icon.svg') center/contain no-repeat;"></span>
 </div>
 <div class="Menu" data-layer="Menu" style="align-self: stretch; text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Menu</div>
 </div>
 <div class="Nav2 nav-item" data-layer="nav 2" onclick="window.location.href='cart.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='cart.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
 <div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<div class="Vector" data-layer="Vector" style="width: 21.05px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#B8B8B7;-webkit-mask:url('assets/menu/icons/cart-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/cart-icon.svg') center/contain no-repeat;"></span>
 </div>
 <div class="Cart" data-layer="Cart" style="align-self: stretch; text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Cart</div>
 </div>
 <div class="Nav3 nav-item" data-layer="nav 3" onclick="window.location.href='track.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='track.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
 <div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<div class="Vector" data-layer="Vector" style="width: 21.50px; height: 21.50px; left: 1.25px; top: 1.25px; position: absolute; background: #B8B8B7"></div>
+<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#B8B8B7;-webkit-mask:url('assets/menu/icons/track-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/track-icon.svg') center/contain no-repeat;"></span>
 </div>
 <div class="TrackOrders" data-layer="Track orders" style="text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Track orders</div>
 </div>
