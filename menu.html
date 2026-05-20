@@ -2951,6 +2951,80 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   display: none !important;
 }
 
+
+
+/* Premium moving gradient system */
+@keyframes cfGradientBackgroundFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes cfGradientGlowDrift {
+  0% { transform: translate3d(-28%, -18%, 0) rotate(0deg); opacity: 0.58; }
+  45% { transform: translate3d(18%, 8%, 0) rotate(130deg); opacity: 0.82; }
+  100% { transform: translate3d(-28%, -18%, 0) rotate(360deg); opacity: 0.58; }
+}
+
+@keyframes cfGradientTextFlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.cf-figma-menu-root .FloatingAddedCard {
+  position: fixed !important;
+  overflow: hidden !important;
+  isolation: isolate !important;
+  background: linear-gradient(110deg, #08A045 0%, #17B568 24%, #3367D6 56%, #941FD3 100%) !important;
+  background-size: 260% 260% !important;
+  animation: cfGradientBackgroundFlow 4.2s ease-in-out infinite !important;
+  box-shadow: 0px 0px 4px rgba(8, 160, 69, 0.72), 0px 8px 22px rgba(148, 31, 211, 0.22) !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard::before {
+  content: "";
+  position: absolute;
+  inset: -70%;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 22% 28%, rgba(253, 253, 255, 0.34) 0%, rgba(253, 253, 255, 0.12) 17%, transparent 34%),
+    radial-gradient(circle at 76% 58%, rgba(148, 31, 211, 0.54) 0%, rgba(148, 31, 211, 0.20) 22%, transparent 43%),
+    radial-gradient(circle at 44% 76%, rgba(8, 160, 69, 0.42) 0%, rgba(8, 160, 69, 0.16) 20%, transparent 42%);
+  filter: blur(12px);
+  animation: cfGradientGlowDrift 6.5s linear infinite;
+}
+
+.cf-figma-menu-root .FloatingAddedCard > * {
+  position: relative;
+  z-index: 1;
+}
+
+.cf-figma-menu-root .FlotaingTabs .pill.pill-active {
+  background: linear-gradient(110deg, rgba(253, 253, 255, 0.16) 0%, rgba(148, 31, 211, 0.28) 45%, rgba(253, 253, 255, 0.16) 100%) !important;
+  background-size: 220% 100% !important;
+  animation: cfGradientBackgroundFlow 4.8s ease-in-out infinite !important;
+}
+
+.cf-figma-menu-root .BestSelling,
+.cf-figma-menu-root .ProteinPackSection > .TextGroup > .ProteinPack,
+.cf-figma-menu-root .RegularPacks {
+  background-size: 240% 100% !important;
+  animation: cfGradientTextFlow 5.4s ease-in-out infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-figma-menu-root .FloatingAddedCard,
+  .cf-figma-menu-root .FloatingAddedCard::before,
+  .cf-figma-menu-root .FlotaingTabs .pill.pill-active,
+  .cf-figma-menu-root .BestSelling,
+  .cf-figma-menu-root .ProteinPackSection > .TextGroup > .ProteinPack,
+  .cf-figma-menu-root .RegularPacks {
+    animation: none !important;
+  }
+}
+
 </style>
 </head>
 <body>
