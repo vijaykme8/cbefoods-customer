@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 
 <meta name="apple-mobile-web-app-capable" content="yes" />
 
@@ -1655,6 +1652,38 @@ window.addEventListener('DOMContentLoaded', () => {
 
 </script>
 
+
+<style id="cf-mobile-zoom-lock">
+  html,
+  body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [onclick],
+  .AddButton,
+  .add-button,
+  .CartButton,
+  .cart-button,
+  .FloatingTabs > *,
+  .BottomNavBar *,
+  .cf-bottom-nav__item {
+    touch-action: manipulation;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+</style>
 </head>
 
 <body>
@@ -1820,5 +1849,42 @@ window.addEventListener('DOMContentLoaded', () => {
 
 </div>
 
+
+<script id="cf-mobile-zoom-lock-script">
+  (function () {
+    if (window.__cfMobileZoomLock) return;
+    window.__cfMobileZoomLock = true;
+
+    let lastTouchEnd = 0;
+
+    document.addEventListener(
+      "touchend",
+      function (event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturestart",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturechange",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+  })();
+</script>
 </body>
 </html>

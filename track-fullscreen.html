@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
@@ -561,6 +561,38 @@ html, body {
   margin-bottom: 0 !important;
 }
 
+</style>
+
+<style id="cf-mobile-zoom-lock">
+  html,
+  body {
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    overscroll-behavior: none;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select,
+  [role="button"],
+  [onclick],
+  .AddButton,
+  .add-button,
+  .CartButton,
+  .cart-button,
+  .FloatingTabs > *,
+  .BottomNavBar *,
+  .cf-bottom-nav__item {
+    touch-action: manipulation;
+  }
+
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -1182,5 +1214,42 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;wind
 </script>
 
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
+
+<script id="cf-mobile-zoom-lock-script">
+  (function () {
+    if (window.__cfMobileZoomLock) return;
+    window.__cfMobileZoomLock = true;
+
+    let lastTouchEnd = 0;
+
+    document.addEventListener(
+      "touchend",
+      function (event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturestart",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturechange",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+  })();
+</script>
 </body>
 </html>
