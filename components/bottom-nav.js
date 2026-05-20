@@ -1,8 +1,8 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_commonnav1';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260520_commonnav2';
 
-  const ACTIVE_COLOR = '#8806CE';
+  const ACTIVE_COLOR = '#941FD3';
   const INACTIVE_COLOR = '#B8B8B7';
   const ICON_BASE = 'assets/menu/icons/';
 
