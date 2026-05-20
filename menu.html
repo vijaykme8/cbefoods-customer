@@ -5007,6 +5007,40 @@ function refreshCommonBottomNav() {
   }
 }
 
+function restoreCommonBottomNavAfterLocationFlow() {
+  document.body.classList.remove("map-screen-open", "is-location-flow-open", "no-bottom-nav");
+
+  if (document.body.dataset && document.body.dataset.bottomNav === "off") {
+    delete document.body.dataset.bottomNav;
+  }
+
+  const mount = document.getElementById("bottomNavMount");
+  if (mount) {
+    mount.hidden = false;
+    mount.style.display = "";
+  }
+
+  if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.show === "function") {
+    window.CoimbatoreFoodsBottomNav.show();
+  } else {
+    refreshCommonBottomNav();
+  }
+
+  window.setTimeout(() => {
+    document.body.classList.remove("map-screen-open", "is-location-flow-open", "no-bottom-nav");
+
+    if (document.body.dataset && document.body.dataset.bottomNav === "off") {
+      delete document.body.dataset.bottomNav;
+    }
+
+    if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.show === "function") {
+      window.CoimbatoreFoodsBottomNav.show();
+    } else {
+      refreshCommonBottomNav();
+    }
+  }, 80);
+}
+
 function getLocationBackTarget() {
   const mode = getLocationReturnMode();
 
@@ -5089,12 +5123,12 @@ function closeLocationMapScreen() {
 
   locationMapScreen.classList.remove("is-open");
   locationMapScreen.setAttribute("aria-hidden", "true");
-  document.body.classList.remove("map-screen-open");
+  document.body.classList.remove("map-screen-open", "is-location-flow-open", "no-bottom-nav");
   closeMapSearch(false);
   showLocationMapStep();
   clearLocationFlowState();
   cleanLocationFlowUrl();
-  refreshCommonBottomNav();
+  restoreCommonBottomNavAfterLocationFlow();
 }
 
 function showLocationMapStep() {
@@ -7962,6 +7996,20 @@ if (shouldAutoOpenLocationMap()) {
       floatingCard.style.pointerEvents = "";
     }
 
+    if (!isOpen) {
+      document.body.classList.remove("map-screen-open", "is-location-flow-open", "no-bottom-nav");
+
+      if (document.body.dataset && document.body.dataset.bottomNav === "off") {
+        delete document.body.dataset.bottomNav;
+      }
+
+      if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.show === "function") {
+        window.CoimbatoreFoodsBottomNav.show();
+      } else if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.refresh === "function") {
+        window.CoimbatoreFoodsBottomNav.refresh();
+      }
+    }
+
     if (!isOpen && window.CBEFloatingAddedCard && typeof window.CBEFloatingAddedCard.refresh === "function") {
       window.CBEFloatingAddedCard.refresh();
     }
@@ -7998,7 +8046,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_flowrules1"></script>
+<script src="components/bottom-nav.js?v=20260520_flowrestore1"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 
