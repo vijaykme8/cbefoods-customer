@@ -56,7 +56,9 @@ body.has-bottom-nav {
   height: 24px;
   position: relative;
   overflow: hidden;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
 }
 
@@ -65,7 +67,7 @@ body.has-bottom-nav {
   height: 24px;
   display: block;
   object-fit: contain;
-  pointer-events: none;
+  flex: 0 0 auto;
 }
 
 .cf-bottom-nav__label {
@@ -82,7 +84,7 @@ body.has-bottom-nav {
   overflow: visible;
 }
 
-.cf-bottom-nav__item--track .cf-bottom-nav__label {
+.cf-bottom-nav__item[data-nav-key="track"] .cf-bottom-nav__label {
   width: 71px;
 }
 
