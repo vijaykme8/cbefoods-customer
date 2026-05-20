@@ -4986,137 +4986,73 @@ function renderSavedAddressList() {
 }
 
 
-function getLocationReturnTarget() {
+function normalizeFlowTarget(value = "") {
+  return String(value || "").trim().toLowerCase().replace(/\.html$/i, "");
+}
+
+function getLocationReturnMode() {
   const params = new URLSearchParams(window.location.search);
-  const queryReturn = params.get("returnTo");
-  const savedReturn = sessionStorage.getItem("cbe_location_return_to");
+  return normalizeFlowTarget(params.get("returnTo") || sessionStorage.getItem("cbe_location_return_to") || "menu");
+}
+
+function clearLocationFlowState(options = {}) {
+  sessionStorage.removeItem("cbe_open_location_map");
+  sessionStorage.removeItem("cbe_location_return_to");
+
+  if (!options.keepCheckout) {
+    sessionStorage.removeItem("cbe_checkout_after_address");
+  }
+}
+
+function cleanLocationFlowUrl() {
+  const url = new URL(window.location.href);
+  ["openLocation", "forceLocation", "returnTo", "profileAction", "addressIndex"].forEach(key => {
+    url.searchParams.delete(key);
+  });
+
+  const cleaned = url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : "") + url.hash;
+  window.history.replaceState({}, "", cleaned);
+}
+
+function refreshCommonBottomNav() {
+  if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.refresh === "function") {
+    window.CoimbatoreFoodsBottomNav.refresh();
+  }
+}
+
+function getLocationBackTarget() {
+  const mode = getLocationReturnMode();
+
+  if (mode === "cart" || mode === "cart-payment") return "cart.html";
+  if (mode === "profile") return "profile.html";
+  if (mode === "track") return "track.html";
+
+  return "";
+}
+
+function getLocationReturnTarget() {
+  const mode = getLocationReturnMode();
   const checkoutAfterAddress = sessionStorage.getItem("cbe_checkout_after_address") === "1";
 
-  if (checkoutAfterAddress) return "cart.html?startPayment=1";
+  if (checkoutAfterAddress || mode === "cart-payment") {
+    return "cart.html?startPayment=1";
+  }
 
-  return (
-    targetFromFlowRouteName(savedReturn, "save") ||
-    targetFromFlowRouteName(queryReturn, "save") ||
-    ""
-  );
+  if (mode === "cart") return "cart.html";
+  if (mode === "profile") return "profile.html";
+  if (mode === "track") return "track.html";
+
+  return "";
 }
 
 function completeLocationReturnIfNeeded() {
   const target = getLocationReturnTarget();
   if (!target) return false;
 
-  sessionStorage.removeItem("cbe_open_location_map");
-  sessionStorage.removeItem("cbe_location_return_to");
-
-  if (!target.includes("startPayment=1")) {
-    sessionStorage.removeItem("cbe_checkout_after_address");
-  }
-
+  const keepCheckout = target.includes("startPayment=1");
+  clearLocationFlowState({ keepCheckout });
   window.location.replace(target);
   return true;
-}
-
-
-function normalizeFlowRouteName(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/^\/+/, "")
-    .replace(/\.html(?:\?.*)?$/, "")
-    .replace(/\?.*$/, "");
-}
-
-function routeFromReferrer() {
-  try {
-    if (!document.referrer) return "";
-    const refUrl = new URL(document.referrer, window.location.href);
-    if (refUrl.origin !== window.location.origin) return "";
-    return normalizeFlowRouteName(refUrl.pathname.split("/").pop() || "");
-  } catch (error) {
-    return "";
-  }
-}
-
-function rememberLocationFlowSource() {
-  const params = new URLSearchParams(window.location.search);
-  const queryReturn = normalizeFlowRouteName(params.get("returnTo"));
-  const savedReturn = normalizeFlowRouteName(sessionStorage.getItem("cbe_location_return_to"));
-  const refReturn = routeFromReferrer();
-
-  if (queryReturn === "cart-payment") {
-    sessionStorage.setItem("cbe_location_return_to", "cart-payment");
-    return;
-  }
-
-  if (["cart", "profile"].includes(queryReturn)) {
-    sessionStorage.setItem("cbe_location_return_to", queryReturn);
-    return;
-  }
-
-  if (["cart", "profile", "cart-payment"].includes(savedReturn)) return;
-
-  if (["cart", "profile"].includes(refReturn)) {
-    sessionStorage.setItem("cbe_location_return_to", refReturn);
-    return;
-  }
-
-  sessionStorage.setItem("cbe_location_return_to", "menu");
-}
-
-function targetFromFlowRouteName(routeName, mode = "back") {
-  const route = normalizeFlowRouteName(routeName);
-
-  if (route === "cart-payment") return mode === "save" ? "cart.html?startPayment=1" : "cart.html";
-  if (route === "cart") return "cart.html";
-  if (route === "profile") return "profile.html";
-  if (route === "track") return "track.html";
-  if (route === "menu") return "";
-
-  return "";
-}
-
-function getLocationBackTarget() {
-  const params = new URLSearchParams(window.location.search);
-  const queryReturn = params.get("returnTo");
-  const savedReturn = sessionStorage.getItem("cbe_location_return_to");
-  const refReturn = routeFromReferrer();
-
-  return (
-    targetFromFlowRouteName(savedReturn, "back") ||
-    targetFromFlowRouteName(queryReturn, "back") ||
-    targetFromFlowRouteName(refReturn, "back") ||
-    ""
-  );
-}
-
-function clearLocationReturnState() {
-  sessionStorage.removeItem("cbe_open_location_map");
-  sessionStorage.removeItem("cbe_location_return_to");
-  sessionStorage.removeItem("cbe_checkout_after_address");
-}
-
-function removeLocationQueryParams() {
-  const url = new URL(window.location.href);
-  let changed = false;
-  ["openLocation", "forceLocation", "returnTo"].forEach(key => {
-    if (url.searchParams.has(key)) {
-      url.searchParams.delete(key);
-      changed = true;
-    }
-  });
-
-  if (changed) {
-    const nextUrl = `${url.pathname}${url.search ? `?${url.searchParams.toString()}` : ""}${url.hash || ""}`;
-    window.history.replaceState({}, document.title, nextUrl);
-  }
-}
-
-function refreshCommonBottomNav() {
-  window.requestAnimationFrame(() => {
-    if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.refresh === "function") {
-      window.CoimbatoreFoodsBottomNav.refresh();
-    }
-  });
 }
 
 function shouldAutoOpenLocationMap() {
@@ -5134,6 +5070,7 @@ function openLocationMapScreen() {
   locationMapScreen.classList.add("is-open");
   locationMapScreen.setAttribute("aria-hidden", "false");
   document.body.classList.add("map-screen-open");
+  refreshCommonBottomNav();
   showLocationMapStep();
   collapseSavedAddressDrawer();
 
@@ -5152,16 +5089,13 @@ function openLocationMapScreen() {
   }, 80);
 }
 
-function closeLocationMapScreen(options = {}) {
-  const opts = options && typeof options === "object" ? options : {};
+function closeLocationMapScreen() {
+  const backTarget = getLocationBackTarget();
 
-  if (opts.returnToSource !== false) {
-    const backTarget = getLocationBackTarget();
-    if (backTarget) {
-      clearLocationReturnState();
-      window.location.replace(backTarget);
-      return;
-    }
+  if (backTarget) {
+    clearLocationFlowState();
+    window.location.replace(backTarget);
+    return;
   }
 
   if (!locationMapScreen) return;
@@ -5171,8 +5105,8 @@ function closeLocationMapScreen(options = {}) {
   document.body.classList.remove("map-screen-open");
   closeMapSearch(false);
   showLocationMapStep();
-  clearLocationReturnState();
-  removeLocationQueryParams();
+  clearLocationFlowState();
+  cleanLocationFlowUrl();
   refreshCommonBottomNav();
 }
 
@@ -6112,13 +6046,19 @@ function renderDeliveryLocation(shouldResolveCoordinates = true) {
   deliveryAddressText.title = "Tap to confirm your delivery address";
 }
 
+function openMenuLocationFlow() {
+  clearLocationFlowState();
+  cleanLocationFlowUrl();
+  openLocationMapScreen();
+}
+
 if (deliveryLocationBox) {
-  deliveryLocationBox.addEventListener("click", openLocationMapScreen);
+  deliveryLocationBox.addEventListener("click", openMenuLocationFlow);
 
   deliveryLocationBox.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      openLocationMapScreen();
+      openMenuLocationFlow();
     }
   });
 }
@@ -6883,17 +6823,17 @@ window.setTimeout(updateCartCount, 250);
 window.setTimeout(updateCartCount, 900);
 
 if (shouldAutoOpenLocationMap()) {
-  rememberLocationFlowSource();
   sessionStorage.removeItem("cbe_open_location_map");
 
   /*
-    Open from cart checkout must be reliable.
+    Open from cart/profile return flow must be reliable.
     Retry a few times because maps/scripts/layout can finish slightly after page load.
   */
   [80, 250, 700].forEach(delay => {
     setTimeout(() => {
       if (!locationMapScreen || locationMapScreen.classList.contains("is-open")) return;
       openLocationMapScreen();
+      refreshCommonBottomNav();
     }, delay);
   });
 }
@@ -8071,7 +8011,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_flowback2"></script>
+<script src="components/bottom-nav.js?v=20260520_flowrules1"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 

@@ -2189,14 +2189,14 @@ body {
       sessionStorage.setItem('cbe_checkout_after_address', '1');
       sessionStorage.setItem('cbe_location_return_to', 'cart-payment');
       sessionStorage.setItem('cbe_open_location_map', '1');
-      window.location.href = 'menu.html?openLocation=1&returnTo=cart-payment';
+      window.location.replace('menu.html?openLocation=1&returnTo=cart-payment');
       return;
     }
 
     sessionStorage.removeItem('cbe_checkout_after_address');
     sessionStorage.setItem('cbe_location_return_to', 'cart');
     sessionStorage.setItem('cbe_open_location_map', '1');
-    window.location.href = 'menu.html?openLocation=1&returnTo=cart';
+    window.location.replace('menu.html?openLocation=1&returnTo=cart');
   }
 
   function buildCheckoutSnapshot(cart, address) {
@@ -2409,7 +2409,7 @@ body {
     }, 350);
   }
 
-  document.getElementById('changeLocationBtn').addEventListener('click', () => openLocationFlow('cart')); 
+  document.getElementById('changeLocationBtn').addEventListener('click', openLocationFlow);
   document.getElementById('placeOrderBtn').addEventListener('click', handlePlaceOrder);
 
   itemCardsEl.addEventListener('click', (event) => {
@@ -2437,7 +2437,7 @@ body {
 })();
 </script>
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_flowback2"></script>
+<script src="components/bottom-nav.js?v=20260520_flowrules1"></script>
 
 <script id="cf-mobile-zoom-lock-script">
   (function () {

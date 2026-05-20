@@ -1,8 +1,8 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_flowback2';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260520_flowrules1';
   const ICON_BASE = './assets/bottom-nav-bar/';
-  const ICON_VERSION = '20260520_flowback2';
+  const ICON_VERSION = '20260520_flowrules1';
 
   const hiddenPages = new Set([
     'login',
@@ -64,6 +64,7 @@
 
     return (
       hiddenPages.has(route) ||
+      params.get('openLocation') === '1' ||
       document.body.classList.contains('no-bottom-nav') ||
       document.body.classList.contains('map-screen-open') ||
       document.body.classList.contains('is-location-flow-open') ||
