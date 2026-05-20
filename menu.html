@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Tiffin CBE">
-<meta name="theme-color" content="#8806CE">
+<meta name="theme-color" content="#12130F">
 <title>Coimbatore Foods</title>
 <link rel="manifest" id="pwa-manifest">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css">
@@ -2140,6 +2140,560 @@ body.is-location-flow-open .floating-added-card {
   display: none;
 }
 
+
+/* =========================
+   CBE MENU UI REFINEMENT 1.1
+   Source: Figma 1.1 Menu export
+   Safe: visual-only overrides; existing location/cart/customer-memory JS is untouched.
+========================= */
+:root {
+  --menu-bg: #12130F;
+  --menu-white: #FDFDFF;
+  --menu-violet: #8806CE;
+  --menu-cta: #08A045;
+  --menu-red: #E23009;
+  --menu-muted: rgba(253,253,255,0.50);
+  --menu-line: rgba(253,253,255,0.16);
+}
+
+html,
+body {
+  background: #080906;
+}
+
+body {
+  color: var(--menu-white);
+}
+
+.app {
+  width: 390px;
+  max-width: 100vw;
+  background: linear-gradient(0deg, rgba(253,253,255,0.02), rgba(253,253,255,0.02)), var(--menu-bg);
+  align-items: center;
+  gap: 10px;
+  overflow-x: hidden;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
+.app.has-floating-cart {
+  padding-bottom: calc(156px + env(safe-area-inset-bottom));
+}
+
+.app-inner {
+  width: 100%;
+  gap: 20px;
+}
+
+.hero {
+  width: 100%;
+  min-height: 368px;
+  padding: 40px 24px 20px;
+  gap: 16px;
+  background: linear-gradient(180deg, rgba(253,253,255,0.16) 0%, rgba(247,247,249,0.16) 100%), #000000;
+}
+
+.top-row {
+  width: 342px;
+  height: 46px;
+  align-items: flex-start;
+  gap: 110px;
+}
+
+.location {
+  width: 191px;
+  height: 45px;
+}
+
+.location-icon {
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.location-copy,
+.location-label-row {
+  width: 153px;
+}
+
+.label {
+  width: 62px;
+  height: 17px;
+  color: var(--menu-white);
+  opacity: 0.50;
+  font-size: 14px;
+  line-height: 120%;
+}
+
+.address {
+  width: 153px;
+  height: 27px;
+  color: var(--menu-white);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 150%;
+}
+
+.change-text {
+  color: var(--menu-cta);
+  font-size: 14px;
+  line-height: 140%;
+}
+
+.avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 25px;
+  background: #878887;
+  box-shadow: none;
+}
+
+.hero-card {
+  width: 342px;
+  min-height: 171px;
+  height: 171px;
+  padding: 14px 16px;
+  gap: 10px;
+  border: 2px solid rgba(0,0,0,0.12);
+  border-radius: 20px;
+  overflow: hidden;
+  background-image:
+    linear-gradient(285.52deg, rgba(136,6,206,0) 26.69%, rgba(136,6,206,0.50) 58.71%),
+    url('assets/menu/img/hero card-img.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.hero-title {
+  width: 297px;
+  height: 31px;
+  color: var(--menu-white);
+  font-size: 26px;
+  font-family: Chillax, 'General Sans', sans-serif;
+  font-weight: 500;
+  line-height: 120%;
+  letter-spacing: -0.04em;
+}
+
+.hero-title span,
+.hero-title .text-green,
+.hero-title .text-purple {
+  color: var(--menu-white);
+}
+
+.hero-title .hero-title-strong {
+  font-weight: 700;
+}
+
+.hero-meta-container {
+  width: 310px;
+  height: 34px;
+  gap: 6px;
+}
+
+.hero-meta {
+  color: rgba(253,253,255,0.60);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 100%;
+}
+
+.badge-row {
+  width: 310px;
+  height: 58px;
+  gap: 6px;
+}
+
+.badge {
+  padding: 6px 8px;
+  background: rgba(18,19,15,0.24);
+  border-radius: 6px;
+  outline: none;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.badge-text {
+  color: rgba(253,253,255,0.80);
+  font-size: 14px;
+  line-height: 100%;
+}
+
+.filter-row {
+  width: 342px;
+  height: 59px;
+  gap: 30px;
+}
+
+.pill {
+  min-height: 59px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: transparent;
+}
+
+.pill-active {
+  background: rgba(253,253,255,0.16);
+}
+
+.pill-text {
+  color: var(--menu-white);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.content {
+  width: 100%;
+  gap: 20px;
+  background: transparent;
+}
+
+.section {
+  gap: 16px;
+  position: relative;
+}
+
+.section:not(:first-child)::before {
+  content: "";
+  display: block;
+  width: calc(100% - 48px);
+  height: 1px;
+  margin: 0 24px;
+  background: var(--menu-line);
+}
+
+.section-header {
+  min-height: 58px;
+  height: auto;
+  padding: 0 24px;
+  gap: 0;
+  overflow: visible;
+}
+
+.section-title {
+  width: max-content;
+  max-width: 250px;
+  color: var(--menu-violet);
+  font-size: 26px;
+  font-family: Chillax, 'General Sans', sans-serif;
+  font-weight: 600;
+  line-height: 120%;
+  letter-spacing: -0.04em;
+  transform: rotate(-5deg);
+  transform-origin: top left;
+  margin-top: -2px;
+  background: linear-gradient(90deg, #8806CE 0%, #E11B1B 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-title.red {
+  background: linear-gradient(90deg, #E23009 0%, #D4B312 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-title.green {
+  background: linear-gradient(90deg, #08A045 0%, #A8C00A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.section-subtitle {
+  width: max-content;
+  max-width: 250px;
+  color: var(--menu-white);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+  transform: rotate(-5deg);
+  transform-origin: top left;
+  margin-top: 0;
+}
+
+.card-scroll-wrap {
+  width: 100%;
+  overflow: visible;
+}
+
+.card-grid {
+  height: 225px;
+  padding: 0 24px;
+  gap: 8px;
+  align-items: stretch;
+  overflow-x: auto;
+  scroll-padding-left: 24px;
+  scroll-padding-right: 24px;
+}
+
+.product-card {
+  width: 166px;
+  min-width: 166px;
+  height: 225px;
+  padding: 0 0 8px;
+  gap: 16px;
+  justify-content: flex-start;
+  background: linear-gradient(0deg, rgba(253,253,255,0.16), rgba(253,253,255,0.16)), var(--menu-bg);
+  border: 2px solid rgba(255,255,255,0.06);
+  box-shadow: 2px 4px 24px rgba(0,0,0,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.product-card-body {
+  width: 166px;
+  height: 172px;
+  gap: 6px;
+}
+
+.product-card img {
+  width: 166px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.product-card-content {
+  gap: 6px;
+}
+
+.product-card-header {
+  min-height: 34px;
+  padding: 0 10px;
+  align-items: flex-start;
+}
+
+.product-card-title {
+  color: var(--menu-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.product-card-meta .meta-label {
+  color: rgba(253,253,255,0.50);
+  font-size: 8px;
+  line-height: 100%;
+}
+
+.product-card-meta .meta-value {
+  color: var(--menu-cta);
+  font-size: 10px;
+  line-height: 100%;
+}
+
+.product-card-badges {
+  display: none;
+}
+
+.product-card-info {
+  min-height: 26px;
+  padding: 0 10px;
+}
+
+.product-card-info-text {
+  color: rgba(253,253,255,0.50);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 130%;
+}
+
+.product-card-footer {
+  height: 29px;
+  padding: 0 10px;
+}
+
+.price .currency,
+.price .amount,
+.product-list-price .currency,
+.product-list-price .amount {
+  color: var(--menu-white);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.action-btn,
+.product-list-action {
+  width: 72px;
+  height: 29px;
+  padding: 6px 22px;
+  background: var(--menu-cta);
+  border-radius: 8px;
+}
+
+.action-btn-text,
+.product-list-action-text {
+  color: var(--menu-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.action-btn.qty-button,
+.product-list-action.qty-button {
+  width: 72px;
+  min-width: 72px;
+  height: 29px;
+  padding: 6px 8px;
+  background: rgba(253,253,255,0.12);
+  border: 1px solid rgba(8,160,69,0.90);
+  border-radius: 8px;
+}
+
+.qty-button .qty-control,
+.qty-button .qty-count {
+  color: var(--menu-white);
+}
+
+.list-grid {
+  width: 100%;
+  padding: 0 24px;
+  gap: 16px;
+}
+
+.product-list-item {
+  width: 342px;
+  min-height: 90px;
+  gap: 12px;
+  overflow: visible;
+}
+
+.product-list-img {
+  width: 90px;
+  height: 90px;
+  border-radius: 20px;
+  border: 2px solid rgba(253,253,255,0.12);
+  box-shadow: 0 2px 12px rgba(255,255,255,0.04);
+  object-fit: cover;
+}
+
+.product-list-copy {
+  width: 240px;
+  height: 90px;
+  gap: 14px;
+}
+
+.product-list-content {
+  height: 90px;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 2px 0 4px;
+}
+
+.product-list-title-text {
+  color: var(--menu-white);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.product-list-row,
+.product-list-chips {
+  display: none;
+}
+
+.product-list-detail-text {
+  color: rgba(253,253,255,0.50);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 130%;
+}
+
+.product-list-meta .meta-label {
+  color: var(--menu-white);
+  font-size: 12px;
+  line-height: 120%;
+}
+
+.product-list-meta .meta-value {
+  color: var(--menu-cta);
+  font-size: 12px;
+  line-height: 120%;
+}
+
+.product-list-price-row {
+  width: 72px;
+  height: 90px;
+  gap: 6px;
+}
+
+.floating-cart-card,
+.floating-added-card {
+  width: 342px;
+  max-width: calc(100vw - 48px);
+  height: 52px;
+  padding: 16px 20px;
+  bottom: calc(76px + env(safe-area-inset-bottom));
+  background: linear-gradient(90deg, #08A045 0%, #8806CE 100%);
+  box-shadow: 0 0 4px #089E44;
+  border-radius: 16px;
+  z-index: 2300;
+}
+
+.items-added,
+.floating-cart-title,
+.cart-button-text {
+  color: var(--menu-white);
+}
+
+.cf-bottom-nav {
+  height: calc(64px + env(safe-area-inset-bottom)) !important;
+  padding: 10px 24px env(safe-area-inset-bottom) !important;
+  gap: 40px !important;
+  background: var(--menu-bg) !important;
+  border-top: 1px solid var(--menu-line) !important;
+  box-shadow: 0 -2px 16px rgba(255,255,255,0.10) !important;
+  z-index: 2200 !important;
+}
+
+.cf-bottom-nav__item {
+  height: 41px !important;
+  gap: 3px !important;
+}
+
+.cf-bottom-nav__label {
+  color: var(--menu-white) !important;
+  font-size: 12px !important;
+  line-height: 120% !important;
+  height: 14px !important;
+}
+
+@supports (corner-shape: squircle) {
+  .location-icon,
+  .avatar,
+  .hero-card,
+  .badge,
+  .pill,
+  .product-card,
+  .product-card img,
+  .product-list-img,
+  .action-btn,
+  .action-btn.qty-button,
+  .product-list-action,
+  .product-list-action.qty-button,
+  .floating-cart-card,
+  .floating-added-card,
+  .cf-bottom-nav {
+    corner-shape: squircle;
+  }
+}
+
+@media (max-width: 389px) {
+  .app,
+  .hero,
+  .top-row,
+  .hero-card,
+  .filter-row,
+  .product-list-item {
+    max-width: 100vw;
+  }
+}
+
 </style>
 <script>
 (function () {
@@ -2213,11 +2767,11 @@ body.is-location-flow-open .floating-added-card {
       </div>
       <div class="hero-card">
         <div class="hero-title">
-          <span class="text-white">Fresh&nbsp;</span><span class="text-green">lunch,&nbsp;</span><span class="text-white"> daily&nbsp;</span><span class="text-purple">warm.</span>
+          <span>Fresh</span><span class="hero-title-strong"> lunch, </span><span>daily</span><span class="hero-title-strong"> warm.</span>
         </div>
         <div class="hero-meta-container">
-          <div class="hero-meta">Home cooked · Coimbatore</div>
-          <div class="hero-meta">Order by 11 AM · Delivered in 15 - 25 mins</div>
+          <div class="hero-meta">Home cooked · Order by 11 AM</div>
+          <div class="hero-meta">Delivered in 15 - 25 mins</div>
         </div>
         <div class="badge-row">
           <div class="badge-row-inner">
@@ -2260,64 +2814,6 @@ body.is-location-flow-open .floating-added-card {
           <div class="card-grid">
           <div class="product-card">
             <div class="product-card-body">
-              <img src="assets/menu/img/Protein egg lunch-img.png" />
-              <div class="product-card-content">
-                <div class="product-card-header">
-                  <div class="product-card-title">Protein egg<br/>lunch</div>
-                  <div class="product-card-meta">
-                    <div class="meta-label">protein</div>
-                    <div class="meta-value">45g</div>
-                  </div>
-                </div>
-                <div class="product-card-badges">
-                  <div class="chip">
-                    <div class="chip-text">Oil used : 7ml</div>
-                  </div>
-                  <div class="chip">
-                    <div class="chip-text">No MSG/tastener</div>
-                  </div>
-                </div>
-                <div class="product-card-info">
-                  <div class="product-card-info-text">egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)</div>
-                </div>
-              </div>
-            </div>
-            <div class="product-card-footer">
-              <div class="price"><span class="currency">₹</span><span class="amount">89</span></div>
-              <div class="action-btn" data-product-id="1">
-                <div class="action-btn-text">Add</div>
-              </div>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-card-body">
-              <img src="assets/menu/img/Regular meal-img.png" />
-              <div class="product-card-content">
-                <div class="product-card-header">
-                  <div class="product-card-title">Regular meal</div>
-                </div>
-                <div class="product-card-badges">
-                  <div class="chip">
-                    <div class="chip-text">Oil used : 7ml</div>
-                  </div>
-                  <div class="chip">
-                    <div class="chip-text">No MSG/tastener</div>
-                  </div>
-                </div>
-                <div class="product-card-info">
-                  <div class="product-card-info-text">rice(250g), sambar(250ml), egg(1), 2veggies(100g), pappad, pacha puli rasam</div>
-                </div>
-              </div>
-            </div>
-            <div class="product-card-footer">
-              <div class="price"><span class="currency">₹</span><span class="amount">65</span></div>
-              <div class="action-btn" data-product-id="2">
-                <div class="action-btn-text">Add</div>
-              </div>
-            </div>
-          </div>
-          <div class="product-card">
-            <div class="product-card-body">
               <img src="assets/menu/img/Protein chicken lunch-img.png" />
               <div class="product-card-content">
                 <div class="product-card-header">
@@ -2347,13 +2843,71 @@ body.is-location-flow-open .floating-added-card {
               </div>
             </div>
           </div>
+<div class="product-card">
+            <div class="product-card-body">
+              <img src="assets/menu/img/Regular meal-img.png" />
+              <div class="product-card-content">
+                <div class="product-card-header">
+                  <div class="product-card-title">Regular meal</div>
+                </div>
+                <div class="product-card-badges">
+                  <div class="chip">
+                    <div class="chip-text">Oil used : 7ml</div>
+                  </div>
+                  <div class="chip">
+                    <div class="chip-text">No MSG/tastener</div>
+                  </div>
+                </div>
+                <div class="product-card-info">
+                  <div class="product-card-info-text">rice(250g), sambar(250ml), egg(1), 2veggies(100g), pappad, pacha puli rasam</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <div class="price"><span class="currency">₹</span><span class="amount">65</span></div>
+              <div class="action-btn" data-product-id="2">
+                <div class="action-btn-text">Add</div>
+              </div>
+            </div>
+          </div>
+<div class="product-card">
+            <div class="product-card-body">
+              <img src="assets/menu/img/Protein egg lunch-img.png" />
+              <div class="product-card-content">
+                <div class="product-card-header">
+                  <div class="product-card-title">Protein egg<br/>lunch</div>
+                  <div class="product-card-meta">
+                    <div class="meta-label">protein</div>
+                    <div class="meta-value">45g</div>
+                  </div>
+                </div>
+                <div class="product-card-badges">
+                  <div class="chip">
+                    <div class="chip-text">Oil used : 7ml</div>
+                  </div>
+                  <div class="chip">
+                    <div class="chip-text">No MSG/tastener</div>
+                  </div>
+                </div>
+                <div class="product-card-info">
+                  <div class="product-card-info-text">egg(3), rice(100g), soya chunks(20g), veggies(50g), chappati(2), channa gravy(100ml)</div>
+                </div>
+              </div>
+            </div>
+            <div class="product-card-footer">
+              <div class="price"><span class="currency">₹</span><span class="amount">89</span></div>
+              <div class="action-btn" data-product-id="1">
+                <div class="action-btn-text">Add</div>
+              </div>
+            </div>
+          </div>
         </div>
         </div>
       </div>
       <div class="section">
         <div class="section-header">
           <div class="section-title red">Protein Pack</div>
-          <div class="section-subtitle">High protein · Fitness friendly</div>
+          <div class="section-subtitle">High protein · Fitness friendly.</div>
         </div>
         <div class="list-grid">
           <div class="product-list-item">
@@ -2429,7 +2983,7 @@ body.is-location-flow-open .floating-added-card {
       <div class="section">
         <div class="section-header">
           <div class="section-title green">Regular packs</div>
-          <div class="section-subtitle">Classic homemade meals & tiffen</div>
+          <div class="section-subtitle">Classic homemade meals & tiffen.</div>
         </div>
         <div class="list-grid">
           <div class="product-list-item">
