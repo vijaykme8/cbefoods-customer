@@ -1,8 +1,6 @@
 :root {
   --cf-bottom-nav-height: 64px;
   --cf-bottom-nav-bg: #12130F;
-  --cf-bottom-nav-active: #941FD3;
-  --cf-bottom-nav-inactive: #B8B8B7;
   --cf-bottom-nav-text: #FDFDFF;
 }
 
@@ -62,44 +60,13 @@ body.has-bottom-nav {
   flex: 0 0 auto;
 }
 
-.cf-bottom-nav__mask-icon {
-  position: absolute;
-  left: 1.25px;
-  top: 1.25px;
-  width: 21.5px;
-  height: 21.5px;
-  background: var(--cf-nav-icon-color, #B8B8B7);
-  -webkit-mask: var(--cf-nav-icon-url) center / contain no-repeat;
-  mask: var(--cf-nav-icon-url) center / contain no-repeat;
-}
-
-.cf-bottom-nav__item--cart .cf-bottom-nav__mask-icon,
-.cf-bottom-nav__item--cart .cf-bottom-nav__fallback-icon {
-  width: 21.05px;
-  height: 21.5px;
-}
-
-.cf-bottom-nav__fallback-icon {
-  position: absolute;
-  left: 1.25px;
-  top: 1.25px;
-  width: 21.5px;
-  height: 21.5px;
+.cf-bottom-nav__state-icon {
+  width: 24px;
+  height: 24px;
+  display: block;
   object-fit: contain;
-  display: none;
-  opacity: 1;
+  pointer-events: none;
 }
-
-@supports not ((-webkit-mask: url("") center / contain no-repeat) or (mask: url("") center / contain no-repeat)) {
-  .cf-bottom-nav__mask-icon {
-    display: none;
-  }
-
-  .cf-bottom-nav__fallback-icon {
-    display: block;
-  }
-}
-
 
 .cf-bottom-nav__label {
   width: 80px;
