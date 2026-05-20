@@ -1744,7 +1744,7 @@ body.map-screen-open {
 }
 
 /* =========================
-   LOCATION ADDRESS DETAILS SCREEN
+   LOCATION ADDRESS DETAILS SCREEN - 2.2 MAP ADDRESS
 ========================= */
 .customer-map-screen.is-details-step .map-address-shell {
   display: none;
@@ -1756,12 +1756,13 @@ body.map-screen-open {
   height: 100dvh;
   min-height: 100dvh;
   position: relative;
-  background: #FFFFFF;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(110px + env(safe-area-inset-bottom));
+  padding-bottom: calc(115px + env(safe-area-inset-bottom));
   display: none;
+  color: #FDFDFF;
 }
 
 .customer-map-screen.is-details-step .address-details-shell {
@@ -1773,13 +1774,14 @@ body.map-screen-open {
   top: 0;
   width: 390px;
   max-width: 100vw;
+  height: 94px;
   margin: 0 auto;
-  padding: 40px 24px 10px;
-  background: linear-gradient(180deg, #FFFFFF 0%, rgba(255,255,255,0.92) 72%, rgba(255,255,255,0) 100%);
+  padding: 40px 24px 24px;
+  background: linear-gradient(180deg, rgba(18, 19, 15, 1) 0%, rgba(18, 19, 15, 0.92) 76%, rgba(18, 19, 15, 0) 100%);
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  z-index: 4;
+  align-items: flex-start;
+  z-index: 10;
 }
 
 .details-back-button,
@@ -1791,6 +1793,7 @@ body.map-screen-open {
   font-family: 'General Sans', sans-serif;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .details-back-button {
@@ -1799,7 +1802,7 @@ body.map-screen-open {
   height: 30px;
   padding: 0;
   background: transparent;
-  color: #12130F;
+  color: #FDFDFF;
   box-shadow: none;
   border-radius: 0;
   transform: none;
@@ -1818,25 +1821,18 @@ body.map-screen-open {
   display: block;
 }
 
+.details-back-button svg path {
+  stroke: #FDFDFF !important;
+}
+
 .details-search-button {
-  position: static;
-  width: 42px;
-  height: 42px;
-  padding: 9px;
-  background: #FDFDFF;
-  color: #12130F;
-  border-radius: 50px;
-  box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.12);
-  transform: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: none;
 }
 
 .details-screen-content {
   position: relative;
   width: 342px;
-  margin: 14px auto 0;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1847,6 +1843,7 @@ body.map-screen-open {
   width: 342px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
 }
 
@@ -1859,10 +1856,10 @@ body.map-screen-open {
 }
 
 .details-current-title {
-  color: #12130F;
+  color: #FDFDFF;
   opacity: 0.60;
   font-size: 16px;
-  font-family: General Sans;
+  font-family: 'General Sans', sans-serif;
   font-weight: 500;
   line-height: 24px;
 }
@@ -1886,23 +1883,23 @@ body.map-screen-open {
   line-height: 20.80px;
 }
 
-.details-change-button svg {
+.details-change-button svg,
+.details-change-button img {
   width: 20px;
   height: 20px;
   display: block;
+  flex: none;
 }
 
 .details-map-preview {
+  box-sizing: border-box;
   width: 342px;
   height: 124px;
   position: relative;
   overflow: hidden;
   border-radius: 14px;
-  border: 1px solid rgba(18, 19, 15, 0.12);
-  background:
-    radial-gradient(circle at 18% 26%, rgba(8, 160, 69, 0.16), transparent 26%),
-    radial-gradient(circle at 72% 60%, rgba(136, 6, 206, 0.14), transparent 24%),
-    linear-gradient(135deg, rgba(18, 19, 15, 0.03), rgba(18, 19, 15, 0.08));
+  border: 1px solid rgba(253, 253, 255, 0.12);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.04), rgba(253, 253, 255, 0.04)), #12130F;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1911,39 +1908,52 @@ body.map-screen-open {
 .details-map-grid {
   position: absolute;
   inset: -20px;
-  opacity: 0.42;
+  opacity: 0.24;
   background-image:
-    linear-gradient(rgba(18, 19, 15, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18, 19, 15, 0.12) 1px, transparent 1px),
-    linear-gradient(35deg, transparent 45%, rgba(8, 160, 69, 0.20) 46%, rgba(8, 160, 69, 0.20) 54%, transparent 55%);
+    linear-gradient(rgba(253, 253, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(253, 253, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(35deg, transparent 45%, rgba(8, 160, 69, 0.22) 46%, rgba(8, 160, 69, 0.22) 54%, transparent 55%);
   background-size: 38px 38px, 38px 38px, 140px 80px;
   transform: rotate(-5deg) scale(1.08);
 }
 
+.details-real-map-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: #12130F;
+  pointer-events: none;
+}
+
+.details-map-preview.has-real-map .details-map-grid {
+  display: none;
+}
+
 .details-map-pin {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   width: 18px;
   height: 24px;
-  filter: drop-shadow(0 8px 12px rgba(18, 19, 15, 0.24));
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.32));
+  pointer-events: none;
+}
+
+.details-map-preview.has-real-map .details-map-pin {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -100%);
 }
 
 .details-preview-text {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 10px;
-  z-index: 3;
-  padding: 5px 9px;
-  border-radius: 999px;
-  background: rgba(253, 253, 255, 0.86);
-  color: rgba(18, 19, 15, 0.68);
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 13px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
+}
+
+.details-map-preview .maplibregl-ctrl-bottom-left,
+.details-map-preview .maplibregl-ctrl-bottom-right {
+  display: none;
 }
 
 .details-form-section {
@@ -1965,14 +1975,18 @@ body.map-screen-open {
 }
 
 .details-field-label,
-.details-input-field span {
+.details-input-field > span {
   width: 342px;
-  color: #12130F;
+  color: #FDFDFF;
   opacity: 0.60;
   font-size: 16px;
-  font-family: General Sans;
+  font-family: 'General Sans', sans-serif;
   font-weight: 500;
   line-height: 24px;
+}
+
+.details-input-field > span .details-required-mark {
+  opacity: 1;
 }
 
 .saveas-chips-group {
@@ -1982,6 +1996,11 @@ body.map-screen-open {
   align-items: flex-start;
   gap: 8px;
   overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.saveas-chips-group::-webkit-scrollbar {
+  display: none;
 }
 
 .saveas-chip {
@@ -1990,9 +2009,10 @@ body.map-screen-open {
   height: 32px;
   padding: 6px 12px 6px 10px;
   flex-shrink: 0;
-  background: rgba(18, 19, 15, 0.04);
+  background: rgba(253, 253, 255, 0.12);
+  border: 1px solid transparent;
   border-radius: 8px;
-  color: #12130F;
+  color: #FDFDFF;
   box-shadow: none;
   transform: none;
   display: inline-flex;
@@ -2005,23 +2025,26 @@ body.map-screen-open {
 }
 
 .saveas-chip.is-selected {
-  background: rgba(136, 6, 206, 0.10);
-  color: #8806CE;
+  background: rgba(136, 6, 206, 0.42);
+  border-color: #8806CE;
+  color: #FDFDFF;
 }
 
 .details-input-field input,
 .details-input-field textarea {
+  box-sizing: border-box;
   width: 342px;
-  border: 1px solid rgba(18, 19, 15, 0.08);
+  border: 1px solid rgba(253, 253, 255, 0.08);
   outline: none;
-  background: rgba(18, 19, 15, 0.02);
+  background: rgba(253, 253, 255, 0.12);
   border-radius: 10px;
   padding: 14px 20px;
-  color: #12130F;
+  color: #FDFDFF;
   font-family: 'General Sans', sans-serif;
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
+  caret-color: #08A045;
 }
 
 .details-input-field input {
@@ -2029,7 +2052,7 @@ body.map-screen-open {
 }
 
 .details-input-field textarea {
-  min-height: 118px;
+  min-height: 76px;
   resize: none;
   overflow-y: hidden;
   white-space: pre-wrap;
@@ -2037,13 +2060,13 @@ body.map-screen-open {
 
 .details-input-field input::placeholder,
 .details-input-field textarea::placeholder {
-  color: rgba(18, 19, 15, 0.30);
+  color: rgba(253, 253, 255, 0.30);
 }
 
 .details-input-field input:focus,
 .details-input-field textarea:focus {
-  border-color: rgba(8, 160, 69, 0.42);
-  box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.08);
+  border-color: rgba(8, 160, 69, 0.56);
+  box-shadow: 0 0 0 3px rgba(8, 160, 69, 0.12);
 }
 
 .save-use-now-button {
@@ -2064,7 +2087,7 @@ body.map-screen-open {
   font-size: 18px;
   font-weight: 600;
   line-height: 26px;
-  z-index: 8;
+  z-index: 12;
 }
 
 .save-use-now-button.is-saving {
@@ -2072,7 +2095,6 @@ body.map-screen-open {
 }
 
 .details-back-button:active,
-.details-search-button:active,
 .details-change-button:active,
 .saveas-chip:active {
   transform: scale(0.97);
@@ -2096,7 +2118,7 @@ body.map-screen-open {
   .save-as-group,
   .details-input-field,
   .details-field-label,
-  .details-input-field span,
+  .details-input-field > span,
   .saveas-chips-group,
   .details-input-field input,
   .details-input-field textarea,
@@ -2759,6 +2781,44 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 .cf-figma-menu-root .HeroTitle .hero-title-bold {
   font-weight: 700 !important;
 }
+
+
+/* 2.2 dark address form final overrides */
+.details-title-field { display: none; }
+.details-title-field.is-visible { display: flex; }
+.details-required-mark { color: #E23009; opacity: 1; margin-left: 2px; }
+.details-field-error {
+  display: none;
+  width: 342px;
+  color: #FF6B4A;
+  font-size: 11px;
+  font-family: General Sans;
+  font-weight: 600;
+  line-height: 14px;
+  margin-top: 2px;
+}
+.details-input-field.has-error input,
+.details-input-field.has-error textarea {
+  border-color: rgba(226, 48, 9, 0.78) !important;
+  box-shadow: 0 0 0 3px rgba(226, 48, 9, 0.12) !important;
+}
+.details-input-field.has-error .details-field-error { display: block; }
+.details-real-map-canvas { background: #12130F !important; }
+.details-map-preview.has-real-map .details-map-grid { display: none !important; }
+.details-map-preview .maplibregl-ctrl-bottom-left,
+.details-map-preview .maplibregl-ctrl-bottom-right { display: none !important; }
+.saveas-icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #888987;
+  font-size: 16px;
+  line-height: 20px;
+}
+.saveas-chip.is-selected .saveas-icon { color: #FDFDFF; }
 
 </style>
 <script>
@@ -3549,8 +3609,8 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
     <div class="details-top-bar">
       <button class="details-back-button" type="button" id="detailsBackBtn" aria-label="Back to map">
         <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z" stroke="#12130F" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872" stroke="#12130F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z" stroke="#FDFDFF" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         back
       </button>
@@ -3567,10 +3627,7 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
         <div class="details-text-button-group">
           <div class="details-current-title">Current pinned location</div>
           <button class="details-change-button" type="button" id="changePinnedLocationBtn">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M4.90669 18.0782C4.39836 18.0782 3.92336 17.9032 3.58169 17.5782C3.14836 17.1698 2.94003 16.5532 3.01503 15.8865L3.32336 13.1865C3.38169 12.6782 3.69003 12.0032 4.04836 11.6365L10.89 4.39482C12.5984 2.58648 14.3817 2.53648 16.19 4.24482C17.9984 5.95315 18.0484 7.73648 16.34 9.54482L9.49837 16.7865C9.14837 17.1615 8.49836 17.5115 7.99003 17.5948L5.30669 18.0532C5.16503 18.0615 5.04003 18.0782 4.90669 18.0782ZM13.565 4.23648C12.9234 4.23648 12.365 4.63648 11.7984 5.23648L4.95669 12.4865C4.79003 12.6615 4.59836 13.0782 4.56503 13.3198L4.25669 16.0198C4.22336 16.2948 4.29003 16.5198 4.44003 16.6615C4.59003 16.8032 4.81503 16.8532 5.09003 16.8115L7.77336 16.3532C8.01503 16.3115 8.41503 16.0948 8.5817 15.9198L15.4234 8.67815C16.4567 7.57815 16.8317 6.56148 15.3234 5.14482C14.6567 4.50315 14.0817 4.23648 13.565 4.23648Z" fill="#08A045"/>
-              <path d="M14.74 10.9375C14.7233 10.9375 14.6983 10.9375 14.6816 10.9375C12.0816 10.6792 9.98995 8.70421 9.58995 6.12087C9.53995 5.77921 9.77329 5.46254 10.115 5.40421C10.4566 5.35421 10.7733 5.58754 10.8316 5.92921C11.1483 7.94587 12.7816 9.49587 14.815 9.69587C15.1566 9.72921 15.4066 10.0375 15.3733 10.3792C15.3316 10.6958 15.0566 10.9375 14.74 10.9375Z" fill="#08A045"/>
-            </svg>
+            <img src="./assets/menu/icons/pen-icon.svg?v=addr22" alt="" aria-hidden="true">
             Change
           </button>
         </div>
@@ -3591,9 +3648,18 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
         <div class="save-as-group">
           <div class="details-field-label">Save as</div>
           <div class="saveas-chips-group" id="saveAsChipsGroup">
-            <button class="saveas-chip is-selected" type="button" data-save-label="Home">🏠 Home</button>
-            <button class="saveas-chip" type="button" data-save-label="Office">💼 Office</button>
-            <button class="saveas-chip" type="button" data-save-label="Gym">🏋️ Gym</button>
+            <button class="saveas-chip is-selected" type="button" data-save-label="Home">
+              <span class="saveas-icon" aria-hidden="true">⌂</span>
+              Home
+            </button>
+            <button class="saveas-chip" type="button" data-save-label="Office">
+              <span class="saveas-icon" aria-hidden="true">▣</span>
+              Office
+            </button>
+            <button class="saveas-chip" type="button" data-save-label="Gym">
+              <span class="saveas-icon" aria-hidden="true">—</span>
+              Gym
+            </button>
             <button class="saveas-chip" type="button" data-save-label="Other">Other</button>
           </div>
         </div>
