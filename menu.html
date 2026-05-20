@@ -2431,6 +2431,62 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   }
 </style>
 
+
+<style id="cf-menu-user-fixes-1">
+/* User fixes: tab labels single line, consistent best-selling card backgrounds, animated floating cart gradient. */
+.cf-figma-menu-root .FlotaingTabs .All,
+.cf-figma-menu-root .FlotaingTabs .ProteinPack,
+.cf-figma-menu-root .FlotaingTabs .Regular {
+  white-space: nowrap !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  width: auto !important;
+  max-width: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.cf-figma-menu-root .FlotaingTabs .Tab1,
+.cf-figma-menu-root .FlotaingTabs .Tab2,
+.cf-figma-menu-root .FlotaingTabs .Tab3 {
+  min-width: 0 !important;
+  overflow: visible !important;
+}
+
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card1,
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card2,
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card3 {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.16) 0%, rgba(253, 253, 255, 0.16) 100%), #12130F !important;
+}
+
+@keyframes cfFloatingAddedGradientMove {
+  0% {
+    background-position: 0% 50%;
+    box-shadow: 0px 0px 4px #089E44;
+  }
+  50% {
+    background-position: 100% 50%;
+    box-shadow: 0px 0px 12px rgba(136, 6, 206, 0.55);
+  }
+  100% {
+    background-position: 0% 50%;
+    box-shadow: 0px 0px 4px #089E44;
+  }
+}
+
+.cf-figma-menu-root .FloatingAddedCard {
+  background: linear-gradient(90deg, #08A045 0%, #18B866 28%, #4A5DD5 58%, #8806CE 100%) !important;
+  background-size: 240% 100% !important;
+  animation: cfFloatingAddedGradientMove 3.2s ease-in-out infinite !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-figma-menu-root .FloatingAddedCard {
+    animation: none !important;
+  }
+}
+</style>
 </head>
 <body data-bottom-nav="off">
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(136px + env(safe-area-inset-bottom));">
