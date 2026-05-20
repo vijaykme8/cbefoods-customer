@@ -1,10 +1,11 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_commonnav2';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260520_commonnav4';
 
   const ACTIVE_COLOR = '#941FD3';
   const INACTIVE_COLOR = '#B8B8B7';
-  const ICON_BASE = 'assets/menu/icons/';
+  const ICON_BASE = './assets/menu/icons/';
+  const ICON_VERSION = '20260520_navicons4';
 
   const hiddenPages = new Set([
     'login',
@@ -87,14 +88,22 @@
     document.head.appendChild(link);
   }
 
-  function iconMask(iconName, color) {
-    const url = `${ICON_BASE}${iconName}`;
+  function iconMask(iconName, color, label) {
+    const url = `${ICON_BASE}${iconName}?v=${ICON_VERSION}`;
     return `
       <span
         class="cf-bottom-nav__mask-icon"
         aria-hidden="true"
         style="--cf-nav-icon-url: url('${url}'); --cf-nav-icon-color: ${color};"
       ></span>
+      <img
+        class="cf-bottom-nav__fallback-icon"
+        src="${url}"
+        alt=""
+        aria-hidden="true"
+        loading="eager"
+        decoding="async"
+      />
     `;
   }
 
@@ -135,7 +144,7 @@
               data-nav-active="${isActive ? 'true' : 'false'}"
             >
               <span class="Icon cf-bottom-nav__icon" data-layer="icon">
-                ${iconMask(item.icon, color)}
+                ${iconMask(item.icon, color, item.label)}
               </span>
               <span class="${labelClass} cf-bottom-nav__label" data-layer="${item.label}">${item.label}</span>
             </a>

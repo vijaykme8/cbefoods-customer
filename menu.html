@@ -2414,6 +2414,15 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   display: none !important;
 }
 
+
+/* Menu change button icon uses real menu asset */
+.cf-figma-menu-root .PenIcon img {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+  object-fit: contain !important;
+}
+
 </style>
 <script>
 (function () {
@@ -2564,8 +2573,8 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 <div class="DelivertoChange" data-layer="deliverto&amp;change" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
 <div class="DeliverTo" data-layer="Deliver to" style="opacity: 0.50; color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Deliver to</div>
 <div class="ChangeButton" data-layer="change button" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
-<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
-<div class="PenVector" data-layer="pen-vector" style="width: 14.58px; height: 15.08px; left: 3px; top: 3px; position: absolute; background: #08A045"></div>
+<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden; flex: 0 0 auto;">
+<img alt="" aria-hidden="true" src="assets/menu/icons/pen-icon.svg?v=20260520_change1" style="width:20px;height:20px;display:block;object-fit:contain;"/>
 </div>
 <div class="Change" data-layer="Change" style="color: #08A045; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Change</div>
 </div>
@@ -6965,7 +6974,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_commonnav2"></script>
+<script src="components/bottom-nav.js?v=20260520_commonnav4"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 </body>

@@ -73,10 +73,33 @@ body.has-bottom-nav {
   mask: var(--cf-nav-icon-url) center / contain no-repeat;
 }
 
-.cf-bottom-nav__item--cart .cf-bottom-nav__mask-icon {
+.cf-bottom-nav__item--cart .cf-bottom-nav__mask-icon,
+.cf-bottom-nav__item--cart .cf-bottom-nav__fallback-icon {
   width: 21.05px;
   height: 21.5px;
 }
+
+.cf-bottom-nav__fallback-icon {
+  position: absolute;
+  left: 1.25px;
+  top: 1.25px;
+  width: 21.5px;
+  height: 21.5px;
+  object-fit: contain;
+  display: none;
+  opacity: 1;
+}
+
+@supports not ((-webkit-mask: url("") center / contain no-repeat) or (mask: url("") center / contain no-repeat)) {
+  .cf-bottom-nav__mask-icon {
+    display: none;
+  }
+
+  .cf-bottom-nav__fallback-icon {
+    display: block;
+  }
+}
+
 
 .cf-bottom-nav__label {
   width: 80px;
