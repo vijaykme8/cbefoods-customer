@@ -1048,7 +1048,7 @@ body.map-screen-open {
   max-width: 100%;
   height: 844px;
   min-height: 100dvh;
-  background: #FDFDFF;
+  background: #12130F;
 }
 
 .map-address-canvas .maplibregl-ctrl-bottom-left,
@@ -1057,24 +1057,11 @@ body.map-screen-open {
 }
 
 .map-address-empty-state {
-  position: absolute;
-  inset: 0;
-  padding: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  color: rgba(18, 19, 15, 0.62);
-  font-size: 13px;
-  font-family: General Sans;
-  font-weight: 600;
-  line-height: 17px;
-  pointer-events: none;
-  z-index: 2;
+  display: none !important;
 }
 
 .map-address-empty-state.is-hidden {
-  display: none;
+  display: none !important;
 }
 
 .map-address-top-bar {
@@ -3514,7 +3501,7 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
     <div id="locationOlaMap" class="map-address-canvas OlamapView" aria-label="Ola Maps delivery location map" data-layer="olamap-view"></div>
 
     <div class="map-address-empty-state" id="mapEmptyState">
-      <div id="mapEmptyCopy">Loading secure map view...</div>
+      <div id="mapEmptyCopy" aria-hidden="true"></div>
     </div>
 
     <div class="map-address-top-bar TopBar" data-layer="top-bar">
@@ -4605,16 +4592,16 @@ async function reverseGeocodeExactAddress(lat, lng) {
 }
 
 function showMapMessage(message) {
-  if (!mapEmptyState || !mapEmptyCopy) return;
-
-  mapEmptyCopy.textContent = message;
-  mapEmptyState.classList.remove("is-hidden");
+  // Intentionally no visible loading/error placeholder on map screen.
+  // The map canvas must remain the only visible layer behind the controls.
+  if (message) console.log("Map status:", message);
+  if (mapEmptyCopy) mapEmptyCopy.textContent = "";
+  if (mapEmptyState) mapEmptyState.classList.add("is-hidden");
 }
 
 function hideMapMessage() {
-  if (mapEmptyState) {
-    mapEmptyState.classList.add("is-hidden");
-  }
+  if (mapEmptyCopy) mapEmptyCopy.textContent = "";
+  if (mapEmptyState) mapEmptyState.classList.add("is-hidden");
 }
 
 function centerToLocation(center, source = "customer_map_center_pin") {
@@ -4777,7 +4764,7 @@ function scheduleReverseForCurrentMap(source = "customer_map_center_pin") {
 async function renderOlaLocationMap(latitude, longitude) {
   if (!locationOlaMapCanvas) return;
 
-  showMapMessage("Loading map...");
+  hideMapMessage();
   const center = [Number(longitude), Number(latitude)];
 
   try {
