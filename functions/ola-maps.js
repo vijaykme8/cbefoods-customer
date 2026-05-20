@@ -1,6 +1,16 @@
 // routefix1: use POST for Ola Directions API; GET can return 404.
-const OLA_STYLE_URL =
-  "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
+const OLA_STYLE_BASE_URL =
+  "https://api.olamaps.io/tiles/vector/v1/styles";
+
+const OLA_STYLE_NAMES = {
+  light: "default-light-standard",
+  dark: "default-dark-standard"
+};
+
+function getStyleUrl(theme = "dark") {
+  const styleName = OLA_STYLE_NAMES[String(theme).toLowerCase()] || OLA_STYLE_NAMES.dark;
+  return `${OLA_STYLE_BASE_URL}/${styleName}/style.json`;
+}
 
 const OLA_REVERSE_URL =
   "https://api.olamaps.io/places/v1/reverse-geocode";
@@ -182,7 +192,7 @@ export async function onRequest(context) {
     }
 
     if (type === "style") {
-      return await fetchOla(OLA_STYLE_URL, apiKey, origin);
+      return await fetchOla(getStyleUrl(url.searchParams.get("theme") || "dark"), apiKey, origin);
     }
 
     if (type === "proxy") {

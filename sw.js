@@ -1,4 +1,4 @@
-const CBE_CACHE_VERSION = '20260513_routepickup2';
+const CBE_CACHE_VERSION = '20260520_darkmap1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
@@ -12,7 +12,7 @@ const PRECACHE_URLS = [
   './pwa-speed.js?v=20260512_speed1',
   './firebase-config.js',
   './firebase-mvp.js',
-  './ola-map-v4.js?v=routepickup2',
+  './ola-map-v4.js?v=darkmap1',
   './assets/cart/dish-img.png',
   './assets/menu/img/Protein egg lunch-img.png',
   './assets/menu/img/Protein chicken lunch-img.png',

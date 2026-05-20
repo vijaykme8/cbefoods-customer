@@ -10,7 +10,21 @@
 ========================================================= */
 (function () {
   const PROXY_URL = "/ola-maps";
-  const OLA_STYLE_URL = "https://api.olamaps.io/tiles/vector/v1/styles/default-light-standard/style.json";
+  const OLA_STYLE_BASE_URL = "https://api.olamaps.io/tiles/vector/v1/styles";
+  const OLA_STYLE_NAMES = {
+    light: "default-light-standard",
+    dark: "default-dark-standard"
+  };
+
+  function getMapTheme() {
+    const value = clean(window.CBE_OLA_MAP_THEME || window.CBE_OLA_THEME || "dark").toLowerCase();
+    return value === "light" ? "light" : "dark";
+  }
+
+  function getStyleUrlForTheme(theme) {
+    const styleName = OLA_STYLE_NAMES[theme] || OLA_STYLE_NAMES.dark;
+    return `${OLA_STYLE_BASE_URL}/${styleName}/style.json`;
+  }
   let mapLibrePromise = null;
   let browserKeyPromise = null;
   const ROUTE_CACHE = new Map();
@@ -59,7 +73,7 @@
 
   async function styleUrl() {
     const apiKey = await getBrowserKey();
-    return withApiKey(OLA_STYLE_URL, apiKey);
+    return withApiKey(getStyleUrlForTheme(getMapTheme()), apiKey);
   }
 
   async function transformRequest(url) {
@@ -479,6 +493,7 @@
     formatDistance,
     formatDuration,
     withApiKey,
-    PROXY_URL
+    PROXY_URL,
+    getMapTheme
   };
 })();
