@@ -6096,6 +6096,7 @@ function updateCartCount() {
   */
   const cartNav =
     document.querySelector(".cf-bottom-nav__item--cart") ||
+    document.querySelector('[data-nav-key="cart"]') ||
     document.querySelectorAll(".nav-item")[1];
 
   if (!cartNav) {
@@ -6141,6 +6142,10 @@ function updateCartCount() {
 
     badge.style.display = "flex";
     badge.textContent = totalQty;
+  }
+
+  if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.updateBadge === "function") {
+    window.CoimbatoreFoodsBottomNav.updateBadge(totalQty);
   }
 
 }
@@ -7396,7 +7401,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260520_stateicons2"></script>
+<script src="components/bottom-nav.js?v=20260520_stateicons_badge1"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 </body>

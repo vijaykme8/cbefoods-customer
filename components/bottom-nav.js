@@ -1,8 +1,8 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_stateicons2';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260520_stateicons_badge1';
   const ICON_BASE = './assets/bottom-nav-bar/';
-  const ICON_VERSION = '20260520_stateicons2';
+  const ICON_VERSION = '20260520_stateicons_badge1';
 
   const hiddenPages = new Set([
     'login',
@@ -29,6 +29,7 @@
       label: 'Menu',
       href: 'menu.html',
       match: ['menu', 'index', 'home', ''],
+      modifier: 'menu',
       activeIcon: 'active-search-icon.svg',
       inactiveIcon: 'inactive-search-icon.svg'
     },
@@ -37,6 +38,7 @@
       label: 'Cart',
       href: 'cart.html',
       match: ['cart'],
+      modifier: 'cart',
       activeIcon: 'active-cart-icon.svg',
       inactiveIcon: 'inactive-cart-icon.svg'
     },
@@ -45,6 +47,7 @@
       label: 'Track orders',
       href: 'track.html',
       match: ['track', 'track-order', 'orders'],
+      modifier: 'track',
       activeIcon: 'active-track-icon.svg',
       inactiveIcon: 'inactive-track-icon.svg'
     }
@@ -84,10 +87,73 @@
     document.head.appendChild(link);
   }
 
+  function escapeAttr(value) {
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
+
   function iconMarkup(item, isActive) {
     const file = isActive ? item.activeIcon : item.inactiveIcon;
     const src = `${ICON_BASE}${file}?v=${ICON_VERSION}`;
-    return `<img class="cf-bottom-nav__state-icon" src="${src}" alt="" aria-hidden="true" loading="eager" decoding="async">`;
+    return `<img class="cf-bottom-nav__state-icon" src="${escapeAttr(src)}" alt="" aria-hidden="true" loading="eager" decoding="async">`;
+  }
+
+  function readCartQtyFromStorage() {
+    let raw = null;
+
+    try {
+      raw = localStorage.getItem('cart');
+    } catch (error) {
+      raw = null;
+    }
+
+    if (!raw) return 0;
+
+    try {
+      const parsed = JSON.parse(raw);
+      const items = Array.isArray(parsed)
+        ? parsed
+        : parsed && typeof parsed === 'object'
+          ? Object.values(parsed)
+          : [];
+
+      return items.reduce((sum, item) => {
+        if (!item || typeof item !== 'object') return sum;
+        return sum + (Number(item.qty || item.quantity || 0) || 0);
+      }, 0);
+    } catch (error) {
+      return 0;
+    }
+  }
+
+  function updateBadge(totalQty) {
+    const qty = Math.max(0, Number(totalQty ?? readCartQtyFromStorage()) || 0);
+    const cartNav =
+      document.querySelector('.cf-bottom-nav__item--cart') ||
+      document.querySelector('[data-nav-key="cart"]');
+
+    if (!cartNav) return;
+
+    let badge = cartNav.querySelector('.cart-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'cart-badge cf-bottom-nav__badge';
+      badge.setAttribute('aria-hidden', 'true');
+      cartNav.appendChild(badge);
+    }
+
+    if (qty <= 0) {
+      badge.style.display = 'none';
+      badge.textContent = '';
+      cartNav.removeAttribute('data-cart-count');
+    } else {
+      badge.style.display = 'flex';
+      badge.textContent = qty > 99 ? '99+' : String(qty);
+      cartNav.setAttribute('data-cart-count', String(qty));
+    }
   }
 
   function renderBottomNav() {
@@ -107,6 +173,7 @@
     }
 
     const active = activeKey();
+    const currentCartQty = readCartQtyFromStorage();
 
     mount.innerHTML = `
       <nav class="BottomNavBar cf-bottom-nav" data-layer="bottom nav bar" aria-label="Bottom navigation">
@@ -114,19 +181,25 @@
           const isActive = item.key === active;
           const navClass = index === 0 ? 'Nav1' : index === 1 ? 'Nav2' : 'Nav3';
           const labelClass = item.key === 'track' ? 'TrackOrders' : item.key === 'cart' ? 'Cart' : 'Menu';
+          const modifierClass = `cf-bottom-nav__item--${item.modifier}`;
+          const badgeMarkup = item.key === 'cart'
+            ? `<span class="cart-badge cf-bottom-nav__badge" aria-hidden="true" style="display:${currentCartQty > 0 ? 'flex' : 'none'}">${currentCartQty > 99 ? '99+' : currentCartQty || ''}</span>`
+            : '';
 
           return `
             <a
-              class="${navClass} cf-bottom-nav__item ${isActive ? 'is-active' : 'is-inactive'}"
+              class="${navClass} cf-bottom-nav__item ${modifierClass} ${isActive ? 'is-active' : 'is-inactive'}"
               data-layer="nav ${index + 1}"
               href="${item.href}"
               ${isActive ? 'aria-current="page"' : ''}
-              aria-label="${item.label}"
+              aria-label="${escapeAttr(item.label)}"
               data-nav-key="${item.key}"
               data-nav-active="${isActive ? 'true' : 'false'}"
+              ${item.key === 'cart' && currentCartQty > 0 ? `data-cart-count="${currentCartQty}"` : ''}
             >
               <span class="Icon cf-bottom-nav__icon" data-layer="icon">${iconMarkup(item, isActive)}</span>
-              <span class="${labelClass} cf-bottom-nav__label" data-layer="${item.label}">${item.label}</span>
+              ${badgeMarkup}
+              <span class="${labelClass} cf-bottom-nav__label" data-layer="${escapeAttr(item.label)}">${item.label}</span>
             </a>
           `;
         }).join('')}
@@ -134,6 +207,11 @@
     `;
 
     document.body.classList.add('has-bottom-nav');
+    updateBadge(currentCartQty);
+  }
+
+  function refreshSoon() {
+    window.requestAnimationFrame(() => updateBadge());
   }
 
   if (document.readyState === 'loading') {
@@ -142,11 +220,21 @@
     renderBottomNav();
   }
 
-  window.addEventListener('pageshow', renderBottomNav);
+  window.addEventListener('pageshow', () => {
+    renderBottomNav();
+    refreshSoon();
+  });
   window.addEventListener('popstate', renderBottomNav);
+  window.addEventListener('storage', (event) => {
+    if (!event.key || event.key === 'cart') updateBadge();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) updateBadge();
+  });
 
   window.CoimbatoreFoodsBottomNav = {
     refresh: renderBottomNav,
+    updateBadge,
     hide() {
       document.body.dataset.bottomNav = 'off';
       renderBottomNav();
@@ -159,6 +247,7 @@
       return {
         route: currentRouteName(),
         active: activeKey(),
+        cartQty: readCartQtyFromStorage(),
         iconBase: ICON_BASE,
         iconVersion: ICON_VERSION,
         items: navItems.map((item) => ({

@@ -99,6 +99,32 @@ body[data-bottom-nav="off"] .cf-bottom-nav {
   display: none !important;
 }
 
+
+.cf-bottom-nav__item--cart {
+  position: relative;
+}
+
+.cf-bottom-nav__badge,
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: 16px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #E23009;
+  color: #FFFFFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 18px;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+
 @media (max-width: 389px) {
   .cf-bottom-nav {
     width: 100vw;
