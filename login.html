@@ -20,39 +20,43 @@
 <title>Coimbatore Foods — Login</title>
 
 <style>
-
 /* =========================
-   FONTS
+   1.1 SPLASH / LOGIN
 ========================= */
 
 @font-face{
   font-family:'General Sans';
   src:url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
   font-weight:400;
+  font-style:normal;
 }
 
 @font-face{
   font-family:'General Sans';
   src:url('./fonts/GeneralSans/GeneralSans-Medium.otf') format('opentype');
   font-weight:500;
+  font-style:normal;
 }
 
 @font-face{
   font-family:'General Sans';
   src:url('./fonts/GeneralSans/GeneralSans-Semibold.otf') format('opentype');
   font-weight:600;
+  font-style:normal;
 }
 
 @font-face{
   font-family:'General Sans';
   src:url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype');
   font-weight:700;
+  font-style:normal;
 }
 
 @font-face{
   font-family:'Chillax';
   src:url('./fonts/Chillax/Chillax-Bold.otf') format('opentype');
   font-weight:700;
+  font-style:normal;
 }
 
 *{
@@ -68,11 +72,8 @@
   --green:#08A045;
   --white:#FDFDFF;
   --dark:#12130F;
+  --danger:#ff6b6b;
 }
-
-/* =========================
-   BASE
-========================= */
 
 html,
 body{
@@ -83,436 +84,365 @@ body{
 
 body{
   font-family:'General Sans',sans-serif;
-  background:linear-gradient(
-    180deg,
-    var(--purple-1) 0%,
-    var(--purple-2) 100%
-  );
   color:var(--white);
+  background:var(--dark);
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
 }
 
-/* =========================
-   APP
-========================= */
+button,
+input{
+  font:inherit;
+}
 
 .app{
   width:100%;
+  max-width:390px;
   height:100dvh;
-
-  overflow:hidden;
+  min-height:100dvh;
   position:relative;
-
-  display:flex;
-  flex-direction:column;
+  overflow:hidden;
+  background:linear-gradient(180deg, var(--purple-1) 35.66%, var(--purple-2) 100%);
 }
 
-/* =========================
-   FRAME 17
-========================= */
-
-.frame-17{
+.splash-shell{
   width:100%;
   height:100%;
-
+  position:relative;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
-
-  position:relative;
+  justify-content:space-between;
+  padding-top:max(50px, env(safe-area-inset-top));
 }
 
-/* =========================
-   TOP SECTION
-========================= */
-
-.top-section{
-  flex:1;
-  position: relative;
+.splash-top{
+  width:100%;
+  min-height:0;
+  flex:1 1 auto;
   display:flex;
   flex-direction:column;
-  justify-content: flex-start;
-
-  min-height:0;
-  z-index: 1;
-
-  padding-top:max(50px, env(safe-area-inset-top));
-  padding-bottom: 20vh;
-
+  align-items:flex-start;
+  gap:70px;
+  padding-bottom:291px;
   overflow:hidden;
 }
 
-.spacer{
-  height:1vh; /* 👈 fixed 10% of screen height */
-  flex-shrink:0;
-  flex: 0;
-}
-/* =========================
-   HERO
-========================= */
-
 .hero{
+  width:100%;
   display:flex;
   flex-direction:column;
+  align-items:flex-start;
   gap:10px;
-  flex: 0;
+  flex:0 0 auto;
 }
 
 .hero-top{
+  width:100%;
   padding:0 24px;
+  display:flex;
+  align-items:flex-start;
 }
 
 .badge{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-
+  gap:10px;
   padding:10px 24px;
-
-  background:#12130F;
-
-  border-radius:20px;
-
+  min-height:41px;
+  background:var(--dark);
+  border-radius:10px;
+  color:var(--white);
   font-size:14px;
   font-weight:500;
   line-height:21px;
+  white-space:nowrap;
 }
 
 .hero-content{
+  width:100%;
   padding:0 24px;
-
   display:flex;
   flex-direction:column;
+  justify-content:center;
+  align-items:flex-start;
   gap:4px;
 }
 
 .subtext{
   width:220px;
-
+  color:var(--white);
   opacity:.6;
-
   font-size:16px;
   font-weight:500;
   line-height:24px;
 }
 
 .brand{
-  font-family:'Chillax',sans-serif;
+  width:100%;
+  color:var(--white);
+  font-family:'Chillax','General Sans',sans-serif;
   font-size:50px;
   font-weight:700;
   line-height:55px;
+  letter-spacing:-0.5px;
 }
-
-/* =========================
-   IMAGE STACK
-========================= */
 
 .image-stack{
   width:100%;
-
+  padding:0 7px;
   display:flex;
   flex-direction:column;
+  justify-content:flex-start;
   align-items:center;
-  justify-content:flex-end;
-  flex:1;
-  padding:0 7px;
-
-  min-height:0;
+  flex:0 0 auto;
+  margin-top:-60px;
 }
 
 .logo-wrap{
   width:150px;
   height:150px;
-
+  position:relative;
   opacity:.8;
-
-  margin-bottom:-60px;
-
+  overflow:hidden;
+  flex:0 0 auto;
   z-index:2;
-
-  flex-shrink:0;
+  margin-bottom:-60px;
 }
 
 .logo-wrap img{
   width:100%;
   height:100%;
   object-fit:contain;
+  display:block;
 }
 
 .food-image{
   width:359px;
   max-width:92vw;
-
-  height:auto;
-  max-height:42vh;
-
+  height:276px;
+  max-height:34dvh;
   object-fit:contain;
-
-  filter:drop-shadow(0 20px 40px rgba(0,0,0,.18));
-
-  flex-shrink:1;
+  display:block;
+  flex:0 1 auto;
 }
-
-/* =========================
-   DRAWER
-========================= */
 
 .drawer{
   width:100%;
-
-  background:#FDFDFF;
-  color:#12130F;
-
-  border-radius:68px 68px 0 0;
-
-  padding:
-    30px
-    24px
-    calc(40px + env(safe-area-inset-bottom));
-
+  min-height:291px;
+  max-height:78dvh;
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:10;
+  overflow-y:auto;
   display:flex;
   flex-direction:column;
-  gap:20px;
-
-  box-shadow:0 -10px 40px rgba(0,0,0,.14);
-
-  transition:.28s ease;
-
-  margin-top:auto;
-
-  position:absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-
-  z-index:10;
-
-  flex-shrink:0;
-
-  max-height:78dvh;
-
-  overflow-y:auto;
+  align-items:flex-start;
+  gap:10px;
+  padding:30px 23px calc(40px + env(safe-area-inset-bottom));
+  background:linear-gradient(0deg, rgba(253,253,255,.02), rgba(253,253,255,.02)), var(--dark);
+  border-radius:34px 34px 0 0;
+  color:var(--white);
 }
 
 .error{
+  width:100%;
   display:none;
-
+  padding:10px 12px;
+  border-radius:10px;
+  background:rgba(255,107,107,.12);
+  color:#ff8c8c;
   font-size:14px;
   font-weight:500;
   line-height:20px;
-
-  color:#d7263d;
 }
 
-/* =========================
-   PHONE SCREEN
-========================= */
-
-.phone-screen{
+.phone-screen,
+.name-screen{
+  width:100%;
   display:flex;
   flex-direction:column;
-  gap:24px;
+  align-items:flex-end;
+  gap:30px;
+}
+
+.phone-field-group,
+.name-field-group,
+.otp-label-group{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
 }
 
 .label{
+  width:100%;
+  color:var(--white);
   opacity:.6;
-
   font-size:16px;
   font-weight:500;
   line-height:24px;
 }
 
-.phone-box{
+.phone-box,
+.name-box{
   width:100%;
-
+  min-height:54px;
   display:flex;
   align-items:center;
   gap:10px;
-
-  padding:16px 18px;
-
-  background:rgba(18,19,15,0.02);
-
-  border-radius:20px;
+  padding:14px 20px;
+  background:rgba(253,253,255,.12);
+  border:1px solid rgba(253,253,255,.08);
+  border-radius:10px;
 }
 
-.country{
+.country,
+.country.dash{
+  color:var(--white);
+  opacity:.5;
   font-size:18px;
   font-weight:500;
   line-height:26px;
-
-  color:#12130F;
+  flex:0 0 auto;
 }
 
-.country.dash{
-  opacity:.12;
-}
-
-.phone-input{
+.phone-input,
+.name-input{
   width:100%;
-
+  min-width:0;
   border:none;
   outline:none;
   background:transparent;
-
-  font-size:20px;
+  color:var(--white);
+  font-size:18px;
   font-weight:500;
   line-height:26px;
-
-  color:#12130F;
+  letter-spacing:.02em;
 }
 
-.phone-input::placeholder{
-  color:rgba(18,19,15,.25);
+.name-input{
+  letter-spacing:0;
+}
+
+.phone-input::placeholder,
+.name-input::placeholder{
+  color:rgba(253,253,255,.35);
+}
+
+.action-group{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:10px;
 }
 
 .btn{
   width:100%;
   height:55px;
-
   border:none;
   outline:none;
-
-  border-radius:20px;
-
-  background:#08A045;
-
-  color:#FDFDFF;
-
+  border-radius:10px;
+  background:var(--green);
+  color:var(--white);
   font-size:18px;
   font-weight:600;
   line-height:26px;
-
   cursor:pointer;
-
-  transition:.2s ease;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:transform .18s ease, opacity .18s ease;
 }
 
 .btn:active{
-  transform:scale(.98);
+  transform:scale(.985);
 }
 
 .btn:disabled{
   opacity:.7;
+  cursor:not-allowed;
 }
 
 .note{
-  opacity:.6;
-
+  width:100%;
+  color:rgba(253,253,255,.5);
   font-size:14px;
   font-weight:500;
   line-height:21px;
 }
 
-
-/* =========================
-   CUSTOMER NAME SCREEN
-========================= */
-
-.name-screen{
-  display:none;
-  flex-direction:column;
-  gap:24px;
-  width:100%;
-}
-
-.name-box{
-  width:100%;
-
-  display:flex;
-  align-items:center;
-  gap:10px;
-
-  padding:16px 18px;
-
-  background:rgba(18,19,15,0.02);
-
-  border-radius:20px;
-}
-
-.name-input{
-  width:100%;
-
-  border:none;
-  outline:none;
-  background:transparent;
-
-  font-size:20px;
-  font-weight:500;
-  line-height:26px;
-
-  color:#12130F;
-}
-
-.name-input::placeholder{
-  color:rgba(18,19,15,.25);
-}
-
-/* =========================
-   OTP SCREEN
-========================= */
-
+.name-screen,
 .otp-screen{
   display:none;
+}
+
+.otp-screen{
+  width:100%;
   flex-direction:column;
   gap:20px;
-
-  width:100%;
 }
 
 .back-row{
-  display:flex;
+  display:inline-flex;
   align-items:center;
   gap:6px;
-
   cursor:pointer;
+  color:var(--white);
 }
 
 .back-icon{
   width:30px;
   height:30px;
-
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
+.back-icon svg path{
+  stroke:var(--white);
+}
+
 .back-text{
+  color:var(--white);
   font-size:18px;
   font-weight:500;
   line-height:27px;
-
-  color:#12130F;
 }
 
 .otp-content{
+  width:100%;
   display:flex;
   flex-direction:column;
   gap:30px;
 }
 
 .otp-group{
+  width:100%;
   display:flex;
   flex-direction:column;
   gap:14px;
 }
 
-.otp-label-group{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
 .otp-box{
   width:100%;
-  cursor: text;
+  min-height:54px;
+  cursor:text;
+  position:relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  position: relative;
-  padding:14px 18px;
-  gap: 10px;
-  background:rgba(18,19,15,0.02);
-
-  border-radius:20px;
+  gap:10px;
+  padding:14px 20px;
+  background:rgba(253,253,255,.12);
+  border:1px solid rgba(253,253,255,.08);
+  border-radius:10px;
 }
 
 .otp-digit{
@@ -521,36 +451,25 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
+  color:var(--white);
   font-size:20px;
   font-weight:500;
-  border-bottom:1px solid rgba(18,19,15,0.2);
+  line-height:26px;
+  border-bottom:1px solid rgba(253,253,255,.25);
 }
 
 .otp-input{
   width:24px;
-
   border:none;
   outline:none;
   background:transparent;
-  caret-color: transparent;
-  user-select: none;
+  caret-color:transparent;
+  user-select:none;
   text-align:center;
-
+  color:var(--white);
   font-size:20px;
   font-weight:500;
   line-height:26px;
-
-  color:#12130F;
-}
-
-.otp-divider{
-  opacity:.12;
-
-  font-size:18px;
-  font-weight:500;
-  line-height:26px;
-
-  color:#12130F;
 }
 
 .otp-info{
@@ -562,75 +481,95 @@ body{
 
 .otp-note{
   text-align:center;
-
-  opacity:.6;
-
+  color:rgba(253,253,255,.5);
   font-size:14px;
   font-weight:500;
   line-height:21px;
-
-  color:#12130F;
 }
 
 .resend{
+  color:rgba(253,253,255,.35);
   font-size:16px;
   font-weight:500;
   line-height:24px;
-
-  color:rgba(18,19,15,.3);
 }
 
 .resend.active{
-  color:#8806CE;
+  color:var(--green);
   cursor:pointer;
 }
 
-/* =========================
-   RESPONSIVE
-========================= */
+@keyframes blink{
+  50%{ opacity:0; }
+}
 
-@media(max-width:390px){
+.otp-cursor{
+  display:inline-block;
+  width:1px;
+  height:22px;
+  background:var(--white);
+  animation:blink 1s step-start infinite;
+  margin:auto;
+}
 
-  .brand{
-    font-size:46px;
-    line-height:52px;
+@media(max-height:760px){
+  .splash-shell{
+    padding-top:max(32px, env(safe-area-inset-top));
   }
 
-  .top-section{
-    gap:48px;
+  .splash-top{
+    gap:46px;
+    padding-bottom:270px;
+  }
+
+  .brand{
+    font-size:44px;
+    line-height:48px;
+  }
+
+  .subtext{
+    font-size:15px;
+    line-height:22px;
   }
 
   .logo-wrap{
-    width:130px;
-    height:130px;
+    width:126px;
+    height:126px;
+    margin-bottom:-50px;
   }
 
-}
+  .food-image{
+    height:230px;
+  }
 
-@keyframes blink {
-  50% {
-    opacity: 0;
+  .drawer{
+    min-height:270px;
+    padding-top:24px;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom));
   }
 }
 
-.otp-cursor {
-  display: inline-block;
-  width: 1px;
-  height: 22px;
-  background: #12130F;
-  animation: blink 1s step-start infinite;
-  margin: auto;
+@media(max-width:360px){
+  .brand{
+    font-size:44px;
+    line-height:49px;
+  }
+
+  .drawer{
+    padding-left:18px;
+    padding-right:18px;
+  }
 }
 
-
-
-/* =========================
-   FIGMA-LIKE 100% CORNER SMOOTHING
-   Fallback: normal border-radius on unsupported browsers.
-========================= */
-@supports (corner-shape: squircle) {
-  * {
-    corner-shape: squircle;
+@supports (corner-shape:squircle){
+  .badge,
+  .drawer,
+  .phone-box,
+  .name-box,
+  .otp-box,
+  .btn,
+  .error{
+    corner-shape:squircle;
   }
 }
 
@@ -987,7 +926,7 @@ catch(err){
 
 }
 
-btn.innerText = 'Continue';
+btn.innerText = 'Login now';
 
 btn.disabled = false;
 
@@ -1685,147 +1624,84 @@ window.addEventListener('DOMContentLoaded', () => {
 
 <div class="app">
 
-  <div class="frame-17">
+  <main class="splash-shell" aria-label="Coimbatore Foods login">
 
-    <div class="top-section">
+    <section class="splash-top">
 
       <div class="hero">
 
         <div class="hero-top">
-
-          <div class="badge">
-            Eat fit, Stay Healthy
-          </div>
-
+          <div class="badge">Eat fit, Stay Healthy</div>
         </div>
 
         <div class="hero-content">
-
-          <div class="subtext">
-            Fresh, protein-packed meals delivered daily.
-          </div>
-
-          <div class="brand">
-            Coimbatore<br/>
-            Foods
-          </div>
-
+          <div class="subtext">Fresh, protein-packed meals, delivered daily.</div>
+          <div class="brand">Coimbatore<br>Foods</div>
         </div>
 
       </div>
-
-      <div class="spacer"></div>
 
       <div class="image-stack">
 
         <div class="logo-wrap">
-
-          <img
-            src="./assets/Logo_my res 1.png"
-            alt="logo"
-          />
-
+          <img src="./assets/Logo_my res 1.png" alt="Coimbatore Foods logo">
         </div>
 
-        <img
-          class="food-image"
-          src="./assets/food-plate-img.png"
-          alt="food"
-        />
+        <img class="food-image" src="./assets/food-plate-img.png" alt="Fresh meal plate">
 
       </div>
 
-    </div>
+    </section>
 
-    <!-- DRAWER -->
-
-    <div class="drawer">
+    <section class="drawer" aria-label="Login form">
 
       <div id="error" class="error"></div>
 
       <!-- PHONE SCREEN -->
-
       <div id="phoneScreen" class="phone-screen">
 
-        <div>
+        <div class="phone-field-group">
+          <div class="label">Phone Number</div>
 
-          <div class="label">
-            Phone Number
+          <div class="phone-box">
+            <div class="country">+91</div>
+            <div class="country dash">-</div>
+            <input
+              id="phoneInput"
+              class="phone-input"
+              type="tel"
+              inputmode="numeric"
+              autocomplete="tel-national"
+              maxlength="10"
+              pattern="[0-9]*"
+              autofocus
+              placeholder="9876543210"
+              aria-label="Phone number"
+            >
           </div>
-
         </div>
 
-        <div class="phone-box">
+        <div class="action-group">
+          <button id="sendOtpBtn" class="btn" onclick="sendOTP()">Login now</button>
 
-          <div class="country">+91</div>
-
-          <div class="country dash">-</div>
-
-          <input
-            id="phoneInput"
-            class="phone-input"
-            type="tel"
-            inputmode="numeric"
-            autocomplete="tel-national"
-            maxlength="10"
-            pattern="[0-9]*"
-            autofocus
-            placeholder=" "
-          />
-
-        </div>
-
-        <button
-          id="sendOtpBtn"
-          class="btn"
-          onclick="sendOTP()"
-        >
-          Continue
-        </button>
-
-        <div class="note">
-          We’ll send a one-time OTP to securely sign you in.
+          <div class="note">
+            By continuing, you agree to receive an OTP on this number. Your number is only used for login.
+          </div>
         </div>
 
       </div>
 
       <!-- OTP SCREEN -->
-
       <div id="otpScreen" class="otp-screen">
 
-        <div
-          class="back-row"
-          onclick="backToPhone()"
-        >
-
+        <div class="back-row" onclick="backToPhone()">
           <div class="back-icon">
-
-            <svg
-              width="30"
-              height="30"
-              viewBox="0 0 30 30"
-              fill="none"
-            >
-              <path
-                d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z"
-                stroke="#12130F"
-                stroke-width="1.5"
-              />
-              <path
-                d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872"
-                stroke="#12130F"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
+            <svg width="30" height="30" viewBox="0 0 30 30" fill="none" aria-hidden="true">
+              <path d="M15 27.5C21.9035 27.5 27.5 21.9035 27.5 15C27.5 8.09644 21.9035 2.5 15 2.5C8.09644 2.5 2.5 8.09644 2.5 15C2.5 21.9035 8.09644 27.5 15 27.5Z" stroke-width="1.5"/>
+              <path d="M16.5753 19.4121L12.1753 14.9996L16.5753 10.5872" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-
           </div>
-
-          <div class="back-text">
-            back
-          </div>
-
+          <div class="back-text">back</div>
         </div>
 
         <div class="otp-content">
@@ -1833,111 +1709,72 @@ window.addEventListener('DOMContentLoaded', () => {
           <div class="otp-group">
 
             <div class="otp-label-group">
-
-              <div class="label">
-                OTP
-              </div>
+              <div class="label">OTP</div>
 
               <div class="otp-box" onclick="document.getElementById('otpHidden').focus()">
-
                 <input
                   id="otpHidden"
-                 type="tel"
-                   maxlength="6"
-                   inputmode="numeric"
-                   autocomplete="one-time-code"
-                   style="position:absolute; opacity:0; pointer-events:none;"
-                  />
-
-                    <div class="otp-digit" id="d0"></div>
-                   <div class="otp-digit" id="d1"></div>
-                  <div class="otp-digit" id="d2"></div>
-                  <div class="otp-digit" id="d3"></div>
-                 <div class="otp-digit" id="d4"></div>
-                 <div class="otp-digit" id="d5"></div>
-
-             </div>
-
+                  type="tel"
+                  maxlength="6"
+                  inputmode="numeric"
+                  autocomplete="one-time-code"
+                  style="position:absolute; opacity:0; pointer-events:none;"
+                >
+                <div class="otp-digit" id="d0"></div>
+                <div class="otp-digit" id="d1"></div>
+                <div class="otp-digit" id="d2"></div>
+                <div class="otp-digit" id="d3"></div>
+                <div class="otp-digit" id="d4"></div>
+                <div class="otp-digit" id="d5"></div>
+              </div>
             </div>
 
             <div class="otp-info">
-
-              <div
-                id="otpNote"
-                class="otp-note"
-              >
-                Enter the OTP we just sent to your phone
-              </div>
-
-              <div
-                id="resendBtn"
-                class="resend"
-              >
-                Resend in 37s
-              </div>
-
+              <div id="otpNote" class="otp-note">Enter the OTP sent to your mobile number</div>
+              <div id="resendBtn" class="resend">Resend in 37s</div>
             </div>
 
           </div>
 
-          <button
-            id="verifyBtn"
-            class="btn"
-            onclick="verifyOTP()"
-          >
-            Verify
-          </button>
+          <button id="verifyBtn" class="btn" onclick="verifyOTP()">Verify</button>
 
         </div>
 
       </div>
 
       <!-- CUSTOMER NAME SCREEN -->
-
       <div id="nameScreen" class="name-screen">
 
-        <div>
+        <div class="name-field-group">
+          <div class="label">Your name</div>
 
-          <div class="label">
-            Your name
+          <div class="name-box">
+            <input
+              id="nameInput"
+              class="name-input"
+              type="text"
+              autocomplete="name"
+              maxlength="40"
+              placeholder="Eg: Vijay Kumar"
+            >
           </div>
-
         </div>
 
-        <div class="name-box">
+        <div class="action-group">
+          <button id="saveNameBtn" class="btn" onclick="saveCustomerNameAndContinue()">Start ordering</button>
 
-          <input
-            id="nameInput"
-            class="name-input"
-            type="text"
-            autocomplete="name"
-            maxlength="40"
-            placeholder="Eg: Vijay Kumar"
-          />
+          <div id="namePhoneCopy" class="note">Mobile number verified</div>
 
-        </div>
-
-        <button
-          id="saveNameBtn"
-          class="btn"
-          onclick="saveCustomerNameAndContinue()"
-        >
-          Start ordering
-        </button>
-
-        <div id="namePhoneCopy" class="note">
-          Mobile number verified
-        </div>
-
-        <div class="note">
-          We’ll save this with your mobile number so your profile is ready automatically.
+          <div class="note">
+            We’ll save this with your mobile number so your profile is ready automatically.
+          </div>
         </div>
 
       </div>
 
-    </div>
+    </section>
 
-  </div>
+  </main>
 
 </div>
 
