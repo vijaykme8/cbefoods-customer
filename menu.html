@@ -2408,6 +2408,12 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   display: none;
 }
 
+
+/* Common bottom nav is now rendered by components/bottom-nav.js. Menu screen must not own a separate nav layer. */
+.cf-figma-menu-root > .BottomNavBar {
+  display: none !important;
+}
+
 </style>
 <script>
 (function () {
@@ -2494,7 +2500,7 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 }
 </style>
 </head>
-<body data-bottom-nav="off">
+<body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(136px + env(safe-area-inset-bottom));">
 <div class="AllContent" data-layer="All content" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 20px; display: flex">
 <div class="TopSection" data-layer="top section" style="align-self: stretch; padding-top: 40px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), black; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
@@ -2760,27 +2766,6 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 <div class="Cart" data-layer="Cart" style="color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Cart</div>
 <div class="ArrowRightIcon" data-layer="arrow-right-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
 <div class="ArrowRightVector" data-layer="arrow-right-Vector" style="width: 7.16px; height: 14.45px; left: 6.80px; top: 2.78px; position: absolute; background: #FDFDFF"></div>
-</div>
-</div>
-</div>
-<div class="BottomNavBar" data-layer="bottom nav bar" style="align-self: stretch; height: 64px; padding-top: 10px; padding-left: 24px; padding-right: 24px; background: #12130F; box-shadow: 0px -2px 16px rgba(255, 255, 255, 0.10); border-top: 1px rgba(253, 253, 255, 0.16) solid; justify-content: center; align-items: flex-start; gap: 40px; display: inline-flex">
-<div class="Nav1 nav-item" data-layer="nav 1" onclick="window.location.href='menu.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='menu.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
-<div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#8806CE;-webkit-mask:url('assets/menu/icons/search-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/search-icon.svg') center/contain no-repeat;"></span>
-</div>
-<div class="Menu" data-layer="Menu" style="align-self: stretch; text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Menu</div>
-</div>
-<div class="Nav2 nav-item" data-layer="nav 2" onclick="window.location.href='cart.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='cart.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
-<div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#B8B8B7;-webkit-mask:url('assets/menu/icons/cart-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/cart-icon.svg') center/contain no-repeat;"></span>
-</div>
-<div class="Cart" data-layer="Cart" style="align-self: stretch; text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Cart</div>
-</div>
-<div class="Nav3 nav-item" data-layer="nav 3" onclick="window.location.href='track.html'" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.location.href='track.html';}" role="link" style="width: 80px; flex-direction: column; justify-content: center; align-items: center; gap: 3px; display: inline-flex" tabindex="0">
-<div class="Icon" data-layer="icon" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<span aria-hidden="true" class="NavAssetIcon" style="width:24px;height:24px;display:block;background:#B8B8B7;-webkit-mask:url('assets/menu/icons/track-icon.svg') center/contain no-repeat;mask:url('assets/menu/icons/track-icon.svg') center/contain no-repeat;"></span>
-</div>
-<div class="TrackOrders" data-layer="Track orders" style="text-align: center; color: #FDFDFF; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Track orders</div>
 </div>
 </div>
 </div>
@@ -6929,6 +6914,7 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
+<script src="components/bottom-nav.js?v=20260520_commonnav1"></script>
 <script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 </body>

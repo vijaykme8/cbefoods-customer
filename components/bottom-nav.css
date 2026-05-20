@@ -1,90 +1,115 @@
 :root {
   --cf-bottom-nav-height: 64px;
-  --cf-bottom-nav-bg: #FFFFFF;
-  --cf-bottom-nav-black: #12130F;
+  --cf-bottom-nav-bg: #12130F;
+  --cf-bottom-nav-active: #8806CE;
+  --cf-bottom-nav-inactive: #B8B8B7;
+  --cf-bottom-nav-text: #FDFDFF;
 }
 
 body.has-bottom-nav {
   --bottom-nav-height: var(--cf-bottom-nav-height);
 }
 
-.cf-bottom-nav {
-  position: fixed;
-  z-index: 900;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 390px;
-  max-width: 100%;
-  height: 64px;
-  padding: 10px 24px 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  background: #FFFFFF;
-  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.10);
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
+.cf-bottom-nav,
 .cf-bottom-nav *,
 .cf-bottom-nav *::before,
 .cf-bottom-nav *::after {
   box-sizing: border-box;
 }
 
+.cf-bottom-nav {
+  position: fixed;
+  z-index: 2200;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 390px;
+  max-width: 100vw;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding: 10px 24px env(safe-area-inset-bottom);
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;
+  background: #12130F;
+  border-top: 1px solid rgba(253, 253, 255, 0.16);
+  box-shadow: 0 -2px 16px rgba(255, 255, 255, 0.10);
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
 .cf-bottom-nav__item {
   width: 80px;
-  height: 37px;
+  height: 41px;
   display: inline-flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   gap: 3px;
   padding: 0;
-  color: #12130F;
+  color: #FDFDFF;
   text-decoration: none;
+  flex: 0 0 auto;
   -webkit-tap-highlight-color: transparent;
 }
 
 .cf-bottom-nav__icon {
   width: 24px;
   height: 24px;
-  display: block;
-  flex: none;
+  position: relative;
   overflow: hidden;
+  display: block;
+  flex: 0 0 auto;
 }
 
-.cf-bottom-nav__icon svg {
-  width: 24px;
-  height: 24px;
-  display: block;
+.cf-bottom-nav__mask-icon {
+  position: absolute;
+  left: 1.25px;
+  top: 1.25px;
+  width: 21.5px;
+  height: 21.5px;
+  background: var(--cf-nav-icon-color, #B8B8B7);
+  -webkit-mask: var(--cf-nav-icon-url) center / contain no-repeat;
+  mask: var(--cf-nav-icon-url) center / contain no-repeat;
+}
+
+.cf-bottom-nav__item--cart .cf-bottom-nav__mask-icon {
+  width: 21.05px;
+  height: 21.5px;
 }
 
 .cf-bottom-nav__label {
   width: 80px;
-  height: 10px;
-  color: #12130F;
+  height: 14px;
+  color: #FDFDFF;
   font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-style: normal;
   font-weight: 500;
-  font-size: 10px;
-  line-height: 100%;
+  font-size: 12px;
+  line-height: 120%;
   text-align: center;
   white-space: nowrap;
+  overflow: visible;
 }
 
 .cf-bottom-nav__item--track .cf-bottom-nav__label {
-  width: 59px;
+  width: 71px;
 }
 
 .cf-bottom-nav[hidden] {
   display: none !important;
 }
 
-@media (max-width: 360px) {
+body.is-location-flow-open .cf-bottom-nav,
+body.map-screen-open .cf-bottom-nav,
+body.no-bottom-nav .cf-bottom-nav,
+body[data-bottom-nav="off"] .cf-bottom-nav {
+  display: none !important;
+}
+
+@media (max-width: 389px) {
   .cf-bottom-nav {
-    gap: 26px;
+    width: 100vw;
+    gap: clamp(18px, 10vw, 40px);
   }
 }
