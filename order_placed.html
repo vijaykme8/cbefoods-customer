@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
-<meta name="theme-color" content="#8806CE" />
+<meta name="theme-color" content="#12130F" />
 <title>Order Placed - Coimbatore Foods</title>
 <link rel="manifest" id="pwa-manifest" />
 
@@ -41,9 +41,16 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --black: #12130F;
-  --black-50: rgba(18, 19, 15, 0.50);
   --white: #FDFDFF;
   --green: #08A045;
   --violet: #8806CE;
@@ -59,14 +66,18 @@ body {
   width: 100%;
   min-height: 100%;
   margin: 0;
-  background: #F4F4F6;
-  color: var(--black);
+  background: var(--black);
+  color: var(--white);
   font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 button,
 a {
   font: inherit;
+  touch-action: manipulation;
 }
 
 button {
@@ -84,7 +95,7 @@ button {
   height: 844px;
   margin: 0 auto;
   overflow: hidden;
-  background: #FDFDFF;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
 }
 
 .tick-illus {
@@ -99,7 +110,7 @@ button {
   flex-direction: row;
   align-items: center;
   gap: 10px;
-  background: rgba(136, 6, 206, 0.20);
+  background: rgba(136, 6, 206, 0.34);
   border-radius: 100px;
   overflow: hidden;
 }
@@ -120,14 +131,14 @@ button {
 .close-button {
   position: absolute;
   right: 24px;
-  top: 40px;
+  top: 50px;
   width: 34px;
   height: 34px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  color: rgba(18, 19, 15, 0.50);
+  color: rgba(253, 253, 255, 0.50);
 }
 
 .close-button svg {
@@ -142,7 +153,6 @@ button {
   top: 320px;
   transform: translateX(-50%);
   width: 342px;
-  height: 147px;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -151,7 +161,6 @@ button {
 
 .success-title {
   width: 342px;
-  height: 93px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -164,7 +173,7 @@ button {
   height: 17px;
   color: #8806CE;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
   line-height: 120%;
   text-align: center;
@@ -172,9 +181,9 @@ button {
 
 .order-title {
   width: 342px;
-  height: 72px;
+  min-height: 72px;
   margin: 0;
-  color: #12130F;
+  color: #FDFDFF;
   font-style: normal;
   font-weight: 600;
   font-size: 30px;
@@ -184,22 +193,21 @@ button {
 
 .order-copy {
   width: 342px;
-  height: 34px;
+  min-height: 40px;
   margin: 0;
-  color: rgba(18, 19, 15, 0.50);
+  color: rgba(253, 253, 255, 0.50);
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
-  line-height: 120%;
+  line-height: 140%;
   text-align: center;
 }
 
 .second-content {
   position: absolute;
   left: 24px;
-  top: 487px;
+  top: 489px;
   width: 342px;
-  height: 211px;
   display: inline-flex;
   flex-direction: column;
   align-items: flex-start;
@@ -208,20 +216,21 @@ button {
 
 .all-info-card {
   width: 342px;
-  height: 99px;
+  min-height: 99px;
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
-  background: rgba(18, 19, 15, 0.04);
+  background: rgba(253, 253, 255, 0.12);
+  border: 1px solid rgba(253, 253, 255, 0.08);
   border-radius: 14px;
   align-self: stretch;
 }
 
 .info-row {
   width: 310px;
-  height: 17px;
+  min-height: 17px;
   display: inline-flex;
   justify-content: space-between;
   align-items: center;
@@ -229,9 +238,9 @@ button {
 }
 
 .info-label {
-  color: rgba(18, 19, 15, 0.50);
+  color: rgba(253, 253, 255, 0.50);
   font-style: normal;
-  font-weight: 500;
+  font-weight: 400;
   font-size: 14px;
   line-height: 120%;
   text-align: left;
@@ -239,9 +248,9 @@ button {
 }
 
 .info-value {
-  color: #12130F;
+  color: #FDFDFF;
   font-style: normal;
-  font-weight: 600;
+  font-weight: 500;
   font-size: 14px;
   line-height: 120%;
   text-align: right;
@@ -253,7 +262,6 @@ button {
 
 .cta-back {
   width: 342px;
-  height: 92px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -286,8 +294,8 @@ button {
 
 .back-to-menu {
   width: 342px;
-  height: 17px;
-  color: #12130F;
+  min-height: 17px;
+  color: #FDFDFF;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -331,38 +339,6 @@ button {
     width: 100%;
   }
 }
-</style>
-
-<style id="cf-mobile-zoom-lock">
-  html,
-  body {
-    touch-action: manipulation;
-    -webkit-text-size-adjust: 100%;
-    overscroll-behavior: none;
-  }
-
-  button,
-  a,
-  input,
-  textarea,
-  select,
-  [role="button"],
-  [onclick],
-  .AddButton,
-  .add-button,
-  .CartButton,
-  .cart-button,
-  .FloatingTabs > *,
-  .BottomNavBar *,
-  .cf-bottom-nav__item {
-    touch-action: manipulation;
-  }
-
-  input,
-  textarea,
-  select {
-    font-size: 16px;
-  }
 </style>
 </head>
 
@@ -574,43 +550,23 @@ button {
   });
 })();
 </script>
-<script src="pwa-speed.js?v=20260512_speed1" defer></script>
+<script>
+(function preventMobileDoubleTapZoom() {
+  let lastTouchEnd = 0;
 
-<script id="cf-mobile-zoom-lock-script">
-  (function () {
-    if (window.__cfMobileZoomLock) return;
-    window.__cfMobileZoomLock = true;
+  document.addEventListener('touchend', function(event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+      event.preventDefault();
+    }
+    lastTouchEnd = now;
+  }, { passive: false });
 
-    let lastTouchEnd = 0;
-
-    document.addEventListener(
-      "touchend",
-      function (event) {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      },
-      { passive: false }
-    );
-
-    document.addEventListener(
-      "gesturestart",
-      function (event) {
-        event.preventDefault();
-      },
-      { passive: false }
-    );
-
-    document.addEventListener(
-      "gesturechange",
-      function (event) {
-        event.preventDefault();
-      },
-      { passive: false }
-    );
-  })();
+  document.addEventListener('gesturestart', function(event) {
+    event.preventDefault();
+  }, { passive: false });
+})();
 </script>
+<script src="pwa-speed.js?v=20260512_speed1" defer></script>
 </body>
 </html>
