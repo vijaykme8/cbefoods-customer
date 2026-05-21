@@ -108,6 +108,17 @@ button {
     var(--white);
 }
 
+/* Prevent cart-added screen flashing before JS decides empty/added state */
+.cart-shell.cart-booting .cart-content,
+.cart-shell.cart-booting .empty-state,
+.cart-shell.cart-booting .placeorder-section {
+  display: none !important;
+}
+
+.cart-shell.cart-booting {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+}
+
 .top-bar {
   position: fixed;
   z-index: 50;
@@ -1415,7 +1426,7 @@ body {
 </head>
 
 <body>
-<div class="cart-shell" id="cartShell">
+<div class="cart-shell cart-booting" id="cartShell">
   <header class="top-bar">
     <div class="left-group">
       <div class="title-group">
@@ -2688,6 +2699,7 @@ body {
     const address = getDeliveryAddress();
 
     cartShell.classList.toggle('is-empty', cart.length === 0);
+    cartShell.classList.remove('cart-booting');
     document.body.classList.toggle('cart-has-items', cart.length > 0);
     itemsCountEl.textContent = totals.qtyTotal === 1 ? '1 item' : `${totals.qtyTotal} items`;
     deliveryAddressEl.textContent = isUsableDeliveryAddress(address) ? truncateAddress(address, 24) : 'Set location';
