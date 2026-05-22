@@ -942,6 +942,120 @@ body:not(.track-map-fullscreen-open) {
   white-space: normal !important;
 }
 
+
+
+/* Final correction: page scroll vs map-card containment
+   - Full page scroll happens on the outer shell.
+   - Map card stays fixed-height and clipped; it is not a scroll container.
+   - Fullscreen map mode still locks page scroll. */
+html,
+body {
+  width: 100% !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  background: #12130F !important;
+}
+
+body:not(.track-map-fullscreen-open) .track-fullscreen-shell {
+  width: 100% !important;
+  max-width: 390px !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  margin: 0 auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior-y: contain !important;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot {
+  width: 390px !important;
+  min-height: 1045px !important;
+  height: auto !important;
+  overflow: visible !important;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot > [data-layer="Frame 88"] {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 390px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot [data-layer="map-wrap-v1"] {
+  width: 390px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: none !important;
+  overflow: visible !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot [data-layer="map-section-v1"] {
+  width: 342px !important;
+  height: 296px !important;
+  min-height: 296px !important;
+  max-height: 296px !important;
+  flex: 0 0 296px !important;
+  position: relative !important;
+  overflow: hidden !important;
+  overscroll-behavior: contain !important;
+  border-radius: 14px !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas,
+body:not(.track-map-fullscreen-open) .track-ola-map-canvas {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  overflow: hidden !important;
+  border-radius: 14px !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas canvas,
+body:not(.track-map-fullscreen-open) .track-ola-map-canvas canvas {
+  border-radius: 14px !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot [data-layer="main-content"] {
+  width: 390px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  flex: none !important;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+body.track-map-fullscreen-open {
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+body.track-map-fullscreen-open .track-fullscreen-shell {
+  height: 100dvh !important;
+  overflow: hidden !important;
+}
+
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="map-section-v1"] {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100dvh !important;
+  min-height: 100dvh !important;
+  max-height: 100dvh !important;
+  border-radius: 0 !important;
+  z-index: 9990 !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
