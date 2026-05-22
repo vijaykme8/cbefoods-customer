@@ -594,6 +594,245 @@ button,a,[role="button"]{touch-action:manipulation}
   color:var(--white);
   font-weight:500;
 }
+
+/* Latest past order card design shared for Track, now reused in Profile */
+.profile-page .track-past-order-card,
+.profile-page .track-past-order-card-v2{
+  box-sizing:border-box;
+  width:342px;
+  max-width:100%;
+  min-height:0;
+  height:auto;
+  padding:0;
+  background:transparent;
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:0;
+}
+.profile-page .track-past-card-stack,
+.profile-page .track-past-card-main{
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:10px;
+  position:relative;
+}
+.profile-page .track-past-card-stack{gap:16px}
+.profile-page .track-past-top-row{
+  width:100%;
+  min-height:37px;
+  display:inline-flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+.profile-page .track-past-order-id-pill{
+  min-height:37px;
+  padding:10px 20px;
+  background:#FDFDFF;
+  border-radius:30px;
+  color:#12130F;
+  font-size:14px;
+  font-weight:500;
+  line-height:120%;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+.profile-page .track-past-menu-wrap{
+  position:relative;
+  flex:0 0 auto;
+  width:34px;
+  height:34px;
+}
+.profile-page .track-past-menu-button{
+  width:34px;
+  height:34px;
+  padding:0;
+  border:0;
+  border-radius:70px;
+  background:linear-gradient(0deg, rgba(253,253,255,.20), rgba(253,253,255,.20)), #12130F;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:3.37px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.profile-page .track-past-menu-dot{
+  width:3.71px;
+  height:3.71px;
+  border-radius:50%;
+  background:#FDFDFF;
+  display:block;
+  flex:0 0 auto;
+}
+.profile-page .track-past-action-menu{
+  position:absolute;
+  right:0;
+  top:40px;
+  width:148px;
+  padding:6px;
+  border-radius:12px;
+  background:#1F201C;
+  border:1px solid rgba(253,253,255,.12);
+  box-shadow:0 12px 30px rgba(0,0,0,.32);
+  display:none;
+  z-index:80;
+}
+.profile-page .track-past-order-card.is-menu-open .track-past-action-menu{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.profile-page .track-past-menu-item{
+  width:100%;
+  min-height:36px;
+  padding:8px 10px;
+  border:0;
+  border-radius:8px;
+  background:transparent;
+  color:#FDFDFF;
+  font-size:13px;
+  font-weight:500;
+  line-height:120%;
+  text-align:left;
+  cursor:pointer;
+}
+.profile-page .track-past-menu-item:active,
+.profile-page .track-past-menu-item:hover{background:rgba(253,253,255,.08)}
+.profile-page .track-past-menu-item--reorder{color:#08A045}
+.profile-page .track-past-time-value{
+  width:100%;
+  min-height:17px;
+  padding:0;
+  display:inline-flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.profile-page .track-past-time{
+  min-width:0;
+  flex:1 1 auto;
+  color:rgba(253,253,255,.60);
+  font-size:14px;
+  font-weight:400;
+  line-height:120%;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+.profile-page .track-past-total-inline{
+  flex:0 0 auto;
+  display:inline-flex;
+  justify-content:flex-end;
+  align-items:flex-start;
+  gap:4px;
+  white-space:nowrap;
+  color:rgba(253,253,255,.50);
+  font-size:14px;
+  font-weight:400;
+  line-height:120%;
+}
+.profile-page .track-past-total-inline span{color:rgba(253,253,255,.50);font-size:14px;font-weight:400;line-height:120%}
+.profile-page .track-past-total-inline strong{color:#FDFDFF;font-size:14px;font-weight:400;line-height:120%}
+.profile-page .track-past-items-card{
+  box-sizing:border-box;
+  width:342px;
+  max-width:100%;
+  height:auto;
+  min-height:0;
+  padding:12px;
+  background:rgba(253,253,255,.12);
+  border:1px solid rgba(253,253,255,.08);
+  border-radius:14px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:center;
+  gap:10px;
+}
+.profile-page .track-past-items{
+  width:100%;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:2px;
+  color:#FDFDFF;
+}
+.profile-page .track-past-items-row{
+  width:100%;
+  min-height:20px;
+  display:flex;
+  flex-direction:row;
+  align-items:flex-start;
+  justify-content:flex-start;
+  gap:14px;
+  flex-wrap:wrap;
+}
+.profile-page .track-past-item-chip{
+  min-height:20px;
+  display:inline-flex;
+  flex-direction:row;
+  justify-content:flex-start;
+  align-items:center;
+  gap:2px;
+  max-width:100%;
+}
+.profile-page .track-past-item-name{
+  max-width:none;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+  color:#FDFDFF;
+  font-size:12px;
+  font-weight:400;
+  line-height:120%;
+}
+.profile-page .track-past-item-count{
+  width:20px;
+  min-width:20px;
+  height:20px;
+  padding:4px;
+  background:rgba(253,253,255,.06);
+  border-radius:30px;
+  color:#FDFDFF;
+  font-size:12px;
+  font-weight:400;
+  line-height:100%;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+}
+.profile-page .track-past-item-comma{color:#FDFDFF;font-size:12px;font-weight:500;line-height:120%}
+.profile-page .track-past-reorder-button{
+  box-sizing:border-box;
+  width:100%;
+  min-height:37px;
+  padding:10px 16px;
+  background:rgba(18,19,15,.16);
+  border:1px solid #08A045;
+  border-radius:8px;
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  color:#08A045;
+  font-size:14px;
+  font-weight:500;
+  line-height:120%;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+
 .empty-state{
   width:100%;
   padding:16px 14px;
@@ -758,12 +997,76 @@ function bindEvents(){
  els.avatarButton.addEventListener('click',()=>els.avatarInput.click());els.avatarInput.addEventListener('change',saveAvatar);
  $('#addAddressButton').addEventListener('click',()=>{sessionStorage.setItem('cbe_location_return_to','profile');sessionStorage.setItem('cbe_open_location_map','1');location.href='menu.html?openLocation=1&returnTo=profile&profileAction=addAddress'});
  $('#dotMenuButton').addEventListener('click',toggleMenu);els.menuPopover.addEventListener('click',e=>{if(e.target===els.menuPopover)closeMenu()});$('#refreshProfileButton').addEventListener('click',()=>{closeMenu();refreshFromStorage();showToast('Profile refreshed')});$('#goOrdersButton').addEventListener('click',()=>{location.href='track.html'});$('#logoutButton').addEventListener('click',logout);
- window.addEventListener('pageshow',refreshFromStorage);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshFromStorage()});
+ window.addEventListener('pageshow',refreshFromStorage);document.addEventListener('visibilitychange',()=>{if(!document.hidden)refreshFromStorage()});document.addEventListener('click',e=>{if(!e.target.closest('.track-past-menu-wrap'))closeProfilePastOrderMenus()});
 }
 function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderPastOrders()}
 function renderProfile(){const name=cleanText(profile.name)||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<span id="avatarInitial">'+escapeHtml(getInitial(name))+'</span>'}}
 function renderAddresses(){const addresses=getSavedAddresses();els.savedAddressList.innerHTML='';if(!addresses.length){els.savedAddressList.innerHTML='<div class="empty-state">No saved address yet. Add one from the map flow.</div>';return}addresses.slice(0,6).forEach((address,index)=>{const row=document.createElement('div');row.className='address-row';row.innerHTML=`<div class="inside-wrap"><div class="address-left-group"><div class="title-with-icon">${getAddressIcon(address.type||address.title||'')}<span class="address-title-text">${escapeHtml(address.title||address.type||'Saved address')}</span></div><div class="address-line">${escapeHtml(address.line||'Address details not available')}</div></div><button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title||'address')}">${editIconSvg()}<span>Edit</span></button><button class="address-dot-button" type="button" aria-label="More options for ${escapeAttribute(address.title||'address')}">${dotMenuSvg()}</button></div>`;row.querySelector('.edit-button').addEventListener('click',()=>{localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_ID',address.id||'');localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX',String(index));sessionStorage.setItem('cbe_location_return_to','profile');sessionStorage.setItem('cbe_open_location_map','1');location.href='menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex='+encodeURIComponent(index)});els.savedAddressList.appendChild(row);if(index<Math.min(addresses.length,6)-1){const div=document.createElement('div');div.className='divider';els.savedAddressList.appendChild(div)}})}
-function renderPastOrders(){const orders=getPastOrders();els.pastOrdersList.innerHTML='';if(!orders.length){els.pastOrdersList.innerHTML='<div class="empty-state">No past orders yet. Completed orders will appear here.</div>';return}orders.slice(0,5).forEach(order=>{const card=document.createElement('div');card.className='item-card';card.innerHTML=`<div class="order-header-card"><div class="order-left-content"><div class="item-img">${order.image?'<img alt="Order image" src="'+escapeAttribute(order.image)+'" />':foodIconSvg()}</div><div class="item-title"><div class="restaurant-name">${escapeHtml(order.restaurantName||'Coimbatore Foods')}</div><div class="order-id">Order ID #${escapeHtml(order.id||'----')}</div></div></div></div><div class="item-list">${buildItemsHtml(order.items)}</div><div class="divider" aria-hidden="true"></div><div class="cta-time-info"><button class="view-details" type="button">View details</button><div class="time-value"><div>Order placed: ${escapeHtml(formatOrderDate(order.createdAt||order.date||order.timestamp))}</div><div class="total"><span>Total value: </span><span class="amount">₹${escapeHtml(formatMoney(order.total||order.totalPaid||order.amount||0))}</span></div></div></div>`;card.querySelector('.view-details').addEventListener('click',()=>{if(order.id)localStorage.setItem('TIFFIN_SELECTED_ORDER_ID',String(order.id));location.href='track-fullscreen.html?orderId='+encodeURIComponent(order.id||'')});els.pastOrdersList.appendChild(card)})}
+function renderPastOrders(){
+ const orders=getPastOrders();
+ els.pastOrdersList.innerHTML='';
+ if(!orders.length){els.pastOrdersList.innerHTML='<div class="empty-state">No past orders yet. Completed orders will appear here.</div>';return}
+ orders.slice(0,8).forEach(order=>{els.pastOrdersList.appendChild(buildProfilePastOrderCard(order))})
+}
+function buildProfilePastOrderCard(order){
+ const id=cleanText(order.id)||'----';
+ const safeId=escapeAttribute(id);
+ const displayId=escapeHtml(String(id).replace(/^CBE-/i,''));
+ const total='₹'+escapeHtml(formatMoney(order.total||order.totalPaid||order.amount||0));
+ const placed=escapeHtml(formatOrderDate(order.createdAt||order.date||order.timestamp));
+ const card=document.createElement('article');
+ card.className='track-past-order-card track-past-order-card-v2';
+ card.setAttribute('data-profile-past-order-card',id);
+ card.innerHTML=`
+  <div class="track-past-card-stack">
+    <div class="track-past-card-main">
+      <div class="track-past-top-row">
+        <div class="track-past-order-id-pill">Order ID #${displayId}</div>
+        <div class="track-past-menu-wrap">
+          <button class="track-past-menu-button" type="button" aria-label="Order actions" data-profile-past-menu="${safeId}">
+            <span class="track-past-menu-dot"></span>
+            <span class="track-past-menu-dot"></span>
+            <span class="track-past-menu-dot"></span>
+          </button>
+          <div class="track-past-action-menu" role="menu">
+            <button class="track-past-menu-item" type="button" role="menuitem" data-profile-past-details="${safeId}">View details</button>
+            <button class="track-past-menu-item track-past-menu-item--reorder" type="button" role="menuitem" data-profile-past-reorder="${safeId}">Reorder this</button>
+          </div>
+        </div>
+      </div>
+      <div class="track-past-time-value">
+        <div class="track-past-time">${placed}</div>
+        <div class="track-past-total-inline"><span>Total value:</span><strong>${total}</strong></div>
+      </div>
+      <div class="track-past-items-card">
+        <div class="track-past-items">${buildProfilePastOrderItems(order.items)}</div>
+        <button class="track-past-reorder-button" type="button" data-profile-past-reorder="${safeId}">Reorder this</button>
+      </div>
+    </div>
+  </div>`;
+ card.querySelector('[data-profile-past-menu]').addEventListener('click',event=>{event.stopPropagation();const open=card.classList.contains('is-menu-open');closeProfilePastOrderMenus();if(!open)card.classList.add('is-menu-open')});
+ card.querySelectorAll('[data-profile-past-details]').forEach(btn=>btn.addEventListener('click',event=>{event.stopPropagation();openPastOrderDetails(order)}));
+ card.querySelectorAll('[data-profile-past-reorder]').forEach(btn=>btn.addEventListener('click',event=>{event.stopPropagation();reorderPastOrder(order)}));
+ return card;
+}
+function buildProfilePastOrderItems(items){
+ const list=Array.isArray(items)&&items.length?items:[{name:'Order item',qty:1}];
+ const chips=list.slice(0,10).map((item,index)=>`<div class="track-past-item-chip"><span class="track-past-item-name">${escapeHtml(item.name||item.title||item.itemName||item.productName||'Item')}</span><span class="track-past-item-count">${escapeHtml(item.qty||item.quantity||item.count||1)}</span>${index<Math.min(list.length,10)-1?'<span class="track-past-item-comma">,</span>':''}</div>`);
+ const rows=[];for(let i=0;i<chips.length;i+=2){rows.push(`<div class="track-past-items-row">${chips.slice(i,i+2).join('')}</div>`)}return rows.join('')
+}
+function closeProfilePastOrderMenus(){document.querySelectorAll('.track-past-order-card.is-menu-open').forEach(card=>card.classList.remove('is-menu-open'))}
+function openPastOrderDetails(order){closeProfilePastOrderMenus();if(order.id)localStorage.setItem('TIFFIN_SELECTED_ORDER_ID',String(order.id));localStorage.setItem('cbe_track_selected_order',JSON.stringify(order));location.href='track-fullscreen.html?orderId='+encodeURIComponent(order.id||'')}
+function reorderPastOrder(order){
+ closeProfilePastOrderMenus();
+ const items=(Array.isArray(order.items)?order.items:[]).map(normalizeReorderItem).filter(item=>Number(item.qty||0)>0);
+ if(!items.length){showToast('No items to reorder');return}
+ localStorage.setItem('cart',JSON.stringify(items));
+ localStorage.removeItem('cbe_cart_cleared_at');
+ localStorage.removeItem('cbe_cart_cleared_customer_id');
+ if(order.id)localStorage.setItem('cbe_reorder_source_order_id',String(order.id));
+ location.href='cart.html';
+}
+function normalizeReorderItem(item){const qty=Number(item.qty||item.quantity||item.count||1)||1;const name=item.name||item.title||item.itemName||item.productName||'Item';return Object.assign({},item,{name,title:item.title||name,qty,quantity:qty,price:Number(item.price||item.unitPrice||item.amount||item.itemPrice||0)||0,image:item.image||item.img||item.imageUrl||item.photo||item.thumbnail||item.asset||''})}
 function loadProfile(){let stored=null;for(const key of PROFILE_KEYS){stored=parseJson(localStorage.getItem(key));if(stored&&typeof stored==='object'&&!Array.isArray(stored))break;stored=null}const auth=parseJson(localStorage.getItem('cust_auth'))||parseJson(localStorage.getItem('customerAuth'))||null;const rawPhone=localStorage.getItem('TIFFIN_CUSTOMER_PHONE')||localStorage.getItem('customer_phone')||localStorage.getItem('cust_phone')||localStorage.getItem('cbe_customer_phone')||localStorage.getItem('loggedInPhone')||localStorage.getItem('phoneNumber')||localStorage.getItem('mobile')||'';const authObj=auth&&typeof auth==='object'?auth:{};return Object.assign({name:stored?.name||stored?.displayName||stored?.profileName||authObj.name||authObj.displayName||localStorage.getItem('TIFFIN_CUSTOMER_NAME')||localStorage.getItem('customer_name')||'Customer',phone:stored?.phone||stored?.mobile||stored?.phoneNumber||authObj.phone||authObj.mobile||authObj.phoneNumber||rawPhone,avatarDataUrl:stored?.avatarDataUrl||stored?.avatar||stored?.profilePhoto||''},stored||{})}
 function persistProfile(next){profile=Object.assign({},profile,next);localStorage.setItem('TIFFIN_CUSTOMER_PROFILE',JSON.stringify(profile));localStorage.setItem('customerProfile',JSON.stringify(profile));if(profile.name){localStorage.setItem('TIFFIN_CUSTOMER_NAME',profile.name);localStorage.setItem('customer_name',profile.name)}if(window.CBEProfileCustomerStore&&typeof window.CBEProfileCustomerStore.scheduleSync==='function'){window.CBEProfileCustomerStore.scheduleSync('profile_update')}}
 function getSavedAddresses(){
