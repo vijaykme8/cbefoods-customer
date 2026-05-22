@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
@@ -77,8 +77,8 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
 }
 
 #trackFullDeliveryAddress{display:-webkit-box!important;-webkit-line-clamp:2!important;line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:normal!important}
-[data-layer="back-button"],[data-layer="back to orders-button"],[data-layer="full screen-button"]{cursor:pointer;user-select:none}
-[data-layer="back-button"]:active,[data-layer="back to orders-button"]:active,[data-layer="full screen-button"]:active{opacity:.82}
+[data-layer="back-button"],[data-layer="back to menu-button"],[data-layer="full screen-button"]{cursor:pointer;user-select:none}
+[data-layer="back-button"]:active,[data-layer="back to menu-button"]:active,[data-layer="full screen-button"]:active{opacity:.82}
 @media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot{width:100%!important;max-width:390px}}
 
 
@@ -556,48 +556,307 @@ html, body {
   height: auto !important;
 }
 
-#trackFullscreenRoot [data-layer="back to orders-button"] {
+#trackFullscreenRoot [data-layer="back to menu-button"] {
   flex: none !important;
   margin-bottom: 0 !important;
 }
 
-</style>
 
-<style id="cf-mobile-zoom-lock">
-  html,
-  body {
-    touch-action: manipulation;
-    -webkit-text-size-adjust: 100%;
-    overscroll-behavior: none;
-  }
 
-  button,
-  a,
-  input,
-  textarea,
-  select,
-  [role="button"],
-  [onclick],
-  .AddButton,
-  .add-button,
-  .CartButton,
-  .cart-button,
-  .FloatingTabs > *,
-  .BottomNavBar *,
-  .cf-bottom-nav__item {
-    touch-action: manipulation;
-  }
+/* 1.3 track-fullscreen dark UI refinement */
+html,
+body {
+  background: #12130F !important;
+  color: #FDFDFF !important;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
 
-  input,
-  textarea,
-  select {
-    font-size: 16px;
+button,
+a,
+[role="button"] {
+  touch-action: manipulation;
+}
+
+.track-fullscreen-shell,
+#trackFullscreenRoot,
+#trackFullscreenRoot > [data-layer="Frame 88"] {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F !important;
+}
+
+#trackFullscreenRoot {
+  width: 390px !important;
+  min-height: 100dvh !important;
+  height: auto !important;
+  color: #FDFDFF !important;
+  overflow: visible !important;
+}
+
+#trackFullscreenRoot > [data-layer="Frame 88"] {
+  width: 390px !important;
+  padding-top: 50px !important;
+  gap: 20px !important;
+  color: #FDFDFF !important;
+}
+
+#trackFullscreenRoot [data-layer="map-wrap-v1"] {
+  width: 390px !important;
+  height: auto !important;
+  min-height: 357px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  gap: 16px !important;
+}
+
+#trackFullscreenRoot [data-layer="map-wrap-v1"] > [data-layer="top-bar"] {
+  width: 342px !important;
+  height: 45px !important;
+  padding: 0 16px 0 12px !important;
+  gap: 20px !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  align-items: flex-start !important;
+}
+
+#trackFullscreenRoot [data-layer="back-button"] {
+  width: 75px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  gap: 4px !important;
+  border-radius: 14px !important;
+}
+
+#trackFullscreenRoot [data-layer="arrow-left-icons"] img {
+  filter: brightness(0) invert(1) !important;
+}
+
+#trackFullscreenRoot [data-layer="back"] {
+  color: #FDFDFF !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  line-height: 27px !important;
+}
+
+#trackFullscreenRoot [data-layer="deliver-to"] {
+  width: 219px !important;
+  height: 45px !important;
+  gap: 4px !important;
+  align-items: flex-end !important;
+}
+
+#trackFullscreenRoot [data-layer="Deliver to:"] {
+  color: rgba(253, 253, 255, 0.50) !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 16.8px !important;
+}
+
+#trackFullDeliveryAddress {
+  width: 199px !important;
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 16.8px !important;
+  text-align: right !important;
+}
+
+#trackFullscreenRoot [data-layer="map-section-v1"] {
+  width: 342px !important;
+  height: 296px !important;
+  padding: 16px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  background: linear-gradient(135deg, rgba(18,19,15,.50), rgba(18,19,15,.16)) !important;
+}
+
+#trackFullscreenRoot [data-layer="floating-content"] {
+  width: 310px !important;
+  height: 264px !important;
+  align-items: flex-end !important;
+  justify-content: flex-end !important;
+}
+
+#trackFullscreenRoot [data-layer="full screen-button"] {
+  width: 48px !important;
+  height: 48px !important;
+  padding: 12px !important;
+  background: #12130F !important;
+  border: 1px solid rgba(253, 253, 255, 0.24) !important;
+  box-shadow: 0 4px 8px rgba(253,253,255,0.10) !important;
+}
+
+#trackFullscreenRoot [data-layer="full screen-icons"] img {
+  filter: brightness(0) invert(1) !important;
+}
+
+.track-map-control-btn {
+  background: #12130F !important;
+  color: #FDFDFF !important;
+  border: 1px solid rgba(253, 253, 255, 0.20) !important;
+}
+
+#trackFullscreenRoot [data-layer="main-content"] {
+  width: 390px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  gap: 16px !important;
+  color: #FDFDFF !important;
+}
+
+#trackFullscreenRoot [data-layer="Line 4"],
+#trackFullscreenRoot [data-layer="Line 3"],
+#trackFullscreenRoot [data-layer="divider"] {
+  outline-color: rgba(253,253,255,0.12) !important;
+  border-color: rgba(253,253,255,0.12) !important;
+}
+
+.cf-order-status-card {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.12), rgba(253, 253, 255, 0.12)), #12130F !important;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.06) !important;
+  color: #FDFDFF !important;
+  height: auto !important;
+  min-height: 194px !important;
+  gap: 16px !important;
+}
+
+.cf-order-status-card .cf-highlight-info {
+  height: auto !important;
+  padding: 8px 16px !important;
+  background: #8806CE !important;
+}
+
+.cf-order-status-card .cf-highlight-title {
+  color: #FDFDFF !important;
+  font-weight: 500 !important;
+}
+
+.cf-order-status-card .cf-status-copy,
+.cf-order-status-card .cf-restaurant-name,
+.cf-order-status-card .cf-rider-name {
+  color: #FDFDFF !important;
+}
+
+.cf-order-status-card .cf-rider-state-text.assigning {
+  color: rgba(253, 253, 255, 0.50) !important;
+}
+
+.cf-order-status-card .cf-step {
+  background: rgba(253, 253, 255, 0.12) !important;
+}
+
+.cf-order-status-card .cf-step.active {
+  background: #08A045 !important;
+}
+
+.cf-order-status-card .cf-connector {
+  border-top-color: rgba(253, 253, 255, 0.28) !important;
+}
+
+.cf-order-status-card .cf-connector.active {
+  border-top-color: #08A045 !important;
+}
+
+.cf-order-status-card .cf-eta-time {
+  background: rgba(253, 253, 255, 0.12) !important;
+}
+
+#trackFullscreenRoot [data-layer="Frame 77"] {
+  height: auto !important;
+  gap: 6px !important;
+}
+
+#trackFullscreenRoot [data-layer="Rider"],
+#trackFullRiderName,
+#trackFullscreenRoot [data-layer="Call"],
+#trackFullscreenRoot [data-layer="Text"],
+#trackFullscreenRoot [data-layer="Order summary"],
+#trackFullscreenRoot [data-layer="payment-details-group"] *,
+#trackPaymentInformations *,
+#trackTotalPay {
+  color: #FDFDFF !important;
+}
+
+#trackFullscreenRoot [data-layer="payment-details-group"] {
+  height: auto !important;
+  gap: 14px !important;
+}
+
+#trackFullscreenRoot [data-layer="Order summary"] {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 19.2px !important;
+}
+
+#trackFullscreenRoot [data-layer="payment-info-card"] {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.12), rgba(253, 253, 255, 0.12)), #12130F !important;
+  border: 1px solid rgba(253, 253, 255, 0.08) !important;
+  border-radius: 10px !important;
+  outline-color: transparent !important;
+  height: auto !important;
+}
+
+#trackPaymentInformations > div,
+#trackFullscreenRoot [data-layer="payment-topay-info"] {
+  align-items: flex-start !important;
+}
+
+#trackPaymentInformations > div > div:first-child,
+#trackFullscreenRoot [data-layer="payment-topay-info"] > div:first-child {
+  color: #FDFDFF !important;
+}
+
+#trackPaymentInformations > div > div:last-child,
+#trackFullscreenRoot [data-layer="payment-topay-info"] > div:last-child {
+  color: #FDFDFF !important;
+}
+
+#trackFullscreenRoot [data-layer="back to menu-button"],
+#trackFullscreenRoot [data-layer="back to orders-button"] {
+  height: 55px !important;
+  padding: 14px 20px !important;
+  background: #08A045 !important;
+  border-radius: 10px !important;
+}
+
+#trackFullscreenRoot [data-layer="Back to menu"],
+#trackFullscreenRoot [data-layer="Back to orders"] {
+  color: #FDFDFF !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: 26px !important;
+}
+
+body.track-map-fullscreen-open .track-map-fullscreen-back {
+  background: #12130F !important;
+  color: #FDFDFF !important;
+  border: 1px solid rgba(253,253,255,.16) !important;
+}
+
+body.track-map-fullscreen-open .track-map-fullscreen-back img {
+  filter: brightness(0) invert(1) !important;
+}
+
+body.track-map-fullscreen-open .track-map-fullscreen-back span {
+  color: #FDFDFF !important;
+}
+
+@media (max-width: 389px) {
+  #trackFullscreenRoot,
+  .track-fullscreen-shell,
+  #trackFullscreenRoot > [data-layer="Frame 88"],
+  #trackFullscreenRoot [data-layer="main-content"],
+  #trackFullscreenRoot [data-layer="map-wrap-v1"] {
+    width: 100% !important;
+    max-width: 390px !important;
   }
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(18, 19, 15, 0.02) 0%, rgba(18, 19, 15, 0.02) 100%), #FDFDFF; overflow: hidden">
+<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
 <div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
 <div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex; width: 390px; height: 376px;">
 <div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex; width: 342px; height: 70px;">
@@ -707,8 +966,8 @@ html, body {
 </div>
 </div>
 </div>
-<div class="BackToOrdersButton" data-layer="back to orders-button" style="align-self: stretch; height: 55px; padding-left: 20px; padding-right: 20px; padding-top: 14px; padding-bottom: 14px; background: #08A045; border-radius: 10px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="BackToOrders" data-layer="Back to orders" style="color: #FDFDFF; font-size: 18px; font-family: General Sans; font-weight: 600; line-height: 26px; word-wrap: break-word">Back to orders</div>
+<div class="BackToOrdersButton" data-layer="back to menu-button" style="align-self: stretch; height: 55px; padding-left: 20px; padding-right: 20px; padding-top: 14px; padding-bottom: 14px; background: #08A045; border-radius: 10px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
+<div class="BackToOrders" data-layer="Back to menu" style="color: #FDFDFF; font-size: 18px; font-family: General Sans; font-weight: 600; line-height: 26px; word-wrap: break-word">Back to menu</div>
 </div>
 </div>
 </div>
@@ -1158,7 +1417,7 @@ function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementB
 function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
 function boot(){bindFrame77RiderActions();hydrate();initMap();renderMap()}
 function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order);if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists)return;const cloud=mergeOrder(order,{id:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>console.warn('Track live order sync failed',err))}catch(err){console.warn('Track live order listener failed',err)}}
-document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to orders-button"]'))window.location.href='track.html'},true);
+document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to menu-button"]'))window.location.href='track.html'},true);
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);
 })();
 </script>
@@ -1215,41 +1474,17 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;wind
 
 <script defer="" src="pwa-speed.js?v=20260512_speed1"></script>
 
-<script id="cf-mobile-zoom-lock-script">
-  (function () {
-    if (window.__cfMobileZoomLock) return;
-    window.__cfMobileZoomLock = true;
-
-    let lastTouchEnd = 0;
-
-    document.addEventListener(
-      "touchend",
-      function (event) {
-        const now = Date.now();
-        if (now - lastTouchEnd <= 300) {
-          event.preventDefault();
-        }
-        lastTouchEnd = now;
-      },
-      { passive: false }
-    );
-
-    document.addEventListener(
-      "gesturestart",
-      function (event) {
-        event.preventDefault();
-      },
-      { passive: false }
-    );
-
-    document.addEventListener(
-      "gesturechange",
-      function (event) {
-        event.preventDefault();
-      },
-      { passive: false }
-    );
-  })();
+<script>
+(function(){
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', function(event){
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) event.preventDefault();
+    lastTouchEnd = now;
+  }, { passive: false });
+  document.addEventListener('gesturestart', function(event){ event.preventDefault(); }, { passive: false });
+})();
 </script>
+
 </body>
 </html>
