@@ -1289,6 +1289,380 @@ body {
   }
 </style>
 
+<style id="cf-track-past-order-align-full-items-fix">
+  /* Past order top row: keep Order ID, Total value, and 3-dot menu centered in one horizontal line */
+  .track-past-summary-row {
+    align-items: center !important;
+  }
+
+  .track-past-summary-left,
+  .track-past-summary-right,
+  .track-past-total-inline {
+    align-items: center !important;
+  }
+
+  .track-past-total-inline span,
+  .track-past-total-inline strong,
+  .track-past-order-id-new {
+    display: inline-flex !important;
+    align-items: center !important;
+    min-height: 24px !important;
+  }
+
+  /* Past order item names: show full names and allow the card to grow instead of truncating */
+  .track-past-items-card {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .track-past-items {
+    height: auto !important;
+  }
+
+  .track-past-items-row {
+    height: auto !important;
+    min-height: 20px !important;
+    flex-wrap: wrap !important;
+    row-gap: 6px !important;
+  }
+
+  .track-past-item-chip {
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 20px !important;
+    white-space: normal !important;
+    align-items: center !important;
+  }
+
+  .track-past-item-name {
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: normal !important;
+    word-break: normal !important;
+  }
+
+  .track-past-item-count {
+    flex: 0 0 20px !important;
+  }
+</style>
+
+
+<style id="cf-track-past-order-v2-final-design">
+  /* New past order cards design */
+  .track-past-orders-section {
+    width: 342px !important;
+    max-width: calc(100vw - 48px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 16px !important;
+  }
+
+  .track-past-orders-list {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .track-past-order-card-v2,
+  .track-past-order-card {
+    box-sizing: border-box !important;
+    width: 342px !important;
+    max-width: 100% !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0 !important;
+  }
+
+  .track-past-card-stack,
+  .track-past-card-main {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    position: relative !important;
+  }
+
+  .track-past-card-stack {
+    gap: 16px !important;
+  }
+
+  .track-past-top-row {
+    width: 100% !important;
+    min-height: 37px !important;
+    display: inline-flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .track-past-order-id-pill {
+    min-height: 37px !important;
+    padding: 10px 20px !important;
+    background: #FDFDFF !important;
+    border-radius: 30px !important;
+    color: #12130F !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 120% !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+  }
+
+  .track-past-menu-wrap {
+    position: relative !important;
+    flex: 0 0 auto !important;
+    width: 34px !important;
+    height: 34px !important;
+  }
+
+  .track-past-menu-button {
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 70px !important;
+    background: linear-gradient(0deg, rgba(253, 253, 255, 0.20), rgba(253, 253, 255, 0.20)), #12130F !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3.37px !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .track-past-menu-dot {
+    width: 3.71px !important;
+    height: 3.71px !important;
+    border-radius: 50% !important;
+    background: #FDFDFF !important;
+    display: block !important;
+    flex: 0 0 auto !important;
+  }
+
+  .track-past-action-menu {
+    position: absolute !important;
+    right: 0 !important;
+    top: 40px !important;
+    width: 148px !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    background: #1F201C !important;
+    border: 1px solid rgba(253, 253, 255, 0.12) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32) !important;
+    display: none !important;
+    z-index: 80 !important;
+  }
+
+  .track-past-order-card.is-menu-open .track-past-action-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .track-past-menu-item {
+    width: 100% !important;
+    min-height: 36px !important;
+    padding: 8px 10px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #FDFDFF !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    line-height: 120% !important;
+    text-align: left !important;
+    cursor: pointer !important;
+  }
+
+  .track-past-menu-item:active,
+  .track-past-menu-item:hover {
+    background: rgba(253, 253, 255, 0.08) !important;
+  }
+
+  .track-past-menu-item--reorder {
+    color: #08A045 !important;
+  }
+
+  .track-past-time-value {
+    width: 100% !important;
+    min-height: 17px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+    font-family: 'General Sans', sans-serif !important;
+  }
+
+  .track-past-time {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    color: rgba(253, 253, 255, 0.60) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 120% !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .track-past-total-inline {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    white-space: nowrap !important;
+    color: rgba(253, 253, 255, 0.50) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-total-inline span {
+    color: rgba(253, 253, 255, 0.50) !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-total-inline strong {
+    color: #FDFDFF !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-items-card {
+    box-sizing: border-box !important;
+    width: 342px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    padding: 12px !important;
+    background: rgba(253, 253, 255, 0.12) !important;
+    border: 1px solid rgba(253, 253, 255, 0.08) !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+  }
+
+  .track-past-items {
+    width: 100% !important;
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+    color: #FDFDFF !important;
+    font-family: 'General Sans', sans-serif !important;
+  }
+
+  .track-past-items-row {
+    width: 100% !important;
+    min-height: 20px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    gap: 14px !important;
+    flex-wrap: wrap !important;
+  }
+
+  .track-past-item-chip {
+    min-height: 20px !important;
+    display: inline-flex !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 2px !important;
+    max-width: 100% !important;
+  }
+
+  .track-past-item-name {
+    max-width: none !important;
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    color: #FDFDFF !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-item-count {
+    width: 20px !important;
+    min-width: 20px !important;
+    height: 20px !important;
+    padding: 4px !important;
+    background: rgba(253, 253, 255, 0.06) !important;
+    border-radius: 30px !important;
+    color: #FDFDFF !important;
+    font-size: 12px !important;
+    font-weight: 400 !important;
+    line-height: 100% !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .track-past-item-comma {
+    color: #FDFDFF !important;
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-reorder-button {
+    box-sizing: border-box !important;
+    width: 100% !important;
+    min-height: 37px !important;
+    padding: 10px 16px !important;
+    background: rgba(18, 19, 15, 0.16) !important;
+    border: 1px solid #08A045 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #08A045 !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    line-height: 120% !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .track-past-divider,
+  .track-past-order-header,
+  .track-past-summary-row,
+  .track-past-summary-left,
+  .track-past-summary-right {
+    display: none !important;
+  }
+</style>
+
 </head>
 
 <body>
@@ -1772,28 +2146,39 @@ body {
   function renderPastOrderCard(order) {
     const id = getOrderId(order);
     const total = money(computedTotalForOrder(order));
+    const placedTime = formatDateTime(order);
     const safeId = escapeHtml(id);
+    const displayId = escapeHtml(String(id || '').replace(/^CBE-/i, ''));
     return `
-      <article class="track-past-order-card" data-track-past-order-card="${safeId}">
-        <div class="track-past-summary-row">
-          <div class="track-past-summary-left">
-            <div class="track-past-order-id-new">Order ID #${escapeHtml(id.replace(/^CBE-/, ''))}</div>
-          </div>
-          <div class="track-past-summary-right">
-            <div class="track-past-total-inline"><span>Total value:</span><strong>${total}</strong></div>
-            <div class="track-past-menu-wrap">
-              <button class="track-past-menu-button" type="button" aria-label="Order actions" data-track-past-menu="${safeId}">⋯</button>
-              <div class="track-past-action-menu" role="menu">
-                <button class="track-past-menu-item" type="button" role="menuitem" data-track-past-details="${safeId}">View details</button>
-                <button class="track-past-menu-item track-past-menu-item--reorder" type="button" role="menuitem" data-track-past-reorder="${safeId}">Reorder this</button>
+      <article class="track-past-order-card track-past-order-card-v2" data-track-past-order-card="${safeId}">
+        <div class="track-past-card-stack">
+          <div class="track-past-card-main">
+            <div class="track-past-top-row">
+              <div class="track-past-order-id-pill">Order ID #${displayId}</div>
+              <div class="track-past-menu-wrap">
+                <button class="track-past-menu-button" type="button" aria-label="Order actions" data-track-past-menu="${safeId}">
+                  <span class="track-past-menu-dot"></span>
+                  <span class="track-past-menu-dot"></span>
+                  <span class="track-past-menu-dot"></span>
+                </button>
+                <div class="track-past-action-menu" role="menu">
+                  <button class="track-past-menu-item" type="button" role="menuitem" data-track-past-details="${safeId}">View details</button>
+                  <button class="track-past-menu-item track-past-menu-item--reorder" type="button" role="menuitem" data-track-past-reorder="${safeId}">Reorder this</button>
+                </div>
               </div>
+            </div>
+
+            <div class="track-past-time-value">
+              <div class="track-past-time">${escapeHtml(placedTime)}</div>
+              <div class="track-past-total-inline"><span>Total value:</span><strong>${total}</strong></div>
+            </div>
+
+            <div class="track-past-items-card">
+              <div class="track-past-items">${renderPastOrderItems(order)}</div>
+              <button class="track-past-reorder-button" type="button" data-track-past-reorder="${safeId}">Reorder this</button>
             </div>
           </div>
         </div>
-        <div class="track-past-items-card">
-          <div class="track-past-items">${renderPastOrderItems(order)}</div>
-        </div>
-        <button class="track-past-reorder-button" type="button" data-track-past-reorder="${safeId}">Reorder this</button>
       </article>
     `;
   }
