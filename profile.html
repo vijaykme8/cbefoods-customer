@@ -612,7 +612,7 @@ button,a,[role="button"]{touch-action:manipulation}
   display:flex;
   flex-direction:column;
   align-items:flex-start;
-  gap:0;
+  gap:10px;
 }
 .profile-page .track-past-card-stack,
 .profile-page .track-past-card-main{
@@ -623,7 +623,6 @@ button,a,[role="button"]{touch-action:manipulation}
   gap:10px;
   position:relative;
 }
-.profile-page .track-past-card-stack{gap:16px}
 .profile-page .track-past-top-row{
   width:100%;
   min-height:37px;
@@ -712,7 +711,7 @@ button,a,[role="button"]{touch-action:manipulation}
 .profile-page .track-past-time-value{
   width:100%;
   min-height:17px;
-  padding:0;
+  padding:0 10px;
   display:inline-flex;
   justify-content:space-between;
   align-items:flex-start;
@@ -747,9 +746,9 @@ button,a,[role="button"]{touch-action:manipulation}
   box-sizing:border-box;
   width:342px;
   max-width:100%;
+  min-height:58px;
   height:auto;
-  min-height:0;
-  padding:12px;
+  padding:8px 4px;
   background:rgba(253,253,255,.12);
   border:1px solid rgba(253,253,255,.08);
   border-radius:14px;
@@ -761,7 +760,7 @@ button,a,[role="button"]{touch-action:manipulation}
 }
 .profile-page .track-past-items{
   width:100%;
-  padding:0;
+  padding:0 12px;
   display:flex;
   flex-direction:column;
   align-items:flex-start;
@@ -1040,8 +1039,8 @@ function buildProfilePastOrderCard(order){
       </div>
       <div class="track-past-items-card">
         <div class="track-past-items">${buildProfilePastOrderItems(order.items)}</div>
-        <button class="track-past-reorder-button" type="button" data-profile-past-reorder="${safeId}">Reorder this</button>
       </div>
+      <button class="track-past-reorder-button" type="button" data-profile-past-reorder="${safeId}">Reorder this</button>
     </div>
   </div>`;
  card.querySelector('[data-profile-past-menu]').addEventListener('click',event=>{event.stopPropagation();const open=card.classList.contains('is-menu-open');closeProfilePastOrderMenus();if(!open)card.classList.add('is-menu-open')});
