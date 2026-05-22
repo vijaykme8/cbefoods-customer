@@ -596,8 +596,8 @@ button,a,[role="button"]{touch-action:manipulation}
 }
 
 /* Latest past order card design shared for Track, now reused in Profile */
-.profile-page .track-past-order-card,
-.profile-page .track-past-order-card-v2{
+.profile-screen .track-past-order-card,
+.profile-screen .track-past-order-card-v2{
   box-sizing:border-box;
   width:342px;
   max-width:100%;
@@ -614,8 +614,8 @@ button,a,[role="button"]{touch-action:manipulation}
   align-items:flex-start;
   gap:10px;
 }
-.profile-page .track-past-card-stack,
-.profile-page .track-past-card-main{
+.profile-screen .track-past-card-stack,
+.profile-screen .track-past-card-main{
   width:100%;
   display:flex;
   flex-direction:column;
@@ -623,7 +623,7 @@ button,a,[role="button"]{touch-action:manipulation}
   gap:10px;
   position:relative;
 }
-.profile-page .track-past-top-row{
+.profile-screen .track-past-top-row{
   width:100%;
   min-height:37px;
   display:inline-flex;
@@ -631,7 +631,7 @@ button,a,[role="button"]{touch-action:manipulation}
   align-items:center;
   gap:10px;
 }
-.profile-page .track-past-order-id-pill{
+.profile-screen .track-past-order-id-pill{
   min-height:37px;
   padding:10px 20px;
   background:#FDFDFF;
@@ -645,13 +645,13 @@ button,a,[role="button"]{touch-action:manipulation}
   justify-content:center;
   white-space:nowrap;
 }
-.profile-page .track-past-menu-wrap{
+.profile-screen .track-past-menu-wrap{
   position:relative;
   flex:0 0 auto;
   width:34px;
   height:34px;
 }
-.profile-page .track-past-menu-button{
+.profile-screen .track-past-menu-button{
   width:34px;
   height:34px;
   padding:0;
@@ -665,7 +665,7 @@ button,a,[role="button"]{touch-action:manipulation}
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
-.profile-page .track-past-menu-dot{
+.profile-screen .track-past-menu-dot{
   width:3.71px;
   height:3.71px;
   border-radius:50%;
@@ -673,7 +673,7 @@ button,a,[role="button"]{touch-action:manipulation}
   display:block;
   flex:0 0 auto;
 }
-.profile-page .track-past-action-menu{
+.profile-screen .track-past-action-menu{
   position:absolute;
   right:0;
   top:40px;
@@ -686,12 +686,12 @@ button,a,[role="button"]{touch-action:manipulation}
   display:none;
   z-index:80;
 }
-.profile-page .track-past-order-card.is-menu-open .track-past-action-menu{
+.profile-screen .track-past-order-card.is-menu-open .track-past-action-menu{
   display:flex;
   flex-direction:column;
   gap:2px;
 }
-.profile-page .track-past-menu-item{
+.profile-screen .track-past-menu-item{
   width:100%;
   min-height:36px;
   padding:8px 10px;
@@ -705,10 +705,10 @@ button,a,[role="button"]{touch-action:manipulation}
   text-align:left;
   cursor:pointer;
 }
-.profile-page .track-past-menu-item:active,
-.profile-page .track-past-menu-item:hover{background:rgba(253,253,255,.08)}
-.profile-page .track-past-menu-item--reorder{color:#08A045}
-.profile-page .track-past-time-value{
+.profile-screen .track-past-menu-item:active,
+.profile-screen .track-past-menu-item:hover{background:rgba(253,253,255,.08)}
+.profile-screen .track-past-menu-item--reorder{color:#08A045}
+.profile-screen .track-past-time-value{
   width:100%;
   min-height:17px;
   padding:0 10px;
@@ -717,7 +717,7 @@ button,a,[role="button"]{touch-action:manipulation}
   align-items:flex-start;
   gap:10px;
 }
-.profile-page .track-past-time{
+.profile-screen .track-past-time{
   min-width:0;
   flex:1 1 auto;
   color:rgba(253,253,255,.60);
@@ -728,7 +728,7 @@ button,a,[role="button"]{touch-action:manipulation}
   overflow:visible;
   text-overflow:clip;
 }
-.profile-page .track-past-total-inline{
+.profile-screen .track-past-total-inline{
   flex:0 0 auto;
   display:inline-flex;
   justify-content:flex-end;
@@ -740,9 +740,9 @@ button,a,[role="button"]{touch-action:manipulation}
   font-weight:400;
   line-height:120%;
 }
-.profile-page .track-past-total-inline span{color:rgba(253,253,255,.50);font-size:14px;font-weight:400;line-height:120%}
-.profile-page .track-past-total-inline strong{color:#FDFDFF;font-size:14px;font-weight:400;line-height:120%}
-.profile-page .track-past-items-card{
+.profile-screen .track-past-total-inline span{color:rgba(253,253,255,.50);font-size:14px;font-weight:400;line-height:120%}
+.profile-screen .track-past-total-inline strong{color:#FDFDFF;font-size:14px;font-weight:400;line-height:120%}
+.profile-screen .track-past-items-card{
   box-sizing:border-box;
   width:342px;
   max-width:100%;
@@ -758,7 +758,7 @@ button,a,[role="button"]{touch-action:manipulation}
   align-items:center;
   gap:10px;
 }
-.profile-page .track-past-items{
+.profile-screen .track-past-items{
   width:100%;
   padding:0 12px;
   display:flex;
@@ -767,7 +767,7 @@ button,a,[role="button"]{touch-action:manipulation}
   gap:2px;
   color:#FDFDFF;
 }
-.profile-page .track-past-items-row{
+.profile-screen .track-past-items-row{
   width:100%;
   min-height:20px;
   display:flex;
@@ -777,7 +777,7 @@ button,a,[role="button"]{touch-action:manipulation}
   gap:14px;
   flex-wrap:wrap;
 }
-.profile-page .track-past-item-chip{
+.profile-screen .track-past-item-chip{
   min-height:20px;
   display:inline-flex;
   flex-direction:row;
@@ -786,7 +786,7 @@ button,a,[role="button"]{touch-action:manipulation}
   gap:2px;
   max-width:100%;
 }
-.profile-page .track-past-item-name{
+.profile-screen .track-past-item-name{
   max-width:none;
   white-space:normal;
   overflow:visible;
@@ -796,7 +796,7 @@ button,a,[role="button"]{touch-action:manipulation}
   font-weight:400;
   line-height:120%;
 }
-.profile-page .track-past-item-count{
+.profile-screen .track-past-item-count{
   width:20px;
   min-width:20px;
   height:20px;
@@ -811,8 +811,8 @@ button,a,[role="button"]{touch-action:manipulation}
   justify-content:center;
   align-items:center;
 }
-.profile-page .track-past-item-comma{color:#FDFDFF;font-size:12px;font-weight:500;line-height:120%}
-.profile-page .track-past-reorder-button{
+.profile-screen .track-past-item-comma{color:#FDFDFF;font-size:12px;font-weight:500;line-height:120%}
+.profile-screen .track-past-reorder-button{
   box-sizing:border-box;
   width:100%;
   min-height:37px;
@@ -830,6 +830,262 @@ button,a,[role="button"]{touch-action:manipulation}
   line-height:120%;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
+}
+
+/* Profile past orders must use the exact same visual system as Track past orders */
+.profile-screen .order-cards-group {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.profile-screen .track-past-order-card,
+.profile-screen .track-past-order-card-v2 {
+  box-sizing: border-box;
+  width: 342px;
+  max-width: 100%;
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+.profile-screen .track-past-card-stack,
+.profile-screen .track-past-card-main {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+}
+.profile-screen .track-past-top-row {
+  width: 100%;
+  min-height: 37px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+.profile-screen .track-past-order-id-pill {
+  min-height: 37px;
+  padding: 10px 20px;
+  background: #FDFDFF;
+  border-radius: 30px;
+  color: #12130F;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+}
+.profile-screen .track-past-menu-wrap {
+  position: relative;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+}
+.profile-screen .track-past-menu-button {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 70px;
+  background: linear-gradient(0deg, rgba(253,253,255,.20), rgba(253,253,255,.20)), #12130F;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.37px;
+  cursor: pointer;
+}
+.profile-screen .track-past-menu-dot {
+  width: 3.71px;
+  height: 3.71px;
+  border-radius: 50%;
+  background: #FDFDFF;
+  display: block;
+  flex: 0 0 auto;
+}
+.profile-screen .track-past-action-menu {
+  position: absolute;
+  right: 0;
+  top: 40px;
+  width: 148px;
+  padding: 6px;
+  border-radius: 12px;
+  background: #1F201C;
+  border: 1px solid rgba(253,253,255,.12);
+  box-shadow: 0 12px 30px rgba(0,0,0,.32);
+  display: none;
+  z-index: 80;
+}
+.profile-screen .track-past-order-card.is-menu-open .track-past-action-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.profile-screen .track-past-menu-item {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #FDFDFF;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 120%;
+  text-align: left;
+  cursor: pointer;
+}
+.profile-screen .track-past-menu-item:active,
+.profile-screen .track-past-menu-item:hover {
+  background: rgba(253,253,255,.08);
+}
+.profile-screen .track-past-menu-item--reorder {
+  color: #08A045;
+}
+.profile-screen .track-past-time-value {
+  width: 100%;
+  min-height: 17px;
+  padding: 0 10px;
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+.profile-screen .track-past-time {
+  min-width: 0;
+  flex: 1 1 auto;
+  color: rgba(253,253,255,.60);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+.profile-screen .track-past-total-inline {
+  flex: 0 0 auto;
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 4px;
+  white-space: nowrap;
+}
+.profile-screen .track-past-total-inline span {
+  color: rgba(253,253,255,.50);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+}
+.profile-screen .track-past-total-inline strong {
+  color: #FDFDFF;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+}
+.profile-screen .track-past-items-card {
+  box-sizing: border-box;
+  width: 342px;
+  max-width: 100%;
+  min-height: 58px;
+  height: auto;
+  padding: 8px 4px;
+  background: rgba(253,253,255,.12);
+  border: 1px solid rgba(253,253,255,.08);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+.profile-screen .track-past-items {
+  width: 100%;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  color: #FDFDFF;
+}
+.profile-screen .track-past-items-row {
+  width: 100%;
+  min-height: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.profile-screen .track-past-item-chip {
+  min-height: 20px;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2px;
+  max-width: 100%;
+}
+.profile-screen .track-past-item-name {
+  max-width: none;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  color: #FDFDFF;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 120%;
+}
+.profile-screen .track-past-item-count {
+  width: 20px;
+  min-width: 20px;
+  height: 20px;
+  padding: 4px;
+  background: rgba(253,253,255,.06);
+  border-radius: 30px;
+  color: #FDFDFF;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 100%;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.profile-screen .track-past-item-comma {
+  color: #FDFDFF;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 120%;
+}
+.profile-screen .track-past-reorder-button {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 37px;
+  padding: 10px 16px;
+  background: rgba(8,160,69,.12);
+  border: 1px solid #08A045;
+  border-radius: 8px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  color: #08A045;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+  cursor: pointer;
 }
 
 .empty-state{
@@ -1039,8 +1295,8 @@ function buildProfilePastOrderCard(order){
       </div>
       <div class="track-past-items-card">
         <div class="track-past-items">${buildProfilePastOrderItems(order.items)}</div>
+        <button class="track-past-reorder-button" type="button" data-profile-past-reorder="${safeId}">Reorder this</button>
       </div>
-      <button class="track-past-reorder-button" type="button" data-profile-past-reorder="${safeId}">Reorder this</button>
     </div>
   </div>`;
  card.querySelector('[data-profile-past-menu]').addEventListener('click',event=>{event.stopPropagation();const open=card.classList.contains('is-menu-open');closeProfilePastOrderMenus();if(!open)card.classList.add('is-menu-open')});
