@@ -1056,6 +1056,31 @@ body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="map-section-v1"
   z-index: 9990 !important;
 }
 
+
+
+/* Final fix: allow page scroll when swiping on the small map card.
+   In card mode the map is view-only, so vertical touch scroll passes to the page.
+   In fullscreen map mode the map becomes interactive again. */
+body:not(.track-map-fullscreen-open) #trackFullscreenRoot [data-layer="map-section-v1"] {
+  touch-action: pan-y !important;
+  overscroll-behavior: auto !important;
+}
+
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas,
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas canvas,
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas .maplibregl-canvas-container,
+body:not(.track-map-fullscreen-open) #trackOlaMapCanvas .maplibregl-canvas {
+  pointer-events: none !important;
+  touch-action: pan-y !important;
+}
+
+body.track-map-fullscreen-open #trackOlaMapCanvas,
+body.track-map-fullscreen-open #trackOlaMapCanvas canvas,
+body.track-map-fullscreen-open #trackOlaMapCanvas .maplibregl-canvas-container,
+body.track-map-fullscreen-open #trackOlaMapCanvas .maplibregl-canvas {
+  pointer-events: auto !important;
+  touch-action: none !important;
+}
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -1621,7 +1646,15 @@ function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementB
 function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',renderMap);if(map.loaded())renderMap()}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
 function boot(){bindFrame77RiderActions();hydrate();initMap();renderMap()}
 function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order);if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists)return;const cloud=mergeOrder(order,{id:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>console.warn('Track live order sync failed',err))}catch(err){console.warn('Track live order listener failed',err)}}
-document.addEventListener('click',e=>{if(e.target.closest('[data-layer="back-button"], [data-layer="back to menu-button"]'))window.location.href='track.html'},true);
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-layer="back-button"]')){
+    window.location.href='track.html';
+    return;
+  }
+  if(e.target.closest('[data-layer="back to menu-button"]')){
+    window.location.href='menu.html';
+  }
+},true);
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);
 })();
 </script>
