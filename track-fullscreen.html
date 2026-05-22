@@ -852,6 +852,96 @@ body.track-map-fullscreen-open .track-map-fullscreen-back span {
   }
 }
 
+
+
+/* Track fullscreen quick fix: deliver-to top section + page scroll */
+html,
+body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  position: static !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+body:not(.track-map-fullscreen-open) {
+  overflow-y: auto !important;
+}
+
+.track-fullscreen-shell {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: touch !important;
+}
+
+#trackFullscreenRoot {
+  height: auto !important;
+  min-height: 100dvh !important;
+  overflow: visible !important;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot > [data-layer="Frame 88"] {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot [data-layer="main-content"] {
+  height: auto !important;
+  overflow: visible !important;
+  padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackFullscreenRoot [data-layer="map-wrap-v1"] > [data-layer="top-bar"] {
+  width: 342px !important;
+  height: 70px !important;
+  padding: 10px 16px 10px 12px !important;
+  gap: 30px !important;
+  align-items: flex-start !important;
+}
+
+#trackFullscreenRoot [data-layer="deliver-to"] {
+  flex: 1 1 0 !important;
+  width: 209px !important;
+  height: 50px !important;
+  justify-content: center !important;
+  align-items: flex-end !important;
+  gap: 4px !important;
+}
+
+#trackFullscreenRoot [data-layer="Deliver to:"] {
+  color: rgba(253, 253, 255, 0.50) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 14.4px !important;
+  text-align: right !important;
+}
+
+#trackFullDeliveryAddress {
+  width: 209px !important;
+  min-height: 32px !important;
+  height: auto !important;
+  color: #FDFDFF !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 15.6px !important;
+  text-align: right !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
