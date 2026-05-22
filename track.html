@@ -1039,7 +1039,253 @@ body {
     border-radius: 10px !important;
   }
   #trackAddedRaw .track-past-orders-section {
-    margin-top: 0 !important;
+    margin-top: 44px !important;
+  }
+</style>
+
+
+<style id="cf-track-past-order-new-card-menu-fix">
+  .track-past-orders-section {
+    gap: 16px !important;
+  }
+
+  #trackAddedRaw .track-past-orders-section {
+    margin-top: 56px !important;
+  }
+
+  .track-past-orders-list {
+    gap: 18px !important;
+  }
+
+  .track-past-order-card {
+    position: relative !important;
+    width: 342px !important;
+    max-width: 100% !important;
+    min-height: 129px !important;
+    height: auto !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+    box-shadow: none !important;
+  }
+
+  .track-past-summary-row {
+    width: 100% !important;
+    min-height: 24px !important;
+    padding: 0 10px !important;
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  .track-past-summary-left {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+
+  .track-past-order-id-new {
+    min-width: 0 !important;
+    color: rgba(253, 253, 255, 0.60) !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 120% !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .track-past-summary-right {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .track-past-total-inline {
+    display: inline-flex !important;
+    justify-content: flex-end !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    color: rgba(253, 253, 255, 0.50) !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 120% !important;
+    text-align: right !important;
+    white-space: nowrap !important;
+  }
+
+  .track-past-total-inline strong {
+    color: #FDFDFF !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 120% !important;
+  }
+
+  .track-past-menu-wrap {
+    position: relative !important;
+    flex: 0 0 auto !important;
+    width: 24px !important;
+    height: 24px !important;
+  }
+
+  .track-past-menu-button {
+    width: 24px !important;
+    height: 24px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: rgba(253, 253, 255, 0.06) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: rgba(253, 253, 255, 0.72) !important;
+    font-size: 18px !important;
+    line-height: 1 !important;
+    font-family: 'General Sans', sans-serif !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .track-past-action-menu {
+    position: absolute !important;
+    right: 0 !important;
+    top: 30px !important;
+    width: 142px !important;
+    padding: 6px !important;
+    border-radius: 12px !important;
+    background: #1F201C !important;
+    border: 1px solid rgba(253, 253, 255, 0.12) !important;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32) !important;
+    display: none !important;
+    z-index: 30 !important;
+  }
+
+  .track-past-order-card.is-menu-open .track-past-action-menu {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 2px !important;
+  }
+
+  .track-past-menu-item {
+    width: 100% !important;
+    min-height: 36px !important;
+    padding: 8px 10px !important;
+    border: 0 !important;
+    border-radius: 8px !important;
+    background: transparent !important;
+    color: #FDFDFF !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    line-height: 120% !important;
+    text-align: left !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  .track-past-menu-item:active,
+  .track-past-menu-item:hover {
+    background: rgba(253, 253, 255, 0.08) !important;
+  }
+
+  .track-past-menu-item--reorder {
+    color: #08A045 !important;
+  }
+
+  .track-past-items-card {
+    box-sizing: border-box !important;
+    width: 342px !important;
+    max-width: 100% !important;
+    min-height: 58px !important;
+    height: auto !important;
+    padding: 8px 4px !important;
+    background: rgba(253, 253, 255, 0.12) !important;
+    border: 1px solid rgba(253, 253, 255, 0.08) !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 10px !important;
+    overflow: hidden !important;
+  }
+
+  .track-past-items {
+    width: 100% !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 2px !important;
+  }
+
+  .track-past-items-row {
+    width: 100% !important;
+    min-height: 20px !important;
+    display: inline-flex !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    gap: 14px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  .track-past-item-chip {
+    min-height: 20px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    color: #FDFDFF !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-weight: 400 !important;
+    font-size: 12px !important;
+    line-height: 120% !important;
+    white-space: nowrap !important;
+  }
+
+  .track-past-item-name {
+    max-width: 118px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .track-past-reorder-button {
+    box-sizing: border-box !important;
+    width: 342px !important;
+    max-width: 100% !important;
+    min-height: 37px !important;
+    padding: 10px 16px !important;
+    background: rgba(8, 160, 69, 0.12) !important;
+    border: 1px solid #08A045 !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 10px !important;
+    color: #08A045 !important;
+    font-family: 'General Sans', sans-serif !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    line-height: 120% !important;
+    text-align: center !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
 </style>
 
@@ -1508,48 +1754,46 @@ body {
 
   function renderPastOrderItems(order) {
     const items = getItems(order);
-    if (!items.length) {
-      return '<div class="track-past-item-chip"><span>Order item</span><span class="track-past-item-count">1</span></div>';
-    }
-    return items.map((item, index) => `
+    const safeItems = items.length ? items : [{ name: 'Order item', qty: 1 }];
+    const chips = safeItems.map((item, index) => `
       <div class="track-past-item-chip">
         <span class="track-past-item-name">${escapeHtml(getItemName(item))}</span>
-        <span class="track-past-item-count">${getItemQty(item)}</span>${index < items.length - 1 ? '<span class="track-past-item-comma">,</span>' : ''}
+        <span class="track-past-item-count">${getItemQty(item)}</span>${index < safeItems.length - 1 ? '<span class="track-past-item-comma">,</span>' : ''}
       </div>
-    `).join('');
+    `);
+
+    const rows = [];
+    for (let i = 0; i < chips.length; i += 2) {
+      rows.push(`<div class="track-past-items-row">${chips.slice(i, i + 2).join('')}</div>`);
+    }
+    return rows.join('');
   }
 
   function renderPastOrderCard(order) {
     const id = getOrderId(order);
     const total = money(computedTotalForOrder(order));
-    const placed = formatDateTime(order);
-    const statusLabel = pastStatusLabel(order);
+    const safeId = escapeHtml(id);
     return `
-      <article class="track-past-order-card" data-track-past-order-card="${id}">
-        <div class="track-past-order-header">
-          <div class="track-past-left">
-            <img class="track-past-shop-icon" src="./assets/track%20orders/cbe-logo.png?v=past-card-logo1" alt="" aria-hidden="true" />
-            <div class="track-past-title-wrap">
-              <div class="track-past-restaurant">Coimbatore Foods</div>
-              <div class="track-past-order-id">Order ID #${id.replace(/^CBE-/, '')}</div>
+      <article class="track-past-order-card" data-track-past-order-card="${safeId}">
+        <div class="track-past-summary-row">
+          <div class="track-past-summary-left">
+            <div class="track-past-order-id-new">Order ID #${escapeHtml(id.replace(/^CBE-/, ''))}</div>
+          </div>
+          <div class="track-past-summary-right">
+            <div class="track-past-total-inline"><span>Total value:</span><strong>${total}</strong></div>
+            <div class="track-past-menu-wrap">
+              <button class="track-past-menu-button" type="button" aria-label="Order actions" data-track-past-menu="${safeId}">⋯</button>
+              <div class="track-past-action-menu" role="menu">
+                <button class="track-past-menu-item" type="button" role="menuitem" data-track-past-details="${safeId}">View details</button>
+                <button class="track-past-menu-item track-past-menu-item--reorder" type="button" role="menuitem" data-track-past-reorder="${safeId}">Reorder this</button>
+              </div>
             </div>
           </div>
-          <div class="track-past-status">
-            <span>${statusLabel}</span>
-            <span class="track-past-status-dot" aria-hidden="true">
-              <img src="./assets/track%20orders/status-delivered-icon.svg?v=past-status1" alt="" />
-            </span>
-          </div>
         </div>
-        <div class="track-past-items">${renderPastOrderItems(order)}</div>
-        <div class="track-past-divider" aria-hidden="true"></div>
-        <div class="track-past-cta-time">
-          <button class="track-past-view-details" type="button" data-track-past-details="${id}">View details</button>
-          <div class="track-past-time-value">
-            <div class="track-past-time"><span>Order placed:</span><strong>${placed}</strong></div>
-            <div class="track-past-total"><span>Total value:</span><strong>${total}</strong></div>
-          </div>
+        <div class="track-past-items-card">
+          <div class="track-past-items">${renderPastOrderItems(order)}</div>
         </div>
+        <button class="track-past-reorder-button" type="button" data-track-past-reorder="${safeId}">Reorder this</button>
       </article>
     `;
   }
@@ -1898,7 +2142,62 @@ body {
     showAdded(orders);
   }
 
+
+  function normalizeReorderItem(item, index = 0) {
+    const qty = getItemQty(item);
+    const name = getItemName(item);
+    return {
+      ...item,
+      id: item?.id ?? item?.productId ?? item?.menuId ?? item?.itemId ?? name ?? `reorder-${index}`,
+      name,
+      title: item?.title ?? name,
+      price: getItemPrice(item),
+      qty,
+      quantity: qty,
+      image: item?.image ?? item?.img ?? item?.imageUrl ?? item?.photo ?? item?.thumbnail ?? item?.asset ?? ''
+    };
+  }
+
+  function closePastOrderMenus() {
+    document.querySelectorAll('.track-past-order-card.is-menu-open').forEach(card => {
+      card.classList.remove('is-menu-open');
+    });
+  }
+
+  function reorderPastOrderById(id) {
+    const selected = getPastOrders().find(order => getOrderId(order) === id);
+    if (!selected) return;
+
+    const items = getItems(selected).map(normalizeReorderItem).filter(item => Number(item.qty || 0) > 0);
+    if (!items.length) return;
+
+    localStorage.setItem('cart', JSON.stringify(items));
+    localStorage.removeItem('cbe_cart_cleared_at');
+    localStorage.removeItem('cbe_cart_cleared_customer_id');
+    localStorage.setItem('cbe_reorder_source_order_id', String(id));
+    window.location.href = 'cart.html';
+  }
+
   document.addEventListener('click', function(event) {
+    const pastMenuBtn = event.target.closest('[data-track-past-menu]');
+    if (pastMenuBtn) {
+      const card = pastMenuBtn.closest('.track-past-order-card');
+      const isOpen = card?.classList.contains('is-menu-open');
+      closePastOrderMenus();
+      if (card && !isOpen) card.classList.add('is-menu-open');
+      event.preventDefault();
+      return;
+    }
+
+    const pastReorderBtn = event.target.closest('[data-track-past-reorder]');
+    if (pastReorderBtn) {
+      const id = pastReorderBtn.getAttribute('data-track-past-reorder');
+      closePastOrderMenus();
+      reorderPastOrderById(id);
+      event.preventDefault();
+      return;
+    }
+
     const pastBtn = event.target.closest('[data-track-past-details]');
     if (pastBtn) {
       const id = pastBtn.getAttribute('data-track-past-details');
@@ -1907,9 +2206,13 @@ body {
         localStorage.setItem('cbe_track_selected_order', JSON.stringify(selected));
         localStorage.setItem('TIFFIN_SELECTED_ORDER_ID', String(id));
       }
+      closePastOrderMenus();
       window.location.href = `track-fullscreen.html?orderId=${encodeURIComponent(id || '')}`;
+      event.preventDefault();
       return;
     }
+
+    if (!event.target.closest('.track-past-menu-wrap')) closePastOrderMenus();
     if (event.target.closest('[data-layer="browsemenu-button"]')) {
       window.location.href = 'menu.html';
       return;
