@@ -3111,9 +3111,20 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 #menuProfileAvatarImg {
   width: 46px !important;
   height: 46px !important;
+  display: block !important;
+}
+
+/* Default exported profile icon must stay exact. Real uploaded profile photo should render as a photo. */
+#menuProfileAvatarImg:not(.is-customer-photo) {
   object-fit: contain !important;
   border-radius: 0 !important;
   background: transparent !important;
+}
+
+#menuProfileAvatarImg.is-customer-photo {
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  background: #878887 !important;
 }
 .cf-figma-menu-root .PenIcon,
 .cf-figma-menu-root .PenIcon img {
@@ -7474,6 +7485,7 @@ if (shouldAutoOpenLocationMap()) {
     "TIFFIN_CUSTOMER_PROFILE",
     "customerProfile",
     "CBE_CUSTOMER_PROFILE",
+    "cbe_customer_profile",
     "customer_profile",
     "cust_profile",
     "userProfile",
@@ -7504,18 +7516,43 @@ if (shouldAutoOpenLocationMap()) {
   }
 
   function getAvatarFromProfile(profile = readLocalProfile()) {
+    const nestedProfile = profile.profile && typeof profile.profile === "object" ? profile.profile : {};
+
     return clean(
       profile.avatarDataUrl ||
+      profile.avatarDataURL ||
+      profile.profilePhotoDataUrl ||
+      profile.profilePhotoDataURL ||
       profile.avatar ||
       profile.profilePhoto ||
       profile.photoURL ||
       profile.photoUrl ||
+      profile.photo ||
+      profile.profileImage ||
+      profile.profileImageUrl ||
       profile.image ||
       profile.imageUrl ||
+      profile.picture ||
+      profile.dp ||
+      profile.displayPicture ||
+      nestedProfile.avatarDataUrl ||
+      nestedProfile.avatar ||
+      nestedProfile.profilePhoto ||
+      localStorage.getItem("TIFFIN_CUSTOMER_AVATAR") ||
+      localStorage.getItem("CBE_CUSTOMER_AVATAR") ||
+      localStorage.getItem("cbe_customer_avatar") ||
       localStorage.getItem("customer_avatar") ||
       localStorage.getItem("cust_avatar") ||
       localStorage.getItem("profile_avatar") ||
-      localStorage.getItem("TIFFIN_CUSTOMER_AVATAR")
+      localStorage.getItem("customer_profile_photo") ||
+      localStorage.getItem("cust_profile_photo") ||
+      localStorage.getItem("profile_photo") ||
+      localStorage.getItem("customerProfilePhoto") ||
+      localStorage.getItem("customer_photo") ||
+      localStorage.getItem("cust_photo") ||
+      localStorage.getItem("user_photo") ||
+      localStorage.getItem("selectedProfilePhoto") ||
+      localStorage.getItem("TIFFIN_PROFILE_PHOTO")
     );
   }
 
@@ -7541,13 +7578,22 @@ if (shouldAutoOpenLocationMap()) {
     const img = getMenuAvatarImage();
     if (!img) return;
 
-    // Menu top profile icon must use the exact exported asset.
-    // Customer photo/avatar memory is kept for profile screens, not this menu icon.
-    img.setAttribute("src", DEFAULT_AVATAR_SRC);
-    img.style.objectFit = "contain";
-    img.style.borderRadius = "0";
-    img.style.background = "transparent";
+    const avatarSrc = getAvatarFromProfile();
+
+    if (avatarSrc) {
+      img.onerror = () => {
+        img.onerror = null;
+        img.classList.remove("is-customer-photo");
+        img.setAttribute("src", DEFAULT_AVATAR_SRC);
+      };
+      img.classList.add("is-customer-photo");
+      img.setAttribute("src", avatarSrc);
+      return;
+    }
+
     img.onerror = null;
+    img.classList.remove("is-customer-photo");
+    img.setAttribute("src", DEFAULT_AVATAR_SRC);
   }
 
   function normalizePhone(value) {
@@ -7592,7 +7638,7 @@ if (shouldAutoOpenLocationMap()) {
 
       const data = snapshot.data() || {};
       const remoteProfile = data.profile && typeof data.profile === "object" ? data.profile : {};
-      const remoteAvatar = clean(remoteProfile.avatarDataUrl || data.avatarDataUrl || data.avatar || data.profilePhoto);
+      const remoteAvatar = clean(remoteProfile.avatarDataUrl || remoteProfile.avatar || remoteProfile.profilePhoto || data.avatarDataUrl || data.avatarDataURL || data.avatar || data.profilePhoto || data.photoURL || data.photoUrl || data.profileImageUrl);
       const remoteName = clean(remoteProfile.name || data.name || data.displayName);
       const remotePhone = normalizePhone(remoteProfile.phone || data.phoneNumber || getLocalPhone());
 
