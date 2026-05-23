@@ -23,8 +23,8 @@ body.has-bottom-nav {
   transform: translateX(-50%);
   width: 390px;
   max-width: 100vw;
-  height: calc(64px + env(safe-area-inset-bottom));
-  padding: 10px 24px env(safe-area-inset-bottom);
+  height: 64px;
+  padding: 10px 24px 0;
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -129,5 +129,22 @@ body[data-bottom-nav="off"] .cf-bottom-nav {
   .cf-bottom-nav {
     width: 100vw;
     gap: clamp(18px, 10vw, 40px);
+  }
+}
+
+
+.cf-bottom-nav__item {
+  transition: transform 90ms ease, opacity 90ms ease;
+}
+
+.cf-bottom-nav__item.is-pressing {
+  transform: translate3d(0, -1px, 0) scale(0.985);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cf-bottom-nav__item,
+  .cf-bottom-nav__item.is-pressing {
+    transition: none !important;
+    transform: none !important;
   }
 }

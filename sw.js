@@ -1,19 +1,34 @@
-const CBE_CACHE_VERSION = '20260523_rollback_stable_pages1';
+const CBE_CACHE_VERSION = '20260523_appfeel1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   './',
+  './index.html',
+  './login.html',
   './menu.html',
   './cart.html',
   './track.html',
-  './components/bottom-nav.css?v=20260523_rollback1',
-  './components/bottom-nav.js?v=20260523_rollback1',
-  './pwa-speed.js?v=20260523_rollback1',
+  './profile.html',
+  './track-fullscreen.html',
+  './order_placed.html',
+  './components/bottom-nav.css?v=20260523_appfeel1',
+  './components/bottom-nav.js?v=20260523_appfeel1',
+  './pwa-speed.js?v=20260523_appfeel1',
   './firebase-config.js',
   './firebase-mvp.js',
-  './ola-map-v4.js?v=darkmap1rollback',
+  './ola-map-v4.js?v=20260523_appfeel1',
+  './assets/bottom-nav-bar/active-search-icon.svg',
+  './assets/bottom-nav-bar/inactive-search-icon.svg',
+  './assets/bottom-nav-bar/active-cart-icon.svg',
+  './assets/bottom-nav-bar/inactive-cart-icon.svg',
+  './assets/bottom-nav-bar/active-track-icon.svg',
+  './assets/bottom-nav-bar/inactive-track-icon.svg',
   './assets/cart/dish-img.png',
+  './assets/track orders/track-img.svg',
+  './assets/menu/icons/user profile.svg',
+  './assets/menu/icons/pen-icon.svg',
+  './assets/menu/icons/arrow-right-icon.svg',
   './assets/menu/img/Protein egg lunch-img.png',
   './assets/menu/img/Protein chicken lunch-img.png',
   './assets/menu/img/Regular meal-img.png',
@@ -24,15 +39,20 @@ const PRECACHE_URLS = [
   './assets/menu/img/tab3-img.png',
   './fonts/GeneralSans/GeneralSans-Regular.otf',
   './fonts/GeneralSans/GeneralSans-Medium.otf',
-  './fonts/GeneralSans/GeneralSans-Semibold.otf'
+  './fonts/GeneralSans/GeneralSans-Semibold.otf',
+  './fonts/GeneralSans/GeneralSans-Bold.otf'
 ];
 
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(STATIC_CACHE)
-      .then(cache => cache.addAll(PRECACHE_URLS.map(url => new Request(url, { cache: 'reload' }))))
-      .catch(() => null)
+    caches.open(STATIC_CACHE).then(cache =>
+      Promise.allSettled(
+        PRECACHE_URLS.map(url =>
+          cache.add(new Request(url, { cache: 'reload' })).catch(() => null)
+        )
+      )
+    )
   );
 });
 
@@ -48,8 +68,8 @@ self.addEventListener('activate', event => {
   );
 });
 
-function isSameOrigin(requestUrl) {
-  return requestUrl.origin === self.location.origin;
+function isSameOrigin(url) {
+  return url.origin === self.location.origin;
 }
 
 function isHtmlRequest(request) {
@@ -61,39 +81,53 @@ function shouldNetworkOnly(url) {
   return url.pathname.startsWith('/ola-maps') ||
     url.pathname.includes('/api/') ||
     url.pathname.includes('/__/') ||
-    url.searchParams.has('api_key');
+    url.searchParams.has('api_key') ||
+    url.hostname.includes('googleapis.com') ||
+    url.hostname.includes('firebaseio.com');
 }
 
-async function networkFirst(request) {
+async function htmlAppLike(request, event) {
   const cache = await caches.open(HTML_CACHE);
-
-  try {
-    const response = await fetch(request);
-    if (response && response.ok) {
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    const cached = await cache.match(request);
-    if (cached) return cached;
-    return caches.match('./menu.html');
-  }
-}
-
-async function staleWhileRevalidate(request) {
-  const cache = await caches.open(STATIC_CACHE);
   const cached = await cache.match(request);
 
   const networkPromise = fetch(request)
     .then(response => {
-      if (response && response.ok) {
+      if (response && response.ok && (response.headers.get('content-type') || '').includes('text/html')) {
         cache.put(request, response.clone());
       }
       return response;
     })
     .catch(() => null);
 
-  return cached || networkPromise || fetch(request);
+  if (cached) {
+    event.waitUntil(networkPromise);
+    return cached;
+  }
+
+  const response = await networkPromise;
+  if (response) return response;
+  return caches.match('./menu.html');
+}
+
+async function staleWhileRevalidate(request, event) {
+  const cache = await caches.open(STATIC_CACHE);
+  const cached = await cache.match(request);
+
+  const networkPromise = fetch(request)
+    .then(response => {
+      if (response && response.ok) cache.put(request, response.clone());
+      return response;
+    })
+    .catch(() => null);
+
+  if (cached) {
+    event.waitUntil(networkPromise);
+    return cached;
+  }
+
+  const response = await networkPromise;
+  if (response) return response;
+  return fetch(request);
 }
 
 self.addEventListener('fetch', event => {
@@ -109,7 +143,7 @@ self.addEventListener('fetch', event => {
   }
 
   if (isHtmlRequest(request)) {
-    event.respondWith(networkFirst(request));
+    event.respondWith(htmlAppLike(request, event));
     return;
   }
 
@@ -123,9 +157,10 @@ self.addEventListener('fetch', event => {
     url.pathname.endsWith('.png') ||
     url.pathname.endsWith('.jpg') ||
     url.pathname.endsWith('.jpeg') ||
+    url.pathname.endsWith('.webp') ||
     url.pathname.endsWith('.svg') ||
     url.pathname.endsWith('.otf')
   ) {
-    event.respondWith(staleWhileRevalidate(request));
+    event.respondWith(staleWhileRevalidate(request, event));
   }
 });

@@ -1,8 +1,8 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_flowrules1';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260523_appfeel1';
   const ICON_BASE = './assets/bottom-nav-bar/';
-  const ICON_VERSION = '20260520_flowrules1';
+  const ICON_VERSION = '20260523_appfeel1';
 
   const hiddenPages = new Set([
     'login',
