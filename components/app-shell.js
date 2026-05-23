@@ -12,8 +12,10 @@
   const VIEW_PAGES = new Set(['menu.html', 'cart.html', 'track.html', 'profile.html']);
   const FULLSCREEN_PAGES = new Set(['track-fullscreen.html', 'order_placed.html', 'login.html']);
   const DEFAULT_ROUTE = 'menu';
+
   let currentRoute = '';
   let routeTimer = null;
+  let shellMode = { location: false, fullscreen: false, noNav: false };
 
   function authOk() {
     try {
@@ -24,7 +26,7 @@
         localStorage.getItem('TIFFIN_AUTH') ||
         localStorage.getItem('authUser')
       );
-    } catch (error) {
+    } catch (_) {
       return false;
     }
   }
@@ -39,15 +41,52 @@
     const absolute = new URL(url, location.href);
     absolute.searchParams.set('embedded', '1');
     absolute.searchParams.set('shell', '1');
+    absolute.searchParams.set('_shellv', '20260523_stable2');
     return `${absolute.pathname.split('/').pop()}${absolute.search}${absolute.hash}`;
   }
 
   function setLoading(isLoading) {
+    // Keep route switching visually stable without showing a loading page overlay.
     document.body.classList.toggle('cf-shell-loading', Boolean(isLoading));
   }
 
-  function clearModeFlags() {
-    document.body.classList.remove('cf-shell-location-mode', 'cf-shell-fullscreen-child', 'cf-shell-no-nav-route');
+  function requestChildLayout(reason = 'layout') {
+    const payload = { type: 'cbe:shell-layout', reason, route: currentRoute };
+    [0, 60, 160, 360].forEach((delay) => {
+      window.setTimeout(() => {
+        try { frame.contentWindow.postMessage(payload, '*'); } catch (_) {}
+        try {
+          const CustomEventCtor = frame.contentWindow.CustomEvent || CustomEvent;
+          frame.contentWindow.dispatchEvent(new CustomEventCtor('cbe:shell-layout', { detail: payload }));
+        } catch (_) {}
+        try {
+          if (typeof frame.contentWindow.__cbeShellResize === 'function') frame.contentWindow.__cbeShellResize(reason);
+        } catch (_) {}
+      }, delay);
+    });
+  }
+
+  function applyShellMode(next = {}, reason = 'mode') {
+    const merged = {
+      location: Boolean(next.location),
+      fullscreen: Boolean(next.fullscreen),
+      noNav: Boolean(next.noNav)
+    };
+
+    const changed =
+      merged.location !== shellMode.location ||
+      merged.fullscreen !== shellMode.fullscreen ||
+      merged.noNav !== shellMode.noNav;
+
+    shellMode = merged;
+    document.body.classList.toggle('cf-shell-location-mode', shellMode.location);
+    document.body.classList.toggle('cf-shell-fullscreen-child', shellMode.fullscreen);
+    document.body.classList.toggle('cf-shell-no-nav-route', shellMode.noNav);
+
+    if (changed) {
+      syncBottomNav();
+      requestChildLayout(reason);
+    }
   }
 
   function syncBottomNav() {
@@ -59,33 +98,28 @@
 
   function loadRoute(route, options = {}) {
     const safeRoute = ROUTES[route] ? route : DEFAULT_ROUTE;
-    const baseUrl = ROUTES[safeRoute];
     currentRoute = safeRoute;
     if (location.hash !== `#${safeRoute}` && !options.skipHash) {
       history.replaceState(null, '', `#${safeRoute}`);
     }
-    clearModeFlags();
-    document.body.classList.toggle('cf-shell-no-nav-route', safeRoute === 'profile');
+    applyShellMode({ location: false, fullscreen: false, noNav: safeRoute === 'profile' }, 'route-start');
     setLoading(true);
-    frame.src = withEmbedded(baseUrl);
+    frame.src = withEmbedded(ROUTES[safeRoute]);
     syncBottomNav();
   }
 
+  function getFrameUrl() {
+    try { return new URL(frame.contentWindow.location.href); } catch (_) { return null; }
+  }
+
   function pathNameOfFrame() {
-    try {
-      const href = frame.contentWindow.location.href;
-      return new URL(href).pathname.split('/').pop() || '';
-    } catch (error) {
-      return '';
-    }
+    const url = getFrameUrl();
+    return url ? (url.pathname.split('/').pop() || '') : '';
   }
 
   function frameSearchParams() {
-    try {
-      return new URL(frame.contentWindow.location.href).searchParams;
-    } catch (error) {
-      return new URLSearchParams();
-    }
+    const url = getFrameUrl();
+    return url ? url.searchParams : new URLSearchParams();
   }
 
   function ensureEmbeddedForViewPage() {
@@ -97,16 +131,37 @@
       if (url.searchParams.get('embedded') === '1') return false;
       url.searchParams.set('embedded', '1');
       url.searchParams.set('shell', '1');
+      url.searchParams.set('_shellv', '20260523_stable2');
       frame.src = `${page}${url.search}${url.hash}`;
       return true;
-    } catch (error) {
+    } catch (_) {
       return false;
     }
   }
 
+  function routeForFramePage(page, url) {
+    if (page === 'cart.html') return 'cart';
+    if (page === 'track.html') return 'track';
+    if (page === 'profile.html') return 'profile';
+    if (page === 'menu.html') {
+      const params = url ? url.searchParams : new URLSearchParams();
+      const returnTo = (params.get('returnTo') || params.get('source') || '').toLowerCase();
+      const isLocation = params.get('openLocation') === '1' || params.get('forceLocation') === '1' || returnTo;
+      if (isLocation) {
+        if (returnTo.startsWith('cart')) return 'cart';
+        if (returnTo === 'profile') return 'profile';
+        if (returnTo === 'track') return 'track';
+        return currentRoute || DEFAULT_ROUTE;
+      }
+      return 'menu';
+    }
+    return '';
+  }
+
   function syncHashFromFrame() {
-    const page = pathNameOfFrame();
-    const route = page === 'cart.html' ? 'cart' : page === 'track.html' ? 'track' : page === 'profile.html' ? 'profile' : page === 'menu.html' ? 'menu' : '';
+    const url = getFrameUrl();
+    const page = url ? (url.pathname.split('/').pop() || '') : '';
+    const route = routeForFramePage(page, url);
     if (!route) return;
     currentRoute = route;
     if (location.hash !== `#${route}`) history.replaceState(null, '', `#${route}`);
@@ -120,13 +175,13 @@
       const url = new URL(frame.contentWindow.location.href);
       window.location.href = `${page}${url.search}${url.hash}`;
       return true;
-    } catch (error) {
+    } catch (_) {
       window.location.href = page;
       return true;
     }
   }
 
-  function syncLocationMode() {
+  function detectLocationMode() {
     let isLocation = false;
     let isFullscreenChild = false;
     try {
@@ -135,6 +190,7 @@
       const body = doc && doc.body;
       isLocation =
         params.get('openLocation') === '1' ||
+        params.get('forceLocation') === '1' ||
         Boolean(body && (
           body.classList.contains('map-screen-open') ||
           body.classList.contains('is-location-flow-open') ||
@@ -143,15 +199,21 @@
         ));
       const page = pathNameOfFrame();
       isFullscreenChild = page === 'track-fullscreen.html' || page === 'order_placed.html';
-    } catch (error) {
+    } catch (_) {
       isLocation = false;
       isFullscreenChild = false;
     }
+    return { location: isLocation, fullscreen: isFullscreenChild, noNav: currentRoute === 'profile' };
+  }
 
-    document.body.classList.toggle('cf-shell-location-mode', isLocation);
-    document.body.classList.toggle('cf-shell-fullscreen-child', isFullscreenChild);
-    document.body.classList.toggle('cf-shell-no-nav-route', currentRoute === 'profile');
-    syncBottomNav();
+  function syncLocationMode(reason = 'poll') {
+    applyShellMode(detectLocationMode(), reason);
+  }
+
+  function shellNavigate(route) {
+    if (!ROUTES[route]) return;
+    if (route === currentRoute && pathNameOfFrame() === ROUTES[route]) return;
+    window.location.hash = `#${route}`;
   }
 
   function installChildBridge() {
@@ -161,11 +223,16 @@
       if (!doc || doc.__cfShellBridgeInstalled) return;
       doc.__cfShellBridgeInstalled = true;
 
-      win.openCbeProfile = () => {
-        window.location.hash = '#profile';
+      win.openCbeProfile = () => shellNavigate('profile');
+      win.CBEAppShell = {
+        navigate: shellNavigate,
+        setLocationMode(open) {
+          applyShellMode({ location: Boolean(open), fullscreen: false, noNav: currentRoute === 'profile' }, 'child-api');
+        },
+        refresh() { syncLocationMode('child-refresh'); }
       };
 
-      const observer = new MutationObserver(() => syncLocationMode());
+      const observer = new MutationObserver(() => syncLocationMode('child-mutation'));
       if (doc.body) {
         observer.observe(doc.body, { attributes: true, attributeFilter: ['class', 'data-bottom-nav'] });
       }
@@ -174,12 +241,13 @@
         const anchor = event.target.closest?.('a[href]');
         if (!anchor) return;
         const href = anchor.getAttribute('href') || '';
-        if (href === 'menu.html' || href === './menu.html') { event.preventDefault(); window.location.hash = '#menu'; }
-        if (href === 'cart.html' || href === './cart.html') { event.preventDefault(); window.location.hash = '#cart'; }
-        if (href === 'track.html' || href === './track.html') { event.preventDefault(); window.location.hash = '#track'; }
-        if (href === 'profile.html' || href === './profile.html') { event.preventDefault(); window.location.hash = '#profile'; }
+        const clean = href.split('?')[0].split('#')[0].replace(/^\.\//, '');
+        if (clean === 'menu.html') { event.preventDefault(); shellNavigate('menu'); }
+        if (clean === 'cart.html') { event.preventDefault(); shellNavigate('cart'); }
+        if (clean === 'track.html') { event.preventDefault(); shellNavigate('track'); }
+        if (clean === 'profile.html') { event.preventDefault(); shellNavigate('profile'); }
       }, true);
-    } catch (error) {
+    } catch (_) {
       // Same-origin access can fail only in unusual browser modes. Ignore safely.
     }
   }
@@ -189,29 +257,33 @@
     if (ensureEmbeddedForViewPage()) return;
     syncHashFromFrame();
     installChildBridge();
-    syncLocationMode();
+    syncLocationMode('frame-load');
     setLoading(false);
+    requestChildLayout('frame-load');
   });
 
   window.addEventListener('hashchange', () => {
     const route = routeFromHash();
-    if (route !== currentRoute) loadRoute(route, { skipHash: true });
+    if (route !== currentRoute || pathNameOfFrame() !== ROUTES[route]) loadRoute(route, { skipHash: true });
   });
 
   window.addEventListener('cbe:shell-route', (event) => {
     const route = event.detail && event.detail.route;
-    if (route && ROUTES[route]) loadRoute(route);
+    if (route && ROUTES[route]) shellNavigate(route);
   });
 
   window.addEventListener('message', (event) => {
     const data = event.data || {};
     if (data.type === 'cbe:navigate' && ROUTES[data.route]) {
-      window.location.hash = `#${data.route}`;
+      shellNavigate(data.route);
+    }
+    if (data.type === 'cbe:location-mode') {
+      applyShellMode({ location: Boolean(data.open), fullscreen: false, noNav: currentRoute === 'profile' }, 'child-location-message');
     }
     if (data.type === 'cbe:bottom-nav-refresh') syncBottomNav();
   });
 
-  routeTimer = window.setInterval(syncLocationMode, 300);
+  routeTimer = window.setInterval(() => syncLocationMode('interval'), 500);
   window.addEventListener('pagehide', () => {
     if (routeTimer) window.clearInterval(routeTimer);
   });

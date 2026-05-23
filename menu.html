@@ -3287,6 +3287,64 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
   }
 </style>
 
+<style id="cf-app-shell-location-layout-fixes">
+  html.cf-embedded body.map-screen-open,
+  html.cf-embedded body.is-location-flow-open {
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100svh !important;
+    min-height: 100dvh !important;
+    overflow: hidden !important;
+  }
+
+  html.cf-embedded .customer-map-screen {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    z-index: 99999 !important;
+    background: #12130F !important;
+  }
+
+  html.cf-embedded .customer-map-screen.is-open {
+    display: flex !important;
+  }
+
+  html.cf-embedded .map-address-shell,
+  html.cf-embedded .address-details-shell {
+    width: min(390px, 100vw) !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    min-height: 100vh !important;
+    min-height: 100svh !important;
+    min-height: 100dvh !important;
+    max-height: 100dvh !important;
+  }
+
+  html.cf-embedded .map-address-canvas {
+    height: 100vh !important;
+    height: 100svh !important;
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+  }
+
+  html.cf-embedded .map-address-bottom-section {
+    bottom: calc(-162px + env(safe-area-inset-bottom)) !important;
+  }
+
+  html.cf-embedded .map-address-bottom-section.is-expanded {
+    bottom: 0 !important;
+  }
+</style>
+
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(136px + env(safe-area-inset-bottom));">
@@ -3828,6 +3886,45 @@ let mapSearchDebounceTimer = null;
 let mapSearchRequestId = 0;
 let currentLocationState = null;
 let detailsPreviewMapInstance = null;
+
+
+function resizeLocationMapsForShell(reason = "shell") {
+  try {
+    if (locationOlaMapInstance && typeof locationOlaMapInstance.resize === "function") {
+      locationOlaMapInstance.resize();
+    }
+  } catch (_) {}
+
+  try {
+    if (detailsPreviewMapInstance && typeof detailsPreviewMapInstance.resize === "function") {
+      detailsPreviewMapInstance.resize();
+    }
+  } catch (_) {}
+}
+
+window.__cbeShellResize = resizeLocationMapsForShell;
+
+function notifyShellLocationMode(isOpen, reason = "location") {
+  try {
+    if (window.parent && window.parent !== window) {
+      window.parent.postMessage({ type: "cbe:location-mode", open: Boolean(isOpen), reason }, "*");
+    }
+  } catch (_) {}
+
+  [0, 80, 180, 360].forEach(delay => {
+    setTimeout(() => resizeLocationMapsForShell(reason), delay);
+  });
+}
+
+window.addEventListener("message", event => {
+  if (event && event.data && event.data.type === "cbe:shell-layout") {
+    resizeLocationMapsForShell(event.data.reason || "shell-message");
+  }
+});
+
+window.addEventListener("cbe:shell-layout", event => {
+  resizeLocationMapsForShell(event?.detail?.reason || "shell-event");
+});
 
 
 const DEFAULT_CBE_LOCATION = {
@@ -5136,6 +5233,7 @@ function completeLocationReturnIfNeeded() {
   const target = getLocationReturnTarget();
   if (!target) return false;
 
+  notifyShellLocationMode(false, "complete-location-return");
   const keepCheckout = target.includes("startPayment=1");
   clearLocationFlowState({ keepCheckout });
   window.location.replace(target);
@@ -5154,9 +5252,11 @@ function shouldAutoOpenLocationMap() {
 function openLocationMapScreen() {
   if (!locationMapScreen) return;
 
+  notifyShellLocationMode(true, "open-map-before-layout");
   locationMapScreen.classList.add("is-open");
   locationMapScreen.setAttribute("aria-hidden", "false");
   document.body.classList.add("map-screen-open");
+  notifyShellLocationMode(true, "open-map-after-body-class");
   refreshCommonBottomNav();
   showLocationMapStep();
   collapseSavedAddressDrawer();
@@ -5180,6 +5280,7 @@ function closeLocationMapScreen() {
   const backTarget = getLocationBackTarget();
 
   if (backTarget) {
+    notifyShellLocationMode(false, "close-map-back-target");
     clearLocationFlowState();
     window.location.replace(backTarget);
     return;
@@ -5190,6 +5291,7 @@ function closeLocationMapScreen() {
   locationMapScreen.classList.remove("is-open");
   locationMapScreen.setAttribute("aria-hidden", "true");
   document.body.classList.remove("map-screen-open", "is-location-flow-open", "no-bottom-nav");
+  notifyShellLocationMode(false, "close-map-inline");
   closeMapSearch(false);
   showLocationMapStep();
   clearLocationFlowState();
@@ -5200,6 +5302,7 @@ function closeLocationMapScreen() {
 function showLocationMapStep() {
   if (!locationMapScreen) return;
 
+  notifyShellLocationMode(true, "show-map-step");
   locationMapScreen.classList.remove("is-details-step");
   locationMapScreen.classList.add("is-map-step");
 
@@ -5211,6 +5314,7 @@ function showLocationMapStep() {
 function showLocationDetailsStep() {
   if (!locationMapScreen) return;
 
+  notifyShellLocationMode(true, "show-details-step");
   locationMapScreen.classList.remove("is-map-step");
   locationMapScreen.classList.add("is-details-step");
 }
@@ -8147,8 +8251,8 @@ if (shouldAutoOpenLocationMap()) {
 </script>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260523_appshell1"></script>
-<script src="pwa-speed.js?v=20260523_appshell1" defer></script>
+<script src="components/bottom-nav.js?v=20260523_stable2"></script>
+<script src="pwa-speed.js?v=20260523_stable2" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">

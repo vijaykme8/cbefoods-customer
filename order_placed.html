@@ -384,10 +384,10 @@ button {
       </div>
 
       <div class="cta-back">
-        <a class="track-order-button" href="track.html" id="trackOrderButton">
+        <a class="track-order-button" href="app.html#track" id="trackOrderButton">
           <span>Track order now</span>
         </a>
-        <a class="back-to-menu" href="menu.html">back to menu</a>
+        <a class="back-to-menu" href="app.html#menu">back to menu</a>
       </div>
     </section>
   </main>
@@ -542,11 +542,11 @@ button {
   const orderId = getOrderId(order);
 
   if (trackOrderButton && orderId && orderId !== '—') {
-    trackOrderButton.href = 'track.html?orderId=' + encodeURIComponent(orderId);
+    trackOrderButton.href = 'app.html#track';
   }
 
   document.getElementById('closeButton').addEventListener('click', () => {
-    window.location.href = 'menu.html';
+    window.location.href = 'app.html#menu';
   });
 })();
 </script>

@@ -4,19 +4,19 @@
   --cf-shell-bg: #12130F;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html,
 body {
   width: 100%;
+  height: 100%;
   min-height: 100%;
   margin: 0;
   background: var(--cf-shell-bg);
   overflow: hidden;
   touch-action: manipulation;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
 }
 
 body {
@@ -26,24 +26,34 @@ body {
 .cf-app-shell {
   position: relative;
   width: min(var(--cf-shell-width), 100vw);
+  height: 100vh;
+  height: 100svh;
   height: 100dvh;
+  min-height: 100vh;
+  min-height: 100svh;
   min-height: 100dvh;
   margin: 0 auto;
   background: var(--cf-shell-bg);
   overflow: hidden;
+  isolation: isolate;
 }
 
 .cf-app-frame-wrap {
   position: absolute;
-  inset: 0 0 var(--cf-shell-bottom-nav) 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: var(--cf-shell-bottom-nav);
   width: 100%;
   background: var(--cf-shell-bg);
   overflow: hidden;
+  z-index: 1;
 }
 
 .cf-app-frame {
   width: 100%;
   height: 100%;
+  min-height: 100%;
   display: block;
   border: 0;
   background: var(--cf-shell-bg);
@@ -56,18 +66,28 @@ body {
   background: var(--cf-shell-bg);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 140ms ease;
 }
 
-body.cf-shell-loading .cf-app-loader {
-  opacity: 1;
-}
-
+/* Layout modes where the child page needs the full device height. */
 body.cf-shell-location-mode .cf-app-frame-wrap,
 body.cf-shell-fullscreen-child .cf-app-frame-wrap,
 body.cf-shell-no-nav-route .cf-app-frame-wrap {
+  top: 0;
+  right: 0;
   bottom: 0;
+  left: 0;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
   z-index: 2300;
+}
+
+body.cf-shell-location-mode .cf-app-frame,
+body.cf-shell-fullscreen-child .cf-app-frame,
+body.cf-shell-no-nav-route .cf-app-frame {
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
 }
 
 body.cf-shell-location-mode #bottomNavMount,
