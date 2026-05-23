@@ -1,12 +1,10 @@
 (() => {
-  const SPEED_VERSION = '20260523_appshell1';
+  const SPEED_VERSION = '20260512_speed1';
 
   const CORE_PAGES = [
-    'app.html',
     'menu.html',
     'cart.html',
-    'track.html',
-    'profile.html'
+    'track.html'
   ];
 
   const IMAGE_ASSETS = [
@@ -101,10 +99,8 @@
     CORE_PAGES.forEach(page => prefetchUrl(page, 'document'));
     IMAGE_ASSETS.forEach(preloadImage);
     FONT_ASSETS.forEach(font => prefetchUrl(font, 'font'));
-    prefetchUrl('components/app-shell.css?v=20260523_appshell1', 'style');
-    prefetchUrl('components/app-shell.js?v=20260523_appshell1', 'script');
-    prefetchUrl('components/bottom-nav.css?v=20260523_appshell1', 'style');
-    prefetchUrl('components/bottom-nav.js?v=20260523_appshell1', 'script');
+    prefetchUrl('components/bottom-nav.css?v=20260511_nav2', 'style');
+    prefetchUrl('components/bottom-nav.js?v=20260511_nav2', 'script');
     prefetchUrl('firebase-config.js', 'script');
     prefetchUrl('firebase-mvp.js', 'script');
   }

@@ -1648,11 +1648,11 @@ function boot(){bindFrame77RiderActions();hydrate();initMap();renderMap()}
 function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order);if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists)return;const cloud=mergeOrder(order,{id:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>console.warn('Track live order sync failed',err))}catch(err){console.warn('Track live order listener failed',err)}}
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-layer="back-button"]')){
-    window.location.href='app.html#track';
+    window.location.href='track.html';
     return;
   }
   if(e.target.closest('[data-layer="back to menu-button"]')){
-    window.location.href='app.html#menu';
+    window.location.href='menu.html';
   }
 },true);
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','pending_order','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);

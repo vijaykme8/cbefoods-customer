@@ -3,46 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
 <meta name="theme-color" content="#12130F">
 <title>Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest">
-<link rel="stylesheet" href="components/app-shell.css?v=20260523_stable2">
 <script>
-  if (!localStorage.getItem('cust_auth') && !localStorage.getItem('customerAuth') && !localStorage.getItem('TIFFIN_CUSTOMER_AUTH') && !localStorage.getItem('TIFFIN_AUTH') && !localStorage.getItem('authUser')) {
-    window.location.replace('login.html');
-  }
-</script>
-
-<script>
-(function () {
-  const mf = {
-    name: 'Tiffin CBE',
-    short_name: 'Tiffin',
-    start_url: './app.html#menu',
-    scope: './',
-    display: 'standalone',
-    background_color: '#12130F',
-    theme_color: '#12130F'
-  };
-  const blob = new Blob([JSON.stringify(mf)], { type: 'application/json' });
-  const manifest = document.getElementById('pwa-manifest');
-  if (manifest) manifest.href = URL.createObjectURL(blob);
-})();
+  // App-shell rollback safety: if any old PWA/session opens app.html, return to stable page flow.
+  const hash = (location.hash || '').replace('#','').split('?')[0];
+  const target = hash === 'cart' ? 'cart.html' : hash === 'track' ? 'track.html' : hash === 'profile' ? 'profile.html' : 'menu.html';
+  location.replace(target);
 </script>
 </head>
-<body>
-  <main class="cf-app-shell" aria-label="Coimbatore Foods app">
-    <section class="cf-app-frame-wrap" aria-live="polite">
-      <iframe id="cfAppFrame" class="cf-app-frame" title="Coimbatore Foods screen"></iframe>
-      <div class="cf-app-loader" aria-hidden="true"></div>
-    </section>
-    <div id="bottomNavMount"></div>
-  </main>
-  <script src="components/bottom-nav.js?v=20260523_stable2"></script>
-  <script src="components/app-shell.js?v=20260523_stable2"></script>
-  <script src="pwa-speed.js?v=20260523_stable2" defer></script>
-</body>
+<body></body>
 </html>

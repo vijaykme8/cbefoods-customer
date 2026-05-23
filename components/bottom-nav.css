@@ -23,8 +23,8 @@ body.has-bottom-nav {
   transform: translateX(-50%);
   width: 390px;
   max-width: 100vw;
-  height: 64px;
-  padding: 10px 24px 0;
+  height: calc(64px + env(safe-area-inset-bottom));
+  padding: 10px 24px env(safe-area-inset-bottom);
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -49,7 +49,6 @@ body.has-bottom-nav {
   text-decoration: none;
   flex: 0 0 auto;
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
 }
 
 .cf-bottom-nav__icon {
@@ -96,10 +95,10 @@ body.has-bottom-nav {
 body.is-location-flow-open .cf-bottom-nav,
 body.map-screen-open .cf-bottom-nav,
 body.no-bottom-nav .cf-bottom-nav,
-body[data-bottom-nav="off"] .cf-bottom-nav,
-body.cf-embedded-page .cf-bottom-nav {
+body[data-bottom-nav="off"] .cf-bottom-nav {
   display: none !important;
 }
+
 
 .cf-bottom-nav__item--cart {
   position: relative;
@@ -120,7 +119,6 @@ body.cf-embedded-page .cf-bottom-nav {
   font-size: 10px;
   font-weight: 600;
   line-height: 18px;
-  display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;

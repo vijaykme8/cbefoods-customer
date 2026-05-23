@@ -1,23 +1,18 @@
-const CBE_CACHE_VERSION = '20260523_stable2';
+const CBE_CACHE_VERSION = '20260523_rollback_stable_pages1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   './',
-  './app.html',
   './menu.html',
   './cart.html',
   './track.html',
-  './profile.html',
-  './order_placed.html',
-  './components/app-shell.css?v=20260523_stable2',
-  './components/app-shell.js?v=20260523_stable2',
-  './components/bottom-nav.css?v=20260523_stable2',
-  './components/bottom-nav.js?v=20260523_stable2',
-  './pwa-speed.js?v=20260512_speed1',
+  './components/bottom-nav.css?v=20260523_rollback1',
+  './components/bottom-nav.js?v=20260523_rollback1',
+  './pwa-speed.js?v=20260523_rollback1',
   './firebase-config.js',
   './firebase-mvp.js',
-  './ola-map-v4.js?v=darkmap1',
+  './ola-map-v4.js?v=darkmap1rollback',
   './assets/cart/dish-img.png',
   './assets/menu/img/Protein egg lunch-img.png',
   './assets/menu/img/Protein chicken lunch-img.png',
@@ -81,7 +76,7 @@ async function networkFirst(request) {
   } catch {
     const cached = await cache.match(request);
     if (cached) return cached;
-    return caches.match('./app.html') || caches.match('./menu.html');
+    return caches.match('./menu.html');
   }
 }
 

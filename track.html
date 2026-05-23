@@ -1663,61 +1663,6 @@ body {
   }
 </style>
 
-
-<script id="cf-embedded-boot">
-  (function () {
-    var params = new URLSearchParams(window.location.search || '');
-    if (params.get('embedded') === '1' || window.self !== window.top) {
-      document.documentElement.classList.add('cf-embedded');
-      document.addEventListener('DOMContentLoaded', function () {
-        document.body.classList.add('cf-embedded-page');
-        document.body.classList.remove('has-bottom-nav');
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage({ type: 'cbe:bottom-nav-refresh' }, '*');
-        }
-      });
-    }
-  })();
-</script>
-<style id="cf-embedded-view-fixes">
-  html.cf-embedded,
-  html.cf-embedded body {
-    background: #12130F !important;
-  }
-
-  body.cf-embedded-page #bottomNavMount,
-  body.cf-embedded-page .cf-bottom-nav {
-    display: none !important;
-  }
-
-  body.cf-embedded-page.has-bottom-nav {
-    --bottom-nav-height: 0px !important;
-  }
-
-  body.cf-embedded-page .floating-cart-card,
-  body.cf-embedded-page .floating-added-card {
-    bottom: 12px !important;
-  }
-
-  body.cf-embedded-page .app.has-floating-cart,
-  body.cf-embedded-page .cf-figma-menu-root.has-floating-cart {
-    padding-bottom: 92px !important;
-  }
-
-  body.cf-embedded-page .cart-shell:not(.is-empty) .placeorder-section {
-    bottom: 0 !important;
-  }
-
-  body.cf-embedded-page .cart-shell:not(.is-empty) .cart-main,
-  body.cf-embedded-page .cart-shell:not(.is-empty) .cart-content {
-    padding-bottom: 116px !important;
-  }
-
-  body.cf-embedded-page .cart-shell.is-empty .placeorder-section {
-    display: none !important;
-  }
-</style>
-
 </head>
 
 <body>
@@ -1824,7 +1769,7 @@ body {
 </main>
 
 <div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260523_stable2"></script>
+<script src="components/bottom-nav.js?v=20260520_stateicons2"></script>
 
 <script>
 (function setupTrackListScreen() {
@@ -3027,7 +2972,7 @@ body {
 })();
 </script>
 
-<script src="pwa-speed.js?v=20260523_stable2" defer></script>
+<script src="pwa-speed.js?v=20260512_speed1" defer></script>
 
 <script id="cf-mobile-zoom-lock-script">
   (function () {
