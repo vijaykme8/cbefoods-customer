@@ -1,8 +1,8 @@
 (() => {
   const STYLE_ID = 'cfBottomNavCss';
-  const CSS_HREF = 'components/bottom-nav.css?v=20260520_flowrules1';
+  const CSS_HREF = 'components/bottom-nav.css?v=20260523_appshell1';
   const ICON_BASE = './assets/bottom-nav-bar/';
-  const ICON_VERSION = '20260520_flowrules1';
+  const ICON_VERSION = '20260523_appshell1';
 
   const hiddenPages = new Set([
     'login',
@@ -28,7 +28,8 @@
       key: 'menu',
       label: 'Menu',
       href: 'menu.html',
-      match: ['menu', 'index', 'home', ''],
+      shellHref: 'app.html#menu',
+      match: ['menu', 'index', 'home', 'app', ''],
       modifier: 'menu',
       activeIcon: 'active-search-icon.svg',
       inactiveIcon: 'inactive-search-icon.svg'
@@ -37,6 +38,7 @@
       key: 'cart',
       label: 'Cart',
       href: 'cart.html',
+      shellHref: 'app.html#cart',
       match: ['cart'],
       modifier: 'cart',
       activeIcon: 'active-cart-icon.svg',
@@ -46,6 +48,7 @@
       key: 'track',
       label: 'Track orders',
       href: 'track.html',
+      shellHref: 'app.html#track',
       match: ['track', 'track-order', 'orders'],
       modifier: 'track',
       activeIcon: 'active-track-icon.svg',
@@ -53,16 +56,38 @@
     }
   ];
 
+  function isEmbeddedPage() {
+    const params = new URLSearchParams(window.location.search || '');
+    return params.get('embedded') === '1' || window.self !== window.top;
+  }
+
+  function isShellPage() {
+    const raw = (window.location.pathname.split('/').pop() || '').toLowerCase();
+    return raw === 'app.html' || raw === 'app';
+  }
+
+  function shellRouteFromHash() {
+    if (!isShellPage()) return '';
+    const value = (window.location.hash || '#menu').replace(/^#/, '').split('?')[0].toLowerCase();
+    if (value === 'cart') return 'cart';
+    if (value === 'track') return 'track';
+    if (value === 'profile') return 'profile';
+    return 'menu';
+  }
+
   function currentRouteName() {
+    if (isShellPage()) return shellRouteFromHash();
     const raw = window.location.pathname.split('/').pop() || '';
     return raw.replace(/\.html$/i, '').toLowerCase();
   }
 
   function shouldHideBottomNav() {
     const route = currentRouteName();
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(window.location.search || '');
 
     return (
+      isEmbeddedPage() ||
+      route === 'profile' ||
       hiddenPages.has(route) ||
       params.get('openLocation') === '1' ||
       document.body.classList.contains('no-bottom-nav') ||
@@ -74,8 +99,9 @@
 
   function activeKey() {
     const route = currentRouteName();
-    const match = navItems.find((item) => item.match.includes(route));
-    return match ? match.key : 'menu';
+    if (route === 'cart') return 'cart';
+    if (route === 'track') return 'track';
+    return 'menu';
   }
 
   function ensureCss() {
@@ -103,15 +129,8 @@
 
   function readCartQtyFromStorage() {
     let raw = null;
-
-    try {
-      raw = localStorage.getItem('cart');
-    } catch (error) {
-      raw = null;
-    }
-
+    try { raw = localStorage.getItem('cart'); } catch (error) { raw = null; }
     if (!raw) return 0;
-
     try {
       const parsed = JSON.parse(raw);
       const items = Array.isArray(parsed)
@@ -119,7 +138,6 @@
         : parsed && typeof parsed === 'object'
           ? Object.values(parsed)
           : [];
-
       return items.reduce((sum, item) => {
         if (!item || typeof item !== 'object') return sum;
         return sum + (Number(item.qty || item.quantity || 0) || 0);
@@ -131,12 +149,8 @@
 
   function updateBadge(totalQty) {
     const qty = Math.max(0, Number(totalQty ?? readCartQtyFromStorage()) || 0);
-    const cartNav =
-      document.querySelector('.cf-bottom-nav__item--cart') ||
-      document.querySelector('[data-nav-key="cart"]');
-
+    const cartNav = document.querySelector('.cf-bottom-nav__item--cart') || document.querySelector('[data-nav-key="cart"]');
     if (!cartNav) return;
-
     let badge = cartNav.querySelector('.cart-badge');
     if (!badge) {
       badge = document.createElement('span');
@@ -144,7 +158,6 @@
       badge.setAttribute('aria-hidden', 'true');
       cartNav.appendChild(badge);
     }
-
     if (qty <= 0) {
       badge.style.display = 'none';
       badge.textContent = '';
@@ -156,9 +169,12 @@
     }
   }
 
+  function navHref(item) {
+    return isEmbeddedPage() ? item.href : item.shellHref;
+  }
+
   function renderBottomNav() {
     ensureCss();
-
     let mount = document.getElementById('bottomNavMount');
     if (!mount) {
       mount = document.createElement('div');
@@ -174,7 +190,6 @@
 
     const active = activeKey();
     const currentCartQty = readCartQtyFromStorage();
-
     mount.innerHTML = `
       <nav class="BottomNavBar cf-bottom-nav" data-layer="bottom nav bar" aria-label="Bottom navigation">
         ${navItems.map((item, index) => {
@@ -185,12 +200,11 @@
           const badgeMarkup = item.key === 'cart'
             ? `<span class="cart-badge cf-bottom-nav__badge" aria-hidden="true" style="display:${currentCartQty > 0 ? 'flex' : 'none'}">${currentCartQty > 99 ? '99+' : currentCartQty || ''}</span>`
             : '';
-
           return `
             <a
               class="${navClass} cf-bottom-nav__item ${modifierClass} ${isActive ? 'is-active' : 'is-inactive'}"
               data-layer="nav ${index + 1}"
-              href="${item.href}"
+              href="${navHref(item)}"
               ${isActive ? 'aria-current="page"' : ''}
               aria-label="${escapeAttr(item.label)}"
               data-nav-key="${item.key}"
@@ -200,12 +214,9 @@
               <span class="Icon cf-bottom-nav__icon" data-layer="icon">${iconMarkup(item, isActive)}</span>
               ${badgeMarkup}
               <span class="${labelClass} cf-bottom-nav__label" data-layer="${escapeAttr(item.label)}">${item.label}</span>
-            </a>
-          `;
+            </a>`;
         }).join('')}
-      </nav>
-    `;
-
+      </nav>`;
     document.body.classList.add('has-bottom-nav');
     updateBadge(currentCartQty);
   }
@@ -214,49 +225,42 @@
     window.requestAnimationFrame(() => updateBadge());
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderBottomNav, { once: true });
-  } else {
-    renderBottomNav();
+  function installShellClickHandler() {
+    if (!isShellPage()) return;
+    document.addEventListener('click', (event) => {
+      const link = event.target.closest?.('.cf-bottom-nav__item');
+      if (!link) return;
+      const key = link.getAttribute('data-nav-key');
+      if (!key) return;
+      event.preventDefault();
+      const nextHash = key === 'cart' ? '#cart' : key === 'track' ? '#track' : '#menu';
+      if (window.location.hash !== nextHash) {
+        window.location.hash = nextHash;
+      } else {
+        window.dispatchEvent(new CustomEvent('cbe:shell-route', { detail: { route: key } }));
+      }
+      renderBottomNav();
+    });
   }
 
-  window.addEventListener('pageshow', () => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => { renderBottomNav(); installShellClickHandler(); }, { once: true });
+  } else {
     renderBottomNav();
-    refreshSoon();
-  });
+    installShellClickHandler();
+  }
+
+  window.addEventListener('hashchange', renderBottomNav);
+  window.addEventListener('pageshow', () => { renderBottomNav(); refreshSoon(); });
   window.addEventListener('popstate', renderBottomNav);
-  window.addEventListener('storage', (event) => {
-    if (!event.key || event.key === 'cart') updateBadge();
-  });
-  document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) updateBadge();
-  });
+  window.addEventListener('storage', (event) => { if (!event.key || event.key === 'cart') updateBadge(); });
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) updateBadge(); });
 
   window.CoimbatoreFoodsBottomNav = {
     refresh: renderBottomNav,
     updateBadge,
-    hide() {
-      document.body.dataset.bottomNav = 'off';
-      renderBottomNav();
-    },
-    show() {
-      delete document.body.dataset.bottomNav;
-      renderBottomNav();
-    },
-    debug() {
-      return {
-        route: currentRouteName(),
-        active: activeKey(),
-        cartQty: readCartQtyFromStorage(),
-        iconBase: ICON_BASE,
-        iconVersion: ICON_VERSION,
-        items: navItems.map((item) => ({
-          key: item.key,
-          label: item.label,
-          activeIcon: item.activeIcon,
-          inactiveIcon: item.inactiveIcon
-        }))
-      };
-    }
+    hide() { document.body.dataset.bottomNav = 'off'; renderBottomNav(); },
+    show() { delete document.body.dataset.bottomNav; renderBottomNav(); },
+    debug() { return { route: currentRouteName(), active: activeKey(), cartQty: readCartQtyFromStorage(), shell: isShellPage(), embedded: isEmbeddedPage() }; }
   };
 })();

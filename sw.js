@@ -1,14 +1,19 @@
-const CBE_CACHE_VERSION = '20260520_darkmap1';
+const CBE_CACHE_VERSION = '20260523_appshell1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
 const PRECACHE_URLS = [
   './',
+  './app.html',
   './menu.html',
   './cart.html',
   './track.html',
-  './components/bottom-nav.css?v=20260511_nav2',
-  './components/bottom-nav.js?v=20260511_nav2',
+  './profile.html',
+  './order_placed.html',
+  './components/app-shell.css?v=20260523_appshell1',
+  './components/app-shell.js?v=20260523_appshell1',
+  './components/bottom-nav.css?v=20260523_appshell1',
+  './components/bottom-nav.js?v=20260523_appshell1',
   './pwa-speed.js?v=20260512_speed1',
   './firebase-config.js',
   './firebase-mvp.js',
@@ -76,7 +81,7 @@ async function networkFirst(request) {
   } catch {
     const cached = await cache.match(request);
     if (cached) return cached;
-    return caches.match('./menu.html');
+    return caches.match('./app.html') || caches.match('./menu.html');
   }
 }
 
