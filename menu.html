@@ -3825,6 +3825,49 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root.app.has-floating-cart { padding-bottom:0 !important; }
 </style>
 
+
+<style id="cbe-ui-refine-menu-v4-fixes">
+/* v4 UI fixes from latest review:
+   1) Profile picture must behave like a rounded DP, not a full uncropped image.
+   2) Hero card must keep gradient overlay on top of the image.
+   3) MenuListings needs 10px top padding. */
+.cf-figma-menu-root .UserProfile,
+.cf-figma-menu-root .avatar,
+#menuProfileAvatarImg {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  object-fit: cover !important;
+  display: block !important;
+  background: #12130F !important;
+}
+
+#menuProfileAvatarImg:not(.is-customer-photo),
+#menuProfileAvatarImg.is-customer-photo {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  object-fit: cover !important;
+}
+
+.cf-figma-menu-root .HeroCard {
+  background-color: #FDFDFF !important;
+  background-image:
+    linear-gradient(318deg, rgba(136, 6, 206, 0) 26%, rgba(136, 6, 206, 0.50) 60%),
+    url('assets/menu/img/hero card-img.png') !important;
+  background-size: cover, cover !important;
+  background-position: center, center !important;
+  background-repeat: no-repeat, no-repeat !important;
+}
+
+.cf-figma-menu-root .MenuListings {
+  padding-top: 10px !important;
+  box-sizing: border-box !important;
+}
+</style>
+
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
