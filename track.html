@@ -505,30 +505,9 @@ body {
 
 
 /* =========================================================
-   UI refinement phase: bottom navigation removed app-wide.
+   UI refinement: app-wide navigation removed.
    Keep only natural scroll/safe-area spacing.
 ========================================================= */
-#bottomNavMount,
-.BottomNavBar,
-.cf-bottom-nav,
-[data-layer="nav-search"],
-[data-layer="nav-cart"],
-[data-layer="nav-track"] {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-body.has-bottom-nav {
-  --bottom-nav-height: 0px !important;
-}
-
 #trackEmptyRaw,
 #trackAddedRaw,
 #trackEmptyRaw > [data-layer="Frame 82"],
@@ -561,9 +540,7 @@ body.has-bottom-nav {
   .add-button,
   .CartButton,
   .cart-button,
-  .FloatingTabs > *,
-  .BottomNavBar *,
-  .cf-bottom-nav__item {
+  .FloatingTabs > * {
     touch-action: manipulation;
   }
 
@@ -3006,7 +2983,7 @@ body {
 })();
 </script>
 
-<script src="pwa-speed.js?v=20260524_ui_refine_nonav1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav_clean1" defer></script>
 
 <script id="cf-mobile-zoom-lock-script">
   (function () {

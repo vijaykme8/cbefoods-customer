@@ -53,11 +53,9 @@
 }
 
 
-/* Fixed app bottom layout: bottom nav flush to viewport bottom, place order sits above it */
 :root {
-  --cf-bottom-nav-height: 64px;
-  --cf-placeorder-height: 68px;
-  --cf-cart-bottom-stack: calc(var(--cf-bottom-nav-height) + var(--cf-placeorder-height));
+--cf-placeorder-height: 68px;
+  --cf-cart-bottom-stack: var(--cf-placeorder-height);
 }
 
 html,
@@ -489,7 +487,7 @@ button {
   position: fixed;
   z-index: 2190;
   left: 50%;
-  bottom: var(--cf-bottom-nav-height);
+  bottom: 0px;
   transform: translateX(-50%);
   width: 100%;
   max-width: 390px;
@@ -555,7 +553,7 @@ button {
 .empty-state {
   position: fixed;
   top: 105px;
-  bottom: var(--cf-bottom-nav-height);
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   width: 100%;
@@ -768,7 +766,7 @@ body {
 
 .empty-state {
   top: 117px;
-  bottom: var(--cf-bottom-nav-height);
+  bottom: 0px;
   padding: 50px 24px 24px;
   background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   align-items: center;
@@ -833,7 +831,6 @@ body {
 .cart-shell.is-empty .empty-state {
   display: flex;
 }
-
 
 
 /* 1.2 cart-added refinement */
@@ -1031,28 +1028,10 @@ body {
 
 
 /* Page-level hard guard for PWA bottom spacing */
-#bottomNavMount,
-.cf-bottom-nav {
-  margin: 0 !important;
-}
-
-.cf-bottom-nav {
-  position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: 390px !important;
-  max-width: 100vw !important;
-  height: var(--cf-bottom-nav-height) !important;
-  padding: 10px 24px 0 !important;
-}
-
 .placeorder-section {
-  bottom: var(--cf-bottom-nav-height) !important;
+  bottom: 0px !important;
 }
 
-/* Cart scroll-layer rule: content may scroll behind sticky checkout area; only place order stays above bottom nav */
 .cart-shell:not(.is-empty) .cart-content {
   bottom: 0 !important;
   padding-bottom: calc(var(--cf-cart-bottom-stack) + 24px) !important;
@@ -1063,7 +1042,7 @@ body {
   position: fixed !important;
   left: 50% !important;
   right: auto !important;
-  bottom: var(--cf-bottom-nav-height) !important;
+  bottom: 0px !important;
   transform: translateX(-50%) !important;
   z-index: 2190 !important;
   width: 390px !important;
@@ -1071,32 +1050,9 @@ body {
   margin: 0 !important;
 }
 
-#bottomNavMount,
-.cf-bottom-nav {
-  z-index: 2200 !important;
-}
-
-
-
-/* Final cart bottom layout: like Menu floating cart + common bottom nav */
-#bottomNavMount,
-.cf-bottom-nav {
-  position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: 390px !important;
-  max-width: 100vw !important;
-  height: var(--cf-bottom-nav-height) !important;
-  margin: 0 !important;
-  padding: 10px 24px 0 !important;
-  z-index: 2200 !important;
-}
-
 .cart-shell:not(.is-empty) .cart-content {
   bottom: 0 !important;
-  padding-bottom: calc(var(--cf-bottom-nav-height) + 92px) !important;
+  padding-bottom: calc(92px) !important;
   z-index: 10 !important;
 }
 
@@ -1109,7 +1065,7 @@ body {
   position: fixed !important;
   left: 50% !important;
   right: auto !important;
-  bottom: calc(var(--cf-bottom-nav-height) + 12px) !important;
+  bottom: calc(12px) !important;
   transform: translateX(-50%) !important;
   width: 342px !important;
   max-width: calc(100vw - 48px) !important;
@@ -1161,32 +1117,13 @@ body {
 }
 
 
-
-
-
-/* Final cart place order layout: width 100%, hug height, auto gap, above bottom nav */
-#bottomNavMount,
-.cf-bottom-nav {
-  position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: 390px !important;
-  max-width: 100vw !important;
-  height: var(--cf-bottom-nav-height) !important;
-  margin: 0 !important;
-  padding: 10px 24px 0 !important;
-  z-index: 2200 !important;
-}
-
 .cart-shell.is-empty .placeorder-section {
   display: none !important;
 }
 
 .cart-shell:not(.is-empty) .cart-content {
   bottom: 0 !important;
-  padding-bottom: calc(var(--cf-bottom-nav-height) + 68px + 24px) !important;
+  padding-bottom: calc(68px + 24px) !important;
   z-index: 10 !important;
 }
 
@@ -1199,7 +1136,7 @@ body {
   position: fixed !important;
   left: 50% !important;
   right: auto !important;
-  bottom: var(--cf-bottom-nav-height) !important;
+  bottom: 0px !important;
   transform: translateX(-50%) !important;
   width: 100% !important;
   max-width: 390px !important;
@@ -1277,32 +1214,8 @@ body {
 }
 
 
-
-/* =========================================================
-   UI refinement phase: bottom navigation removed app-wide.
-   Cart CTA now sits at viewport bottom with safe-area spacing.
-========================================================= */
 :root {
-  --cf-bottom-nav-height: 0px !important;
-  --cf-cart-bottom-stack: var(--cf-placeorder-height) !important;
-}
-
-#bottomNavMount,
-.BottomNavBar,
-.cf-bottom-nav {
-  display: none !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  height: 0 !important;
-  min-height: 0 !important;
-  padding: 0 !important;
-  margin: 0 !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-
-body.has-bottom-nav {
-  --bottom-nav-height: 0px !important;
+--cf-cart-bottom-stack: var(--cf-placeorder-height) !important;
 }
 
 .cart-shell:not(.is-empty) .cart-content {
@@ -1342,9 +1255,7 @@ body.has-bottom-nav {
   .add-button,
   .CartButton,
   .cart-button,
-  .FloatingTabs > *,
-  .BottomNavBar *,
-  .cf-bottom-nav__item {
+  .FloatingTabs > * {
     touch-action: manipulation;
   }
 
@@ -1355,29 +1266,13 @@ body.has-bottom-nav {
   }
 
 
-/* Final cart place order layout: width 100%, hug height, auto gap, above bottom nav */
-#bottomNavMount,
-.cf-bottom-nav {
-  position: fixed !important;
-  left: 50% !important;
-  right: auto !important;
-  bottom: 0 !important;
-  transform: translateX(-50%) !important;
-  width: 390px !important;
-  max-width: 100vw !important;
-  height: var(--cf-bottom-nav-height) !important;
-  margin: 0 !important;
-  padding: 10px 24px 0 !important;
-  z-index: 2200 !important;
-}
-
 .cart-shell.is-empty .placeorder-section {
   display: none !important;
 }
 
 .cart-shell:not(.is-empty) .cart-content {
   bottom: 0 !important;
-  padding-bottom: calc(var(--cf-bottom-nav-height) + 68px + 24px) !important;
+  padding-bottom: calc(68px + 24px) !important;
   z-index: 10 !important;
 }
 
@@ -1390,7 +1285,7 @@ body.has-bottom-nav {
   position: fixed !important;
   left: 50% !important;
   right: auto !important;
-  bottom: var(--cf-bottom-nav-height) !important;
+  bottom: 0px !important;
   transform: translateX(-50%) !important;
   width: 100% !important;
   max-width: 390px !important;
@@ -2265,7 +2160,6 @@ body.has-bottom-nav {
   }
 
 
-
   function getNumberValue(value) {
     if (value === null || value === undefined || value === '') return null;
     const parsed = Number(value);
@@ -3089,6 +2983,6 @@ body.has-bottom-nav {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260524_ui_refine_nonav1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav_clean1" defer></script>
 </body>
 </html>

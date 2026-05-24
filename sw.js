@@ -1,4 +1,4 @@
-const CBE_CACHE_VERSION = '20260524_ui_refine_nonav1';
+const CBE_CACHE_VERSION = '20260524_ui_refine_nonav_clean1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
@@ -12,7 +12,7 @@ const PRECACHE_URLS = [
   './profile.html',
   './track-fullscreen.html',
   './order_placed.html',
-  './pwa-speed.js?v=20260524_ui_refine_nonav1',
+  './pwa-speed.js?v=20260524_ui_refine_nonav_clean1',
   './firebase-config.js',
   './firebase-mvp.js',
   './ola-map-v4.js?v=20260523_appfeel1',

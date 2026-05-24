@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260524_ui_refine_nonav1';
+  const SPEED_VERSION = '20260524_ui_refine_nonav_clean1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
