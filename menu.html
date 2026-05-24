@@ -3864,67 +3864,41 @@ body { padding:0 !important; justify-content:center !important; }
 .qty-button .qty-control img { width:16px !important; height:16px !important; display:block !important; object-fit:contain !important; pointer-events:none !important; }
 </style>
 
-<style id="cf-menu-scroll-top-variant">
-:root { --menu-top-progress: 0; }
-.cf-figma-menu-root.app {
-  height: auto !important;
-  min-height: 2440px !important;
-  overflow: visible !important;
-  display: block !important;
-}
-.cf-figma-menu-root .AllContent {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  height: auto !important;
-  display: flex !important;
-}
-.cf-figma-menu-root .TopSection {
-  position: sticky !important;
-  top: 0 !important;
-  z-index: 1000 !important;
-  overflow: hidden !important;
-  box-sizing: border-box !important;
-  height: calc(368px - (262px * var(--menu-top-progress, 0))) !important;
-  min-height: 106px !important;
-  background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), #000000 !important;
-  will-change: height, background;
-}
-.cf-figma-menu-root .TopBar {
-  position: relative !important;
-  z-index: 2 !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .HeroCard,
-.cf-figma-menu-root .FlotaingTabs {
-  transform: translate3d(0, calc(-310px * var(--menu-top-progress, 0)), 0) !important;
-  opacity: calc(1 - var(--menu-top-progress, 0)) !important;
-  will-change: transform, opacity;
-}
+<style id="cf-menu-top-section-exact-v12">
+.cf-figma-menu-root .TopSection{width:390px!important;height:378px!important;align-self:stretch!important;display:inline-flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-start!important;padding:0!important;gap:0!important;background:transparent!important;position:relative!important;z-index:60!important;overflow:visible!important;box-sizing:border-box!important;flex:none!important}
+.cf-figma-menu-root .TopSection .TopBar{width:390px!important;height:116px!important;padding:50px 24px 20px!important;gap:16px!important;background:#282829!important;border-radius:0!important;justify-content:space-between!important;align-items:flex-start!important;display:inline-flex!important;box-sizing:border-box!important;position:fixed!important;top:0!important;left:50%!important;transform:translateX(-50%)!important;z-index:500!important;flex:none!important}
+.cf-figma-menu-root .TopSection .UserLocation{width:191px!important;height:46px!important;align-self:stretch!important;flex:0 0 191px!important}
+.cf-figma-menu-root .TopSection .TextGroupLocation{width:153px!important;height:46px!important;justify-content:space-between!important}
+.cf-figma-menu-root .TopSection .DelivertoChange{width:153px!important;height:20px!important;margin:0!important}
+.cf-figma-menu-root .TopSection .DeliverTo{width:62px!important;height:17px!important;font-weight:400!important;opacity:1!important}
+.cf-figma-menu-root .TopSection .UserProfile.avatar{width:46px!important;height:46px!important;border-radius:25px!important;object-fit:cover!important;overflow:hidden!important;flex:0 0 46px!important;background:#878887!important}
+.cf-figma-menu-root .HeroAndTabsGroup{width:390px!important;height:262px!important;margin-top:116px!important;padding:0 24px 16px!important;gap:16px!important;background:#282829!important;display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;box-sizing:border-box!important;flex:none!important;position:relative!important;z-index:40!important}
+.cf-figma-menu-root .HeroAndTabsGroup .HeroCard{width:342px!important;height:171px!important;box-sizing:border-box!important;flex:0 0 171px!important}
+.cf-figma-menu-root .HeroAndTabsGroup .FlotaingTabs{width:342px!important;height:59px!important;gap:16px!important;flex:none!important}
 </style>
+
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
 <div class="AllContent" data-layer="All content" style="width: 390px; height: 2331.29px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
-<div class="TopSection" data-layer="top section" style="align-self: stretch; padding-top: 40px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), black; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
-<div class="TopBar" data-layer="top bar" style="width: 342px; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div aria-label="Update delivery location" class="UserLocation location" data-layer="user location" role="button" style="justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex" tabindex="0">
-<div class="IconLocationPin" data-layer="icon-location-pin" style="width: 34px; height: 34px; position: relative; overflow: hidden"><img alt="Delivery location" src="assets/menu/icons/icon-location-pin.svg" style="width:34px;height:34px;display:block;object-fit:contain;"/></div>
-<div class="TextGroupLocation" data-layer="text group-location" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+<div class="TopSection" data-layer="top section" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
+<div class="TopBar" data-layer="top bar" style="width: 390px; padding-top: 50px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; background: #282829; justify-content: space-between; align-items: flex-start; display: inline-flex">
+<div aria-label="Update delivery location" class="UserLocation location" data-layer="user location" role="button" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex" tabindex="0">
+<div class="IconLocationPin" data-layer="icon-location-pin" style="width: 34px; height: 34px; position: relative; overflow: hidden"><img alt="Delivery location" src="assets/menu/icons/icon-location-pin.svg" style="width:34px;height:34px;display:block;object-fit:contain"/></div>
+<div class="TextGroupLocation" data-layer="text group-location" style="align-self: stretch; flex-direction: column; justify-content: space-between; align-items: flex-start; display: inline-flex">
 <div class="DelivertoChange" data-layer="deliverto&amp;change" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
-<div class="DeliverTo" data-layer="Deliver to:" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Deliver to:</div>
+<div class="DeliverTo" data-layer="Deliver to" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Deliver to</div>
 <div class="ChangeButton" data-layer="change button" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
-<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
-<img alt="" aria-hidden="true" src="assets/menu/icons/pen-icon.svg" style="width:20px;height:20px;display:block;object-fit:contain"/>
-</div>
+<div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden"><img alt="" aria-hidden="true" src="assets/menu/icons/pen-icon.svg" style="width:20px;height:20px;display:block;object-fit:contain"/></div>
 <div class="Change" data-layer="Change" style="color: #08A045; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Change</div>
 </div>
 </div>
 <div class="34IndiraNagar address" data-layer="9/34, Indira nagar.." style="color: #FDFDFF; font-size: 18px; font-family: General Sans; font-weight: 500; line-height: 27px; word-wrap: break-word">Loading location...</div>
 </div>
 </div>
-<img alt="User profile" aria-label="Open profile" class="UserProfile avatar" data-layer="user profile" id="menuProfileAvatarImg" onclick="window.location.href='profile.html'" role="link" src="assets/menu/icons/user-profile.svg" style="width: 46px; height: 46px; border-radius: 50px; object-fit: cover; display: block; cursor: pointer;" tabindex="0"/>
+<img alt="User profile" aria-label="Open profile" class="UserProfile avatar" data-layer="user profile" id="menuProfileAvatarImg" onclick="window.location.href='profile.html'" role="link" src="assets/menu/icons/user-profile.svg" style="width: 46px; height: 46px; position: relative; overflow: hidden; border-radius: 25px; object-fit: cover; display: block; cursor: pointer" tabindex="0"/>
 </div>
+<div class="HeroAndTabsGroup" data-layer="hero-and-tabs-group" style="align-self: stretch; padding-bottom: 16px; padding-left: 24px; padding-right: 24px; background: #282829; flex-direction: column; justify-content: flex-start; align-items: center; gap: 16px; display: flex">
 <div class="HeroCard" data-layer="hero card" style="width: 342px; padding-left: 16px; padding-right: 16px; padding-top: 14px; padding-bottom: 14px; background: linear-gradient(318deg, rgba(136, 6, 206, 0) 26%, rgba(136, 6, 206, 0.50) 60%), #FDFDFF; border-radius: 20px; background-image: url('assets/menu/img/hero card-img.png'); background-size: cover; background-position: center; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="HeroTitle" data-layer="hero title"><span class="hero-title-light" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">Fresh</span><span class="hero-title-bold" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> lunch, </span><span class="hero-title-light" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">daily</span><span class="hero-title-bold" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> warm.</span></div>
 <div class="HeroInfo" data-layer="hero info" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
@@ -3933,32 +3907,16 @@ body { padding:0 !important; justify-content:center !important; }
 </div>
 <div class="HeroChips" data-layer="hero chips" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
 <div class="HeroChipRow1" data-layer="hero chip row 1" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 6px; display: inline-flex">
-<div class="Chip1" data-layer="chip 1" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex">
-<div class="HomeCooked" data-layer="🏠 Home Cooked" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">🏠 Home Cooked</div>
+<div class="Chip1" data-layer="chip 1" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex"><div class="HomeCooked" data-layer="🏠 Home Cooked" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">🏠 Home Cooked</div></div>
+<div class="Chip2" data-layer="chip 2" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex"><div class="CbeDelivery" data-layer="🛵 CBE delivery" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">🛵 CBE delivery</div></div>
 </div>
-<div class="Chip2" data-layer="chip 2" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex">
-<div class="CbeDelivery" data-layer="🛵 CBE delivery" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">🛵 CBE delivery</div>
-</div>
-</div>
-<div class="HeroChipRow2" data-layer="hero chip row 2" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex">
-<div class="Chip3" data-layer="chip 3" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex">
-<div class="SecurePayment" data-layer="✅ Secure payment" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">✅ Secure payment</div>
-</div>
-</div>
+<div class="HeroChipRow2" data-layer="hero chip row 2" style="align-self: stretch; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex"><div class="Chip3" data-layer="chip 3" style="padding-left: 8px; padding-right: 8px; padding-top: 6px; padding-bottom: 6px; background: rgba(18, 19, 15, 0.24); border-radius: 6px; backdrop-filter: blur(7px); justify-content: center; align-items: center; gap: 10px; display: flex"><div class="SecurePayment" data-layer="✅ Secure payment" style="justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.80); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">✅ Secure payment</div></div></div>
 </div>
 </div>
 <div class="FlotaingTabs" data-layer="flotaing tabs" style="width: 342px; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
-<div aria-label="All" class="Tab1 pill pill-active" data-layer="tab 1" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; background: rgba(253, 253, 255, 0.08); border-radius: 20px; outline: 1px rgba(253, 253, 255, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0">
-<img alt="All" class="Img" data-layer="img" src="assets/menu/img/tab1-img.png" style="width: 51px; height: 34px"/>
-<div class="All" data-layer="All" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">All</div>
-</div>
-<div aria-label="Protein pack" class="Tab2 pill" data-layer="tab 2" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; border-radius: 20px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0">
-<img alt="Protein pack" class="Img" data-layer="img" src="assets/menu/img/tab2-img.png" style="width: 34px; height: 34px"/>
-<div class="ProteinPack" data-layer="Protein pack" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Protein pack</div>
-</div>
-<div aria-label="Regular" class="Tab3 pill" data-layer="tab 3" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; border-radius: 20px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0">
-<img alt="Regular" class="Img" data-layer="img" src="assets/menu/img/tab3-img.png" style="width: 34px; height: 34px"/>
-<div class="Regular" data-layer="Regular" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Regular</div>
+<div aria-label="All" class="Tab1 pill pill-active" data-layer="tab 1" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; background: rgba(253, 253, 255, 0.08); border-radius: 20px; outline: 1px rgba(253, 253, 255, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0"><img alt="All" class="Img" data-layer="img" src="assets/menu/img/tab1-img.png" style="width: 51px; height: 34px"/><div class="All" data-layer="All" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">All</div></div>
+<div aria-label="Protein pack" class="Tab2 pill" data-layer="tab 2" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; border-radius: 20px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0"><img alt="Protein pack" class="Img" data-layer="img" src="assets/menu/img/tab2-img.png" style="width: 34px; height: 34px"/><div class="ProteinPack" data-layer="Protein pack" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Protein pack</div></div>
+<div aria-label="Regular" class="Tab3 pill" data-layer="tab 3" role="button" style="flex: 1 1 0; padding-left: 10px; padding-right: 10px; padding-top: 4px; padding-bottom: 4px; border-radius: 20px; flex-direction: column; justify-content: center; align-items: center; display: inline-flex" tabindex="0"><img alt="Regular" class="Img" data-layer="img" src="assets/menu/img/tab3-img.png" style="width: 34px; height: 34px"/><div class="Regular" data-layer="Regular" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Regular</div></div>
 </div>
 </div>
 </div>
@@ -5386,6 +5344,8 @@ async function reverseGeocodeExactAddress(lat, lng) {
 }
 
 function showMapMessage(message) {
+  // Intentionally no visible loading/error placeholder on map screen.
+  // The map canvas must remain the only visible layer behind the controls.
   if (message) console.log("Map status:", message);
   if (mapEmptyCopy) mapEmptyCopy.textContent = "";
   if (mapEmptyState) mapEmptyState.classList.add("is-hidden");
@@ -5794,6 +5754,7 @@ function cleanLocationFlowUrl() {
 }
 
 function refreshCommonBottomNav() {
+  // Bottom navigation has been removed for the UI refinement phase.
 }
 
 function restoreCommonBottomNavAfterLocationFlow() {
@@ -6407,7 +6368,11 @@ function setupSavedAddressDrawerGesture() {
 
     const atTop = savedAddressList.scrollTop <= 2;
     const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
+
+    // Finger up: list should scroll down unless it is already at bottom.
     if (deltaY < 0) return !atBottom;
+
+    // Finger down: list should scroll up unless it is already at top.
     if (deltaY > 0) return !atTop;
 
     return false;
@@ -6418,6 +6383,8 @@ function setupSavedAddressDrawerGesture() {
 
     const deltaY = getDelta(y);
     const expanded = isExpanded();
+
+    // Collapsed state: saved addresses are only a preview. Any upward swipe opens the drawer.
     if (!expanded) {
       if (event && event.cancelable) event.preventDefault();
 
@@ -6427,9 +6394,13 @@ function setupSavedAddressDrawerGesture() {
       }
       return;
     }
+
+    // Expanded state: saved address list owns normal scrolling.
     if (shouldLetSavedListScroll(target, deltaY) && !startedOnHandle) {
       return;
     }
+
+    // Expanded + list already at top / handle dragged: downward swipe collapses drawer.
     if (deltaY > SWIPE_THRESHOLD) {
       if (event && event.cancelable) event.preventDefault();
       collapseSavedAddressDrawer();
@@ -6450,6 +6421,8 @@ function setupSavedAddressDrawerGesture() {
     const expanded = isExpanded();
     const delta = event.deltaY;
     const isOverList = savedAddressList && savedAddressList.contains(event.target);
+
+    // Collapsed state: wheel/trackpad scroll on the drawer opens it. The list does not scroll yet.
     if (!expanded && delta > WHEEL_THRESHOLD) {
       event.preventDefault();
       expandSavedAddressDrawer();
@@ -6461,6 +6434,8 @@ function setupSavedAddressDrawerGesture() {
     if (!expanded) {
       return;
     }
+
+    // Expanded state: let saved list scroll normally while it has scroll room.
     if (isOverList) {
       const atTop = savedAddressList.scrollTop <= 2;
       const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
@@ -6469,6 +6444,8 @@ function setupSavedAddressDrawerGesture() {
         return;
       }
     }
+
+    // When expanded and already at the top, wheel/trackpad up collapses it.
     if (delta < -WHEEL_THRESHOLD) {
       event.preventDefault();
       collapseSavedAddressDrawer();
@@ -8470,6 +8447,7 @@ if (shouldAutoOpenLocationMap()) {
     try {
       localStorage.setItem(CART_KEY, JSON.stringify(items.filter(item => Number(item.qty || 0) > 0)));
     } catch {
+      // localStorage unavailable should not break menu UI.
     }
   }
 
@@ -8675,6 +8653,7 @@ if (shouldAutoOpenLocationMap()) {
       return result;
     };
   } catch {
+    // Ignore localStorage patch failures.
   }
 
   window.addEventListener("storage", event => {
@@ -8804,28 +8783,6 @@ if (shouldAutoOpenLocationMap()) {
       { passive: false }
     );
   })();
-</script>
-
-<script id="cf-menu-scroll-top-variant-script">
-(function() {
-  const root = document.querySelector(".cf-figma-menu-root");
-  if (!root) return;
-  const distance = 262;
-  let frame = 0;
-  const applyTopVariant = () => {
-    frame = 0;
-    const y = Math.max(0, Math.min(distance, window.scrollY || window.pageYOffset || 0));
-    const progress = y / distance;
-    root.style.setProperty("--menu-top-progress", progress.toFixed(4));
-  };
-  const requestApply = () => {
-    if (frame) return;
-    frame = window.requestAnimationFrame(applyTopVariant);
-  };
-  applyTopVariant();
-  window.addEventListener("scroll", requestApply, { passive: true });
-  window.addEventListener("resize", requestApply, { passive: true });
-})();
 </script>
 </body>
 </html>
