@@ -2804,6 +2804,26 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   bottom: calc(16px + env(safe-area-inset-bottom)) !important;
 }
 
+
+
+<style id="cf-menu-reference-refinement-20260524-v2">
+/* Latest reference adjustment: floating cart sits 35px above bottom and uses 18px horizontal padding. */
+.cf-figma-menu-root .FloatingAddedCard,
+.cf-figma-menu-root .floating-cart-card,
+.cf-figma-menu-root .floating-added-card {
+  width: 342px !important;
+  height: 53px !important;
+  padding: 8px 18px !important;
+  bottom: calc(35px + env(safe-area-inset-bottom)) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(90deg, #08A045 0%, #8806CE 100%) !important;
+  box-shadow: 0px 0px 4px #089E44 !important;
+}
+
+.cf-figma-menu-root.app.has-floating-cart {
+  padding-bottom: calc(108px + env(safe-area-inset-bottom)) !important;
+}
+</style>
 </style>
 <script>
 (function () {
@@ -3231,11 +3251,501 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
     font-size: 16px;
   }
 </style>
+
+
+<style id="cf-menu-reference-refinement-20260524">
+/* 1.1 Menu reference recreation pass: dark menu, no bottom nav, exact spacing from uploaded HTML/CSS. */
+html,
+body {
+  background: #12130F !important;
+}
+
+body {
+  padding: 0 !important;
+  justify-content: center !important;
+}
+
+.cf-figma-menu-root.app {
+  width: 390px !important;
+  max-width: 100vw !important;
+  min-height: 100dvh !important;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F !important;
+  gap: 0 !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+.cf-figma-menu-root.app.has-floating-cart {
+  padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important;
+}
+
+.cf-figma-menu-root .AllContent {
+  gap: 0 !important;
+  width: 100% !important;
+}
+
+.cf-figma-menu-root .TopSection {
+  width: 390px !important;
+  height: 368px !important;
+  padding: 40px 24px 20px !important;
+  gap: 16px !important;
+  background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), #000000 !important;
+}
+
+.cf-figma-menu-root .TopBar {
+  width: 342px !important;
+  height: 46px !important;
+  align-items: flex-start !important;
+}
+
+.cf-figma-menu-root .UserLocation {
+  width: 191px !important;
+  height: 45px !important;
+  gap: 4px !important;
+}
+
+.cf-figma-menu-root .TextGroupLocation {
+  width: 153px !important;
+  height: 45px !important;
+}
+
+.cf-figma-menu-root .DelivertoChange {
+  width: 153px !important;
+  height: 20px !important;
+  gap: 8px !important;
+}
+
+.cf-figma-menu-root .DeliverTo {
+  opacity: 1 !important;
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 16.8px !important;
+}
+
+.cf-figma-menu-root .Change {
+  color: #08A045 !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 19.6px !important;
+}
+
+.cf-figma-menu-root .address,
+.cf-figma-menu-root [data-layer="9/34, Indira nagar.."] {
+  width: 153px !important;
+  color: #FDFDFF !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+  line-height: 27px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+}
+
+.cf-figma-menu-root .UserProfile,
+.cf-figma-menu-root .UserProfile img {
+  width: 46px !important;
+  height: 46px !important;
+}
+
+.cf-figma-menu-root .HeroCard {
+  width: 342px !important;
+  height: 171px !important;
+  min-height: 171px !important;
+  padding: 14px 16px !important;
+  gap: 10px !important;
+  border-radius: 20px !important;
+  outline: 0 !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.cf-figma-menu-root .HeroTitle {
+  width: 310px !important;
+  height: 31px !important;
+  font-family: 'Chillax', sans-serif !important;
+  font-size: 26px !important;
+  line-height: 31.2px !important;
+  letter-spacing: -0.04em !important;
+}
+
+.cf-figma-menu-root .HeroInfo {
+  width: 310px !important;
+  height: 34px !important;
+  gap: 6px !important;
+}
+
+.cf-figma-menu-root .HomeCookedOrderBy11Am,
+.cf-figma-menu-root .DeliveredIn1525Mins {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 14px !important;
+  color: rgba(253, 253, 255, 0.60) !important;
+}
+
+.cf-figma-menu-root .HeroChips {
+  width: 310px !important;
+  height: 58px !important;
+  gap: 6px !important;
+}
+
+.cf-figma-menu-root .HeroChipRow1,
+.cf-figma-menu-root .HeroChipRow2 {
+  height: 26px !important;
+}
+
+.cf-figma-menu-root .Chip1,
+.cf-figma-menu-root .Chip2,
+.cf-figma-menu-root .Chip3 {
+  padding: 6px 8px !important;
+  background: rgba(18, 19, 15, 0.24) !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(7px) !important;
+}
+
+.cf-figma-menu-root .HomeCooked,
+.cf-figma-menu-root .CbeDelivery,
+.cf-figma-menu-root .SecurePayment {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  line-height: 14px !important;
+  color: rgba(253, 253, 255, 0.80) !important;
+}
+
+.cf-figma-menu-root .FlotaingTabs {
+  width: 342px !important;
+  height: 59px !important;
+  gap: 16px !important;
+}
+
+.cf-figma-menu-root .Tab1,
+.cf-figma-menu-root .Tab2,
+.cf-figma-menu-root .Tab3 {
+  height: 59px !important;
+  padding: 4px 10px !important;
+  border-radius: 20px !important;
+  background: transparent !important;
+  outline: 0 !important;
+  border: 0 !important;
+}
+
+.cf-figma-menu-root .Tab1.pill-active,
+.cf-figma-menu-root .Tab2.pill-active,
+.cf-figma-menu-root .Tab3.pill-active,
+.cf-figma-menu-root .pill-active {
+  background: rgba(253, 253, 255, 0.08) !important;
+  outline: 1px solid rgba(253, 253, 255, 0.12) !important;
+  outline-offset: -1px !important;
+}
+
+.cf-figma-menu-root .FlotaingTabs .All,
+.cf-figma-menu-root .FlotaingTabs .ProteinPack,
+.cf-figma-menu-root .FlotaingTabs .Regular {
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 16.8px !important;
+}
+
+.cf-figma-menu-root .MenuListings {
+  width: 390px !important;
+  gap: 20px !important;
+}
+
+.cf-figma-menu-root .BestSellingSection {
+  width: 390px !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  gap: 6px !important;
+  overflow: hidden !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection,
+.cf-figma-menu-root .RegularPackSection {
+  width: 390px !important;
+  gap: 10px !important;
+}
+
+.cf-figma-menu-root .TextGroup {
+  padding: 12px 24px !important;
+}
+
+.cf-figma-menu-root .BestSelling,
+.cf-figma-menu-root .ProteinPackSection > .TextGroup > .ProteinPack,
+.cf-figma-menu-root .RegularPacks {
+  font-family: 'Chillax', sans-serif !important;
+  font-size: 26px !important;
+  font-weight: 600 !important;
+  line-height: 31.2px !important;
+  letter-spacing: -0.04em !important;
+  transform: rotate(-5deg) !important;
+  transform-origin: top left !important;
+}
+
+.cf-figma-menu-root .FasterSellingOrders,
+.cf-figma-menu-root .HighProteinFitnessFriendly,
+.cf-figma-menu-root .ClassicHomemadeMealsTiffen {
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 14px !important;
+  transform: rotate(-5deg) !important;
+  transform-origin: top left !important;
+}
+
+.cf-figma-menu-root .BestSellingSection > .ListingCards {
+  width: 390px !important;
+  max-width: 100vw !important;
+  margin-left: 0 !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  height: 238px !important;
+  display: inline-flex !important;
+  gap: 8px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+}
+
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card1,
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card2,
+.cf-figma-menu-root .BestSellingSection > .ListingCards > .Card3 {
+  width: 194px !important;
+  min-width: 194px !important;
+  max-width: 194px !important;
+  height: 238px !important;
+  flex: 0 0 194px !important;
+  padding-bottom: 8px !important;
+  border-radius: 18px !important;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.16), rgba(253, 253, 255, 0.16)), #12130F !important;
+  overflow: hidden !important;
+}
+
+.cf-figma-menu-root .BestSellingSection .CardContent {
+  width: 194px !important;
+  gap: 6px !important;
+}
+
+.cf-figma-menu-root .BestSellingSection .Img {
+  width: 194px !important;
+  height: 100px !important;
+  border-radius: 0 !important;
+  outline: 0 !important;
+}
+
+.cf-figma-menu-root .BestSellingSection .CardDetails {
+  width: 194px !important;
+  gap: 6px !important;
+}
+
+.cf-figma-menu-root .BestSellingSection .ItemTitle {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+.cf-figma-menu-root .BestSellingSection .Ingredients {
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection > .ListingCards,
+.cf-figma-menu-root .RegularPackSection > .ListingCards {
+  padding: 0 24px !important;
+  gap: 20px !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection > .ListingCards > div,
+.cf-figma-menu-root .RegularPackSection > .ListingCards > div {
+  width: 342px !important;
+  height: 90px !important;
+  gap: 12px !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection .Img,
+.cf-figma-menu-root .RegularPackSection .Img {
+  width: 90px !important;
+  height: 90px !important;
+  border-radius: 20px !important;
+  box-shadow: 0px 2px 12px rgba(255, 255, 255, 0.04) !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection .CardContent,
+.cf-figma-menu-root .RegularPackSection .CardContent {
+  width: 240px !important;
+  height: 90px !important;
+  gap: 14px !important;
+}
+
+.cf-figma-menu-root .ProteinPackSection .CardDetails,
+.cf-figma-menu-root .RegularPackSection .CardDetails {
+  height: 90px !important;
+  padding: 2px 0 4px !important;
+}
+
+.cf-figma-menu-root .ItemTitle > div:not(.ProteinDetails),
+.cf-figma-menu-root .ProteinEggLunch,
+.cf-figma-menu-root .ProteinChickenLunch,
+.cf-figma-menu-root .ProteinChickenDinner,
+.cf-figma-menu-root .RegularMeal,
+.cf-figma-menu-root .ChappatiGravy,
+.cf-figma-menu-root .BarbequeChic,
+.cf-figma-menu-root .SmokeyLeg,
+.cf-figma-menu-root .ChickenBreastPiece,
+.cf-figma-menu-root .PaneerTikka,
+.cf-figma-menu-root .VegBalls,
+.cf-figma-menu-root .AllVegCombo {
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 19.2px !important;
+}
+
+.cf-figma-menu-root .Ingredients > div {
+  color: rgba(253, 253, 255, 0.50) !important;
+  font-size: 12px !important;
+  font-weight: 400 !important;
+  line-height: 15.6px !important;
+}
+
+.cf-figma-menu-root .ProteinDetails .Protein,
+.cf-figma-menu-root .ProteinDetails .G,
+.cf-figma-menu-root .ProteinDetails [data-layer="・"] {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  line-height: 14.4px !important;
+}
+
+.cf-figma-menu-root .ProteinDetails .Protein {
+  color: #FDFDFF !important;
+}
+
+.cf-figma-menu-root .ProteinDetails .G {
+  color: #08A045 !important;
+}
+
+.cf-figma-menu-root .PriceAddItem > div:first-child {
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 24px !important;
+}
+
+.cf-figma-menu-root .product-list-action {
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  padding: 6px 22px !important;
+  border-radius: 8px !important;
+  background: #08A045 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  color: #FDFDFF !important;
+}
+
+.cf-figma-menu-root .product-list-action-text {
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  line-height: 16.8px !important;
+}
+
+.cf-figma-menu-root .product-list-action.qty-button,
+.action-btn.qty-button,
+.product-list-action.qty-button {
+  width: 76px !important;
+  min-width: 76px !important;
+  max-width: 76px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  padding: 6px 8px !important;
+  background: rgba(18, 19, 15, 0.24) !important;
+  border: 1px solid #08A045 !important;
+  border-radius: 8px !important;
+  color: #FDFDFF !important;
+}
+
+.cf-figma-menu-root .product-list-action.qty-button .qty-control,
+.cf-figma-menu-root .product-list-action.qty-button .qty-count,
+.cf-figma-menu-root .product-list-action.qty-button .qty-value,
+.qty-button .qty-control,
+.qty-button .qty-count,
+.qty-button .qty-value {
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 19.2px !important;
+}
+
+.cf-figma-menu-root .DividerFrame .Div,
+.cf-figma-menu-root .MenuListings > .Div {
+  border-color: rgba(253, 253, 255, 0.16) !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard {
+  width: 342px !important;
+  height: 53px !important;
+  padding: 8px 18px !important;
+  bottom: calc(35px + env(safe-area-inset-bottom)) !important;
+  border-radius: 14px !important;
+  background: linear-gradient(90deg, #08A045 0%, #8806CE 100%) !important;
+  box-shadow: 0px 0px 4px #089E44 !important;
+  gap: 51px !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard .Frame156 {
+  width: 90px !important;
+  height: 37px !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard .ItemsAdded,
+.cf-figma-menu-root .FloatingAddedCard .floating-cart-title {
+  color: #FDFDFF !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  line-height: 16.8px !important;
+  width: max-content !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard .CartButton {
+  height: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.cf-figma-menu-root .FloatingAddedCard .Cart {
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 19.2px !important;
+}
+
+.cf-figma-menu-root .FloatingCartIcon {
+  width: 24px !important;
+  height: 24px !important;
+  display: block !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) !important;
+}
+
+@media (max-width: 389px) {
+  .cf-figma-menu-root.app,
+  .cf-figma-menu-root .TopSection,
+  .cf-figma-menu-root .MenuListings,
+  .cf-figma-menu-root .BestSellingSection,
+  .cf-figma-menu-root .ProteinPackSection,
+  .cf-figma-menu-root .RegularPackSection {
+    width: 100vw !important;
+  }
+}
+</style>
+
 </head>
 <body>
-<div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(136px + env(safe-area-inset-bottom));">
-<div class="AllContent" data-layer="All content" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 24px; display: flex">
-<div class="TopSection" data-layer="top section" style="align-self: stretch; padding-top: 54px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), black; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
+<div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden; flex-direction: column; justify-content: flex-start; align-items: center; gap: 10px; display: inline-flex; min-height: 100dvh; padding-bottom: calc(24px + env(safe-area-inset-bottom));">
+<div class="AllContent" data-layer="All content" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 0px; display: flex">
+<div class="TopSection" data-layer="top section" style="align-self: stretch; padding-top: 40px; padding-bottom: 20px; padding-left: 24px; padding-right: 24px; background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), black; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
 <div class="TopBar" data-layer="top bar" style="width: 342px; justify-content: space-between; align-items: flex-start; display: inline-flex">
 <div aria-label="Update delivery location" class="UserLocation location" data-layer="user location" role="button" style="justify-content: flex-start; align-items: flex-start; gap: 4px; display: flex" tabindex="0">
 <div class="IconLocationPin" data-layer="icon-location-pin" style="width: 34px; height: 34px; position: relative; overflow: hidden">
@@ -3243,7 +3753,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 </div>
 <div class="TextGroupLocation" data-layer="text group-location" style="flex-direction: column; justify-content: flex-start; align-items: flex-start; display: inline-flex">
 <div class="DelivertoChange" data-layer="deliverto&amp;change" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 8px; display: inline-flex">
-<div class="DeliverTo" data-layer="Deliver to" style="opacity: 0.50; color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 16.80px; word-wrap: break-word">Deliver to</div>
+<div class="DeliverTo" data-layer="Deliver to:" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Deliver to:</div>
 <div class="ChangeButton" data-layer="change button" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
 <div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: visible; flex: 0 0 auto; background: transparent;">
 <img alt="" aria-hidden="true" class="PenIconImg" src="assets/menu/icons/pen-icon.svg?v=pen-exact-20260520" style="width:20px;height:20px;display:block;object-fit:contain;background:transparent;border:0;filter:none;"/>
@@ -3498,12 +4008,15 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 </div>
 </div>
 </div>
-<div aria-label="Open cart" class="FloatingAddedCard floating-cart-card floating-added-card" data-layer="floating-added-card" id="floatingCartCard" role="button" style="width: 342px; padding-left: 20px; padding-right: 20px; padding-top: 16px; padding-bottom: 16px; background: linear-gradient(90deg, #08A045 0%, #8806CE 100%); box-shadow: 0px 0px 4px #089E44; border-radius: 16px; justify-content: space-between; align-items: center; display: inline-flex" tabindex="0">
-<div class="ItemsAdded floating-cart-title" data-layer="4 items added" id="floatingCartTitle" style="color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 600; line-height: 19.20px; word-wrap: break-word">0 items added</div>
-<div class="CartButton" data-layer="cart-button" style="justify-content: flex-start; align-items: center; display: flex">
-<div class="Cart" data-layer="Cart" style="color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Cart</div>
-<img alt="" aria-hidden="true" class="ArrowRightIcon arrow-right-icon" data-layer="arrow-right-icon" src="assets/menu/icons/arrow-right-icon.svg?v=menu-arrow-1" style="width: 20px; height: 20px; display: block; flex: none"/>
+<div aria-label="Open cart" class="FloatingAddedCard floating-cart-card floating-added-card" data-layer="floating-added-card" id="floatingCartCard" role="button" style="width: 342px; height: 53px; padding-left: 18px; padding-right: 18px; padding-top: 8px; padding-bottom: 8px; background: linear-gradient(90deg, #08A045 0%, #8806CE 100%); box-shadow: 0px 0px 4px #089E44; border-radius: 14px; justify-content: space-between; align-items: center; display: inline-flex" tabindex="0">
+<div class="Frame156" data-layer="Frame 156" style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+<div class="ItemsAdded floating-cart-title" data-layer="4 items added" id="floatingCartTitle" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">0 items added</div>
+<div class="CartButton" data-layer="cart-button" style="justify-content: flex-start; align-items: center; display: inline-flex">
+<div class="Cart" data-layer="Cart" style="justify-content: center; display: flex; flex-direction: column; color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Cart</div>
+<img alt="" aria-hidden="true" class="ArrowRightIcon arrow-right-icon" data-layer="arrow-right-icon" src="assets/menu/icons/arrow-right-icon.svg?v=menu-arrow-1" style="width: 20px; height: 20px; display: block; flex: none; object-fit: contain"/>
 </div>
+</div>
+<img alt="" aria-hidden="true" class="FloatingCartIcon" data-layer="cart-icon" src="assets/menu/icons/cart-icon.svg" style="width: 24px; height: 24px; display: block; flex: 0 0 auto; object-fit: contain; filter: brightness(0) invert(1);"/>
 </div>
 
 <div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
@@ -7757,15 +8270,18 @@ if (shouldAutoOpenLocationMap()) {
     card.setAttribute("tabindex", "0");
     card.setAttribute("aria-label", "Open cart");
     card.innerHTML = `
-      <div class="items-added floating-cart-title" id="floatingCartTitle">0 items added</div>
-      <div class="cart-button" aria-hidden="true">
-        <div class="cart-button-text">Cart</div>
-        <div class="arrow-right-icon">
-          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7.425 3.575C7.65833 3.34167 8.025 3.34167 8.25833 3.575L14.2583 9.575C14.4917 9.80833 14.4917 10.175 14.2583 10.4083L8.25833 16.4083C8.025 16.6417 7.65833 16.6417 7.425 16.4083C7.19167 16.175 7.19167 15.8083 7.425 15.575L13.0083 9.99167L7.425 4.40833C7.2 4.175 7.2 3.80833 7.425 3.575Z" fill="#FDFDFF"/>
-          </svg>
+      <div class="Frame156" data-layer="Frame 156" style="flex-direction: column; justify-content: center; align-items: flex-start; display: inline-flex">
+        <div class="ItemsAdded floating-cart-title" id="floatingCartTitle" data-layer="4 items added">0 items added</div>
+        <div class="CartButton" data-layer="cart-button" aria-hidden="true">
+          <div class="Cart" data-layer="Cart">Cart</div>
+          <div class="arrow-right-icon">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M7.425 3.575C7.65833 3.34167 8.025 3.34167 8.25833 3.575L14.2583 9.575C14.4917 9.80833 14.4917 10.175 14.2583 10.4083L8.25833 16.4083C8.025 16.6417 7.65833 16.6417 7.425 16.4083C7.19167 16.175 7.19167 15.8083 7.425 15.575L13.0083 9.99167L7.425 4.40833C7.2 4.175 7.2 3.80833 7.425 3.575Z" fill="#FDFDFF"/>
+            </svg>
+          </div>
         </div>
       </div>
+      <img alt="" aria-hidden="true" class="FloatingCartIcon" data-layer="cart-icon" src="assets/menu/icons/cart-icon.svg"/>
     `;
 
     document.body.appendChild(card);
@@ -7963,12 +8479,6 @@ if (shouldAutoOpenLocationMap()) {
 
       if (document.body.dataset && document.body.dataset.bottomNav === "off") {
         delete document.body.dataset.bottomNav;
-      }
-
-      if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.show === "function") {
-        window.CoimbatoreFoodsBottomNav.show();
-      } else if (window.CoimbatoreFoodsBottomNav && typeof window.CoimbatoreFoodsBottomNav.refresh === "function") {
-        window.CoimbatoreFoodsBottomNav.refresh();
       }
     }
 
