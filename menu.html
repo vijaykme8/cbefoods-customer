@@ -710,7 +710,7 @@ img {
   word-wrap: break-word;
 }
 
-
+/* Quantity button state */
 .action-btn,
 .product-list-action {
   cursor: pointer;
@@ -977,12 +977,17 @@ img {
   word-wrap: break-word;
 }
 
+
+/* =========================
+   COMMON FIXED BOTTOM NAV
+========================= */
 .app {
   min-height: 100dvh;
   padding-bottom: calc(74px + env(safe-area-inset-bottom));
 }
 
-
+/* When the floating cart is visible, create extra scroll space so
+   the last menu items/add buttons are never hidden behind it. */
 .app.has-floating-cart {
   padding-bottom: calc(154px + env(safe-area-inset-bottom));
 }
@@ -1005,6 +1010,10 @@ img {
   }
 }
 
+
+/* =========================
+   FULL SCREEN LOCATION MAP
+========================= */
 body.map-screen-open {
   overflow: hidden;
 }
@@ -1547,7 +1556,8 @@ body.map-screen-open {
   overscroll-behavior: contain;
 }
 
-
+/* Collapsed drawer: list is only a preview, not a scroll area.
+   Expanded drawer: list becomes the only scrollable area. */
 .map-address-bottom-section.is-expanded .saved-add-group {
   overflow-y: auto;
   touch-action: pan-y;
@@ -1720,7 +1730,9 @@ body.map-screen-open {
   }
 }
 
-
+/* =========================
+   LOCATION ADDRESS DETAILS SCREEN - 2.2 MAP ADDRESS
+========================= */
 .customer-map-screen.is-details-step .map-address-shell {
   display: none;
 }
@@ -2106,6 +2118,10 @@ body.map-screen-open {
   }
 }
 
+
+/* =========================
+   FLOATING ADDED CARD
+========================= */
 .floating-cart-card,
 .floating-added-card {
   position: fixed;
@@ -2218,6 +2234,8 @@ body.is-location-flow-open .floating-added-card {
   transform: translate(-50%, 0) scale(0.98);
 }
 
+
+/* CBE address form enhancement: other title + required fields + real preview map */
 .details-title-field {
   display: none;
 }
@@ -2285,6 +2303,13 @@ body.is-location-flow-open .floating-added-card {
   display: none;
 }
 
+
+
+/* =========================================================
+   1.1 MENU - EXACT FIGMA STRUCTURE OVERRIDE
+   Uses the provided Figma layer HTML as the real DOM.
+   Older menu layer/group classes are not used in the UI.
+========================================================= */
 body[data-bottom-nav="off"] {
   background: #12130F !important;
   font-family: 'General Sans', sans-serif !important;
@@ -2481,7 +2506,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   }
 }
 
-
+/* 1.1 Menu visual correction: keep Figma layers, fix hero overflow + best-selling horizontal overflow */
 .cf-figma-menu-root .HeroCard {
   box-sizing: border-box !important;
   width: 342px !important;
@@ -2570,6 +2595,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   display: none;
 }
 
+
+/* Menu change button icon uses real menu asset */
 .cf-figma-menu-root .PenIcon img {
   width: 20px !important;
   height: 20px !important;
@@ -2577,6 +2604,9 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   object-fit: contain !important;
 }
 
+
+
+/* Figma CSS pass: only gap + font-weight corrections for 1.1 Menu */
 .cf-figma-menu-root .AllContent { gap: 20px !important; }
 .cf-figma-menu-root .TopSection { gap: 16px !important; }
 .cf-figma-menu-root .TopBar { gap: 110px !important; }
@@ -2654,15 +2684,20 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 .cf-figma-menu-root .ClassicHomemadeMealsTiffen,
 .cf-figma-menu-root .Ingredients > div { font-weight: 400 !important; }
 
+
+
+/* Final tuning: slightly increase All content frame gap */
 .cf-figma-menu-root .AllContent {
   gap: 24px !important;
 }
 
+
+/* Final refinement: floating tabs gap + equal Add / quantity button sizing */
 .cf-figma-menu-root .FlotaingTabs {
   gap: 16px !important;
 }
 
-
+/* Keep Add and quantity states exactly the same outer size. */
 .cf-figma-menu-root .product-list-action {
   box-sizing: border-box !important;
   width: 72px !important;
@@ -2703,6 +2738,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   color: #FDFDFF !important;
 }
 
+
+/* Hero title emphasis fix */
 .cf-figma-menu-root .HeroTitle .hero-title-light {
   font-weight: 500 !important;
 }
@@ -2711,6 +2748,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   font-weight: 700 !important;
 }
 
+
+/* 2.2 dark address form final overrides */
 .details-title-field { display: none; }
 .details-title-field.is-visible { display: flex; }
 .details-required-mark { color: #E23009; opacity: 1; margin-left: 2px; }
@@ -2743,6 +2782,12 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 }
 .saveas-chip.is-selected .saveas-icon { opacity: 1; }
 
+
+
+/* =========================================================
+   UI refinement: app-wide navigation removed.
+   Keep only content/floating-cart safe-area spacing.
+========================================================= */
 .app,
 .cf-figma-menu-root.app {
   padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
@@ -2759,8 +2804,10 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   bottom: calc(16px + env(safe-area-inset-bottom)) !important;
 }
 
-<style id="cf-menu-reference-refinement-20260524-v2">
 
+
+<style id="cf-menu-reference-refinement-20260524-v2">
+/* Latest reference adjustment: floating cart sits 35px above bottom and uses 18px horizontal padding. */
 .cf-figma-menu-root .FloatingAddedCard,
 .cf-figma-menu-root .floating-cart-card,
 .cf-figma-menu-root .floating-added-card {
@@ -2776,79 +2823,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 .cf-figma-menu-root.app.has-floating-cart {
   padding-bottom: calc(108px + env(safe-area-inset-bottom)) !important;
 }
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 <script>
 (function () {
@@ -2877,6 +2852,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
     opacity: 1;
   }
 
+
+/* Figma CSS pass: only gap + font-weight corrections for 1.1 Menu */
 .cf-figma-menu-root .AllContent { gap: 20px !important; }
 .cf-figma-menu-root .TopSection { gap: 16px !important; }
 .cf-figma-menu-root .TopBar { gap: 110px !important; }
@@ -2954,45 +2931,11 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 .cf-figma-menu-root .ClassicHomemadeMealsTiffen,
 .cf-figma-menu-root .Ingredients > div { font-weight: 400 !important; }
 
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 
 
 <style id="cf-menu-user-fixes-1">
-
+/* User fixes: tab labels single line, consistent best-selling card backgrounds, animated floating cart gradient. */
 .cf-figma-menu-root .FlotaingTabs .All,
 .cf-figma-menu-root .FlotaingTabs .ProteinPack,
 .cf-figma-menu-root .FlotaingTabs .Regular {
@@ -3046,6 +2989,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   }
 }
 
+
+/* Best selling free-scroll fix: allow cards to overflow to screen edges and remove auto snap */
 .cf-figma-menu-root .BestSellingSection {
   width: 390px !important;
   max-width: 100vw !important;
@@ -3095,6 +3040,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   display: none !important;
 }
 
+
+/* Figma CSS pass: only gap + font-weight corrections for 1.1 Menu */
 .cf-figma-menu-root .AllContent { gap: 20px !important; }
 .cf-figma-menu-root .TopSection { gap: 16px !important; }
 .cf-figma-menu-root .TopBar { gap: 110px !important; }
@@ -3172,7 +3119,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 .cf-figma-menu-root .ClassicHomemadeMealsTiffen,
 .cf-figma-menu-root .Ingredients > div { font-weight: 400 !important; }
 
-
+/* Use exact exported menu icons without clipping or styling overrides */
 .cf-figma-menu-root .UserProfile,
 .cf-figma-menu-root .avatar {
   width: 46px !important;
@@ -3188,7 +3135,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   display: block !important;
 }
 
-
+/* Default exported profile icon must stay exact. Real uploaded profile photo should render as a photo. */
 #menuProfileAvatarImg:not(.is-customer-photo) {
   object-fit: contain !important;
   border-radius: 0 !important;
@@ -3208,6 +3155,9 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   background: transparent !important;
 }
 
+
+
+/* Final menu listing spacing + divider + exact icon fixes */
 .cf-figma-menu-root .MenuListings {
   gap: 24px !important;
 }
@@ -3259,7 +3209,7 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   filter: none !important;
 }
 
-
+/* Tab active-state fix: inline Figma background on All tab must not stay active after filtering. */
 .cf-figma-menu-root .FlotaingTabs .pill {
   background: transparent !important;
 }
@@ -3268,40 +3218,6 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 }
 .cf-figma-menu-root .MenuListings.is-filtered .DividerFrame {
   display: none !important;
-}
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
 }
 
 </style>
@@ -3334,47 +3250,11 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   select {
     font-size: 16px;
   }
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 
 
 <style id="cf-menu-reference-refinement-20260524">
-
+/* 1.1 Menu reference recreation pass: dark menu, no bottom nav, exact spacing from uploaded HTML/CSS. */
 html,
 body {
   background: #12130F !important;
@@ -3859,47 +3739,11 @@ body {
     width: 100vw !important;
   }
 }
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 
 
 <style id="cf-menu-exact-latest-reference-20260524-v3">
-
+/* Latest user reference pass: structure, paddings, gaps, sizes and typography from uploaded Figma code. */
 html, body { background:#12130F !important; }
 body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root.app {
@@ -3979,47 +3823,14 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .FloatingAddedCard:not(.is-visible) { opacity:0 !important; visibility:hidden !important; pointer-events:none !important; }
 .cf-figma-menu-root .FloatingAddedCard.is-visible { opacity:1 !important; visibility:visible !important; pointer-events:auto !important; }
 .cf-figma-menu-root.app.has-floating-cart { padding-bottom:0 !important; }
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 
 
 <style id="cbe-ui-refine-menu-v4-fixes">
-
+/* v4 UI fixes from latest review:
+   1) Profile picture must behave like a rounded DP, not a full uncropped image.
+   2) Hero card must keep gradient overlay on top of the image.
+   3) MenuListings needs 10px top padding. */
 .cf-figma-menu-root .UserProfile,
 .cf-figma-menu-root .avatar,
 #menuProfileAvatarImg {
@@ -4055,42 +3866,6 @@ body { padding:0 !important; justify-content:center !important; }
   padding-top: 10px !important;
   box-sizing: border-box !important;
 }
-
-
-.cf-figma-menu-root .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 50% !important;
-  object-fit: cover !important;
-  overflow: hidden !important;
-  flex: 0 0 46px !important;
-}
-.cf-figma-menu-root .PenIcon img,
-.cf-figma-menu-root .ArrowRightIcon img,
-.cf-figma-menu-root .FloatingCartClose img {
-  display: block !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .qty-control {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  width: 16px !important;
-  height: 16px !important;
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-}
-.cf-figma-menu-root .qty-control img {
-  display: block !important;
-  width: 16px !important;
-  height: 16px !important;
-  object-fit: contain !important;
-}
-.cf-figma-menu-root .FloatingCartClose {
-  flex: 0 0 24px !important;
-}
-
 </style>
 
 </head>
@@ -4106,7 +3881,7 @@ body { padding:0 !important; justify-content:center !important; }
 <div class="DeliverTo" data-layer="Deliver to:" style="color: #FDFDFF; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; word-wrap: break-word">Deliver to:</div>
 <div class="ChangeButton" data-layer="change button" style="justify-content: flex-start; align-items: center; gap: 2px; display: flex">
 <div class="PenIcon" data-layer="pen-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
-<img alt="" aria-hidden="true" src="assets/menu/icons/pen-icon.svg" style="width:20px;height:20px;display:block;object-fit:contain;"/>
+<div class="PenVector" data-layer="pen-vector" style="width: 14.58px; height: 15.08px; left: 3px; top: 3px; position: absolute; background: #08A045"></div>
 </div>
 <div class="Change" data-layer="Change" style="color: #08A045; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Change</div>
 </div>
@@ -4116,7 +3891,7 @@ body { padding:0 !important; justify-content:center !important; }
 </div>
 <img alt="User profile" aria-label="Open profile" class="UserProfile avatar" data-layer="user profile" id="menuProfileAvatarImg" onclick="window.location.href='profile.html'" role="link" src="assets/menu/icons/user profile.svg" style="width: 46px; height: 46px; border-radius: 50px; object-fit: cover; display: block; cursor: pointer;" tabindex="0"/>
 </div>
-<div class="HeroCard" data-layer="hero card" style="width: 342px; padding-left: 16px; padding-right: 16px; padding-top: 14px; padding-bottom: 14px; background: #FDFDFF; border-radius: 20px; background-image: linear-gradient(318deg, rgba(136, 6, 206, 0) 26%, rgba(136, 6, 206, 0.50) 60%), url('assets/menu/img/hero card-img.png'); background-size: cover, cover; background-position: center, center; background-repeat: no-repeat, no-repeat; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
+<div class="HeroCard" data-layer="hero card" style="width: 342px; padding-left: 16px; padding-right: 16px; padding-top: 14px; padding-bottom: 14px; background: linear-gradient(318deg, rgba(136, 6, 206, 0) 26%, rgba(136, 6, 206, 0.50) 60%), #FDFDFF; border-radius: 20px; background-image: url('assets/menu/img/hero card-img.png'); background-size: cover; background-position: center; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
 <div class="HeroTitle" data-layer="hero title"><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">Fresh</span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> lunch, </span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">daily</span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> warm.</span></div>
 <div class="HeroInfo" data-layer="hero info" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
 <div class="HomeCookedOrderBy11Am" data-layer="Home cooked · Order by 11 AM" style="align-self: stretch; justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.60); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">Home cooked · Order by 11 AM</div>
@@ -4497,13 +4272,11 @@ body { padding:0 !important; justify-content:center !important; }
 <div class="CartButton" data-layer="cart-button" style="justify-content: flex-start; align-items: center; display: inline-flex">
 <div class="Cart" data-layer="Cart" style="justify-content: center; display: flex; flex-direction: column; color: #FDFDFF; font-size: 16px; font-family: General Sans; font-weight: 500; line-height: 19.20px; word-wrap: break-word">Cart</div>
 <div class="ArrowRightIcon" data-layer="arrow-right-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
-<img alt="" aria-hidden="true" src="assets/menu/icons/arrow-right-icon.svg" style="width:20px;height:20px;display:block;object-fit:contain;"/>
+<div class="ArrowRightVector" data-layer="arrow-right-Vector" style="width: 7.16px; height: 14.45px; left: 6.80px; top: 2.78px; position: absolute; background: #FDFDFF"></div>
 </div>
 </div>
 </div>
-<button class="FloatingCartClose" data-layer="close button" type="button" aria-label="Close cart preview" style="width:24px;height:24px;padding:0;border:0;background:transparent;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<img alt="" aria-hidden="true" src="assets/menu/icons/close-button.svg" style="width:24px;height:24px;display:block;object-fit:contain;"/>
-</button>
+<div class="Frame" data-layer="Frame" style="width: 24px; height: 24px; position: relative; overflow: hidden"><img alt="" aria-hidden="true" class="FloatingCartIcon" src="assets/menu/icons/cart-icon.svg" style="width:24px;height:24px;display:block;object-fit:contain;filter:brightness(0) invert(1);"/></div>
 </div>
 </div>
 <div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
@@ -4701,6 +4474,24 @@ document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
 <script>window.CBE_OLA_MAP_THEME = "dark";</script>
 <script src="ola-map-v4.js?v=20260523_appfeel1"></script>
 <script>
+/* =========================
+   MENU PAGE LOGIC
+========================= */
+
+
+
+/*
+========================================
+0. DELIVERY LOCATION MAP SCREEN LOGIC
+========================================
+
+Behavior:
+- Tapping the top location opens a full-screen map screen.
+- The map moves/zooms under a fixed center pin.
+- "Use current location" recenters the map using GPS.
+- The captured address card updates from the center pin.
+- Continue stores the selected pin as pending data for the next address-details screen.
+*/
 
 const deliveryAddressText = document.querySelector(".address");
 const deliveryLocationBox = document.querySelector(".location");
@@ -4764,7 +4555,11 @@ const DEFAULT_CBE_LOCATION = {
   source: "default_coimbatore"
 };
 
-
+/*
+Ola Maps V4 setup:
+- Map tiles/resources are proxied through Cloudflare Pages Function.
+- Reverse geocode also uses the same /ola-maps function first.
+*/
 const OLA_PROXY_URL = "/ola-maps";
 
 function cbeCleanOlaTargetUrl(rawUrl) {
@@ -5204,7 +4999,11 @@ function saveLocationState(locationState) {
   localStorage.setItem("cust_location_details", serializedLocation);
   localStorage.setItem("delivery_location_details", serializedLocation);
 
-  
+  /*
+    Customer-memory compatibility keys:
+    keep the current menu/cart keys, but also expose one clear active location key
+    for profile.html and future shared customer storage.
+  */
   localStorage.setItem("activeDeliveryLocation", serializedLocation);
   localStorage.setItem("customer_active_delivery_location", serializedLocation);
 
@@ -5259,7 +5058,11 @@ function saveSavedAddressesArray(addresses) {
   localStorage.setItem("cust_saved_addresses", serializedList);
   localStorage.setItem("delivery_saved_addresses", serializedList);
 
-  
+  /*
+    Customer-memory compatibility key:
+    profile.html and future shared customer storage can read the same saved addresses
+    without creating a separate address system.
+  */
   localStorage.setItem("savedAddresses", serializedList);
 
   if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
@@ -5529,7 +5332,7 @@ async function reverseGeocodeExactAddress(lat, lng) {
 
   try {
     const nominatimUrl =
-      "https:
+      "https://nominatim.openstreetmap.org/reverse" +
       "?format=jsonv2" +
       `&lat=${encodeURIComponent(lat)}` +
       `&lon=${encodeURIComponent(lng)}` +
@@ -5572,8 +5375,8 @@ async function reverseGeocodeExactAddress(lat, lng) {
 }
 
 function showMapMessage(message) {
-  
-  
+  // Intentionally no visible loading/error placeholder on map screen.
+  // The map canvas must remain the only visible layer behind the controls.
   if (message) console.log("Map status:", message);
   if (mapEmptyCopy) mapEmptyCopy.textContent = "";
   if (mapEmptyState) mapEmptyState.classList.add("is-hidden");
@@ -5982,7 +5785,7 @@ function cleanLocationFlowUrl() {
 }
 
 function refreshCommonBottomNav() {
-  
+  // Bottom navigation has been removed for the UI refinement phase.
 }
 
 function restoreCommonBottomNavAfterLocationFlow() {
@@ -6597,10 +6400,10 @@ function setupSavedAddressDrawerGesture() {
     const atTop = savedAddressList.scrollTop <= 2;
     const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
 
-    
+    // Finger up: list should scroll down unless it is already at bottom.
     if (deltaY < 0) return !atBottom;
 
-    
+    // Finger down: list should scroll up unless it is already at top.
     if (deltaY > 0) return !atTop;
 
     return false;
@@ -6612,7 +6415,7 @@ function setupSavedAddressDrawerGesture() {
     const deltaY = getDelta(y);
     const expanded = isExpanded();
 
-    
+    // Collapsed state: saved addresses are only a preview. Any upward swipe opens the drawer.
     if (!expanded) {
       if (event && event.cancelable) event.preventDefault();
 
@@ -6623,12 +6426,12 @@ function setupSavedAddressDrawerGesture() {
       return;
     }
 
-    
+    // Expanded state: saved address list owns normal scrolling.
     if (shouldLetSavedListScroll(target, deltaY) && !startedOnHandle) {
       return;
     }
 
-    
+    // Expanded + list already at top / handle dragged: downward swipe collapses drawer.
     if (deltaY > SWIPE_THRESHOLD) {
       if (event && event.cancelable) event.preventDefault();
       collapseSavedAddressDrawer();
@@ -6650,7 +6453,7 @@ function setupSavedAddressDrawerGesture() {
     const delta = event.deltaY;
     const isOverList = savedAddressList && savedAddressList.contains(event.target);
 
-    
+    // Collapsed state: wheel/trackpad scroll on the drawer opens it. The list does not scroll yet.
     if (!expanded && delta > WHEEL_THRESHOLD) {
       event.preventDefault();
       expandSavedAddressDrawer();
@@ -6663,7 +6466,7 @@ function setupSavedAddressDrawerGesture() {
       return;
     }
 
-    
+    // Expanded state: let saved list scroll normally while it has scroll room.
     if (isOverList) {
       const atTop = savedAddressList.scrollTop <= 2;
       const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
@@ -6673,7 +6476,7 @@ function setupSavedAddressDrawerGesture() {
       }
     }
 
-    
+    // When expanded and already at the top, wheel/trackpad up collapses it.
     if (delta < -WHEEL_THRESHOLD) {
       event.preventDefault();
       collapseSavedAddressDrawer();
@@ -7158,6 +6961,30 @@ window.addEventListener("keydown", event => {
 renderDeliveryLocation();
 renderSavedAddressList();
 
+/* Customer location is user-controlled. We do not auto-request GPS after first setup. */
+
+
+/*
+========================================
+1. PRODUCT DATA SOURCE
+========================================
+
+Why:
+- Right now products exist only in HTML.
+- Logic becomes hard if products are duplicated everywhere.
+- So we create ONE source of truth.
+
+How:
+- Every product gets:
+  id
+  category
+  price
+  protein
+  etc
+
+- UI reads from this data.
+*/
+
 const products = [
   {
     "id": 1,
@@ -7239,6 +7066,24 @@ const products = [
   }
 ];
 
+
+/*
+========================================
+2. FILTER PILLS LOGIC
+========================================
+
+Why:
+- Only one pill should be active.
+- Clicking a pill should:
+  - remove active state from others
+  - activate clicked pill
+  - filter sections
+
+How:
+- We loop through every .pill
+- Add click listener
+*/
+
 const pills = document.querySelectorAll(".pill");
 
 const bestSellingSection =
@@ -7263,7 +7108,10 @@ function setActivePill(activePill) {
     pill.classList.remove("pill-active");
     pill.setAttribute("aria-selected", "false");
 
-    
+    /*
+    Figma export had inline background on All tab.
+    Clear inline background so only the clicked tab stays highlighted.
+    */
     pill.style.background = "transparent";
   });
 
@@ -7275,7 +7123,10 @@ function setActivePill(activePill) {
 
 function setDividerMode(mode) {
 
-  
+  /*
+  All view: keep dividers between menu groups.
+  Filtered view: hide dividers above/below the visible listing.
+  */
   const shouldHideDividers = mode !== "all";
 
   if (menuListings) {
@@ -7328,11 +7179,25 @@ pills.forEach((pill, index) => {
 
 });
 
-
+/*
+Initial state: keep only All tab highlighted and show all sections/dividers.
+*/
 if (pills[0]) {
   setActivePill(pills[0]);
 }
 setMenuFilter("all");
+
+/*
+========================================
+3. ADD TO CART + QUANTITY BUTTON LOGIC
+========================================
+
+Behavior:
+- Product quantity 0 = green Add button.
+- Product quantity 1 or more = translucent white quantity button with - qty +.
+- Same product shown in multiple places updates everywhere.
+- Cart is saved in localStorage.
+*/
 
 const addButtons = document.querySelectorAll(
   ".action-btn, .product-list-action"
@@ -7353,7 +7218,11 @@ function loadCart() {
 
     const parsedCart = JSON.parse(savedCart);
 
-    
+    /*
+    Supports both formats:
+    - current array format
+    - older object format, if it exists from testing
+    */
     if (Array.isArray(parsedCart)) {
       return parsedCart;
     }
@@ -7567,9 +7436,9 @@ function renderCartButton(button) {
   button.classList.add("qty-button");
 
   button.innerHTML = `
-    <button class="qty-control qty-minus" type="button" aria-label="Decrease quantity"><img alt="" aria-hidden="true" src="assets/menu/icons/qty-minus.svg" /></button>
+    <button class="qty-control qty-minus" type="button" aria-label="Decrease quantity">-</button>
     <div class="qty-count">${qty}</div>
-    <button class="qty-control qty-plus" type="button" aria-label="Increase quantity"><img alt="" aria-hidden="true" src="assets/menu/icons/qty-plus.svg" /></button>
+    <button class="qty-control qty-plus" type="button" aria-label="Increase quantity">+</button>
   `;
 
 }
@@ -7604,14 +7473,19 @@ addButtons.forEach((button) => {
 
     }
 
-    
+    /*
+    If the button is already in quantity mode,
+    clicking the number or empty gap should not add again.
+    */
     if (button.classList.contains("qty-button")) {
       return;
     }
 
     addProductToCart(productId);
 
-    
+    /*
+    Touch feedback only for Add click.
+    */
     button.style.transform = "scale(0.95)";
 
     setTimeout(() => {
@@ -7621,6 +7495,19 @@ addButtons.forEach((button) => {
   });
 
 });
+
+
+/*
+========================================
+4. CART COUNT BADGE
+========================================
+
+Why:
+- User must know how many items added.
+
+How:
+- Sum all quantities in cart.
+*/
 
 function updateCartCount() {
 
@@ -7639,18 +7526,7 @@ function updateCartCount() {
 
 if (floatingCartCard) {
 
-  const floatingCartClose = floatingCartCard.querySelector(".FloatingCartClose");
-
-  if (floatingCartClose) {
-    floatingCartClose.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      floatingCartCard.classList.remove("is-visible");
-    });
-  }
-
-  floatingCartCard.addEventListener("click", (event) => {
-    if (event.target.closest(".FloatingCartClose")) return;
+  floatingCartCard.addEventListener("click", () => {
     window.location.href = "cart.html";
   });
 
@@ -7662,6 +7538,16 @@ if (floatingCartCard) {
   });
 
 }
+
+
+/*
+========================================
+5. BUTTON ACTIVE FEEDBACK
+========================================
+
+Why:
+- UI feels responsive on mobile.
+*/
 
 const tapButtons = document.querySelectorAll(
   ".action-btn, .product-list-action, .pill, .nav-item"
@@ -7679,6 +7565,20 @@ tapButtons.forEach(btn => {
 
 });
 
+
+/*
+========================================
+6. RESTORE APP STATE
+========================================
+
+Why:
+- On refresh:
+  cart count and button quantity state should remain.
+
+How:
+- Read localStorage and render every product button.
+*/
+
 renderAllCartButtons();
 updateCartCount();
 updateFloatingCartCard();
@@ -7689,7 +7589,10 @@ window.setTimeout(updateCartCount, 900);
 if (shouldAutoOpenLocationMap()) {
   sessionStorage.removeItem("cbe_open_location_map");
 
-  
+  /*
+    Open from cart/profile return flow must be reliable.
+    Retry a few times because maps/scripts/layout can finish slightly after page load.
+  */
   [80, 250, 700].forEach(delay => {
     setTimeout(() => {
       if (!locationMapScreen || locationMapScreen.classList.contains("is-open")) return;
@@ -7698,6 +7601,9 @@ if (shouldAutoOpenLocationMap()) {
     }, delay);
   });
 }
+
+
+/* Horizontal scroll and snap are handled in CSS above. */
 
 </script>
 <script src="firebase-config.js"></script>
@@ -7708,7 +7614,18 @@ if (shouldAutoOpenLocationMap()) {
 
 <script>
 (function installCBECustomerStore() {
-  
+  /*
+    Customer memory foundation
+    ----------------------------------------
+    Phone login / Firebase UID = customer identity.
+    Firebase = real customer memory.
+    localStorage = fast page cache only.
+
+    This script is intentionally UI-safe:
+    - no layout changes
+    - no track/order changes
+    - no unpaid order reading/writing
+  */
 
   const CUSTOMER_ID_KEY = "cbe_active_customer_id";
   const CUSTOMER_CACHE_VERSION_KEY = "cbe_customer_cache_version";
@@ -8653,7 +8570,7 @@ if (shouldAutoOpenLocationMap()) {
     try {
       localStorage.setItem(CART_KEY, JSON.stringify(items.filter(item => Number(item.qty || 0) > 0)));
     } catch {
-      
+      // localStorage unavailable should not break menu UI.
     }
   }
 
@@ -8693,7 +8610,10 @@ if (shouldAutoOpenLocationMap()) {
       return card;
     }
 
-    
+    /*
+      Safety fallback: if future edits accidentally remove the HTML,
+      create the same floating card dynamically.
+    */
     card = document.createElement("div");
     card.className = "floating-cart-card floating-added-card";
     card.id = "floatingCartCard";
@@ -8803,7 +8723,10 @@ if (shouldAutoOpenLocationMap()) {
     window.setTimeout(syncFloatingCard, 420);
   }
 
-  
+  /*
+    If the older add-to-cart handler fails for any reason, this fallback updates cart.
+    If the older handler works, this does NOT double-add because it checks whether cart changed.
+  */
   document.addEventListener("click", event => {
     const actionButton = event.target.closest(".action-btn, .product-list-action");
     if (!actionButton) return;
@@ -8833,7 +8756,9 @@ if (shouldAutoOpenLocationMap()) {
     }, 50);
   }, true);
 
-  
+  /*
+    Watch all cart localStorage changes, including changes made by old logic.
+  */
   try {
     const originalSetItem = localStorage.setItem.bind(localStorage);
     const originalRemoveItem = localStorage.removeItem.bind(localStorage);
@@ -8850,7 +8775,7 @@ if (shouldAutoOpenLocationMap()) {
       return result;
     };
   } catch {
-    
+    // Ignore localStorage patch failures.
   }
 
   window.addEventListener("storage", event => {
