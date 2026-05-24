@@ -3877,18 +3877,22 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .HeroAndTabsGroup .FlotaingTabs{width:342px!important;height:59px!important;gap:16px!important;flex:none!important}
 </style>
 
-<style id="cf-menu-best-selling-sticky-transform-v16">
-.cf-figma-menu-root .BestSellingSection {
+<style id="cf-menu-section-fixed-transform-v17">
+.cf-figma-menu-root .BestSellingSection,
+.cf-figma-menu-root .ProteinPackSection,
+.cf-figma-menu-root .RegularPackSection {
   overflow: visible !important;
   position: relative !important;
 }
-.cf-figma-menu-root .BestSellingSection > .TextGroup {
+.cf-figma-menu-root .BestSellingSection > .TextGroup,
+.cf-figma-menu-root .ProteinPackSection > .TextGroup,
+.cf-figma-menu-root .RegularPackSection > .TextGroup {
   position: relative !important;
   top: auto !important;
   z-index: 20 !important;
   background: transparent !important;
 }
-.cf-menu-sticky-best-clone {
+.cf-menu-section-sticky-clone {
   position: fixed !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
@@ -3905,11 +3909,15 @@ body { padding:0 !important; justify-content:center !important; }
   z-index: 480 !important;
   pointer-events: none !important;
 }
-.cf-menu-sticky-best-clone.is-visible {
+.cf-menu-section-sticky-clone.is-visible {
   display: flex !important;
 }
-.cf-menu-sticky-best-clone .BestSelling,
-.cf-menu-sticky-best-clone .FasterSellingOrders {
+.cf-menu-section-sticky-clone .BestSelling,
+.cf-menu-section-sticky-clone .FasterSellingOrders,
+.cf-menu-section-sticky-clone .ProteinPack,
+.cf-menu-section-sticky-clone .HighProteinFitnessFriendly,
+.cf-menu-section-sticky-clone .RegularPacks,
+.cf-menu-section-sticky-clone .ClassicHomemadeMealsTiffen {
   transform: none !important;
 }
 </style>
@@ -8821,42 +8829,51 @@ if (shouldAutoOpenLocationMap()) {
     );
   })();
 </script>
-<script id="cf-menu-best-selling-sticky-transform-v16-script">
+<script id="cf-menu-section-fixed-transform-v17-script">
 (function(){
-  function initBestSellingStickyTransform(){
+  function initMenuSectionFixedTransform(){
     var root = document.querySelector('.cf-figma-menu-root');
     if (!root) return;
-    var nextSection = root.querySelector('.ProteinPackSection');
-    var textGroup = root.querySelector('.BestSellingSection > .TextGroup');
     var topBar = root.querySelector('.TopBar');
-    if (!textGroup || !topBar) return;
-    var clone = root.querySelector('.cf-menu-sticky-best-clone');
-    if (!clone) {
-      clone = textGroup.cloneNode(true);
-      clone.classList.add('cf-menu-sticky-best-clone');
+    if (!topBar) return;
+    var items = [
+      { section: root.querySelector('.BestSellingSection'), next: root.querySelector('.ProteinPackSection') },
+      { section: root.querySelector('.ProteinPackSection'), next: root.querySelector('.RegularPackSection') },
+      { section: root.querySelector('.RegularPackSection'), next: null }
+    ];
+    var pairs = [];
+    items.forEach(function(item){
+      if (!item.section) return;
+      var textGroup = item.section.querySelector(':scope > .TextGroup');
+      if (!textGroup) return;
+      var clone = textGroup.cloneNode(true);
+      clone.classList.add('cf-menu-section-sticky-clone');
       clone.removeAttribute('style');
       clone.setAttribute('aria-hidden', 'true');
       root.appendChild(clone);
-    }
+      pairs.push({ textGroup: textGroup, next: item.next, clone: clone });
+    });
     function getStickyTop(){
-      return Math.round(topBar.getBoundingClientRect().height) + 4;
+      return Math.round(topBar.getBoundingClientRect().height) + 2;
     }
     function update(){
       var stickyTop = getStickyTop();
-      var textRect = textGroup.getBoundingClientRect();
-      var nextRect = nextSection ? nextSection.getBoundingClientRect() : null;
-      var active = textRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
-      clone.style.top = stickyTop + 'px';
-      clone.classList.toggle('is-visible', active);
+      pairs.forEach(function(pair){
+        var textRect = pair.textGroup.getBoundingClientRect();
+        var nextRect = pair.next ? pair.next.getBoundingClientRect() : null;
+        var active = textRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
+        pair.clone.style.top = stickyTop + 'px';
+        pair.clone.classList.toggle('is-visible', active);
+      });
     }
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update);
   }
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initBestSellingStickyTransform);
+    document.addEventListener('DOMContentLoaded', initMenuSectionFixedTransform);
   } else {
-    initBestSellingStickyTransform();
+    initMenuSectionFixedTransform();
   }
 })();
 </script>
