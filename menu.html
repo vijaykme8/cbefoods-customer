@@ -2803,6 +2803,47 @@ body.map-screen-open .cf-figma-menu-root .BottomNavBar {
 }
 .saveas-chip.is-selected .saveas-icon { opacity: 1; }
 
+
+
+/* =========================================================
+   UI refinement phase: bottom navigation removed app-wide.
+   Keep only content/floating-cart safe-area spacing.
+========================================================= */
+#bottomNavMount,
+.bottom-nav,
+.BottomNavBar,
+.cf-bottom-nav {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.has-bottom-nav {
+  --bottom-nav-height: 0px !important;
+}
+
+.app,
+.cf-figma-menu-root.app {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+.app.has-floating-cart,
+.cf-figma-menu-root.app.has-floating-cart {
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+}
+
+.floating-cart-card,
+.floating-added-card,
+.cf-figma-menu-root .FloatingAddedCard {
+  bottom: calc(16px + env(safe-area-inset-bottom)) !important;
+}
+
 </style>
 <script>
 (function () {
@@ -8090,10 +8131,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-
-<div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260523_appfeel1"></script>
-<script src="pwa-speed.js?v=20260523_appfeel1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav1" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">

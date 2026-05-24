@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260523_appfeel1';
+  const SPEED_VERSION = '20260524_ui_refine_nonav1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
@@ -8,15 +8,7 @@
     'track-fullscreen.html',
     'order_placed.html'
   ];
-
-  const NAV_ICON_ASSETS = [
-    'assets/bottom-nav-bar/active-search-icon.svg',
-    'assets/bottom-nav-bar/inactive-search-icon.svg',
-    'assets/bottom-nav-bar/active-cart-icon.svg',
-    'assets/bottom-nav-bar/inactive-cart-icon.svg',
-    'assets/bottom-nav-bar/active-track-icon.svg',
-    'assets/bottom-nav-bar/inactive-track-icon.svg'
-  ];
+  const NAV_ICON_ASSETS = [];
 
   const IMAGE_ASSETS = [
     'assets/cart/dish-img.png',
@@ -46,8 +38,6 @@
     ...NAV_ICON_ASSETS,
     ...IMAGE_ASSETS,
     ...FONT_ASSETS,
-    'components/bottom-nav.css?v=20260523_appfeel1',
-    'components/bottom-nav.js?v=20260523_appfeel1',
     'ola-map-v4.js?v=20260523_appfeel1',
     'firebase-config.js',
     'firebase-mvp.js'
@@ -76,19 +66,13 @@
         transition: opacity 110ms ease, transform 110ms ease;
         pointer-events: none;
       }
-      .cf-bottom-nav__item,
       button,
       a,
       [role="button"] {
         touch-action: manipulation;
       }
-      .cf-bottom-nav__item.is-pressing {
-        transform: translate3d(0, -1px, 0) scale(0.985);
-        transition: transform 90ms ease;
-      }
       @media (prefers-reduced-motion: reduce) {
-        body.cbe-page-leaving,
-        .cf-bottom-nav__item.is-pressing {
+        body.cbe-page-leaving {
           transition: none !important;
           transform: none !important;
         }

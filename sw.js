@@ -1,4 +1,4 @@
-const CBE_CACHE_VERSION = '20260523_appfeel1';
+const CBE_CACHE_VERSION = '20260524_ui_refine_nonav1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 
@@ -12,18 +12,10 @@ const PRECACHE_URLS = [
   './profile.html',
   './track-fullscreen.html',
   './order_placed.html',
-  './components/bottom-nav.css?v=20260523_appfeel1',
-  './components/bottom-nav.js?v=20260523_appfeel1',
-  './pwa-speed.js?v=20260523_appfeel1',
+  './pwa-speed.js?v=20260524_ui_refine_nonav1',
   './firebase-config.js',
   './firebase-mvp.js',
   './ola-map-v4.js?v=20260523_appfeel1',
-  './assets/bottom-nav-bar/active-search-icon.svg',
-  './assets/bottom-nav-bar/inactive-search-icon.svg',
-  './assets/bottom-nav-bar/active-cart-icon.svg',
-  './assets/bottom-nav-bar/inactive-cart-icon.svg',
-  './assets/bottom-nav-bar/active-track-icon.svg',
-  './assets/bottom-nav-bar/inactive-track-icon.svg',
   './assets/cart/dish-img.png',
   './assets/track orders/track-img.svg',
   './assets/menu/icons/user profile.svg',

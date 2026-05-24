@@ -1,150 +1,20 @@
-:root {
-  --cf-bottom-nav-height: 64px;
-  --cf-bottom-nav-bg: #12130F;
-  --cf-bottom-nav-text: #FDFDFF;
-}
+/* Bottom nav removed for UI refinement. Kept as a safe no-op for old cached pages. */
 
+:root,
 body.has-bottom-nav {
-  --bottom-nav-height: var(--cf-bottom-nav-height);
+  --cf-bottom-nav-height: 0px !important;
+  --bottom-nav-height: 0px !important;
 }
-
-.cf-bottom-nav,
-.cf-bottom-nav *,
-.cf-bottom-nav *::before,
-.cf-bottom-nav *::after {
-  box-sizing: border-box;
-}
-
+#bottomNavMount,
+.BottomNavBar,
 .cf-bottom-nav {
-  position: fixed;
-  z-index: 2200;
-  left: 50%;
-  bottom: 0;
-  transform: translateX(-50%);
-  width: 390px;
-  max-width: 100vw;
-  height: 64px;
-  padding: 10px 24px 0;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 40px;
-  background: #12130F;
-  border-top: 1px solid rgba(253, 253, 255, 0.16);
-  box-shadow: 0 -2px 16px rgba(255, 255, 255, 0.10);
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-.cf-bottom-nav__item {
-  width: 80px;
-  height: 41px;
-  display: inline-flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 3px;
-  padding: 0;
-  color: #FDFDFF;
-  text-decoration: none;
-  flex: 0 0 auto;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.cf-bottom-nav__icon {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-}
-
-.cf-bottom-nav__state-icon {
-  width: 24px;
-  height: 24px;
-  display: block;
-  object-fit: contain;
-  flex: 0 0 auto;
-}
-
-.cf-bottom-nav__label {
-  width: 80px;
-  height: 14px;
-  color: #FDFDFF;
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 120%;
-  text-align: center;
-  white-space: nowrap;
-  overflow: visible;
-}
-
-.cf-bottom-nav__item[data-nav-key="track"] .cf-bottom-nav__label {
-  width: 71px;
-}
-
-.cf-bottom-nav[hidden] {
   display: none !important;
-}
-
-body.is-location-flow-open .cf-bottom-nav,
-body.map-screen-open .cf-bottom-nav,
-body.no-bottom-nav .cf-bottom-nav,
-body[data-bottom-nav="off"] .cf-bottom-nav {
-  display: none !important;
-}
-
-
-.cf-bottom-nav__item--cart {
-  position: relative;
-}
-
-.cf-bottom-nav__badge,
-.cart-badge {
-  position: absolute;
-  top: -4px;
-  right: 16px;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  border-radius: 999px;
-  background: #E23009;
-  color: #FFFFFF;
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 18px;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 2;
-}
-
-@media (max-width: 389px) {
-  .cf-bottom-nav {
-    width: 100vw;
-    gap: clamp(18px, 10vw, 40px);
-  }
-}
-
-
-.cf-bottom-nav__item {
-  transition: transform 90ms ease, opacity 90ms ease;
-}
-
-.cf-bottom-nav__item.is-pressing {
-  transform: translate3d(0, -1px, 0) scale(0.985);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cf-bottom-nav__item,
-  .cf-bottom-nav__item.is-pressing {
-    transition: none !important;
-    transform: none !important;
-  }
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }

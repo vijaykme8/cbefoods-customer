@@ -502,6 +502,44 @@ body {
   border-color: rgba(253, 253, 255, 0.12) !important;
 }
 
+
+
+/* =========================================================
+   UI refinement phase: bottom navigation removed app-wide.
+   Keep only natural scroll/safe-area spacing.
+========================================================= */
+#bottomNavMount,
+.BottomNavBar,
+.cf-bottom-nav,
+[data-layer="nav-search"],
+[data-layer="nav-cart"],
+[data-layer="nav-track"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.has-bottom-nav {
+  --bottom-nav-height: 0px !important;
+}
+
+#trackEmptyRaw,
+#trackAddedRaw,
+#trackEmptyRaw > [data-layer="Frame 82"],
+#trackAddedRaw > [data-layer="Frame 84"] {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
+#trackAddedRaw [data-layer="empty-tract-content"] {
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
 </style>
 
 <style id="cf-mobile-zoom-lock">
@@ -1767,10 +1805,6 @@ body {
     </div>
   </section>
 </main>
-
-<div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260523_appfeel1"></script>
-
 <script>
 (function setupTrackListScreen() {
   const emptyScreen = document.getElementById('trackEmptyScreen');
@@ -2972,7 +3006,7 @@ body {
 })();
 </script>
 
-<script src="pwa-speed.js?v=20260523_appfeel1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav1" defer></script>
 
 <script id="cf-mobile-zoom-lock-script">
   (function () {

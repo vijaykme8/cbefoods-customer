@@ -1276,6 +1276,51 @@ body {
   line-height: 24px !important;
 }
 
+
+
+/* =========================================================
+   UI refinement phase: bottom navigation removed app-wide.
+   Cart CTA now sits at viewport bottom with safe-area spacing.
+========================================================= */
+:root {
+  --cf-bottom-nav-height: 0px !important;
+  --cf-cart-bottom-stack: var(--cf-placeorder-height) !important;
+}
+
+#bottomNavMount,
+.BottomNavBar,
+.cf-bottom-nav {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+body.has-bottom-nav {
+  --bottom-nav-height: 0px !important;
+}
+
+.cart-shell:not(.is-empty) .cart-content {
+  bottom: 0 !important;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom)) !important;
+}
+
+.cart-shell:not(.is-empty) .placeorder-section {
+  bottom: 0 !important;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+}
+
+.cart-shell.is-empty .empty-state,
+.empty-state {
+  bottom: 0 !important;
+  padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
+}
+
 </style>
 
 <style id="cf-mobile-zoom-lock">
@@ -3008,9 +3053,6 @@ body {
   continuePaymentFromAddressIfNeeded();
 })();
 </script>
-<div id="bottomNavMount"></div>
-<script src="components/bottom-nav.js?v=20260523_appfeel1"></script>
-
 <script id="cf-mobile-zoom-lock-script">
   (function () {
     if (window.__cfMobileZoomLock) return;
@@ -3047,6 +3089,6 @@ body {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260523_appfeel1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav1" defer></script>
 </body>
 </html>
