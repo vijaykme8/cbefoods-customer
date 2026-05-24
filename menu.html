@@ -3877,6 +3877,25 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .HeroAndTabsGroup .FlotaingTabs{width:342px!important;height:59px!important;gap:16px!important;flex:none!important}
 </style>
 
+<style id="cf-menu-best-selling-sticky-transform-v14">
+.cf-figma-menu-root .BestSellingSection > .TextGroup {
+  position: sticky !important;
+  top: 120px !important;
+  z-index: 480 !important;
+  box-sizing: border-box !important;
+  transition: background 0.12s ease, height 0.12s ease, gap 0.12s ease;
+}
+.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active {
+  height: 69px !important;
+  gap: 0 !important;
+  background: #282829 !important;
+}
+.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active .BestSelling,
+.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active .FasterSellingOrders {
+  transform: none !important;
+}
+</style>
+
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
@@ -8784,5 +8803,33 @@ if (shouldAutoOpenLocationMap()) {
     );
   })();
 </script>
+<script id="cf-menu-best-selling-sticky-transform-v14-script">
+(function(){
+  function initBestSellingStickyTransform(){
+    var root = document.querySelector('.cf-figma-menu-root');
+    if (!root) return;
+    var section = root.querySelector('.BestSellingSection');
+    var textGroup = root.querySelector('.BestSellingSection > .TextGroup');
+    if (!section || !textGroup) return;
+    var stickyTop = 120;
+    function update(){
+      var groupRect = textGroup.getBoundingClientRect();
+      var sectionRect = section.getBoundingClientRect();
+      var groupHeight = textGroup.offsetHeight || 69;
+      var active = groupRect.top <= stickyTop + 0.5 && sectionRect.bottom > stickyTop + groupHeight;
+      textGroup.classList.toggle('is-sticky-active', active);
+    }
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBestSellingStickyTransform);
+  } else {
+    initBestSellingStickyTransform();
+  }
+})();
+</script>
+
 </body>
 </html>
