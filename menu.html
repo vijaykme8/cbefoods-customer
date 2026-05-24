@@ -3960,6 +3960,76 @@ body { padding:0 !important; justify-content:center !important; }
   letter-spacing: -0.04em !important;
 }
 </style>
+
+<style>
+.cart-clear-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10080;
+  background: rgba(18, 19, 15, 0.24);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.cart-clear-confirm-overlay.is-open {
+  display: flex;
+}
+.cart-clear-confirm-dialog {
+  width: 342px;
+  max-width: calc(100vw - 48px);
+  padding: 20px;
+  background: #282829;
+  border: 1px solid rgba(253, 253, 255, 0.12);
+  border-radius: 20px;
+  box-shadow: 0px 12px 40px rgba(0, 0, 0, 0.30);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cart-clear-confirm-title {
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 120%;
+}
+.cart-clear-confirm-copy {
+  color: rgba(253, 253, 255, 0.64);
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+.cart-clear-confirm-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.cart-clear-confirm-button {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 0;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 120%;
+  cursor: pointer;
+}
+.cart-clear-confirm-cancel {
+  background: rgba(253, 253, 255, 0.08);
+  color: #FDFDFF;
+}
+.cart-clear-confirm-clear {
+  background: #08A045;
+  color: #FDFDFF;
+}
+body.is-cart-clear-confirm-open {
+  overflow: hidden;
+}
+</style>
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
@@ -4354,6 +4424,16 @@ body { padding:0 !important; justify-content:center !important; }
 <button aria-label="Close cart preview" class="FloatingCartClose" data-layer="close-button" type="button" style="width:24px;height:24px;display:flex;align-items:center;justify-content:center;background:transparent;border:0;padding:0;margin:0;cursor:pointer">
 <img alt="" aria-hidden="true" class="FloatingCartIcon" src="assets/menu/icons/close-button.svg" style="width:24px;height:24px;display:block;object-fit:contain"/>
 </button>
+</div>
+<div class="cart-clear-confirm-overlay" id="cartClearConfirmOverlay" aria-hidden="true">
+<div class="cart-clear-confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="cartClearConfirmTitle" aria-describedby="cartClearConfirmCopy">
+<div class="cart-clear-confirm-title" id="cartClearConfirmTitle">Clear cart?</div>
+<div class="cart-clear-confirm-copy" id="cartClearConfirmCopy">This will remove all items from your cart.</div>
+<div class="cart-clear-confirm-actions">
+<button class="cart-clear-confirm-button cart-clear-confirm-cancel" id="cartClearCancelBtn" type="button">Cancel</button>
+<button class="cart-clear-confirm-button cart-clear-confirm-clear" id="cartClearConfirmBtn" type="button">Clear cart</button>
+</div>
+</div>
 </div>
 </div>
 <div class="customer-map-screen is-map-step" id="locationMapScreen" aria-hidden="true">
@@ -7505,6 +7585,67 @@ function updateCartCount() {
 }
 
 
+const cartClearConfirmOverlay = document.getElementById("cartClearConfirmOverlay");
+const cartClearCancelBtn = document.getElementById("cartClearCancelBtn");
+const cartClearConfirmBtn = document.getElementById("cartClearConfirmBtn");
+
+function openCartClearConfirm() {
+
+  if (!cartClearConfirmOverlay) return;
+
+  cartClearConfirmOverlay.classList.add("is-open");
+  cartClearConfirmOverlay.setAttribute("aria-hidden", "false");
+  document.body.classList.add("is-cart-clear-confirm-open");
+  cartClearCancelBtn?.focus({ preventScroll: true });
+
+}
+
+function closeCartClearConfirm() {
+
+  if (!cartClearConfirmOverlay) return;
+
+  cartClearConfirmOverlay.classList.remove("is-open");
+  cartClearConfirmOverlay.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("is-cart-clear-confirm-open");
+
+}
+
+function clearCartFromFloatingCard() {
+
+  cart = [];
+  lastAddedProductName = "";
+  saveCart();
+  renderAllCartButtons();
+  updateCartCount();
+  updateFloatingCartCard();
+  closeCartClearConfirm();
+
+}
+
+if (cartClearConfirmOverlay) {
+
+  cartClearConfirmOverlay.addEventListener("click", event => {
+    if (event.target === cartClearConfirmOverlay) {
+      closeCartClearConfirm();
+    }
+  });
+
+}
+
+if (cartClearCancelBtn) {
+  cartClearCancelBtn.addEventListener("click", closeCartClearConfirm);
+}
+
+if (cartClearConfirmBtn) {
+  cartClearConfirmBtn.addEventListener("click", clearCartFromFloatingCard);
+}
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && cartClearConfirmOverlay?.classList.contains("is-open")) {
+    closeCartClearConfirm();
+  }
+});
+
 if (floatingCartCard) {
 
   const floatingCartClose = floatingCartCard.querySelector(".FloatingCartClose");
@@ -7513,8 +7654,7 @@ if (floatingCartCard) {
     floatingCartClose.addEventListener("click", event => {
       event.preventDefault();
       event.stopPropagation();
-      floatingCartCard.classList.remove("is-visible");
-      document.querySelector(".app")?.classList.remove("has-floating-cart");
+      openCartClearConfirm();
     });
   }
 
