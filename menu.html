@@ -3877,12 +3877,17 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .HeroAndTabsGroup .FlotaingTabs{width:342px!important;height:59px!important;gap:16px!important;flex:none!important}
 </style>
 
-<style id="cf-menu-best-selling-sticky-transform-v14">
+<style id="cf-menu-best-selling-sticky-transform-v15">
+.cf-figma-menu-root .BestSellingSection {
+  overflow: visible !important;
+  position: relative !important;
+}
 .cf-figma-menu-root .BestSellingSection > .TextGroup {
   position: sticky !important;
   top: 120px !important;
   z-index: 480 !important;
   box-sizing: border-box !important;
+  background: transparent !important;
   transition: background 0.12s ease, height 0.12s ease, gap 0.12s ease;
 }
 .cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active {
@@ -8803,20 +8808,25 @@ if (shouldAutoOpenLocationMap()) {
     );
   })();
 </script>
-<script id="cf-menu-best-selling-sticky-transform-v14-script">
+<script id="cf-menu-best-selling-sticky-transform-v15-script">
 (function(){
   function initBestSellingStickyTransform(){
     var root = document.querySelector('.cf-figma-menu-root');
     if (!root) return;
     var section = root.querySelector('.BestSellingSection');
+    var nextSection = root.querySelector('.ProteinPackSection');
     var textGroup = root.querySelector('.BestSellingSection > .TextGroup');
-    if (!section || !textGroup) return;
-    var stickyTop = 120;
+    var topBar = root.querySelector('.TopBar');
+    if (!section || !textGroup || !topBar) return;
+    function getStickyTop(){
+      return Math.round(topBar.getBoundingClientRect().height) + 4;
+    }
     function update(){
-      var groupRect = textGroup.getBoundingClientRect();
+      var stickyTop = getStickyTop();
+      textGroup.style.top = stickyTop + 'px';
       var sectionRect = section.getBoundingClientRect();
-      var groupHeight = textGroup.offsetHeight || 69;
-      var active = groupRect.top <= stickyTop + 0.5 && sectionRect.bottom > stickyTop + groupHeight;
+      var nextRect = nextSection ? nextSection.getBoundingClientRect() : null;
+      var active = sectionRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
       textGroup.classList.toggle('is-sticky-active', active);
     }
     update();
