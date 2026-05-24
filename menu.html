@@ -3865,24 +3865,54 @@ body { padding:0 !important; justify-content:center !important; }
 </style>
 
 <style id="cf-menu-scroll-top-variant">
+:root { --menu-top-progress: 0; }
+.cf-figma-menu-root.app {
+  height: auto !important;
+  min-height: 2440px !important;
+  overflow: visible !important;
+  display: block !important;
+}
+.cf-figma-menu-root .AllContent {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  height: auto !important;
+  display: flex !important;
+}
 .cf-figma-menu-root .TopSection {
   position: sticky !important;
   top: 0 !important;
   z-index: 1000 !important;
   overflow: hidden !important;
   box-sizing: border-box !important;
-  transition: height 180ms ease, background 180ms ease, padding 180ms ease !important;
+  height: calc(368px - (262px * var(--menu-top-progress, 0))) !important;
+  min-height: 106px !important;
+  background: linear-gradient(180deg, rgba(253, 253, 255, 0.16) 0%, rgba(247, 247, 249, 0.16) 100%), #000000 !important;
+  will-change: height, background;
+}
+.cf-figma-menu-root .TopBar {
+  position: relative !important;
+  z-index: 2 !important;
+  flex: 0 0 46px !important;
+}
+.cf-figma-menu-root .HeroCard,
+.cf-figma-menu-root .FlotaingTabs {
+  transform: translate3d(0, calc(-310px * var(--menu-top-progress, 0)), 0) !important;
+  opacity: calc(1 - var(--menu-top-progress, 0)) !important;
+  will-change: transform, opacity;
 }
 .cf-figma-menu-root.is-top-collapsed .TopSection {
   width: 390px !important;
   height: 106px !important;
+  min-height: 106px !important;
   padding: 40px 24px 20px !important;
   gap: 16px !important;
   background: #282829 !important;
 }
 .cf-figma-menu-root.is-top-collapsed .HeroCard,
 .cf-figma-menu-root.is-top-collapsed .FlotaingTabs {
-  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 .cf-figma-menu-root.is-top-collapsed .DeliverTo {
   width: 62px !important;
@@ -5381,8 +5411,6 @@ async function reverseGeocodeExactAddress(lat, lng) {
 }
 
 function showMapMessage(message) {
-  // Intentionally no visible loading/error placeholder on map screen.
-  // The map canvas must remain the only visible layer behind the controls.
   if (message) console.log("Map status:", message);
   if (mapEmptyCopy) mapEmptyCopy.textContent = "";
   if (mapEmptyState) mapEmptyState.classList.add("is-hidden");
@@ -5791,7 +5819,6 @@ function cleanLocationFlowUrl() {
 }
 
 function refreshCommonBottomNav() {
-  // Bottom navigation has been removed for the UI refinement phase.
 }
 
 function restoreCommonBottomNavAfterLocationFlow() {
@@ -6405,11 +6432,7 @@ function setupSavedAddressDrawerGesture() {
 
     const atTop = savedAddressList.scrollTop <= 2;
     const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
-
-    // Finger up: list should scroll down unless it is already at bottom.
     if (deltaY < 0) return !atBottom;
-
-    // Finger down: list should scroll up unless it is already at top.
     if (deltaY > 0) return !atTop;
 
     return false;
@@ -6420,8 +6443,6 @@ function setupSavedAddressDrawerGesture() {
 
     const deltaY = getDelta(y);
     const expanded = isExpanded();
-
-    // Collapsed state: saved addresses are only a preview. Any upward swipe opens the drawer.
     if (!expanded) {
       if (event && event.cancelable) event.preventDefault();
 
@@ -6431,13 +6452,9 @@ function setupSavedAddressDrawerGesture() {
       }
       return;
     }
-
-    // Expanded state: saved address list owns normal scrolling.
     if (shouldLetSavedListScroll(target, deltaY) && !startedOnHandle) {
       return;
     }
-
-    // Expanded + list already at top / handle dragged: downward swipe collapses drawer.
     if (deltaY > SWIPE_THRESHOLD) {
       if (event && event.cancelable) event.preventDefault();
       collapseSavedAddressDrawer();
@@ -6458,8 +6475,6 @@ function setupSavedAddressDrawerGesture() {
     const expanded = isExpanded();
     const delta = event.deltaY;
     const isOverList = savedAddressList && savedAddressList.contains(event.target);
-
-    // Collapsed state: wheel/trackpad scroll on the drawer opens it. The list does not scroll yet.
     if (!expanded && delta > WHEEL_THRESHOLD) {
       event.preventDefault();
       expandSavedAddressDrawer();
@@ -6471,8 +6486,6 @@ function setupSavedAddressDrawerGesture() {
     if (!expanded) {
       return;
     }
-
-    // Expanded state: let saved list scroll normally while it has scroll room.
     if (isOverList) {
       const atTop = savedAddressList.scrollTop <= 2;
       const atBottom = savedAddressList.scrollTop + savedAddressList.clientHeight >= savedAddressList.scrollHeight - 2;
@@ -6481,8 +6494,6 @@ function setupSavedAddressDrawerGesture() {
         return;
       }
     }
-
-    // When expanded and already at the top, wheel/trackpad up collapses it.
     if (delta < -WHEEL_THRESHOLD) {
       event.preventDefault();
       collapseSavedAddressDrawer();
@@ -8484,7 +8495,6 @@ if (shouldAutoOpenLocationMap()) {
     try {
       localStorage.setItem(CART_KEY, JSON.stringify(items.filter(item => Number(item.qty || 0) > 0)));
     } catch {
-      // localStorage unavailable should not break menu UI.
     }
   }
 
@@ -8690,7 +8700,6 @@ if (shouldAutoOpenLocationMap()) {
       return result;
     };
   } catch {
-    // Ignore localStorage patch failures.
   }
 
   window.addEventListener("storage", event => {
@@ -8827,13 +8836,24 @@ if (shouldAutoOpenLocationMap()) {
   const root = document.querySelector(".cf-figma-menu-root");
   if (!root) return;
   const deliverToLabel = root.querySelector(".DeliverTo");
-  const setTopVariant = () => {
-    const collapsed = window.scrollY > 18;
+  const distance = 262;
+  let frame = 0;
+  const applyTopVariant = () => {
+    frame = 0;
+    const y = Math.max(0, Math.min(distance, window.scrollY || window.pageYOffset || 0));
+    const progress = y / distance;
+    root.style.setProperty("--menu-top-progress", progress.toFixed(4));
+    const collapsed = progress >= 0.98;
     root.classList.toggle("is-top-collapsed", collapsed);
     if (deliverToLabel) deliverToLabel.textContent = collapsed ? "Deliver to" : "Deliver to:";
   };
-  setTopVariant();
-  window.addEventListener("scroll", setTopVariant, { passive: true });
+  const requestApply = () => {
+    if (frame) return;
+    frame = window.requestAnimationFrame(applyTopVariant);
+  };
+  applyTopVariant();
+  window.addEventListener("scroll", requestApply, { passive: true });
+  window.addEventListener("resize", requestApply, { passive: true });
 })();
 </script>
 </body>
