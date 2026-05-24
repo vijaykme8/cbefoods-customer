@@ -3877,26 +3877,39 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .HeroAndTabsGroup .FlotaingTabs{width:342px!important;height:59px!important;gap:16px!important;flex:none!important}
 </style>
 
-<style id="cf-menu-best-selling-sticky-transform-v15">
+<style id="cf-menu-best-selling-sticky-transform-v16">
 .cf-figma-menu-root .BestSellingSection {
   overflow: visible !important;
   position: relative !important;
 }
 .cf-figma-menu-root .BestSellingSection > .TextGroup {
-  position: sticky !important;
-  top: 120px !important;
-  z-index: 480 !important;
-  box-sizing: border-box !important;
+  position: relative !important;
+  top: auto !important;
+  z-index: 20 !important;
   background: transparent !important;
-  transition: background 0.12s ease, height 0.12s ease, gap 0.12s ease;
 }
-.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active {
+.cf-menu-sticky-best-clone {
+  position: fixed !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 390px !important;
   height: 69px !important;
+  padding: 12px 24px !important;
+  display: none !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
   gap: 0 !important;
   background: #282829 !important;
+  box-sizing: border-box !important;
+  z-index: 480 !important;
+  pointer-events: none !important;
 }
-.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active .BestSelling,
-.cf-figma-menu-root .BestSellingSection > .TextGroup.is-sticky-active .FasterSellingOrders {
+.cf-menu-sticky-best-clone.is-visible {
+  display: flex !important;
+}
+.cf-menu-sticky-best-clone .BestSelling,
+.cf-menu-sticky-best-clone .FasterSellingOrders {
   transform: none !important;
 }
 </style>
@@ -8808,26 +8821,33 @@ if (shouldAutoOpenLocationMap()) {
     );
   })();
 </script>
-<script id="cf-menu-best-selling-sticky-transform-v15-script">
+<script id="cf-menu-best-selling-sticky-transform-v16-script">
 (function(){
   function initBestSellingStickyTransform(){
     var root = document.querySelector('.cf-figma-menu-root');
     if (!root) return;
-    var section = root.querySelector('.BestSellingSection');
     var nextSection = root.querySelector('.ProteinPackSection');
     var textGroup = root.querySelector('.BestSellingSection > .TextGroup');
     var topBar = root.querySelector('.TopBar');
-    if (!section || !textGroup || !topBar) return;
+    if (!textGroup || !topBar) return;
+    var clone = root.querySelector('.cf-menu-sticky-best-clone');
+    if (!clone) {
+      clone = textGroup.cloneNode(true);
+      clone.classList.add('cf-menu-sticky-best-clone');
+      clone.removeAttribute('style');
+      clone.setAttribute('aria-hidden', 'true');
+      root.appendChild(clone);
+    }
     function getStickyTop(){
       return Math.round(topBar.getBoundingClientRect().height) + 4;
     }
     function update(){
       var stickyTop = getStickyTop();
-      textGroup.style.top = stickyTop + 'px';
-      var sectionRect = section.getBoundingClientRect();
+      var textRect = textGroup.getBoundingClientRect();
       var nextRect = nextSection ? nextSection.getBoundingClientRect() : null;
-      var active = sectionRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
-      textGroup.classList.toggle('is-sticky-active', active);
+      var active = textRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
+      clone.style.top = stickyTop + 'px';
+      clone.classList.toggle('is-visible', active);
     }
     update();
     window.addEventListener('scroll', update, { passive: true });
@@ -8840,6 +8860,5 @@ if (shouldAutoOpenLocationMap()) {
   }
 })();
 </script>
-
 </body>
 </html>
