@@ -3901,31 +3901,6 @@ body { padding:0 !important; justify-content:center !important; }
   opacity: calc(1 - var(--menu-top-progress, 0)) !important;
   will-change: transform, opacity;
 }
-.cf-figma-menu-root.is-top-collapsed .TopSection {
-  width: 390px !important;
-  height: 106px !important;
-  min-height: 106px !important;
-  padding: 40px 24px 20px !important;
-  gap: 16px !important;
-  background: #282829 !important;
-}
-.cf-figma-menu-root.is-top-collapsed .HeroCard,
-.cf-figma-menu-root.is-top-collapsed .FlotaingTabs {
-  opacity: 0 !important;
-  pointer-events: none !important;
-}
-.cf-figma-menu-root.is-top-collapsed .DeliverTo {
-  width: 62px !important;
-  color: #FDFDFF !important;
-  opacity: 0.5 !important;
-  font-weight: 500 !important;
-}
-.cf-figma-menu-root.is-top-collapsed .UserProfile {
-  width: 46px !important;
-  height: 46px !important;
-  border-radius: 25px !important;
-  overflow: hidden !important;
-}
 </style>
 </head>
 <body>
@@ -8835,7 +8810,6 @@ if (shouldAutoOpenLocationMap()) {
 (function() {
   const root = document.querySelector(".cf-figma-menu-root");
   if (!root) return;
-  const deliverToLabel = root.querySelector(".DeliverTo");
   const distance = 262;
   let frame = 0;
   const applyTopVariant = () => {
@@ -8843,9 +8817,6 @@ if (shouldAutoOpenLocationMap()) {
     const y = Math.max(0, Math.min(distance, window.scrollY || window.pageYOffset || 0));
     const progress = y / distance;
     root.style.setProperty("--menu-top-progress", progress.toFixed(4));
-    const collapsed = progress >= 0.98;
-    root.classList.toggle("is-top-collapsed", collapsed);
-    if (deliverToLabel) deliverToLabel.textContent = collapsed ? "Deliver to" : "Deliver to:";
   };
   const requestApply = () => {
     if (frame) return;
