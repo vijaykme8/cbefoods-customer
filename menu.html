@@ -2734,6 +2734,11 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
   font-weight: 700 !important;
 }
 
+.cf-figma-menu-root .HeroTitle span.hero-title-bold {
+  font-weight: 700 !important;
+}
+
+
 
 
 .details-title-field { display: none; }
@@ -3199,7 +3204,8 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 .cf-figma-menu-root .FlotaingTabs .pill.pill-active {
   background: rgba(253, 253, 255, 0.16) !important;
 }
-.cf-figma-menu-root .MenuListings.is-filtered .DividerFrame {
+.cf-figma-menu-root .MenuListings.is-filtered .DividerFrame,
+.cf-figma-menu-root .MenuListings.is-filtered > .Div {
   display: none !important;
 }
 
@@ -3801,6 +3807,7 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .product-list-action.qty-button { padding:6px 8px !important; background:rgba(18,19,15,.24) !important; border:1px solid #08A045 !important; justify-content:space-between !important; }
 .cf-figma-menu-root .product-list-action.qty-button .qty-control, .cf-figma-menu-root .product-list-action.qty-button .qty-count, .cf-figma-menu-root .product-list-action.qty-button .qty-value { color:#FDFDFF !important; font-size:16px !important; font-weight:500 !important; line-height:19.2px !important; }
 .cf-figma-menu-root .MenuListings > .Div { width:342px !important; margin-left:24px !important; border-top:1px solid rgba(253,253,255,.16) !important; outline:0 !important; }
+.cf-figma-menu-root .MenuListings.is-filtered > .Div { display:none !important; }
 .cf-figma-menu-root .Spacer { width:390px !important; height:308px !important; padding:20px 24px !important; gap:20px !important; background:rgba(255,255,255,.13) !important; }
 .cf-figma-menu-root .FloatingAddedCard { position:fixed !important; left:50% !important; bottom:calc(35px + env(safe-area-inset-bottom)) !important; transform:translateX(-50%) !important; top:auto !important; width:342px !important; height:53px !important; padding:8px 18px !important; gap:51px !important; border-radius:14px !important; background:linear-gradient(90deg,#08A045 0%,#8806CE 100%) !important; box-shadow:0 0 4px #089E44 !important; z-index:9999 !important; }
 .cf-figma-menu-root .FloatingAddedCard:not(.is-visible) { opacity:0 !important; visibility:hidden !important; pointer-events:none !important; }
@@ -3880,7 +3887,7 @@ body { padding:0 !important; justify-content:center !important; }
 <img alt="User profile" aria-label="Open profile" class="UserProfile avatar" data-layer="user profile" id="menuProfileAvatarImg" onclick="window.location.href='profile.html'" role="link" src="assets/menu/icons/user-profile.svg" style="width: 46px; height: 46px; border-radius: 50px; object-fit: cover; display: block; cursor: pointer;" tabindex="0"/>
 </div>
 <div class="HeroCard" data-layer="hero card" style="width: 342px; padding-left: 16px; padding-right: 16px; padding-top: 14px; padding-bottom: 14px; background: linear-gradient(318deg, rgba(136, 6, 206, 0) 26%, rgba(136, 6, 206, 0.50) 60%), #FDFDFF; border-radius: 20px; background-image: url('assets/menu/img/hero card-img.png'); background-size: cover; background-position: center; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
-<div class="HeroTitle" data-layer="hero title"><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">Fresh</span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> lunch, </span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">daily</span><span style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> warm.</span></div>
+<div class="HeroTitle" data-layer="hero title"><span class="hero-title-light" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">Fresh</span><span class="hero-title-bold" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> lunch, </span><span class="hero-title-light" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 500; line-height: 31.20px; word-wrap: break-word">daily</span><span class="hero-title-bold" style="color: #FDFDFF; font-size: 26px; font-family: Chillax; font-weight: 700; line-height: 31.20px; word-wrap: break-word"> warm.</span></div>
 <div class="HeroInfo" data-layer="hero info" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
 <div class="HomeCookedOrderBy11Am" data-layer="Home cooked · Order by 11 AM" style="align-self: stretch; justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.60); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">Home cooked · Order by 11 AM</div>
 <div class="DeliveredIn1525Mins" data-layer="Delivered in 15 - 25 mins" style="align-self: stretch; justify-content: center; display: flex; flex-direction: column; color: rgba(253, 253, 255, 0.60); font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 14px; word-wrap: break-word">Delivered in 15 - 25 mins</div>
@@ -7030,7 +7037,7 @@ const menuListings =
   document.querySelector(".MenuListings");
 
 const dividerFrames = menuListings
-  ? menuListings.querySelectorAll(".DividerFrame")
+  ? Array.from(menuListings.children).filter(child => child.classList && (child.classList.contains("DividerFrame") || child.classList.contains("Div")))
   : [];
 
 function setActivePill(activePill) {
