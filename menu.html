@@ -3863,6 +3863,40 @@ body { padding:0 !important; justify-content:center !important; }
 .cf-figma-menu-root .FloatingCartClose img { width:24px !important; height:24px !important; display:block !important; object-fit:contain !important; }
 .qty-button .qty-control img { width:16px !important; height:16px !important; display:block !important; object-fit:contain !important; pointer-events:none !important; }
 </style>
+
+<style id="cf-menu-scroll-top-variant">
+.cf-figma-menu-root .TopSection {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1000 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  transition: height 180ms ease, background 180ms ease, padding 180ms ease !important;
+}
+.cf-figma-menu-root.is-top-collapsed .TopSection {
+  width: 390px !important;
+  height: 106px !important;
+  padding: 40px 24px 20px !important;
+  gap: 16px !important;
+  background: #282829 !important;
+}
+.cf-figma-menu-root.is-top-collapsed .HeroCard,
+.cf-figma-menu-root.is-top-collapsed .FlotaingTabs {
+  display: none !important;
+}
+.cf-figma-menu-root.is-top-collapsed .DeliverTo {
+  width: 62px !important;
+  color: #FDFDFF !important;
+  opacity: 0.5 !important;
+  font-weight: 500 !important;
+}
+.cf-figma-menu-root.is-top-collapsed .UserProfile {
+  width: 46px !important;
+  height: 46px !important;
+  border-radius: 25px !important;
+  overflow: hidden !important;
+}
+</style>
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
@@ -8786,6 +8820,21 @@ if (shouldAutoOpenLocationMap()) {
       { passive: false }
     );
   })();
+</script>
+
+<script id="cf-menu-scroll-top-variant-script">
+(function() {
+  const root = document.querySelector(".cf-figma-menu-root");
+  if (!root) return;
+  const deliverToLabel = root.querySelector(".DeliverTo");
+  const setTopVariant = () => {
+    const collapsed = window.scrollY > 18;
+    root.classList.toggle("is-top-collapsed", collapsed);
+    if (deliverToLabel) deliverToLabel.textContent = collapsed ? "Deliver to" : "Deliver to:";
+  };
+  setTopVariant();
+  window.addEventListener("scroll", setTopVariant, { passive: true });
+})();
 </script>
 </body>
 </html>
