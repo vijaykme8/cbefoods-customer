@@ -1209,7 +1209,8 @@ body.track-map-fullscreen-open #trackOlaMapCanvas .maplibregl-canvas {
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
-const ROUTE_REFRESH_MIN_MS=10*60*1000;
+const ROUTE_REFRESH_MIN_MS=60*1000;
+const ETA_SECONDS_PER_KM=160;
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
 let liveUnsubscribe=null,routeRequestToken=0,lastRouteState=null,lastFitKey='';
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
@@ -1226,7 +1227,9 @@ function riderLoc(o){return loc(o?.riderLocation)||loc(o?.liveRiderLocation)||lo
 function status(o){return String(o?.adminStatus||o?.orderStatus||o?.deliveryStatus||o?.riderStatus||o?.status||'confirmed').toLowerCase().replace(/[\s-]+/g,'_')}
 function outForDelivery(o){return['picked_up','pickup_done','out_for_delivery','outfordelivery','on_the_way','on_way'].includes(status(o))}
 function address(o){return o.deliveryAddress||o.address||(o.deliveryLocation&&(o.deliveryLocation.fullAddress||o.deliveryLocation.displayAddress))||o.delivery_address||''}
-function eta(o){return o.eta||o.estimatedDeliveryTime||o.deliveryEta||o.deliveryTime||o.timing||'25 - 35mins'}
+function formatEtaFromMinutes(minutes){const value=Math.max(0,Math.round(Number(minutes||0)));const h=Math.floor(value/60);const m=String(value%60).padStart(2,'0');return`${h}:${m}m`}
+function normalizeEtaText(value){const text=String(value||'').trim();if(!text)return'';const match=text.match(/(\d+)\s*:\s*(\d{1,2})/);if(match)return`${Number(match[1])}:${String(Number(match[2])).padStart(2,'0')}m`;const nums=text.match(/\d+/g);if(nums&&nums.length){const mins=Number(nums[nums.length-1]);if(Number.isFinite(mins))return formatEtaFromMinutes(mins)}return''}
+function eta(o){return normalizeEtaText(o.floatingTrackEta||o.etaDisplay||o.eta||o.estimatedDeliveryTime||o.deliveryEta||o.deliveryTime||o.timing)||formatEtaFromMinutes(Number(o.etaMinutes||o.restaurantToCustomerEtaMinutes||o.riderToCustomerEtaMinutes||28)||28)}
 function items(o){const it=o.items||o.cartItems||o.orderItems||[];if(Array.isArray(it))return it.filter(Boolean);if(it&&typeof it==='object')return Object.values(it).filter(Boolean);return[]}
 function itemName(i){return i.name||i.title||i.itemName||i.productName||'Item'}
 function itemQty(i){return Number(i.qty??i.quantity??i.count??1)||1}
@@ -1417,20 +1420,29 @@ function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from
 function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return;routeRequestToken++;lastRouteState=null;const s=map.getSource('track-route-source');s.setData(routeData(curve(from,to)));map.setPaintProperty('track-route-casing','line-width',0);map.setPaintProperty('track-route-casing','line-opacity',0);map.setPaintProperty('track-route-line','line-color','#12130F');map.setPaintProperty('track-route-line','line-width',2);map.setPaintProperty('track-route-line','line-opacity',.9);map.setPaintProperty('track-route-line','line-dasharray',[1.5,3])}
 let currentRoadRouteCoords=[];
 function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;currentRoadRouteCoords=coords.slice();map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#08A045');map.setPaintProperty('track-route-line','line-width',5);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
-function routeCacheKey(from,to){const o=getSelectedOrder();const id=getOrderId(o)||'latest';return `cbe_static_road_route_${id}_${to.lat.toFixed(4)}_${to.lng.toFixed(4)}`}
+function routeCacheKey(from,to){const o=getSelectedOrder();const id=getOrderId(o)||'latest';return `cbe_static_road_route_${id}_${from.lat.toFixed(4)}_${from.lng.toFixed(4)}_${to.lat.toFixed(4)}_${to.lng.toFixed(4)}`}
 function readRouteCache(from,to){try{const cached=JSON.parse(localStorage.getItem(routeCacheKey(from,to))||'null');if(!cached||!Array.isArray(cached.coords)||cached.coords.length<3)return null;if(Date.now()-Number(cached.at||0)>ROUTE_REFRESH_MIN_MS)return null;return cached}catch{return null}}
-function writeRouteCache(from,to,coords){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords}))}catch{}}
+function writeRouteCache(from,to,coords,distanceMeters){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords,distanceMeters:Math.round(Number(distanceMeters||0))}))}catch{}}
 function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;const key=valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|');if(key===lastFitKey)return;lastFitKey=key;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:350,maxZoom:15})}
 function haversineMeters(a,b){if(!a||!b)return Infinity;const R=6371000;const rad=v=>v*Math.PI/180;const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);const lat1=rad(a.lat),lat2=rad(b.lat);const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
+function getOlaDistanceMeters(value){if(value===null||value===undefined||value==='')return 0;if(typeof value==='number')return Number.isFinite(value)?value:0;if(typeof value==='object')return getOlaDistanceMeters(value.value??value.distance??value.distanceMeters??value.distance_meters??value.meters??value.text);const text=String(value).trim().toLowerCase();const n=Number(text.replace(/[^0-9.]/g,''));if(!Number.isFinite(n))return 0;return text.includes('km')?n*1000:n}
+function extractRoadDistanceMeters(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;const legs=Array.isArray(route?.legs)?route.legs:[];const legDistance=legs.reduce((sum,leg)=>sum+getOlaDistanceMeters(leg?.distance||leg?.distanceMeters||leg?.distance_meters),0);if(legDistance>0)return legDistance;return getOlaDistanceMeters(route?.distance||route?.distanceMeters||route?.distance_meters||route?.summary?.distance||data?.distance||data?.distanceMeters||data?.distance_meters)}
+function etaMinutesFromMeters(meters){const km=Number(meters||0)/1000;if(!Number.isFinite(km)||km<=0)return null;return Math.max(1,Math.ceil((km*ETA_SECONDS_PER_KM)/60))}
+function routeEtaPatch(source,meters,origin,destination){const etaMinutes=etaMinutesFromMeters(meters);if(!etaMinutes)return null;const km=Number((Number(meters)/1000).toFixed(2));const etaText=formatEtaFromMinutes(etaMinutes);const now=new Date().toISOString();const key=`${source}:${origin.lat.toFixed(5)},${origin.lng.toFixed(5)}:${destination.lat.toFixed(5)},${destination.lng.toFixed(5)}`;const patch={eta:etaText,etaDisplay:etaText,floatingTrackEta:etaText,estimatedDeliveryTime:etaText,etaMinutes,etaSource:source,etaUpdatedAt:now,routeDistanceKm:km,routeDistanceMeters:Math.round(Number(meters)),etaRouteKey:key,etaRouteOrigin:origin,etaRouteDestination:destination};if(source==='rider_to_customer'){patch.riderToCustomerDistanceKm=km;patch.riderToCustomerDistanceMeters=Math.round(Number(meters));patch.riderToCustomerEtaMinutes=etaMinutes;patch.riderToCustomerEta=etaText;patch.riderToCustomerEtaUpdatedAt=now}if(source==='restaurant_to_customer'){patch.restaurantToCustomerDistanceKm=km;patch.restaurantToCustomerDistanceMeters=Math.round(Number(meters));patch.restaurantToCustomerEtaMinutes=etaMinutes;patch.restaurantToCustomerEta=etaText;patch.restaurantToCustomerEtaUpdatedAt=now}return patch}
+function updateListWithPatch(list,orderId,patch){if(!Array.isArray(list))return[];return list.map(order=>getOrderId(order)===orderId?{...order,...patch}:order)}
+function customerDocId(o){try{const u=window.firebase&&firebase.auth?firebase.auth().currentUser:null;if(u?.uid)return u.uid}catch{}return String(o?.customerId||o?.customer?.uid||o?.customer?.id||localStorage.getItem('cust_uid')||localStorage.getItem('customer_uid')||'').trim()}
+function persistEtaPatch(source,meters,origin,destination){const order=getSelectedOrder();const orderId=getOrderId(order);const patch=routeEtaPatch(source,meters,origin,destination);if(!patch||!orderId)return;const merged={...order,...patch};writeJSON('current_order',merged);writeJSON('cbe_track_selected_order',merged);const history=normalizeOrders(readJSON('order_history'));if(history.length)writeJSON('order_history',updateListWithPatch(history,orderId,patch));try{if(window.firebase&&firebase.firestore){const db=firebase.firestore();db.collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{});const cid=customerDocId(order);if(cid)db.collection('customers').doc(cid).collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{})}}catch{}setText('trackFullEta',eta(merged))}
+
 function shouldFetchRoadRoute(from,to){
   if(!from||!to)return false;
   if(document.hidden)return false;
   if(!lastRouteState)return true;
 
+  const originChanged=haversineMeters(lastRouteState.from,from)>30;
   const destinationChanged=haversineMeters(lastRouteState.to,to)>30;
   const elapsed=Date.now()-lastRouteState.at;
 
-  return destinationChanged||elapsed>=ROUTE_REFRESH_MIN_MS;
+  return destinationChanged||(originChanged&&elapsed>=ROUTE_REFRESH_MIN_MS);
 }
 
 function decodePolyline(str,precision=5){if(!str||typeof str!=='string')return[];let index=0,lat=0,lng=0,out=[],factor=Math.pow(10,precision);while(index<str.length){let result=0,shift=0,byte;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lat+=(result&1)?~(result>>1):(result>>1);result=0;shift=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lng+=(result&1)?~(result>>1):(result>>1);out.push([lng/factor,lat/factor])}return out.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]))}
@@ -1451,6 +1463,7 @@ async function fetchRoadRoute(from,to){
     const cached=readRouteCache(from,to);
     if(cached){
       drawRoadRoute(cached.coords);
+      if(Number(cached.distanceMeters||0)>0)persistEtaPatch('rider_to_customer',Number(cached.distanceMeters),from,to);
       lastRouteState={
         from:cached.from||{...from},
         to:cached.to||{...to},
@@ -1470,11 +1483,14 @@ async function fetchRoadRoute(from,to){
     const data=await helper.directions(from,to);
     if(token!==routeRequestToken)return false;
 
+    const distanceMeters=extractRoadDistanceMeters(data);
+    if(distanceMeters>0)persistEtaPatch('rider_to_customer',distanceMeters,from,to);
+
     const coords=extractRoadCoords(data);
 
     if(coords.length>=3){
       drawRoadRoute(coords);
-      writeRouteCache(from,to,coords);
+      writeRouteCache(from,to,coords,distanceMeters);
       lastRouteState={from:{...from},to:{...to},at:Date.now()};
       return true;
     }
@@ -1709,7 +1725,7 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;wind
 })();
 </script>
 
-<script defer="" src="pwa-speed.js?v=20260524_ui_refine_nonav_clean1"></script>
+<script defer="" src="pwa-speed.js?v=20260523_appfeel1"></script>
 
 <script>
 (function(){

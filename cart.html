@@ -2482,6 +2482,8 @@ body {
   const FREE_DISTANCE_KM = 10;
   const EXTRA_KM_DELIVERY_FEE = 2;
   const PACKAGING_FEE = 6;
+  const ETA_SECONDS_PER_KM = 160;
+  const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325, name: 'Coimbatore Foods' };
   const DELIVERY_INSTRUCTIONS_KEY = 'cbe_cart_delivery_instructions';
   const FOOD_INSTRUCTIONS_KEY = 'cbe_cart_food_instructions';
 
@@ -3470,7 +3472,7 @@ body {
       localStorage.getItem('store_lng')
     );
 
-    if (lat === null || lng === null) return null;
+    if (lat === null || lng === null) return { ...DEFAULT_RESTAURANT_LOCATION, source: 'default_restaurant_location' };
     return { lat, lng, source: 'restaurant_lat_lng_keys' };
   }
 
@@ -3896,6 +3898,116 @@ body {
     window.location.replace('menu.html?openLocation=1&returnTo=cart');
   }
 
+
+  function normalizeEtaPoint(source) {
+    const point = getCoordsFromObject(source);
+    if (!point) return null;
+    return { lat: point.lat, lng: point.lng };
+  }
+
+  function getOlaDistanceMeters(value) {
+    if (value === null || value === undefined || value === '') return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    if (typeof value === 'object') {
+      return getOlaDistanceMeters(value.value ?? value.distance ?? value.distanceMeters ?? value.distance_meters ?? value.meters ?? value.text);
+    }
+    const text = String(value).trim().toLowerCase();
+    const number = Number(text.replace(/[^0-9.]/g, ''));
+    if (!Number.isFinite(number)) return 0;
+    if (text.includes('km')) return number * 1000;
+    return number;
+  }
+
+  function extractOlaRouteDistanceMeters(data) {
+    const routes = data?.routes || data?.data?.routes || data?.result?.routes || data?.paths || data?.data?.paths || data?.route || data?.data?.route || [];
+    const route = Array.isArray(routes) ? routes[0] : routes;
+    const legs = Array.isArray(route?.legs) ? route.legs : [];
+    const legDistance = legs.reduce((sum, leg) => sum + getOlaDistanceMeters(leg?.distance || leg?.distanceMeters || leg?.distance_meters), 0);
+    if (legDistance > 0) return legDistance;
+    return getOlaDistanceMeters(route?.distance || route?.distanceMeters || route?.distance_meters || route?.summary?.distance || data?.distance || data?.distanceMeters || data?.distance_meters);
+  }
+
+  function etaMinutesFromDistanceMeters(meters) {
+    const km = Number(meters || 0) / 1000;
+    if (!Number.isFinite(km) || km <= 0) return null;
+    return Math.max(1, Math.ceil((km * ETA_SECONDS_PER_KM) / 60));
+  }
+
+  function formatEtaFromMinutes(minutes) {
+    const value = Math.max(0, Math.round(Number(minutes || 0)));
+    const hours = Math.floor(value / 60);
+    const mins = String(value % 60).padStart(2, '0');
+    return `${hours}:${mins}m`;
+  }
+
+  function buildRouteEtaPatch(source, meters, origin, destination) {
+    const etaMinutes = etaMinutesFromDistanceMeters(meters);
+    if (!etaMinutes) return null;
+    const km = Number((Number(meters) / 1000).toFixed(2));
+    const etaText = formatEtaFromMinutes(etaMinutes);
+    const now = new Date().toISOString();
+    const routeKey = `${source}:${origin.lat.toFixed(5)},${origin.lng.toFixed(5)}:${destination.lat.toFixed(5)},${destination.lng.toFixed(5)}`;
+    const patch = {
+      eta: etaText,
+      etaDisplay: etaText,
+      floatingTrackEta: etaText,
+      estimatedDeliveryTime: etaText,
+      etaMinutes,
+      etaSource: source,
+      etaUpdatedAt: now,
+      routeDistanceKm: km,
+      routeDistanceMeters: Math.round(Number(meters)),
+      etaRouteKey: routeKey,
+      etaRouteOrigin: origin,
+      etaRouteDestination: destination
+    };
+
+    if (source === 'restaurant_to_customer') {
+      patch.restaurantToCustomerDistanceKm = km;
+      patch.restaurantToCustomerDistanceMeters = Math.round(Number(meters));
+      patch.restaurantToCustomerEtaMinutes = etaMinutes;
+      patch.restaurantToCustomerEta = etaText;
+      patch.restaurantToCustomerEtaUpdatedAt = now;
+    }
+
+    if (source === 'rider_to_customer') {
+      patch.riderToCustomerDistanceKm = km;
+      patch.riderToCustomerDistanceMeters = Math.round(Number(meters));
+      patch.riderToCustomerEtaMinutes = etaMinutes;
+      patch.riderToCustomerEta = etaText;
+      patch.riderToCustomerEtaUpdatedAt = now;
+    }
+
+    return patch;
+  }
+
+  async function fetchOlaRouteDistanceMeters(origin, destination) {
+    if (!origin || !destination) return null;
+    const url = `/ola-maps?type=directions&originLat=${encodeURIComponent(origin.lat)}&originLng=${encodeURIComponent(origin.lng)}&destLat=${encodeURIComponent(destination.lat)}&destLng=${encodeURIComponent(destination.lng)}&_=${Date.now()}`;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 6500);
+    try {
+      const response = await fetch(url, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' }, signal: controller.signal });
+      if (!response.ok) return null;
+      const data = await response.json();
+      const meters = extractOlaRouteDistanceMeters(data);
+      return meters > 0 ? meters : null;
+    } catch (_) {
+      return null;
+    } finally {
+      window.clearTimeout(timer);
+    }
+  }
+
+  async function getInitialRestaurantEtaPatch(order) {
+    const origin = normalizeEtaPoint(order?.restaurantLocation || order?.deliveryFeeRule?.restaurantLocation || order?.totals?.deliveryFeeRule?.restaurantLocation) || normalizeEtaPoint(DEFAULT_RESTAURANT_LOCATION);
+    const destination = normalizeEtaPoint(order?.customerLocation || order?.deliveryLocation || order?.deliveryFeeRule?.customerLocation || order?.totals?.deliveryFeeRule?.customerLocation || getActiveDeliveryLocationObject());
+    if (!origin || !destination) return null;
+    const meters = await fetchOlaRouteDistanceMeters(origin, destination);
+    if (!meters) return null;
+    return buildRouteEtaPatch('restaurant_to_customer', meters, origin, destination);
+  }
+
   function buildCheckoutSnapshot(cart, address) {
     const totals = getTotals(cart);
     const items = cart.map(({ _cartIndex, ...item }) => item);
@@ -3960,8 +4072,8 @@ body {
     };
   }
 
-  function saveConfirmedOrder(snapshot, paymentResponse = {}) {
-    const order = {
+  async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
+    let order = {
       ...snapshot,
       status: 'confirmed',
       paymentStatus: 'paid',
@@ -3973,6 +4085,13 @@ body {
       paidAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
+
+    setPlaceOrderLoading(true, 'Placing order');
+
+    try {
+      const etaPatch = await getInitialRestaurantEtaPatch(order);
+      if (etaPatch) order = { ...order, ...etaPatch };
+    } catch (_) {}
 
     localStorage.setItem('current_order', JSON.stringify(order));
 
@@ -4043,7 +4162,11 @@ body {
         color: '#8806CE'
       },
       handler(response) {
-        saveConfirmedOrder(snapshot, response);
+        saveConfirmedOrder(snapshot, response).catch(error => {
+          console.warn('Order save failed', error);
+          setPlaceOrderLoading(false);
+          showToast('Payment succeeded, but order save failed. Please contact support.');
+        });
       },
       modal: {
         ondismiss() {

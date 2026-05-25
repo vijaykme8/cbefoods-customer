@@ -9678,6 +9678,11 @@ if (shouldAutoOpenLocationMap()) {
   let refreshTimer = 0;
   let stepAnimationTimer = 0;
   let iconSwapTimers = [];
+  let etaRequestKey = '';
+  let liveTrackUnsubscribe = null;
+  let liveTrackOrderId = '';
+  const ETA_SECONDS_PER_KM = 160;
+  const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325 };
 
   function cleanText(value) {
     return value === null || value === undefined ? "" : String(value).trim();
@@ -9789,6 +9794,8 @@ if (shouldAutoOpenLocationMap()) {
         }
       }
 
+      startLiveTrackOrderListener(activeOrder);
+      syncEtaForOrder(activeOrder);
       renderTrackCard();
     } catch (_) {}
   }
@@ -9817,7 +9824,33 @@ if (shouldAutoOpenLocationMap()) {
     return "Variant1";
   }
 
+  function normalizeEtaDisplay(value) {
+    const text = cleanText(value);
+    if (!text) return "";
+    const timeMatch = text.match(/(\d+)\s*:\s*(\d{1,2})/);
+    if (timeMatch) return `${Number(timeMatch[1])}:${String(Number(timeMatch[2])).padStart(2, "0")}`;
+    const minuteMatches = text.match(/\d+/g);
+    if (minuteMatches && minuteMatches.length) {
+      const minutes = Number(minuteMatches[minuteMatches.length - 1]);
+      if (Number.isFinite(minutes)) return formatFloatingEtaFromMinutes(minutes);
+    }
+    return "";
+  }
+
+  function formatFloatingEtaFromMinutes(minutes) {
+    const value = Math.max(0, Math.round(Number(minutes || 0)));
+    const hours = Math.floor(value / 60);
+    const mins = String(value % 60).padStart(2, "0");
+    return `${hours}:${mins}`;
+  }
+
   function getEtaText(order) {
+    const storedEta = normalizeEtaDisplay(order?.floatingTrackEta || order?.etaDisplay || order?.eta || order?.estimatedDeliveryTime || order?.deliveryEta || order?.estimatedTime);
+    if (storedEta) return storedEta;
+
+    const minutes = Number(order?.etaMinutes || order?.restaurantToCustomerEtaMinutes || order?.riderToCustomerEtaMinutes || 0);
+    if (Number.isFinite(minutes) && minutes > 0) return formatFloatingEtaFromMinutes(minutes);
+
     const start = toTime(order?.paidAt || order?.createdAt || order?.orderTime);
     const durationMs = 28 * 60 * 1000;
 
@@ -9828,6 +9861,236 @@ if (shouldAutoOpenLocationMap()) {
     const capped = Math.min(99, remainingMinutes);
 
     return `0:${String(capped).padStart(2, "0")}`;
+  }
+
+
+  function getNumberValue(value) {
+    if (value === null || value === undefined || value === "") return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+
+  function getCoordsFromValue(value) {
+    if (!value || typeof value !== "object") return null;
+    const lat = getNumberValue(value.lat ?? value.latitude ?? value.customerLat ?? value.deliveryLat ?? value.restaurantLat ?? value.riderLat ?? value.coords?.lat ?? value.coords?.latitude);
+    const lng = getNumberValue(value.lng ?? value.lon ?? value.long ?? value.longitude ?? value.customerLng ?? value.deliveryLng ?? value.restaurantLng ?? value.riderLng ?? value.coords?.lng ?? value.coords?.longitude);
+    if (lat === null || lng === null) return null;
+    return { lat, lng };
+  }
+
+  function readStoredPoint(keys) {
+    for (const key of keys) {
+      const value = safeParse(localStorage.getItem(key), null);
+      const point = getCoordsFromValue(value);
+      if (point) return point;
+    }
+    return null;
+  }
+
+  function getRestaurantPoint(order) {
+    return getCoordsFromValue(order?.restaurantLocation) || getCoordsFromValue(order?.adminLocation) || getCoordsFromValue(order?.deliveryFeeRule?.restaurantLocation) || getCoordsFromValue(order?.totals?.deliveryFeeRule?.restaurantLocation) || readStoredPoint(["restaurant_location", "admin_restaurant_location", "default_restaurant_location", "CBE_RESTAURANT_LOCATION", "cbe_restaurant_location"]) || { ...DEFAULT_RESTAURANT_LOCATION };
+  }
+
+  function getCustomerPoint(order) {
+    return getCoordsFromValue(order?.customerLocation) || getCoordsFromValue(order?.deliveryLocation) || getCoordsFromValue(order?.addressLocation) || getCoordsFromValue(order?.location) || getCoordsFromValue(order?.deliveryFeeRule?.customerLocation) || getCoordsFromValue(order?.totals?.deliveryFeeRule?.customerLocation) || readStoredPoint(["active_delivery_location", "activeDeliveryLocation", "selectedDeliveryLocation", "selected_delivery_location", "delivery_location_details", "cust_location_details"]);
+  }
+
+  function getRiderPoint(order) {
+    return getCoordsFromValue(order?.riderLocation) || getCoordsFromValue(order?.liveRiderLocation) || getCoordsFromValue(order?.assignedRiderLocation) || getCoordsFromValue(order?.rider?.location) || getCoordsFromValue(order?.assignedRider?.location) || getCoordsFromValue(order?.deliveryPartner?.location) || readStoredPoint(["rider_live_location"]);
+  }
+
+  function isRiderEtaStatus(order) {
+    const current = normalizeStatus(order);
+    return ["picked_up", "pickup_done", "out_for_delivery", "outfordelivery", "on_the_way", "on_way", "reached", "arrived"].includes(current);
+  }
+
+  function getOlaDistanceMeters(value) {
+    if (value === null || value === undefined || value === "") return 0;
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    if (typeof value === "object") return getOlaDistanceMeters(value.value ?? value.distance ?? value.distanceMeters ?? value.distance_meters ?? value.meters ?? value.text);
+    const text = String(value).trim().toLowerCase();
+    const number = Number(text.replace(/[^0-9.]/g, ""));
+    if (!Number.isFinite(number)) return 0;
+    if (text.includes("km")) return number * 1000;
+    return number;
+  }
+
+  function extractOlaRouteDistanceMeters(data) {
+    const routes = data?.routes || data?.data?.routes || data?.result?.routes || data?.paths || data?.data?.paths || data?.route || data?.data?.route || [];
+    const route = Array.isArray(routes) ? routes[0] : routes;
+    const legs = Array.isArray(route?.legs) ? route.legs : [];
+    const legDistance = legs.reduce((sum, leg) => sum + getOlaDistanceMeters(leg?.distance || leg?.distanceMeters || leg?.distance_meters), 0);
+    if (legDistance > 0) return legDistance;
+    return getOlaDistanceMeters(route?.distance || route?.distanceMeters || route?.distance_meters || route?.summary?.distance || data?.distance || data?.distanceMeters || data?.distance_meters);
+  }
+
+  function etaMinutesFromDistanceMeters(meters) {
+    const km = Number(meters || 0) / 1000;
+    if (!Number.isFinite(km) || km <= 0) return null;
+    return Math.max(1, Math.ceil((km * ETA_SECONDS_PER_KM) / 60));
+  }
+
+  function formatEtaStorage(minutes) {
+    return `${formatFloatingEtaFromMinutes(minutes)}m`;
+  }
+
+  function getRoutePlan(order) {
+    const customer = getCustomerPoint(order);
+    if (!customer) return null;
+    const rider = getRiderPoint(order);
+    if (isRiderEtaStatus(order) && rider) return { source: "rider_to_customer", origin: rider, destination: customer };
+    const restaurant = getRestaurantPoint(order);
+    if (!restaurant) return null;
+    return { source: "restaurant_to_customer", origin: restaurant, destination: customer };
+  }
+
+  function routePlanKey(plan) {
+    if (!plan) return "";
+    return `${plan.source}:${plan.origin.lat.toFixed(5)},${plan.origin.lng.toFixed(5)}:${plan.destination.lat.toFixed(5)},${plan.destination.lng.toFixed(5)}`;
+  }
+
+  function shouldFetchEtaRoute(order, plan) {
+    const key = routePlanKey(plan);
+    if (!key) return false;
+    if (plan.source === "restaurant_to_customer" && Number(order?.restaurantToCustomerDistanceMeters || 0) > 0) return false;
+    if (plan.source === "restaurant_to_customer" && order?.etaSource === "restaurant_to_customer" && order?.etaRouteKey === key) return false;
+    if (plan.source === "rider_to_customer") {
+      if (order?.etaSource === "rider_to_customer" && order?.etaRouteKey === key) return false;
+      if (order?.etaSource === "rider_to_customer") {
+        const elapsed = Date.now() - toTime(order?.riderToCustomerEtaUpdatedAt || order?.etaUpdatedAt);
+        if (elapsed > 0 && elapsed < 55000) return false;
+      }
+    }
+    return true;
+  }
+
+  function buildEtaPatch(source, meters, origin, destination) {
+    const etaMinutes = etaMinutesFromDistanceMeters(meters);
+    if (!etaMinutes) return null;
+    const km = Number((Number(meters) / 1000).toFixed(2));
+    const etaText = formatEtaStorage(etaMinutes);
+    const now = new Date().toISOString();
+    const key = routePlanKey({ source, origin, destination });
+    const patch = {
+      eta: etaText,
+      etaDisplay: etaText,
+      floatingTrackEta: etaText,
+      estimatedDeliveryTime: etaText,
+      etaMinutes,
+      etaSource: source,
+      etaUpdatedAt: now,
+      routeDistanceKm: km,
+      routeDistanceMeters: Math.round(Number(meters)),
+      etaRouteKey: key,
+      etaRouteOrigin: origin,
+      etaRouteDestination: destination
+    };
+    if (source === "restaurant_to_customer") {
+      patch.restaurantToCustomerDistanceKm = km;
+      patch.restaurantToCustomerDistanceMeters = Math.round(Number(meters));
+      patch.restaurantToCustomerEtaMinutes = etaMinutes;
+      patch.restaurantToCustomerEta = etaText;
+      patch.restaurantToCustomerEtaUpdatedAt = now;
+    }
+    if (source === "rider_to_customer") {
+      patch.riderToCustomerDistanceKm = km;
+      patch.riderToCustomerDistanceMeters = Math.round(Number(meters));
+      patch.riderToCustomerEtaMinutes = etaMinutes;
+      patch.riderToCustomerEta = etaText;
+      patch.riderToCustomerEtaUpdatedAt = now;
+    }
+    return patch;
+  }
+
+  async function fetchRouteDistanceMeters(origin, destination) {
+    const url = `/ola-maps?type=directions&originLat=${encodeURIComponent(origin.lat)}&originLng=${encodeURIComponent(origin.lng)}&destLat=${encodeURIComponent(destination.lat)}&destLng=${encodeURIComponent(destination.lng)}&_=${Date.now()}`;
+    const response = await fetch(url, { cache: "no-store", headers: { "Cache-Control": "no-cache" } });
+    if (!response.ok) return null;
+    const data = await response.json();
+    const meters = extractOlaRouteDistanceMeters(data);
+    return meters > 0 ? meters : null;
+  }
+
+  function getOrderIdentity(order) {
+    if (!order || typeof order !== "object") return "";
+    const id = cleanText(order.id || order.orderId || order.orderNumber || order.paymentId || order.razorpayPaymentId);
+    if (id) return id;
+    const placed = getPlacedTime(order);
+    return placed ? String(placed) : "";
+  }
+
+  function updateOrderInLocalList(list, orderId, patch) {
+    if (!Array.isArray(list)) return [];
+    return list.map(order => getOrderIdentity(order) === orderId ? { ...order, ...patch } : order);
+  }
+
+  function applyEtaPatchToLocal(order, patch) {
+    const orderId = getOrderIdentity(order);
+    if (!orderId || !patch) return;
+    const merged = { ...order, ...patch };
+    activeOrder = merged;
+    try {
+      localStorage.setItem("current_order", JSON.stringify(merged));
+      const history = safeParse(localStorage.getItem("order_history"), []);
+      if (Array.isArray(history)) localStorage.setItem("order_history", JSON.stringify(updateOrderInLocalList(history, orderId, patch)));
+    } catch (_) {}
+  }
+
+  function getCustomerDocId(order) {
+    try {
+      const authUser = window.firebase && firebase.auth ? firebase.auth().currentUser : null;
+      if (authUser?.uid) return authUser.uid;
+    } catch (_) {}
+    return cleanText(order?.customerId || order?.customer?.uid || order?.customer?.id || localStorage.getItem("cust_uid") || localStorage.getItem("customer_uid") || "");
+  }
+
+  function persistEtaPatchToCloud(order, patch) {
+    if (!patch || !window.firebase || !firebase.firestore) return;
+    const orderId = getOrderIdentity(order);
+    const customerId = getCustomerDocId(order);
+    try {
+      const db = firebase.firestore();
+      if (orderId) db.collection("orders").doc(orderId).set(patch, { merge: true }).catch(() => {});
+      if (customerId && orderId) db.collection("customers").doc(customerId).collection("orders").doc(orderId).set(patch, { merge: true }).catch(() => {});
+    } catch (_) {}
+  }
+
+  async function syncEtaForOrder(order) {
+    if (!order || !isActiveOrder(order)) return;
+    const plan = getRoutePlan(order);
+    if (!plan || !shouldFetchEtaRoute(order, plan)) return;
+    const key = routePlanKey(plan);
+    if (!key || etaRequestKey === key) return;
+    etaRequestKey = key;
+    try {
+      const meters = await fetchRouteDistanceMeters(plan.origin, plan.destination);
+      const patch = meters ? buildEtaPatch(plan.source, meters, plan.origin, plan.destination) : null;
+      if (patch) {
+        applyEtaPatchToLocal(order, patch);
+        persistEtaPatchToCloud(order, patch);
+        scheduleRender();
+      }
+    } catch (_) {
+    } finally {
+      if (etaRequestKey === key) etaRequestKey = "";
+    }
+  }
+
+  function startLiveTrackOrderListener(order) {
+    const orderId = getOrderIdentity(order);
+    if (!orderId || !window.firebase || !firebase.firestore) return;
+    if (liveTrackOrderId === orderId && liveTrackUnsubscribe) return;
+    try {
+      if (liveTrackUnsubscribe) liveTrackUnsubscribe();
+      liveTrackOrderId = orderId;
+      liveTrackUnsubscribe = firebase.firestore().collection("orders").doc(orderId).onSnapshot(snapshot => {
+        if (!snapshot.exists) return;
+        const cloud = { ...(activeOrder || order), id: snapshot.id, ...snapshot.data() };
+        activeOrder = cloud;
+        try { localStorage.setItem("current_order", JSON.stringify(cloud)); } catch (_) {}
+        scheduleRender();
+      }, () => {});
+    } catch (_) {}
   }
 
   function isLocationFlowOpen() {
@@ -10004,6 +10267,9 @@ if (shouldAutoOpenLocationMap()) {
       document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => setStepElementState(element, false, false));
       document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => setLineElementState(element, false, false));
     }
+
+    startLiveTrackOrderListener(activeOrder);
+    syncEtaForOrder(activeOrder);
 
     if (eta) eta.textContent = getEtaText(activeOrder);
     if (statusText) statusText.textContent = getStatusText(activeOrder);
