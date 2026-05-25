@@ -2029,15 +2029,20 @@ body {
   justify-content: space-between;
   align-items: flex-start;
   background: transparent;
-  color: rgba(253, 253, 255, 0.5);
+  color: #FDFDFF;
 }
 
 .bill-details-header span {
-  color: rgba(253, 253, 255, 0.5);
+  color: #FDFDFF;
   font-size: 16px;
   font-family: 'General Sans', sans-serif;
   font-weight: 400;
   line-height: 120%;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-details-header,
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-details-header span {
+  color: rgba(253, 253, 255, 0.5);
 }
 
 .bill-arrow {
