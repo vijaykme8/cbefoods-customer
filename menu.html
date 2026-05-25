@@ -2423,6 +2423,30 @@ body.is-location-flow-open .floating-added-card {
   align-items: center;
   background: rgba(253, 253, 255, 0.12);
   flex: 0 0 auto;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #FDFDFF;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  z-index: 0;
+}
+
+.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.is-active::before {
+  transform: scaleX(1);
+}
+
+.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.just-activated::before {
+  animation: cbeTrackIconFill 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon svg {
@@ -2440,10 +2464,13 @@ body.is-location-flow-open .floating-added-card {
   height: 20px;
   display: block;
   object-fit: contain;
+  position: relative;
+  z-index: 1;
+  transition: opacity 0.16s ease;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.is-active {
-  background: #FDFDFF;
+  background: rgba(253, 253, 255, 0.12);
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.is-active svg path {
@@ -2456,10 +2483,38 @@ body.is-location-flow-open .floating-added-card {
   background: rgba(253, 253, 255, 0.12);
   flex: 1 1 auto;
   min-width: 0;
+  position: relative;
+  overflow: hidden;
 }
 
-.cf-figma-menu-root .FloatingTrackCard .TrackStepLine.is-active {
+.cf-figma-menu-root .FloatingTrackCard .TrackStepLine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
   background: #FDFDFF;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.64s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.cf-figma-menu-root .FloatingTrackCard .TrackStepLine.is-active::before {
+  transform: scaleX(1);
+}
+
+.cf-figma-menu-root .FloatingTrackCard .TrackStepLine.just-activated::before {
+  animation: cbeTrackLineFill 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cbeTrackIconFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes cbeTrackLineFill {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 
 .cf-figma-menu-root .FloatingTrackCard .ArrowRightIcon img {
@@ -9768,6 +9823,13 @@ if (shouldAutoOpenLocationMap()) {
     return items.reduce((sum, item) => sum + (Number(item?.qty ?? item?.quantity ?? item?.count ?? 0) || 0), 0);
   }
 
+  function restartFillAnimation(element) {
+    element.classList.remove("just-activated");
+    void element.offsetWidth;
+    element.classList.add("just-activated");
+    window.setTimeout(() => element.classList.remove("just-activated"), 760);
+  }
+
   function applyStep(step) {
     const card = document.getElementById("floatingTrackCard");
     if (card) {
@@ -9777,17 +9839,44 @@ if (shouldAutoOpenLocationMap()) {
     document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => {
       const number = Number(element.dataset.step || 0);
       const isActive = number <= step;
-      element.classList.toggle("is-active", isActive);
+      const wasActive = element.classList.contains("is-active");
       const img = element.querySelector(".TrackStepImg");
+
+      element.classList.toggle("is-active", isActive);
+
       if (img) {
-        img.src = isActive ? img.dataset.blackSrc : img.dataset.whiteSrc;
+        if (isActive && !wasActive) {
+          restartFillAnimation(element);
+          window.setTimeout(() => {
+            if (element.classList.contains("is-active")) {
+              img.src = img.dataset.blackSrc;
+            }
+          }, 180);
+        } else {
+          img.src = isActive ? img.dataset.blackSrc : img.dataset.whiteSrc;
+        }
+        img.style.opacity = "1";
+      }
+
+      if (!isActive) {
+        element.classList.remove("just-activated");
       }
     });
 
     document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => {
       const number = Number(element.dataset.line || 0);
       const isActive = number <= Math.min(step, 3);
+      const wasActive = element.classList.contains("is-active");
+
       element.classList.toggle("is-active", isActive);
+
+      if (isActive && !wasActive) {
+        restartFillAnimation(element);
+      }
+
+      if (!isActive) {
+        element.classList.remove("just-activated");
+      }
     });
   }
 
