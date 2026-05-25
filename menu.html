@@ -1058,32 +1058,31 @@ body.map-screen-open {
 .map-address-empty-state.is-hidden {
   display: none !important;
 }
-
 .map-address-top-bar {
   position: absolute;
   width: 390px;
   max-width: 100vw;
-  height: 188px;
+  height: 114px;
   left: 50%;
   top: 0;
   transform: translateX(-50%);
-  padding: 54px 24px 100px;
+  padding: 50px 24px 16px;
   background: linear-gradient(180deg, rgba(18, 19, 15, 0.08) 0%, rgba(18, 19, 15, 0) 100%);
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  gap: 240px;
   z-index: 8;
   pointer-events: none;
 }
-
 .map-round-button {
   width: 48px;
   height: 48px;
   padding: 12px;
-  border: 0;
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
-  box-shadow: 1px 4px 8px rgba(253, 253, 255, 0.12);
+  border: 1px solid rgba(253, 253, 255, 0.60);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.34), rgba(253, 253, 255, 0.34)), #12130F;
+  box-shadow: 0px 4px 8px rgba(253, 253, 255, 0.06);
   border-radius: 50px;
   display: flex;
   justify-content: center;
@@ -1101,6 +1100,10 @@ body.map-screen-open {
   width: 24px;
   height: 24px;
   display: block;
+}
+
+.map-address-top-bar .SearchIcon {
+  display: none;
 }
 
 .map-search-overlay {
@@ -1287,14 +1290,13 @@ body.map-screen-open {
   height: 54px;
   display: block;
 }
-
 .map-address-bottom-section {
   position: absolute;
   left: 0;
-  bottom: calc(-162px + env(safe-area-inset-bottom));
+  bottom: calc(-172px + env(safe-area-inset-bottom));
   width: 390px;
   max-width: 100vw;
-  height: 501px;
+  height: 511px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1313,31 +1315,29 @@ body.map-screen-open {
 .map-address-bottom-section.is-gesture-active {
   transition-duration: 0.18s;
 }
-
 .map-address-wrap {
   width: 342px;
-  height: 211px;
+  height: 219px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   pointer-events: auto;
 }
-
 .gps-button {
-  width: 198px;
+  width: 194px;
   height: 36px;
   padding: 6px 10px 6px 8px;
   border: 0;
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  background: #8806CE;
   border-radius: 30px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  color: #08A045;
+  color: #FDFDFF;
   font-family: General Sans;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 20.80px;
   box-shadow: none;
   cursor: pointer;
@@ -1350,13 +1350,16 @@ body.map-screen-open {
   flex: none;
 }
 
+.gps-button svg path {
+  fill: #FDFDFF;
+}
+
 .gps-button:active {
   transform: scale(0.97);
 }
-
 .captured-add-wrap {
   width: 342px;
-  height: 100px;
+  height: 108px;
   padding: 20px 24px;
   background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
@@ -1368,10 +1371,9 @@ body.map-screen-open {
   align-items: flex-start;
   gap: 14px;
 }
-
 .captured-address {
   width: 294px;
-  height: 60px;
+  height: 68px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -1414,15 +1416,14 @@ body.map-screen-open {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .captured-full-address {
   width: 294px;
-  height: 34px;
+  height: 42px;
   color: #FDFDFF;
-  font-size: 14px;
+  font-size: 16px;
   font-family: General Sans;
   font-weight: 400;
-  line-height: 16.80px;
+  line-height: 20.80px;
   word-wrap: break-word;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1457,11 +1458,10 @@ body.map-screen-open {
 .continue-button.is-saved {
   opacity: 0.92;
 }
-
 .saved-add-drawer {
   width: 390px;
   max-width: 100vw;
-  height: 280px;
+  height: 282px;
   padding: 20px 24px;
   background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
   box-shadow: 0px -4px 34px rgba(0, 0, 0, 0.12);
@@ -1527,15 +1527,14 @@ body.map-screen-open {
 .drawer-handle-wide:active {
   cursor: grabbing;
 }
-
 .saved-address-title {
   width: 342px;
-  height: 14px;
+  height: 16px;
   color: rgba(253, 253, 255, 0.50);
-  font-size: 14px;
+  font-size: 16px;
   font-family: General Sans;
-  font-weight: 500;
-  line-height: 14px;
+  font-weight: 400;
+  line-height: 16px;
   word-wrap: break-word;
 }
 
@@ -1607,13 +1606,12 @@ body.map-screen-open {
   align-items: center;
   gap: 10px;
 }
-
 .saved-address-label {
   color: #FDFDFF;
   font-size: 16px;
   font-family: General Sans;
-  font-weight: 600;
-  line-height: 20.80px;
+  font-weight: 500;
+  line-height: 19.20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1639,21 +1637,20 @@ body.map-screen-open {
   width: 20px;
   height: 20px;
 }
-
 .saved-address-line {
   width: 100%;
   color: #FDFDFF;
-  font-size: 14px;
+  font-size: 16px;
   font-family: General Sans;
   font-weight: 400;
-  line-height: 16.80px;
+  line-height: 19.20px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.saved-address-edit-button {
-  width: 52px;
+.saved-address-edit-button,
+.saved-address-select-button {
+  width: 48px;
   height: 21px;
   padding: 0;
   border: 0;
@@ -1678,7 +1675,8 @@ body.map-screen-open {
   transform: scale(0.97);
 }
 
-.saved-address-edit-button:focus-visible {
+.saved-address-edit-button:focus-visible,
+.saved-address-select-button:focus-visible {
   outline: 2px solid rgba(8, 160, 69, 0.28);
   outline-offset: 3px;
   border-radius: 6px;
@@ -5826,10 +5824,7 @@ function renderSavedAddressList() {
             <div class="saved-address-label">${label}</div>
             <div class="saved-address-line">${line}</div>
           </div>
-          <button class="edit-button saved-address-edit-button" type="button" data-saved-edit="${index}" aria-label="Edit ${label} address">
-            ${makeEditIconSvg()}
-            Edit
-          </button>
+          <button class="saved-address-select-button" type="button" data-saved-select="${index}" aria-label="Select ${label} address">Select</button>
         </div>
       </div>
     `;
@@ -5864,10 +5859,10 @@ function renderSavedAddressList() {
     closeLocationMapScreen();
   }
 
-  savedAddressList.querySelectorAll("[data-saved-edit]").forEach(button => {
+  savedAddressList.querySelectorAll("[data-saved-select]").forEach(button => {
     button.addEventListener("click", event => {
       event.stopPropagation();
-      openSavedAddressForm(Number(button.getAttribute("data-saved-edit")));
+      useSavedAddress(Number(button.getAttribute("data-saved-select")));
     });
   });
 
