@@ -9682,6 +9682,7 @@ if (shouldAutoOpenLocationMap()) {
   let liveTrackUnsubscribe = null;
   let liveTrackOrderId = '';
   const ETA_SECONDS_PER_KM = 160;
+  const ETA_PREPARATION_EXTRA_MINUTES = 5;
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325 };
 
   function cleanText(value) {
@@ -9965,8 +9966,9 @@ if (shouldAutoOpenLocationMap()) {
   }
 
   function buildEtaPatch(source, meters, origin, destination) {
-    const etaMinutes = etaMinutesFromDistanceMeters(meters);
-    if (!etaMinutes) return null;
+    const travelEtaMinutes = etaMinutesFromDistanceMeters(meters);
+    if (!travelEtaMinutes) return null;
+    const etaMinutes = source === "restaurant_to_customer" ? travelEtaMinutes + ETA_PREPARATION_EXTRA_MINUTES : travelEtaMinutes;
     const km = Number((Number(meters) / 1000).toFixed(2));
     const etaText = formatEtaStorage(etaMinutes);
     const now = new Date().toISOString();
@@ -9989,6 +9991,8 @@ if (shouldAutoOpenLocationMap()) {
       patch.restaurantToCustomerDistanceKm = km;
       patch.restaurantToCustomerDistanceMeters = Math.round(Number(meters));
       patch.restaurantToCustomerEtaMinutes = etaMinutes;
+      patch.restaurantToCustomerTravelEtaMinutes = travelEtaMinutes;
+      patch.preparationExtraMinutes = ETA_PREPARATION_EXTRA_MINUTES;
       patch.restaurantToCustomerEta = etaText;
       patch.restaurantToCustomerEtaUpdatedAt = now;
     }
@@ -9996,6 +10000,7 @@ if (shouldAutoOpenLocationMap()) {
       patch.riderToCustomerDistanceKm = km;
       patch.riderToCustomerDistanceMeters = Math.round(Number(meters));
       patch.riderToCustomerEtaMinutes = etaMinutes;
+      patch.riderToCustomerTravelEtaMinutes = travelEtaMinutes;
       patch.riderToCustomerEta = etaText;
       patch.riderToCustomerEtaUpdatedAt = now;
     }

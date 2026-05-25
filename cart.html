@@ -2483,6 +2483,7 @@ body {
   const EXTRA_KM_DELIVERY_FEE = 2;
   const PACKAGING_FEE = 6;
   const ETA_SECONDS_PER_KM = 160;
+  const ETA_PREPARATION_EXTRA_MINUTES = 5;
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325, name: 'Coimbatore Foods' };
   const DELIVERY_INSTRUCTIONS_KEY = 'cbe_cart_delivery_instructions';
   const FOOD_INSTRUCTIONS_KEY = 'cbe_cart_food_instructions';
@@ -3941,8 +3942,9 @@ body {
   }
 
   function buildRouteEtaPatch(source, meters, origin, destination) {
-    const etaMinutes = etaMinutesFromDistanceMeters(meters);
-    if (!etaMinutes) return null;
+    const travelEtaMinutes = etaMinutesFromDistanceMeters(meters);
+    if (!travelEtaMinutes) return null;
+    const etaMinutes = source === 'restaurant_to_customer' ? travelEtaMinutes + ETA_PREPARATION_EXTRA_MINUTES : travelEtaMinutes;
     const km = Number((Number(meters) / 1000).toFixed(2));
     const etaText = formatEtaFromMinutes(etaMinutes);
     const now = new Date().toISOString();
