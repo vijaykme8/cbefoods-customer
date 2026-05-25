@@ -4733,6 +4733,22 @@ html, body { min-height: 100%; background: #12130F !important; }
 .cf-figma-menu-root .BestSellingSection, .cf-figma-menu-root .ProteinPackSection, .cf-figma-menu-root .RegularPackSection { height: auto !important; }
 </style>
 
+
+<style id="cf-floating-bottom-v38">
+.cf-figma-menu-root .FloatingAddedCard,
+.cf-figma-menu-root .FloatingTrackCard {
+  position: fixed !important;
+  left: 50% !important;
+  right: auto !important;
+  top: auto !important;
+  bottom: calc(4dvh + env(safe-area-inset-bottom)) !important;
+  transform: translateX(-50%) translateY(16px) !important;
+}
+.cf-figma-menu-root .FloatingAddedCard.is-visible,
+.cf-figma-menu-root .FloatingTrackCard.is-visible {
+  transform: translateX(-50%) translateY(0) !important;
+}
+</style>
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
