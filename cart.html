@@ -1993,6 +1993,150 @@ body {
   overflow: visible !important;
 }
 </style>
+
+<style id="cf-cart-v5-bill-details">
+.cart-shell:not(.is-empty) .cart-content {
+  bottom: 0 !important;
+  padding-bottom: calc(150px + env(safe-area-inset-bottom)) !important;
+}
+
+.cart-shell:not(.is-empty) .cart-content-inner > .section-group:nth-child(2),
+.cart-shell:not(.is-empty) .bill-details-section {
+  width: 390px !important;
+  height: auto !important;
+  min-height: 56px !important;
+  padding: 16px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  background: #252622 !important;
+}
+
+.cart-shell:not(.is-empty) .cart-content-inner > .section-group:nth-child(2) .section-title,
+.cart-shell:not(.is-empty) .cart-content-inner > .section-group:nth-child(2) .section-title::after {
+  display: none !important;
+  content: none !important;
+}
+
+.bill-details-header {
+  width: 342px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: transparent;
+  color: rgba(253, 253, 255, 0.5);
+}
+
+.bill-details-header span {
+  color: rgba(253, 253, 255, 0.5);
+  font-size: 16px;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+.bill-arrow {
+  width: 24px;
+  height: 24px;
+  display: block;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.cart-shell:not(.is-empty) .payment-card {
+  display: none !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .payment-card {
+  width: 342px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 8px !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .payment-lines {
+  width: 342px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-row,
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .to-pay-row {
+  width: 342px !important;
+  height: 26px !important;
+  min-height: 26px !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-row > span:first-child,
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .to-pay-row > span:first-child {
+  flex: 1 1 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-family: 'General Sans', sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 120% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  white-space: nowrap !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-row > span:last-child,
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .to-pay-row > span:last-child {
+  width: 60px !important;
+  flex: 0 0 60px !important;
+  text-align: right !important;
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-family: 'General Sans', sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 120% !important;
+  letter-spacing: 0 !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .to-pay-row > span:first-child,
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .to-pay-row > span:last-child {
+  font-weight: 500 !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .bill-muted {
+  color: rgba(253, 253, 255, 0.5) !important;
+  font-size: 16px !important;
+  font-family: 'General Sans', sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 120% !important;
+  white-space: nowrap !important;
+}
+
+.cart-shell:not(.is-empty) .bill-details-section.is-expanded .divider {
+  width: 342px !important;
+  height: 1px !important;
+  background: rgba(253, 253, 255, 0.12) !important;
+  flex: 0 0 auto !important;
+}
+
+.cart-shell:not(.is-empty) .placeorder-section {
+  bottom: 0 !important;
+}
+</style>
+
 </head>
 
 <body>
@@ -2031,30 +2175,33 @@ body {
         <div class="item-cards" id="itemCards"></div>
       </section>
 
-      <section class="section-group">
-        <div class="section-title">Bill Details</div>
-        <div class="payment-card">
+      <section class="section-group bill-details-section" id="billDetailsSection">
+        <button class="bill-details-header" id="billDetailsToggle" type="button" aria-expanded="false">
+          <span>Bill Details</span>
+          <img class="bill-arrow" id="billDetailsArrow" src="assets/cart/arrow-down.png" alt="" aria-hidden="true" onerror="this.style.display='none'" />
+        </button>
+        <div class="payment-card" id="billDetailsCard">
           <div class="payment-lines">
             <div class="bill-row">
-              <span>Item total</span>
+              <span>Item Total</span>
               <span id="itemTotal">₹0</span>
             </div>
-            <div class="bill-row">
-              <span>Packaging charges</span>
-              <span id="packagingCharges">₹0</span>
-            </div>
-            <div class="bill-row">
-              <span>Delivery fee</span>
+            <div class="bill-row delivery-row">
+              <span><span>Delivery Fee</span><span class="bill-muted">/ ₹7 Per km</span></span>
               <span id="deliveryFee">₹0</span>
             </div>
             <div class="bill-row">
-              <span>Tax &amp; charges</span>
+              <span>Restaurant Packing charge</span>
+              <span id="packagingCharges">₹0</span>
+            </div>
+            <div class="bill-row">
+              <span>GST &amp; Tax</span>
               <span id="taxCharges">-</span>
             </div>
           </div>
           <div class="divider"></div>
           <div class="to-pay-row">
-            <span>To pay</span>
+            <span>Total Amt.</span>
             <span id="toPay">₹0</span>
           </div>
         </div>
@@ -2116,6 +2263,9 @@ body {
   const toPayEl = document.getElementById('toPay');
   const bottomTotalEl = document.getElementById('bottomTotal');
   const toastEl = document.getElementById('toast');
+  const billDetailsSection = document.getElementById('billDetailsSection');
+  const billDetailsToggle = document.getElementById('billDetailsToggle');
+  const billDetailsArrow = document.getElementById('billDetailsArrow');
 
   function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -2130,6 +2280,13 @@ body {
   function money(value) {
     const amount = Number(value || 0);
     return `₹${Math.round(amount)}`;
+  }
+
+  function setBillDetailsExpanded(isExpanded) {
+    if (!billDetailsSection || !billDetailsToggle || !billDetailsArrow) return;
+    billDetailsSection.classList.toggle('is-expanded', Boolean(isExpanded));
+    billDetailsToggle.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+    billDetailsArrow.src = isExpanded ? 'assets/cart/arrow-up.png' : 'assets/cart/arrow-down.png';
   }
 
   function numberFrom(value, fallback = 0) {
@@ -3264,6 +3421,7 @@ body {
     const address = getDeliveryAddress();
 
     cartShell.classList.toggle('is-empty', cart.length === 0);
+    if (cart.length === 0) setBillDetailsExpanded(false);
     cartShell.classList.remove('cart-booting');
     document.body.classList.toggle('cart-has-items', cart.length > 0);
     itemsCountEl.textContent = totals.qtyTotal === 1 ? '1 item' : `${totals.qtyTotal} items`;
@@ -3546,6 +3704,11 @@ body {
   }
 
   document.getElementById('changeLocationBtn').addEventListener('click', openLocationFlow);
+  if (billDetailsToggle && billDetailsSection) {
+    billDetailsToggle.addEventListener('click', () => {
+      setBillDetailsExpanded(!billDetailsSection.classList.contains('is-expanded'));
+    });
+  }
   const cartBackBtn = document.getElementById('cartBackBtn');
   if (cartBackBtn) cartBackBtn.addEventListener('click', () => { window.location.href = 'menu.html'; });
   document.getElementById('placeOrderBtn').addEventListener('click', handlePlaceOrder);
