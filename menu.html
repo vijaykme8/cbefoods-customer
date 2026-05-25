@@ -5582,6 +5582,8 @@ function saveLocationState(locationState) {
   const landmark = cleanText(locationState.landmark);
   const shortAddress = compactAddress(fullAddress, doorNo);
 
+  const activeUpdatedAt = new Date().toISOString();
+
   const savedLocation = {
     id: locationState.id || "",
     label: locationState.label || "Home",
@@ -5594,7 +5596,9 @@ function saveLocationState(locationState) {
     displayAddress: shortAddress,
     source: locationState.source || "user_confirmed_address",
     pinnedByUser: true,
-    savedAt: new Date().toISOString()
+    savedAt: locationState.savedAt || activeUpdatedAt,
+    updatedAt: activeUpdatedAt,
+    activeLocationUpdatedAt: activeUpdatedAt
   };
 
   const serializedLocation = JSON.stringify(savedLocation);
@@ -5605,6 +5609,18 @@ function saveLocationState(locationState) {
   
   localStorage.setItem("activeDeliveryLocation", serializedLocation);
   localStorage.setItem("customer_active_delivery_location", serializedLocation);
+  localStorage.setItem("active_delivery_location", serializedLocation);
+  localStorage.setItem("TIFFIN_ACTIVE_DELIVERY_LOCATION", serializedLocation);
+  localStorage.setItem("deliveryLocation", serializedLocation);
+  localStorage.setItem("delivery_location", serializedLocation);
+  localStorage.setItem("selectedDeliveryLocation", serializedLocation);
+  localStorage.setItem("selected_delivery_location", serializedLocation);
+  localStorage.setItem("selected_location", serializedLocation);
+  localStorage.setItem("current_location", serializedLocation);
+  localStorage.setItem("currentLocation", serializedLocation);
+  localStorage.setItem("cbe_active_location_updated_at", savedLocation.updatedAt);
+  localStorage.setItem("active_delivery_location_updated_at", savedLocation.updatedAt);
+  sessionStorage.setItem("cbe_force_active_location_from_address_flow", serializedLocation);
 
   localStorage.setItem("cust_address", shortAddress);
   localStorage.setItem("delivery_address", shortAddress);
@@ -5626,7 +5642,9 @@ function saveLocationState(locationState) {
   renderDeliveryLocation(false);
   renderSavedAddressList();
 
-  if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
+  if (window.CBECustomerStore && typeof window.CBECustomerStore.syncNow === "function") {
+    window.CBECustomerStore.syncNow("active_delivery_location");
+  } else if (window.CBECustomerStore && typeof window.CBECustomerStore.scheduleSync === "function") {
     window.CBECustomerStore.scheduleSync("active_delivery_location");
   }
 }

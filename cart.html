@@ -2688,8 +2688,59 @@ body {
       displayAddress: displayAddress || fullAddress,
       lat,
       lng,
-      updatedAt: parsed.updatedAt || new Date().toISOString()
+      updatedAt: parsed.updatedAt || parsed.activeLocationUpdatedAt || parsed.selectedAt || parsed.savedAt || parsed.createdAt || ''
     };
+  }
+
+  function toLocationTimeMs(value) {
+    if (!value) return 0;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    if (typeof value?.toDate === 'function') return value.toDate().getTime() || 0;
+    if (value?.seconds) return Number(value.seconds) * 1000;
+    const time = new Date(value).getTime();
+    return Number.isFinite(time) ? time : 0;
+  }
+
+  function getLocationUpdatedMs(location) {
+    const parsed = getLocationFromAnyObject(location) || location;
+    if (!parsed || typeof parsed !== 'object') return 0;
+    return Math.max(
+      toLocationTimeMs(parsed.activeLocationUpdatedAt),
+      toLocationTimeMs(parsed.updatedAt),
+      toLocationTimeMs(parsed.selectedAt),
+      toLocationTimeMs(parsed.savedAt),
+      toLocationTimeMs(parsed.createdAt)
+    );
+  }
+
+  function getStoredActiveDeliveryLocationObject() {
+    for (const key of CUSTOMER_MEMORY_KEYS.activeLocation) {
+      const location = getLocationFromAnyObject(localStorage.getItem(key));
+      if (location) return location;
+    }
+    return null;
+  }
+
+  function getForcedActiveLocationFromFlow() {
+    const forced = getLocationFromAnyObject(sessionStorage.getItem('cbe_force_active_location_from_address_flow'));
+    if (forced) return forced;
+    return null;
+  }
+
+  function shouldKeepLocalActiveLocation(incomingLocation) {
+    const localLocation = getStoredActiveDeliveryLocationObject();
+    const forcedLocation = getForcedActiveLocationFromFlow();
+    const incomingMs = getLocationUpdatedMs(incomingLocation);
+    const localMs = Math.max(
+      getLocationUpdatedMs(localLocation),
+      getLocationUpdatedMs(forcedLocation),
+      toLocationTimeMs(localStorage.getItem('cbe_active_location_updated_at')),
+      toLocationTimeMs(localStorage.getItem('active_delivery_location_updated_at'))
+    );
+
+    if (!localLocation) return false;
+    if (!incomingMs && localMs) return true;
+    return incomingMs + 1000 < localMs;
   }
 
   function getActiveDeliveryLocationObject() {
@@ -2713,18 +2764,24 @@ body {
     return null;
   }
 
-  function saveSharedActiveLocation(locationValue) {
+  function saveSharedActiveLocation(locationValue, options = {}) {
     const location = getLocationFromAnyObject(locationValue) || locationValue;
     if (!location || typeof location !== 'object') return null;
 
+    if (options.onlyIfNewer && shouldKeepLocalActiveLocation(location)) {
+      return getStoredActiveDeliveryLocationObject();
+    }
+
     const fullAddress = cleanText(location.fullAddress || location.full || location.address || location.displayAddress);
     const displayAddress = cleanText(location.displayAddress || location.display || fullAddress);
+    const locationUpdatedAt = location.updatedAt || location.activeLocationUpdatedAt || location.selectedAt || location.savedAt || new Date().toISOString();
 
     const normalized = {
       ...location,
       fullAddress,
       displayAddress,
-      updatedAt: location.updatedAt || new Date().toISOString()
+      updatedAt: locationUpdatedAt,
+      activeLocationUpdatedAt: locationUpdatedAt
     };
 
     CUSTOMER_MEMORY_KEYS.activeLocation.forEach(key => {
@@ -2733,9 +2790,16 @@ body {
       } catch {}
     });
 
+    localStorage.setItem('cbe_active_location_updated_at', locationUpdatedAt);
+    localStorage.setItem('active_delivery_location_updated_at', locationUpdatedAt);
+
     if (isUsableDeliveryAddress(displayAddress || fullAddress)) {
       localStorage.setItem('cust_address', displayAddress || fullAddress);
       localStorage.setItem('delivery_address', displayAddress || fullAddress);
+      localStorage.setItem('customer_address', displayAddress || fullAddress);
+      localStorage.setItem('deliveryAddress', displayAddress || fullAddress);
+      localStorage.setItem('selected_address', displayAddress || fullAddress);
+      localStorage.setItem('selectedAddress', displayAddress || fullAddress);
       localStorage.setItem('cust_full_address', fullAddress || displayAddress);
       localStorage.setItem('delivery_full_address', fullAddress || displayAddress);
     }
@@ -2836,6 +2900,13 @@ body {
       }
 
       const data = snapshot.data() || {};
+      const forcedActiveLocation = getForcedActiveLocationFromFlow();
+      let usedForcedActiveLocation = false;
+
+      if (forcedActiveLocation) {
+        saveSharedActiveLocation(forcedActiveLocation);
+        usedForcedActiveLocation = true;
+      }
 
       const localSaved = getLocalSavedAddresses();
       const cloudSaved = normalizeAddressListFromValue(data.savedAddresses || data.addresses || []);
@@ -2853,7 +2924,13 @@ body {
         null;
 
       if (cloudActiveLocation) {
-        saveSharedActiveLocation(cloudActiveLocation);
+        saveSharedActiveLocation(cloudActiveLocation, { onlyIfNewer: true });
+      }
+
+      if (usedForcedActiveLocation) {
+        sessionStorage.removeItem('cbe_force_active_location_from_address_flow');
+        renderCart();
+        scheduleCustomerMemorySync('active_delivery_location');
       }
 
       const localCart = loadCartRaw();
