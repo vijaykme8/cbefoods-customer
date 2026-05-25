@@ -106,7 +106,7 @@ button {
     var(--white);
 }
 
-/* Prevent cart-added screen flashing before JS decides empty/added state */
+
 .cart-shell.cart-booting .cart-content,
 .cart-shell.cart-booting .empty-state,
 .cart-shell.cart-booting .placeorder-section {
@@ -687,7 +687,7 @@ button {
 }
 
 
-/* 1.1 cart-empty refinement */
+
 body {
   background: #12130F;
 }
@@ -833,7 +833,7 @@ body {
 }
 
 
-/* 1.2 cart-added refinement */
+
 .cart-shell {
   background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
 }
@@ -1027,7 +1027,7 @@ body {
 }
 
 
-/* Page-level hard guard for PWA bottom spacing */
+
 .placeorder-section {
   bottom: 0px !important;
 }
@@ -1234,6 +1234,256 @@ body {
   padding-bottom: calc(24px + env(safe-area-inset-bottom)) !important;
 }
 
+
+body {
+  background: #12130F;
+}
+
+.cart-shell {
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+}
+
+.top-bar {
+  position: fixed;
+  z-index: 70;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  height: 117px;
+  padding: 50px 24px 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+  background: #12130F;
+  border-radius: 0 0 30px 30px;
+}
+
+.cart-back-button {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: #FDFDFF;
+}
+
+.cart-back-button svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+.cart-top-right-group {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 47px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.cart-eyebrow {
+  align-self: stretch;
+  color: rgba(253, 253, 255, 0.5);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+.cart-location-row {
+  align-self: stretch;
+  min-width: 0;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.deliver-address {
+  max-width: 153px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #FDFDFF;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.change-button {
+  width: 81px;
+  height: 24px;
+  padding: 2px 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 10px;
+  color: #08A045;
+  flex: 0 0 auto;
+}
+
+.change-button svg {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+}
+
+.change-button span {
+  color: #08A045;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.cart-more-button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.37px;
+  flex: 0 0 auto;
+  border-radius: 70px;
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.2), rgba(253, 253, 255, 0.2)), #12130F;
+}
+
+.cart-more-button span {
+  width: 3.71px;
+  height: 3.71px;
+  border-radius: 50%;
+  background: #FDFDFF;
+  display: block;
+}
+
+.empty-state {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  padding: 0;
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+  background: #252622;
+}
+
+.empty-cart-content {
+  width: 100%;
+  height: 100%;
+  min-height: 100dvh;
+  padding: 60px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  background: #252622;
+}
+
+.empty-gif {
+  width: 250px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+  border-radius: 150px;
+  flex: 0 0 auto;
+}
+
+.empty-img {
+  width: 250px;
+  height: 250px;
+  display: block;
+  object-fit: cover;
+  margin: 0;
+}
+
+.info-cta-group {
+  align-self: stretch;
+  width: 342px;
+  max-width: 100%;
+  height: 151px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.info-group {
+  align-self: stretch;
+  width: 342px;
+  max-width: 100%;
+  height: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.empty-title {
+  align-self: stretch;
+  width: 342px;
+  max-width: 100%;
+  height: 34px;
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.empty-copy {
+  align-self: stretch;
+  width: 342px;
+  max-width: 100%;
+  height: 42px;
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+  text-align: center;
+}
+
+.browse-menu-button {
+  width: 196px;
+  height: 55px;
+  padding: 14px 40px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #08A045;
+  border-radius: 10px;
+  background: transparent;
+  color: #08A045;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 26px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+.cart-shell.is-empty .empty-state {
+  display: flex;
+}
+
+.cart-shell:not(.is-empty) .cart-content {
+  top: 137px;
+}
+
 </style>
 
 <style id="cf-mobile-zoom-lock">
@@ -1368,28 +1618,32 @@ body {
 <body>
 <div class="cart-shell cart-booting" id="cartShell">
   <header class="top-bar">
-    <div class="left-group">
-      <div class="title-group">
-        <svg class="cart-title-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M6.35 6.75h14.2c.7 0 1.22.65 1.07 1.33l-1.18 5.31a2.75 2.75 0 0 1-2.68 2.15H9.1a2.75 2.75 0 0 1-2.7-2.22L4.8 4.95H2.75a1 1 0 0 1 0-2h2.88c.48 0 .9.34.99.81l.73 2.99Zm2.2 2 1 4.18c.06.36.38.62.75.62h7.46c.36 0 .68-.25.76-.6l.93-4.2H8.55ZM9.4 21.05a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Zm8.25 0a1.55 1.55 0 1 1 0-3.1 1.55 1.55 0 0 1 0 3.1Z" fill="currentColor"/>
-        </svg>
-        <div class="title-text">Cart</div>
+    <button class="cart-back-button" id="cartBackBtn" type="button" aria-label="Back to menu">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M10.31 5.18 3.48 12l6.83 6.82" fill="none" stroke="#FDFDFF" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 12h17.25" fill="none" stroke="#FDFDFF" stroke-width="1.7" stroke-linecap="round"/>
+      </svg>
+    </button>
+
+    <div class="cart-top-right-group">
+      <div class="cart-eyebrow">Cart</div>
+      <div class="cart-location-row">
+        <span class="deliver-address" id="deliveryAddress">Set location</span>
+        <button class="change-button" id="changeLocationBtn" type="button" aria-label="Change delivery location">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15.38 4.87 19.13 8.62 8.58 19.17l-4.2.46.46-4.2L15.38 4.87Zm1.52-1.52a2.1 2.1 0 0 1 2.97 0l.78.78a2.1 2.1 0 0 1 0 2.97l-.43.43-3.75-3.75.43-.43Z" fill="currentColor"/>
+          </svg>
+          <span>Change</span>
+        </button>
       </div>
-      <div class="items-count" id="itemsCount">0 items</div>
     </div>
 
-    <div class="right-group">
-      <div class="deliver-info">
-        <span class="deliver-label">Deliver to:</span>
-        <span class="deliver-address" id="deliveryAddress">Set location</span>
-      </div>
-      <button class="change-button" id="changeLocationBtn" type="button" aria-label="Change delivery location">
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M15.38 4.87 19.13 8.62 8.58 19.17l-4.2.46.46-4.2L15.38 4.87Zm1.52-1.52a2.1 2.1 0 0 1 2.97 0l.78.78a2.1 2.1 0 0 1 0 2.97l-.43.43-3.75-3.75.43-.43Z" fill="currentColor"/>
-        </svg>
-        <span>Change</span>
-      </button>
-    </div>
+    <button class="cart-more-button" type="button" aria-label="More options">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <span id="itemsCount" hidden>0 items</span>
   </header>
 
   <main class="cart-content">
@@ -1431,13 +1685,17 @@ body {
   </main>
 
   <section class="empty-state" aria-live="polite">
-    <img class="empty-img" src="assets/cart/dish-img.png" alt="" onerror="this.style.display='none'" />
-    <div class="info-cta-group">
-      <div class="info-group">
-        <h1 class="empty-title">Your cart is empty</h1>
-        <p class="empty-copy">Add items from the menu and come back here to place order.</p>
+    <div class="empty-cart-content">
+      <div class="empty-gif">
+        <img class="empty-img" src="assets/cart/dish-img.png" alt="" onerror="this.style.display='none'" />
       </div>
-      <a class="browse-menu-button" href="menu.html">Browse menu</a>
+      <div class="info-cta-group">
+        <div class="info-group">
+          <h1 class="empty-title">Your cart is empty</h1>
+          <p class="empty-copy">Add items from the menu and come <br>back here to place order.</p>
+        </div>
+        <a class="browse-menu-button" href="menu.html">Browse menu</a>
+      </div>
     </div>
   </section>
 
@@ -1636,7 +1894,6 @@ body {
       data.updatedAt
     );
 
-    // If the remote cart is older than the latest clear marker, do not revive stale items.
     return !remoteCartUpdatedMs || remoteCartUpdatedMs <= clearedMs + 1000;
   }
 
@@ -2128,10 +2385,7 @@ body {
   }
 
   function clearCartAfterPaidOrder(order = {}) {
-    /*
-      Payment success must clear BOTH local cache and Firebase customer memory.
-      Otherwise cart.html can restore old cartItems from customers/{uid} after redirect/refresh.
-    */
+    
     window.clearTimeout(customerMemory.syncTimer);
 
     localStorage.removeItem(CART_KEY);
@@ -2385,10 +2639,7 @@ body {
       return directImage;
     }
 
-    /*
-    Existing cart items saved before this fix may not have an image key.
-    So cart uses id/name fallback mapping to render the same menu image.
-    */
+    
     const fallbackById = {
       "1": "assets/menu/img/Protein egg lunch-img.png",
       "2": "assets/menu/img/Regular meal-img.png",
@@ -2477,10 +2728,7 @@ body {
 
     if (blockedValues.has(normalized)) return false;
 
-    /*
-      Do not allow coordinate-only values as a delivery address.
-      Place order must force the user to save/select a readable address first.
-    */
+    
     if (/^-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?$/.test(normalized)) return false;
 
     return text.length >= 5;
@@ -2813,7 +3061,6 @@ body {
   function openRazorpayPayment(snapshot) {
     const key = getRazorpayKeyId();
 
-    // Do not store unpaid payment attempts as orders. Only save after Razorpay success.
 
     if (!key) {
       localStorage.removeItem('pending_order');
@@ -2921,6 +3168,8 @@ body {
   }
 
   document.getElementById('changeLocationBtn').addEventListener('click', openLocationFlow);
+  const cartBackBtn = document.getElementById('cartBackBtn');
+  if (cartBackBtn) cartBackBtn.addEventListener('click', () => { window.location.href = 'menu.html'; });
   document.getElementById('placeOrderBtn').addEventListener('click', handlePlaceOrder);
 
   itemCardsEl.addEventListener('click', (event) => {
