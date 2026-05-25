@@ -3251,6 +3251,26 @@ body.map-screen-open .cf-figma-menu-root .FloatingAddedCard {
 
 </style>
 </style>
+<style id="cf-menu-refine-v26">
+.customer-map-screen.is-details-step .details-top-bar {
+  position: fixed !important;
+  top: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 80 !important;
+}
+.customer-map-screen.is-details-step .details-form-section .save-use-now-button {
+  position: relative !important;
+  left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 4px 0 calc(30px + env(safe-area-inset-bottom)) !important;
+  flex: none !important;
+}
+.customer-map-screen.is-details-step .details-form-section .save-use-now-button:active {
+  transform: scale(0.98) !important;
+}
+</style>
 <script>
 (function () {
   document.documentElement.style.display = 'none';
@@ -5052,10 +5072,10 @@ html, body { min-height: 100%; background: #12130F !important; }
           <span>Landmark <span class="details-optional-mark">(Optional)</span></span>
           <input id="detailsLandmarkInput" type="text" autocomplete="off" placeholder="e.g. apollo pharmacy">
         </label>
+
+        <button class="save-use-now-button" type="button" id="saveUseNowBtn">Save &amp; Use now</button>
       </div>
     </div>
-
-    <button class="save-use-now-button" type="button" id="saveUseNowBtn">Save &amp; Use now</button>
   </div>
 </div>
 
