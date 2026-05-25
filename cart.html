@@ -2167,6 +2167,171 @@ body {
   color: rgba(253, 253, 255, 0.5) !important;
   margin-left: 0 !important;
 }
+
+.cart-options-layer,
+.cart-dialog-layer {
+  position: fixed;
+  z-index: 90;
+  inset: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 390px;
+  background: rgba(18, 19, 15, 0.24);
+}
+
+.cart-options-layer[hidden],
+.cart-dialog-layer[hidden] {
+  display: none !important;
+}
+
+.cart-options-menu {
+  position: absolute;
+  top: 96px;
+  right: 24px;
+  width: 230px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #252622;
+  border: 1px solid rgba(253, 253, 255, 0.12);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.24);
+  border-radius: 14px;
+}
+
+.cart-options-menu button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #FDFDFF;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 120%;
+  text-align: left;
+  border-radius: 10px;
+}
+
+.cart-options-menu button:active {
+  background: rgba(253, 253, 255, 0.08);
+}
+
+.cart-options-menu .danger-option {
+  color: #FF7A66;
+}
+
+.cart-dialog-layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.cart-dialog {
+  width: 342px;
+  max-width: 100%;
+  padding: 20px;
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  background: #252622;
+  border: 1px solid rgba(253, 253, 255, 0.12);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.28);
+  border-radius: 18px;
+}
+
+.cart-dialog.is-active {
+  display: flex;
+}
+
+.cart-dialog-title {
+  color: #FDFDFF;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.cart-dialog-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.72);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 150%;
+}
+
+.cart-dialog-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cart-dialog-field label {
+  color: #FDFDFF;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+.cart-dialog-field textarea {
+  width: 100%;
+  min-height: 76px;
+  padding: 12px 14px;
+  resize: vertical;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 140%;
+  background: rgba(253, 253, 255, 0.06);
+  border: 1px solid rgba(253, 253, 255, 0.08);
+  border-radius: 10px;
+  outline: none;
+}
+
+.cart-dialog-field textarea::placeholder {
+  color: rgba(253, 253, 255, 0.34);
+}
+
+.cart-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.cart-dialog-actions button {
+  min-width: 92px;
+  height: 44px;
+  padding: 0 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  color: #FDFDFF;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.cart-dialog-actions .secondary-action {
+  background: rgba(253, 253, 255, 0.08);
+}
+
+.cart-dialog-actions .primary-action {
+  background: #08A045;
+}
+
+.cart-dialog-actions .danger-action {
+  background: #E23009;
+}
 </style>
 </head>
 
@@ -2191,7 +2356,7 @@ body {
       </div>
     </div>
 
-    <button class="cart-more-button" type="button" aria-label="More options">
+    <button class="cart-more-button" id="cartMoreBtn" type="button" aria-label="More options" aria-expanded="false" aria-controls="cartOptionsLayer">
       <span></span>
       <span></span>
       <span></span>
@@ -2262,6 +2427,41 @@ body {
     </div>
     <button class="placeorder-button" id="placeOrderBtn" type="button">Proceed to pay</button>
   </section>
+  <div class="cart-options-layer" id="cartOptionsLayer" hidden>
+    <div class="cart-options-menu" role="menu" aria-label="Cart options">
+      <button type="button" id="addInstructionsBtn" role="menuitem">Add instructions</button>
+      <button type="button" id="helpCartBtn" role="menuitem">Help</button>
+      <button type="button" id="clearCartOptionBtn" class="danger-option" role="menuitem">Clear cart</button>
+    </div>
+  </div>
+
+  <div class="cart-dialog-layer" id="cartDialogLayer" hidden>
+    <div class="cart-dialog" id="clearCartDialog" role="dialog" aria-modal="true" aria-labelledby="clearCartTitle">
+      <div class="cart-dialog-title" id="clearCartTitle">Clear cart?</div>
+      <p class="cart-dialog-copy">This will remove all items from your cart.</p>
+      <div class="cart-dialog-actions">
+        <button type="button" class="secondary-action" id="cancelClearCartBtn">Cancel</button>
+        <button type="button" class="danger-action" id="confirmClearCartBtn">Clear cart</button>
+      </div>
+    </div>
+    <div class="cart-dialog" id="instructionsDialog" role="dialog" aria-modal="true" aria-labelledby="instructionsTitle">
+      <div class="cart-dialog-title" id="instructionsTitle">Add instructions</div>
+      <div class="cart-dialog-fields">
+        <div class="cart-dialog-field">
+          <label for="deliveryInstructionsInput">Delivery instructions</label>
+          <textarea id="deliveryInstructionsInput" maxlength="180" placeholder="e.g. Call before arriving"></textarea>
+        </div>
+        <div class="cart-dialog-field">
+          <label for="foodInstructionsInput">Food instructions</label>
+          <textarea id="foodInstructionsInput" maxlength="180" placeholder="e.g. Less spicy"></textarea>
+        </div>
+      </div>
+      <div class="cart-dialog-actions">
+        <button type="button" class="secondary-action" id="cancelInstructionsBtn">Cancel</button>
+        <button type="button" class="primary-action" id="saveInstructionsBtn">Save</button>
+      </div>
+    </div>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script>
@@ -2282,6 +2482,8 @@ body {
   const FREE_DISTANCE_KM = 10;
   const EXTRA_KM_DELIVERY_FEE = 2;
   const PACKAGING_FEE = 6;
+  const DELIVERY_INSTRUCTIONS_KEY = 'cbe_cart_delivery_instructions';
+  const FOOD_INSTRUCTIONS_KEY = 'cbe_cart_food_instructions';
 
   const cartShell = document.getElementById('cartShell');
   const itemsCountEl = document.getElementById('itemsCount');
@@ -2297,6 +2499,20 @@ body {
   const billDetailsSection = document.getElementById('billDetailsSection');
   const billDetailsToggle = document.getElementById('billDetailsToggle');
   const billDetailsArrow = document.getElementById('billDetailsArrow');
+  const cartMoreBtn = document.getElementById('cartMoreBtn');
+  const cartOptionsLayer = document.getElementById('cartOptionsLayer');
+  const addInstructionsBtn = document.getElementById('addInstructionsBtn');
+  const helpCartBtn = document.getElementById('helpCartBtn');
+  const clearCartOptionBtn = document.getElementById('clearCartOptionBtn');
+  const cartDialogLayer = document.getElementById('cartDialogLayer');
+  const clearCartDialog = document.getElementById('clearCartDialog');
+  const instructionsDialog = document.getElementById('instructionsDialog');
+  const cancelClearCartBtn = document.getElementById('cancelClearCartBtn');
+  const confirmClearCartBtn = document.getElementById('confirmClearCartBtn');
+  const cancelInstructionsBtn = document.getElementById('cancelInstructionsBtn');
+  const saveInstructionsBtn = document.getElementById('saveInstructionsBtn');
+  const deliveryInstructionsInput = document.getElementById('deliveryInstructionsInput');
+  const foodInstructionsInput = document.getElementById('foodInstructionsInput');
 
   function escapeHTML(value) {
     return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -2826,6 +3042,7 @@ body {
     const activeDeliveryLocation = getActiveDeliveryLocationObject();
     const savedAddresses = getLocalSavedAddresses();
     const cartItems = loadCartRaw().map(({ _cartIndex, ...item }) => item);
+    const cartInstructions = getCartInstructions();
     const identity = customerMemory.identity || getCustomerIdentity();
 
     const cartClearedAt = localStorage.getItem(CART_CLEARED_AT_KEY) || '';
@@ -2839,9 +3056,11 @@ body {
       cart: cartItems,
       currentCart: {
         items: cartItems,
+        instructions: cartInstructions,
         updatedAt: new Date().toISOString(),
         clearedAt: cartClearedAt || ''
       },
+      cartInstructions,
       cartUpdatedAt: new Date().toISOString(),
       lastCartClearedAt: cartClearedAt || '',
       lastCartClearedCustomerId: cartClearedCustomerId || ''
@@ -2935,6 +3154,10 @@ body {
 
       const localCart = loadCartRaw();
       const cloudCart = normalizeCloudCart(data.cartItems || data.cart || data.currentCart?.items || data.currentCart || []);
+      const cloudInstructions = data.cartInstructions || data.currentCart?.instructions || null;
+      if (cloudInstructions && typeof cloudInstructions === 'object') {
+        saveCartInstructions(cloudInstructions.delivery || '', cloudInstructions.food || '');
+      }
       const blockStaleCloudCart = shouldBlockCloudCartRestore(data);
 
       if (!localCart.length && cloudCart.length && !blockStaleCloudCart) {
@@ -3032,6 +3255,7 @@ body {
     window.clearTimeout(customerMemory.syncTimer);
 
     localStorage.removeItem(CART_KEY);
+    clearCartInstructions();
     markCartClearedLocally();
     localStorage.removeItem('checkout_snapshot');
     localStorage.removeItem('pending_order');
@@ -3054,6 +3278,76 @@ body {
     }, { merge: true }).catch(error => {
       console.warn('Customer cart clear sync failed', error);
     });
+  }
+
+
+  function cleanInstruction(value) {
+    return cleanText(value).slice(0, 180);
+  }
+
+  function getCartInstructions() {
+    return {
+      delivery: cleanInstruction(localStorage.getItem(DELIVERY_INSTRUCTIONS_KEY) || ''),
+      food: cleanInstruction(localStorage.getItem(FOOD_INSTRUCTIONS_KEY) || '')
+    };
+  }
+
+  function saveCartInstructions(delivery, food) {
+    const deliveryText = cleanInstruction(delivery);
+    const foodText = cleanInstruction(food);
+
+    if (deliveryText) localStorage.setItem(DELIVERY_INSTRUCTIONS_KEY, deliveryText);
+    else localStorage.removeItem(DELIVERY_INSTRUCTIONS_KEY);
+
+    if (foodText) localStorage.setItem(FOOD_INSTRUCTIONS_KEY, foodText);
+    else localStorage.removeItem(FOOD_INSTRUCTIONS_KEY);
+  }
+
+  function clearCartInstructions() {
+    localStorage.removeItem(DELIVERY_INSTRUCTIONS_KEY);
+    localStorage.removeItem(FOOD_INSTRUCTIONS_KEY);
+  }
+
+  function closeCartOptions() {
+    if (!cartOptionsLayer) return;
+    cartOptionsLayer.hidden = true;
+    cartMoreBtn?.setAttribute('aria-expanded', 'false');
+  }
+
+  function openCartOptions() {
+    if (!cartOptionsLayer) return;
+    cartOptionsLayer.hidden = false;
+    cartMoreBtn?.setAttribute('aria-expanded', 'true');
+  }
+
+  function openCartDialog(dialog) {
+    closeCartOptions();
+    if (!cartDialogLayer || !dialog) return;
+    [clearCartDialog, instructionsDialog].forEach(item => item?.classList.remove('is-active'));
+    dialog.classList.add('is-active');
+    cartDialogLayer.hidden = false;
+  }
+
+  function closeCartDialog() {
+    if (!cartDialogLayer) return;
+    cartDialogLayer.hidden = true;
+    [clearCartDialog, instructionsDialog].forEach(item => item?.classList.remove('is-active'));
+  }
+
+  function openInstructionsDialog() {
+    const instructions = getCartInstructions();
+    if (deliveryInstructionsInput) deliveryInstructionsInput.value = instructions.delivery;
+    if (foodInstructionsInput) foodInstructionsInput.value = instructions.food;
+    openCartDialog(instructionsDialog);
+    window.setTimeout(() => deliveryInstructionsInput?.focus(), 80);
+  }
+
+  function clearCartFromOptions() {
+    saveCart([]);
+    clearCartInstructions();
+    closeCartDialog();
+    renderCart();
+    showToast('Cart cleared');
   }
 
 
@@ -3615,6 +3909,7 @@ body {
       fullAddress: address,
       displayAddress: address
     };
+    const cartInstructions = getCartInstructions();
 
     return {
       id: `CBE-${Date.now()}`,
@@ -3634,6 +3929,10 @@ body {
       customerPhone,
       customerName,
       deliveryAddress: address,
+      deliveryInstructions: cartInstructions.delivery,
+      foodInstructions: cartInstructions.food,
+      orderInstructions: cartInstructions,
+      instructions: cartInstructions,
       deliveryLocation: {
         ...activeDeliveryLocation,
         fullAddress: activeDeliveryLocation.fullAddress || address,
@@ -3736,7 +4035,9 @@ body {
       },
       notes: {
         order_id: snapshot.id,
-        address: snapshot.deliveryAddress
+        address: snapshot.deliveryAddress,
+        delivery_instructions: snapshot.deliveryInstructions || '',
+        food_instructions: snapshot.foodInstructions || ''
       },
       theme: {
         color: '#8806CE'
@@ -3830,6 +4131,54 @@ body {
 
     if (action === 'increase') changeQty(itemId, 1);
     if (action === 'decrease') changeQty(itemId, -1);
+  });
+
+  cartMoreBtn?.addEventListener('click', (event) => {
+    event.stopPropagation();
+    if (!cartOptionsLayer) return;
+    if (cartOptionsLayer.hidden) openCartOptions();
+    else closeCartOptions();
+  });
+
+  cartOptionsLayer?.addEventListener('click', (event) => {
+    if (event.target === cartOptionsLayer) closeCartOptions();
+  });
+
+  clearCartOptionBtn?.addEventListener('click', () => {
+    if (!loadCartRaw().length) {
+      closeCartOptions();
+      showToast('Cart is already empty');
+      return;
+    }
+    openCartDialog(clearCartDialog);
+  });
+
+  addInstructionsBtn?.addEventListener('click', openInstructionsDialog);
+
+  helpCartBtn?.addEventListener('click', () => {
+    closeCartOptions();
+    showToast('For help, contact restaurant support.');
+  });
+
+  cancelClearCartBtn?.addEventListener('click', closeCartDialog);
+  confirmClearCartBtn?.addEventListener('click', clearCartFromOptions);
+  cancelInstructionsBtn?.addEventListener('click', closeCartDialog);
+
+  saveInstructionsBtn?.addEventListener('click', () => {
+    saveCartInstructions(deliveryInstructionsInput?.value || '', foodInstructionsInput?.value || '');
+    closeCartDialog();
+    scheduleCustomerMemorySync('cart_instructions_updated');
+    showToast('Instructions saved');
+  });
+
+  cartDialogLayer?.addEventListener('click', (event) => {
+    if (event.target === cartDialogLayer) closeCartDialog();
+  });
+
+  window.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    closeCartOptions();
+    closeCartDialog();
   });
 
   window.addEventListener('storage', (event) => {
