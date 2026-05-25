@@ -3919,13 +3919,127 @@ body {
     return number;
   }
 
-  function extractOlaRouteDistanceMeters(data) {
+  function extractOlaRoute(data) {
     const routes = data?.routes || data?.data?.routes || data?.result?.routes || data?.paths || data?.data?.paths || data?.route || data?.data?.route || [];
-    const route = Array.isArray(routes) ? routes[0] : routes;
+    return Array.isArray(routes) ? routes[0] : routes;
+  }
+
+  function extractOlaRouteDistanceMeters(data) {
+    const route = extractOlaRoute(data);
     const legs = Array.isArray(route?.legs) ? route.legs : [];
     const legDistance = legs.reduce((sum, leg) => sum + getOlaDistanceMeters(leg?.distance || leg?.distanceMeters || leg?.distance_meters), 0);
     if (legDistance > 0) return legDistance;
     return getOlaDistanceMeters(route?.distance || route?.distanceMeters || route?.distance_meters || route?.summary?.distance || data?.distance || data?.distanceMeters || data?.distance_meters);
+  }
+
+  function decodeEtaPolyline(str, precision = 5) {
+    if (!str || typeof str !== 'string') return [];
+    let index = 0, lat = 0, lng = 0, out = [], factor = Math.pow(10, precision);
+    while (index < str.length) {
+      let result = 0, shift = 0, byte;
+      do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20 && index < str.length);
+      lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+      result = 0; shift = 0;
+      do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20 && index < str.length);
+      lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+      out.push([lng / factor, lat / factor]);
+    }
+    return out.filter(point => Number.isFinite(point[0]) && Number.isFinite(point[1]));
+  }
+
+  function etaLooksLatLng(a, b) { return a >= 5 && a <= 40 && b >= 65 && b <= 100; }
+  function etaLooksLngLat(a, b) { return a >= 65 && a <= 100 && b >= 5 && b <= 40; }
+
+  function etaPair(a, b) {
+    const x = Number(a), y = Number(b);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+    if (etaLooksLatLng(x, y)) return [y, x];
+    if (etaLooksLngLat(x, y)) return [x, y];
+    if (Math.abs(x) <= 90 && Math.abs(y) > 45) return [y, x];
+    return [x, y];
+  }
+
+  function normalizeEtaPointList(list) {
+    if (!Array.isArray(list)) return [];
+    return list.map(point => Array.isArray(point) ? etaPair(point[0], point[1]) : point && typeof point === 'object' ? etaPair(point.lng ?? point.lon ?? point.long ?? point.longitude, point.lat ?? point.latitude) : null).filter(Boolean);
+  }
+
+  function etaGeoJsonCoords(obj) {
+    if (!obj || typeof obj !== 'object') return [];
+    if (obj.type === 'LineString') return normalizeEtaPointList(obj.coordinates);
+    if (obj.type === 'MultiLineString') return normalizeEtaPointList((obj.coordinates || []).flat());
+    if (obj.type === 'Feature') return etaGeoJsonCoords(obj.geometry);
+    if (obj.type === 'FeatureCollection') return (obj.features || []).flatMap(etaGeoJsonCoords);
+    return [];
+  }
+
+  function etaDeepCoords(value, depth = 0) {
+    if (!value || depth > 7) return [];
+    if (Array.isArray(value)) {
+      if (value.length >= 2 && typeof value[0] !== 'object' && typeof value[1] !== 'object') {
+        const point = etaPair(value[0], value[1]);
+        return point ? [point] : [];
+      }
+      return value.flatMap(item => etaDeepCoords(item, depth + 1));
+    }
+    if (typeof value === 'object') {
+      for (const key of ['coordinates', 'overview_path', 'path', 'points', 'route_points', 'polyline_points', 'geometry', 'geojson']) {
+        if (key in value) {
+          const found = etaDeepCoords(value[key], depth + 1);
+          if (found.length >= 3) return found;
+        }
+      }
+      return [];
+    }
+    return [];
+  }
+
+  function etaEncodedCandidates(value, depth = 0) {
+    if (!value || depth > 7) return [];
+    if (typeof value === 'string') return value.length >= 12 && /[\_@?`~|{}\[\]\^]/.test(value) ? [value] : [];
+    if (Array.isArray(value)) return value.flatMap(item => etaEncodedCandidates(item, depth + 1));
+    if (typeof value === 'object') {
+      let out = [];
+      for (const key of ['points', 'polyline', 'encodedPolyline', 'overview_polyline', 'overviewPolyline', 'geometry']) {
+        if (key in value) out = out.concat(etaEncodedCandidates(value[key], depth + 1));
+      }
+      return out.length ? out : Object.values(value).flatMap(item => etaEncodedCandidates(item, depth + 1));
+    }
+    return [];
+  }
+
+  function extractOlaRouteCoords(data) {
+    const route = extractOlaRoute(data);
+    let coords = [];
+    const direct = route?.overview_polyline?.points || route?.overviewPolyline?.points || route?.overview_polyline || route?.overviewPolyline || route?.polyline || route?.encodedPolyline || route?.geometry;
+    if (typeof direct === 'string') {
+      coords = decodeEtaPolyline(direct, 5);
+      if (coords.length < 3) coords = decodeEtaPolyline(direct, 6);
+    }
+    if (coords.length < 3) coords = etaGeoJsonCoords(route?.geometry || route?.geojson || route?.routeGeoJson || data?.geometry || data?.geojson);
+    if (coords.length < 3 && Array.isArray(route?.legs)) {
+      let stepCoords = [];
+      route.legs.forEach(leg => (leg.steps || []).forEach(step => {
+        const encoded = step.polyline?.points || step.polyline || step.encodedPolyline || step.geometry;
+        if (typeof encoded === 'string') {
+          let decoded = decodeEtaPolyline(encoded, 5);
+          if (decoded.length < 3) decoded = decodeEtaPolyline(encoded, 6);
+          stepCoords = stepCoords.concat(decoded);
+        } else {
+          stepCoords = stepCoords.concat(etaGeoJsonCoords(encoded), etaDeepCoords(encoded));
+        }
+      }));
+      coords = stepCoords;
+    }
+    if (coords.length < 3) {
+      for (const encoded of etaEncodedCandidates(route || data)) {
+        let decoded = decodeEtaPolyline(encoded, 5);
+        if (decoded.length < 3) decoded = decodeEtaPolyline(encoded, 6);
+        if (decoded.length >= 3) { coords = decoded; break; }
+      }
+    }
+    if (coords.length < 3) coords = etaDeepCoords(route || data);
+    return normalizeEtaPointList(coords);
   }
 
   function etaMinutesFromDistanceMeters(meters) {
@@ -3941,7 +4055,7 @@ body {
     return `${hours}:${mins}m`;
   }
 
-  function buildRouteEtaPatch(source, meters, origin, destination) {
+  function buildRouteEtaPatch(source, meters, origin, destination, routeCoords = []) {
     const travelEtaMinutes = etaMinutesFromDistanceMeters(meters);
     if (!travelEtaMinutes) return null;
     const etaMinutes = source === 'restaurant_to_customer' ? travelEtaMinutes + ETA_PREPARATION_EXTRA_MINUTES : travelEtaMinutes;
@@ -3964,12 +4078,17 @@ body {
       etaRouteDestination: destination
     };
 
+    if (Array.isArray(routeCoords) && routeCoords.length >= 3) {
+      patch.etaRouteCoords = routeCoords;
+    }
+
     if (source === 'restaurant_to_customer') {
       patch.restaurantToCustomerDistanceKm = km;
       patch.restaurantToCustomerDistanceMeters = Math.round(Number(meters));
       patch.restaurantToCustomerEtaMinutes = etaMinutes;
       patch.restaurantToCustomerEta = etaText;
       patch.restaurantToCustomerEtaUpdatedAt = now;
+      if (Array.isArray(routeCoords) && routeCoords.length >= 3) patch.restaurantToCustomerRouteCoords = routeCoords;
     }
 
     if (source === 'rider_to_customer') {
@@ -3978,12 +4097,13 @@ body {
       patch.riderToCustomerEtaMinutes = etaMinutes;
       patch.riderToCustomerEta = etaText;
       patch.riderToCustomerEtaUpdatedAt = now;
+      if (Array.isArray(routeCoords) && routeCoords.length >= 3) patch.riderToCustomerRouteCoords = routeCoords;
     }
 
     return patch;
   }
 
-  async function fetchOlaRouteDistanceMeters(origin, destination) {
+  async function fetchOlaRouteDistanceData(origin, destination) {
     if (!origin || !destination) return null;
     const url = `/ola-maps?type=directions&originLat=${encodeURIComponent(origin.lat)}&originLng=${encodeURIComponent(origin.lng)}&destLat=${encodeURIComponent(destination.lat)}&destLng=${encodeURIComponent(destination.lng)}&_=${Date.now()}`;
     const controller = new AbortController();
@@ -3993,7 +4113,8 @@ body {
       if (!response.ok) return null;
       const data = await response.json();
       const meters = extractOlaRouteDistanceMeters(data);
-      return meters > 0 ? meters : null;
+      const coords = extractOlaRouteCoords(data);
+      return meters > 0 ? { meters, coords } : null;
     } catch (_) {
       return null;
     } finally {
@@ -4005,9 +4126,9 @@ body {
     const origin = normalizeEtaPoint(order?.restaurantLocation || order?.deliveryFeeRule?.restaurantLocation || order?.totals?.deliveryFeeRule?.restaurantLocation) || normalizeEtaPoint(DEFAULT_RESTAURANT_LOCATION);
     const destination = normalizeEtaPoint(order?.customerLocation || order?.deliveryLocation || order?.deliveryFeeRule?.customerLocation || order?.totals?.deliveryFeeRule?.customerLocation || getActiveDeliveryLocationObject());
     if (!origin || !destination) return null;
-    const meters = await fetchOlaRouteDistanceMeters(origin, destination);
-    if (!meters) return null;
-    return buildRouteEtaPatch('restaurant_to_customer', meters, origin, destination);
+    const routeData = await fetchOlaRouteDistanceData(origin, destination);
+    if (!routeData?.meters) return null;
+    return buildRouteEtaPatch('restaurant_to_customer', routeData.meters, origin, destination, routeData.coords || []);
   }
 
   function buildCheckoutSnapshot(cart, address) {

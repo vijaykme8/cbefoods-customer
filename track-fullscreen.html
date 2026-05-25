@@ -1209,10 +1209,14 @@ body.track-map-fullscreen-open #trackOlaMapCanvas .maplibregl-canvas {
 <script>
 (function(){
 const DEFAULT_RESTAURANT_LOCATION={lat:11.051992,lng:77.0427325,name:'Coimbatore Foods'};
-const ROUTE_REFRESH_MIN_MS=60*1000;
+const ROUTE_CACHE_MAX_MS=12*60*60*1000;
+const OLA_REROUTE_MIN_MS=2*60*1000;
+const OFF_ROUTE_MIN_METERS=200;
+const ETA_UPDATE_MIN_DIFF_METERS=25;
 const ETA_SECONDS_PER_KM=160;const ETA_PREPARATION_EXTRA_MINUTES=5;
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
 let liveUnsubscribe=null,routeRequestToken=0,lastRouteState=null,lastFitKey='';
+let currentFullRoadRouteCoords=[];
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
 function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
 function normalizeOrders(v){if(!v)return[];if(Array.isArray(v))return v.filter(Boolean);if(typeof v==='object')return Object.values(v).filter(Boolean);return[]}
@@ -1421,28 +1425,30 @@ function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return;routeReque
 let currentRoadRouteCoords=[];
 function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;currentRoadRouteCoords=coords.slice();map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#08A045');map.setPaintProperty('track-route-line','line-width',5);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
 function routeCacheKey(from,to){const o=getSelectedOrder();const id=getOrderId(o)||'latest';return `cbe_static_road_route_${id}_${from.lat.toFixed(4)}_${from.lng.toFixed(4)}_${to.lat.toFixed(4)}_${to.lng.toFixed(4)}`}
-function readRouteCache(from,to){try{const cached=JSON.parse(localStorage.getItem(routeCacheKey(from,to))||'null');if(!cached||!Array.isArray(cached.coords)||cached.coords.length<3)return null;if(Date.now()-Number(cached.at||0)>ROUTE_REFRESH_MIN_MS)return null;return cached}catch{return null}}
-function writeRouteCache(from,to,coords,distanceMeters){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords,distanceMeters:Math.round(Number(distanceMeters||0))}))}catch{}}
+function readRouteCache(from,to){try{const cached=JSON.parse(localStorage.getItem(routeCacheKey(from,to))||'null');if(!cached||!Array.isArray(cached.coords)||cached.coords.length<3)return null;if(Date.now()-Number(cached.at||0)>ROUTE_CACHE_MAX_MS)return null;return cached}catch{return null}}
+function writeRouteCache(from,to,coords,distanceMeters){try{localStorage.setItem(routeCacheKey(from,to),JSON.stringify({at:Date.now(),from,to,coords,distanceMeters:Math.round(Number(distanceMeters||0))}))}catch{}}function readStoredRouteCoords(order,source){const raw=source==='rider_to_customer'?(order?.riderToCustomerRouteCoords||order?.etaRouteCoords):(order?.restaurantToCustomerRouteCoords||order?.etaRouteCoords);return normalizePointList(raw||[])}
+function coordsDistanceMeters(coords){if(!Array.isArray(coords)||coords.length<2)return 0;let total=0;for(let i=0;i<coords.length-1;i++){const a=coords[i],b=coords[i+1];total+=haversineMeters({lat:a[1],lng:a[0]},{lat:b[1],lng:b[0]})}return total}
+function projectPointToSegment(location,a,b){const lat0=Number(location.lat);const lng0=Number(location.lng);const latA=Number(a[1]);const lngA=Number(a[0]);const latB=Number(b[1]);const lngB=Number(b[0]);const cos=Math.cos((lat0*Math.PI)/180);const ax=(lngA-lng0)*111320*cos,ay=(latA-lat0)*111320;const bx=(lngB-lng0)*111320*cos,by=(latB-lat0)*111320;const abx=bx-ax,aby=by-ay;const len2=abx*abx+aby*aby;let t=len2?(-(ax*abx+ay*aby)/len2):0;t=Math.max(0,Math.min(1,t));const x=ax+abx*t,y=ay+aby*t;return{t,distanceMeters:Math.sqrt(x*x+y*y),point:[lngA+(lngB-lngA)*t,latA+(latB-latA)*t]}}
+function routeProgressFromLocation(coords,location){if(!Array.isArray(coords)||coords.length<2||!location)return null;let best=null;let distanceBefore=0;let running=0;for(let i=0;i<coords.length-1;i++){const a=coords[i],b=coords[i+1];const segmentMeters=haversineMeters({lat:a[1],lng:a[0]},{lat:b[1],lng:b[0]});const projected=projectPointToSegment(location,a,b);if(!best||projected.distanceMeters<best.distanceMeters){best={...projected,index:i,segmentMeters,distanceBefore:running}}running+=segmentMeters}if(!best)return null;const remainingFromProjection=Math.max(0,best.segmentMeters*(1-best.t));let after=0;for(let i=best.index+1;i<coords.length-1;i++){const a=coords[i],b=coords[i+1];after+=haversineMeters({lat:a[1],lng:a[0]},{lat:b[1],lng:b[0]})}const remainingMeters=remainingFromProjection+after;const remainingCoords=[best.point,...coords.slice(best.index+1)].filter(point=>Array.isArray(point)&&Number.isFinite(point[0])&&Number.isFinite(point[1]));return{distanceMeters:best.distanceMeters,remainingMeters,remainingCoords}}
+function loadFullRouteForOrder(order,source){let coords=Array.isArray(currentFullRoadRouteCoords)&&currentFullRoadRouteCoords.length>=3?currentFullRoadRouteCoords:[];if(coords.length<3)coords=readStoredRouteCoords(order,source);return coords.length>=3?coords:[]}
+function applyStoredRouteProgress(start,customer){const order=getSelectedOrder();let coords=loadFullRouteForOrder(order,'rider_to_customer');if(coords.length<3)return{ready:false,offRoute:true};currentFullRoadRouteCoords=coords.slice();const progress=routeProgressFromLocation(coords,start);if(!progress||!Number.isFinite(progress.remainingMeters))return{ready:false,offRoute:true};if(progress.distanceMeters<=OFF_ROUTE_MIN_METERS&&progress.remainingCoords.length>=2){drawRoadRoute(progress.remainingCoords);persistEtaPatch('rider_to_customer',progress.remainingMeters,start,customer,progress.remainingCoords)}return{ready:true,offRoute:progress.distanceMeters>OFF_ROUTE_MIN_METERS,remainingMeters:progress.remainingMeters,distanceFromRoute:progress.distanceMeters,remainingCoords:progress.remainingCoords}}
 function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;const key=valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|');if(key===lastFitKey)return;lastFitKey=key;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:{top:92,bottom:72,left:54,right:54},duration:350,maxZoom:15})}
 function haversineMeters(a,b){if(!a||!b)return Infinity;const R=6371000;const rad=v=>v*Math.PI/180;const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);const lat1=rad(a.lat),lat2=rad(b.lat);const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
 function getOlaDistanceMeters(value){if(value===null||value===undefined||value==='')return 0;if(typeof value==='number')return Number.isFinite(value)?value:0;if(typeof value==='object')return getOlaDistanceMeters(value.value??value.distance??value.distanceMeters??value.distance_meters??value.meters??value.text);const text=String(value).trim().toLowerCase();const n=Number(text.replace(/[^0-9.]/g,''));if(!Number.isFinite(n))return 0;return text.includes('km')?n*1000:n}
 function extractRoadDistanceMeters(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;const legs=Array.isArray(route?.legs)?route.legs:[];const legDistance=legs.reduce((sum,leg)=>sum+getOlaDistanceMeters(leg?.distance||leg?.distanceMeters||leg?.distance_meters),0);if(legDistance>0)return legDistance;return getOlaDistanceMeters(route?.distance||route?.distanceMeters||route?.distance_meters||route?.summary?.distance||data?.distance||data?.distanceMeters||data?.distance_meters)}
 function etaMinutesFromMeters(meters){const km=Number(meters||0)/1000;if(!Number.isFinite(km)||km<=0)return null;return Math.max(1,Math.ceil((km*ETA_SECONDS_PER_KM)/60))}
-function routeEtaPatch(source,meters,origin,destination){const travelEtaMinutes=etaMinutesFromMeters(meters);if(!travelEtaMinutes)return null;const etaMinutes=source==='restaurant_to_customer'?travelEtaMinutes+ETA_PREPARATION_EXTRA_MINUTES:travelEtaMinutes;const km=Number((Number(meters)/1000).toFixed(2));const etaText=formatEtaFromMinutes(etaMinutes);const now=new Date().toISOString();const key=`${source}:${origin.lat.toFixed(5)},${origin.lng.toFixed(5)}:${destination.lat.toFixed(5)},${destination.lng.toFixed(5)}`;const patch={eta:etaText,etaDisplay:etaText,floatingTrackEta:etaText,estimatedDeliveryTime:etaText,etaMinutes,etaSource:source,etaUpdatedAt:now,routeDistanceKm:km,routeDistanceMeters:Math.round(Number(meters)),etaRouteKey:key,etaRouteOrigin:origin,etaRouteDestination:destination};if(source==='rider_to_customer'){patch.riderToCustomerDistanceKm=km;patch.riderToCustomerDistanceMeters=Math.round(Number(meters));patch.riderToCustomerEtaMinutes=etaMinutes;patch.riderToCustomerTravelEtaMinutes=travelEtaMinutes;patch.riderToCustomerEta=etaText;patch.riderToCustomerEtaUpdatedAt=now}if(source==='restaurant_to_customer'){patch.restaurantToCustomerDistanceKm=km;patch.restaurantToCustomerDistanceMeters=Math.round(Number(meters));patch.restaurantToCustomerEtaMinutes=etaMinutes;patch.restaurantToCustomerTravelEtaMinutes=travelEtaMinutes;patch.preparationExtraMinutes=ETA_PREPARATION_EXTRA_MINUTES;patch.restaurantToCustomerEta=etaText;patch.restaurantToCustomerEtaUpdatedAt=now}return patch}
+function routeEtaPatch(source,meters,origin,destination,routeCoords=[]){const travelEtaMinutes=etaMinutesFromMeters(meters);if(!travelEtaMinutes)return null;const etaMinutes=source==='restaurant_to_customer'?travelEtaMinutes+ETA_PREPARATION_EXTRA_MINUTES:travelEtaMinutes;const km=Number((Number(meters)/1000).toFixed(2));const etaText=formatEtaFromMinutes(etaMinutes);const now=new Date().toISOString();const key=`${source}:${origin.lat.toFixed(5)},${origin.lng.toFixed(5)}:${destination.lat.toFixed(5)},${destination.lng.toFixed(5)}`;const patch={eta:etaText,etaDisplay:etaText,floatingTrackEta:etaText,estimatedDeliveryTime:etaText,etaMinutes,etaSource:source,etaUpdatedAt:now,routeDistanceKm:km,routeDistanceMeters:Math.round(Number(meters)),etaRouteKey:key,etaRouteOrigin:origin,etaRouteDestination:destination};if(Array.isArray(routeCoords)&&routeCoords.length>=3)patch.etaRouteCoords=routeCoords;if(source==='rider_to_customer'){patch.riderToCustomerDistanceKm=km;patch.riderToCustomerDistanceMeters=Math.round(Number(meters));patch.riderToCustomerEtaMinutes=etaMinutes;patch.riderToCustomerTravelEtaMinutes=travelEtaMinutes;patch.riderToCustomerEta=etaText;patch.riderToCustomerEtaUpdatedAt=now;if(Array.isArray(routeCoords)&&routeCoords.length>=3)patch.riderToCustomerRouteCoords=routeCoords}if(source==='restaurant_to_customer'){patch.restaurantToCustomerDistanceKm=km;patch.restaurantToCustomerDistanceMeters=Math.round(Number(meters));patch.restaurantToCustomerEtaMinutes=etaMinutes;patch.restaurantToCustomerTravelEtaMinutes=travelEtaMinutes;patch.preparationExtraMinutes=ETA_PREPARATION_EXTRA_MINUTES;patch.restaurantToCustomerEta=etaText;patch.restaurantToCustomerEtaUpdatedAt=now;if(Array.isArray(routeCoords)&&routeCoords.length>=3)patch.restaurantToCustomerRouteCoords=routeCoords}return patch}
 function updateListWithPatch(list,orderId,patch){if(!Array.isArray(list))return[];return list.map(order=>getOrderId(order)===orderId?{...order,...patch}:order)}
 function customerDocId(o){try{const u=window.firebase&&firebase.auth?firebase.auth().currentUser:null;if(u?.uid)return u.uid}catch{}return String(o?.customerId||o?.customer?.uid||o?.customer?.id||localStorage.getItem('cust_uid')||localStorage.getItem('customer_uid')||'').trim()}
-function persistEtaPatch(source,meters,origin,destination){const order=getSelectedOrder();const orderId=getOrderId(order);const patch=routeEtaPatch(source,meters,origin,destination);if(!patch||!orderId)return;const merged={...order,...patch};writeJSON('current_order',merged);writeJSON('cbe_track_selected_order',merged);const history=normalizeOrders(readJSON('order_history'));if(history.length)writeJSON('order_history',updateListWithPatch(history,orderId,patch));try{if(window.firebase&&firebase.firestore){const db=firebase.firestore();db.collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{});const cid=customerDocId(order);if(cid)db.collection('customers').doc(cid).collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{})}}catch{}setText('trackFullEta',eta(merged))}
+function persistEtaPatch(source,meters,origin,destination,routeCoords=[]){const order=getSelectedOrder();const orderId=getOrderId(order);const previousMeters=Number(source==='rider_to_customer'?order?.riderToCustomerDistanceMeters:order?.restaurantToCustomerDistanceMeters);const previousUpdatedAt=Date.parse(source==='rider_to_customer'?order?.riderToCustomerEtaUpdatedAt:order?.restaurantToCustomerEtaUpdatedAt);if(Number.isFinite(previousMeters)&&Math.abs(previousMeters-Number(meters||0))<ETA_UPDATE_MIN_DIFF_METERS&&Number.isFinite(previousUpdatedAt)&&Date.now()-previousUpdatedAt<30000)return;const patch=routeEtaPatch(source,meters,origin,destination,routeCoords);if(!patch||!orderId)return;const merged={...order,...patch};writeJSON('current_order',merged);writeJSON('cbe_track_selected_order',merged);const history=normalizeOrders(readJSON('order_history'));if(history.length)writeJSON('order_history',updateListWithPatch(history,orderId,patch));try{if(window.firebase&&firebase.firestore){const db=firebase.firestore();db.collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{});const cid=customerDocId(order);if(cid)db.collection('customers').doc(cid).collection('orders').doc(orderId).set(patch,{merge:true}).catch(()=>{})}}catch{}setText('trackFullEta',eta(merged))}
 
-function shouldFetchRoadRoute(from,to){
+function shouldFetchRoadRoute(from,to,force=false){
   if(!from||!to)return false;
   if(document.hidden)return false;
   if(!lastRouteState)return true;
-
-  const originChanged=haversineMeters(lastRouteState.from,from)>30;
   const destinationChanged=haversineMeters(lastRouteState.to,to)>30;
-  const elapsed=Date.now()-lastRouteState.at;
-
-  return destinationChanged||(originChanged&&elapsed>=ROUTE_REFRESH_MIN_MS);
+  const elapsed=Date.now()-Number(lastRouteState.at||0);
+  return destinationChanged||Boolean(force&&elapsed>=OLA_REROUTE_MIN_MS);
 }
 
 function decodePolyline(str,precision=5){if(!str||typeof str!=='string')return[];let index=0,lat=0,lng=0,out=[],factor=Math.pow(10,precision);while(index<str.length){let result=0,shift=0,byte;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lat+=(result&1)?~(result>>1):(result>>1);result=0;shift=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5}while(byte>=0x20&&index<str.length);lng+=(result&1)?~(result>>1):(result>>1);out.push([lng/factor,lat/factor])}return out.filter(p=>Number.isFinite(p[0])&&Number.isFinite(p[1]))}
@@ -1454,21 +1460,21 @@ function geoJsonCoords(obj){if(!obj||typeof obj!=='object')return[];if(obj.type=
 function deepCoords(value,depth=0){if(!value||depth>7)return[];if(Array.isArray(value)){if(value.length>=2&&typeof value[0]!=='object'&&typeof value[1]!=='object'){const p=pair(value[0],value[1]);return p?[p]:[]}return value.flatMap(v=>deepCoords(v,depth+1))}if(typeof value==='object'){for(const key of ['coordinates','overview_path','path','points','route_points','polyline_points','geometry','geojson']){if(key in value){const found=deepCoords(value[key],depth+1);if(found.length>=3)return found}}return[]}return[]}
 function encodedCandidates(value,depth=0){if(!value||depth>7)return[];if(typeof value==='string')return value.length>=12&&/[\\_@?`~|{}\[\]\^]/.test(value)?[value]:[];if(Array.isArray(value))return value.flatMap(v=>encodedCandidates(v,depth+1));if(typeof value==='object'){let out=[];for(const key of ['points','polyline','encodedPolyline','overview_polyline','overviewPolyline','geometry'])if(key in value)out=out.concat(encodedCandidates(value[key],depth+1));return out.length?out:Object.values(value).flatMap(v=>encodedCandidates(v,depth+1))}return[]}
 function extractRoadCoords(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;let coords=[];const direct=route?.overview_polyline?.points||route?.overviewPolyline?.points||route?.overview_polyline||route?.overviewPolyline||route?.polyline||route?.encodedPolyline||route?.geometry;if(typeof direct==='string'){coords=decodePolyline(direct,5);if(coords.length<3)coords=decodePolyline(direct,6)}if(coords.length<3)coords=geoJsonCoords(route?.geometry||route?.geojson||route?.routeGeoJson||data?.geometry||data?.geojson);if(coords.length<3&&Array.isArray(route?.legs)){let step=[];route.legs.forEach(leg=>(leg.steps||[]).forEach(st=>{const enc=st.polyline?.points||st.polyline||st.encodedPolyline||st.geometry;if(typeof enc==='string'){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);step=step.concat(d)}else{step=step.concat(geoJsonCoords(enc),deepCoords(enc))}}));coords=step}if(coords.length<3){for(const enc of encodedCandidates(route||data)){let d=decodePolyline(enc,5);if(d.length<3)d=decodePolyline(enc,6);if(d.length>=3){coords=d;break}}}if(coords.length<3)coords=deepCoords(route||data);return normalizePointList(coords)}
-async function fetchRoadRoute(from,to){
+async function fetchRoadRoute(from,to,force=false){
   if(!ensureRoute()||!from||!to)return false;
 
-  const shouldFetch=shouldFetchRoadRoute(from,to);
+  const shouldFetch=shouldFetchRoadRoute(from,to,force);
 
   if(!shouldFetch){
     const cached=readRouteCache(from,to);
     if(cached){
-      drawRoadRoute(cached.coords);
-      if(Number(cached.distanceMeters||0)>0)persistEtaPatch('rider_to_customer',Number(cached.distanceMeters),from,to);
-      lastRouteState={
-        from:cached.from||{...from},
-        to:cached.to||{...to},
-        at:Number(cached.at)||Date.now()
-      };
+      currentFullRoadRouteCoords=cached.coords.slice();
+      const progress=routeProgressFromLocation(cached.coords,from);
+      const drawCoords=progress&&progress.remainingCoords.length>=2?progress.remainingCoords:cached.coords;
+      drawRoadRoute(drawCoords);
+      if(progress&&Number(progress.remainingMeters)>0)persistEtaPatch('rider_to_customer',Number(progress.remainingMeters),from,to,drawCoords);
+      else if(Number(cached.distanceMeters||0)>0)persistEtaPatch('rider_to_customer',Number(cached.distanceMeters),from,to,cached.coords);
+      lastRouteState={from:cached.from||{...from},to:cached.to||{...to},at:Number(cached.at)||Date.now()};
       return true;
     }
     return false;
@@ -1484,17 +1490,21 @@ async function fetchRoadRoute(from,to){
     if(token!==routeRequestToken)return false;
 
     const distanceMeters=extractRoadDistanceMeters(data);
-    if(distanceMeters>0)persistEtaPatch('rider_to_customer',distanceMeters,from,to);
-
     const coords=extractRoadCoords(data);
 
     if(coords.length>=3){
-      drawRoadRoute(coords);
+      currentFullRoadRouteCoords=coords.slice();
+      const progress=routeProgressFromLocation(coords,from);
+      const drawCoords=progress&&progress.remainingCoords.length>=2?progress.remainingCoords:coords;
+      const remainingMeters=progress&&Number(progress.remainingMeters)>0?progress.remainingMeters:distanceMeters;
+      drawRoadRoute(drawCoords);
       writeRouteCache(from,to,coords,distanceMeters);
+      if(remainingMeters>0)persistEtaPatch('rider_to_customer',remainingMeters,from,to,coords);
       lastRouteState={from:{...from},to:{...to},at:Date.now()};
       return true;
     }
 
+    if(distanceMeters>0)persistEtaPatch('rider_to_customer',distanceMeters,from,to);
     console.warn('Ola returned no road geometry; keeping old route.');
     return false;
   }catch(err){
@@ -1578,9 +1588,12 @@ async function updateRouteThenMoveRider(start,customer){
   const nextKey=riderKey(start);
   latestRequestedRiderKey=nextKey;
 
+  const existingRoute=applyStoredRouteProgress(start,customer);
+  const needRoute=!existingRoute.ready||existingRoute.offRoute;
+
   if(!riderMarker){
     riderMarker=upsert(riderMarker,'rider',start);
-    await fetchRoadRoute(start,customer);
+    if(needRoute)await fetchRoadRoute(start,customer,!existingRoute.ready||existingRoute.offRoute);
     return;
   }
 
@@ -1589,28 +1602,21 @@ async function updateRouteThenMoveRider(start,customer){
   const moved=currentLoc?haversineMeters(currentLoc,start):Infinity;
 
   if(moved<8){
-    await fetchRoadRoute(start,customer);
+    if(needRoute)await fetchRoadRoute(start,customer,existingRoute.offRoute);
     return;
   }
 
   if(pendingRiderRouteKey===nextKey)return;
   pendingRiderRouteKey=nextKey;
 
-  const previousRoadRouteCoords=Array.isArray(currentRoadRouteCoords)?currentRoadRouteCoords.slice():[];
-  const routeFollowPath=buildRouteFollowPath(currentLoc,start,previousRoadRouteCoords);
+  const fullRoute=Array.isArray(currentFullRoadRouteCoords)&&currentFullRoadRouteCoords.length>=3?currentFullRoadRouteCoords.slice():[];
+  const routeFollowPath=buildRouteFollowPath(currentLoc,start,fullRoute);
 
-  // Fast visual route preview:
-  // draw the remaining old road route from new rider GPS to customer immediately,
-  // then replace it with fresh Ola route when the API response arrives.
-  const instantRoutePreviewPath=buildRouteFollowPath(start,customer,previousRoadRouteCoords);
-  if(instantRoutePreviewPath&&instantRoutePreviewPath.length>=3){
-    drawRoadRoute(instantRoutePreviewPath);
+  if(needRoute){
+    await fetchRoadRoute(start,customer,existingRoute.offRoute);
   }
 
-  const routeReady=await fetchRoadRoute(start,customer);
-
   if(latestRequestedRiderKey===nextKey){
-    // Option B: route first, then marker follows road-route segment smoothly.
     if(routeFollowPath&&routeFollowPath.length>=2){
       animateMarkerAlongCoords(riderMarker,routeFollowPath);
     }else{
@@ -1619,10 +1625,6 @@ async function updateRouteThenMoveRider(start,customer){
   }
 
   pendingRiderRouteKey='';
-
-  if(!routeReady){
-    console.warn('Route was not refreshed; rider marker moved after keeping old route.');
-  }
 }
 
 function renderMap(){

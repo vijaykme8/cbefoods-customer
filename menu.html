@@ -10061,24 +10061,7 @@ if (shouldAutoOpenLocationMap()) {
   }
 
   async function syncEtaForOrder(order) {
-    if (!order || !isActiveOrder(order)) return;
-    const plan = getRoutePlan(order);
-    if (!plan || !shouldFetchEtaRoute(order, plan)) return;
-    const key = routePlanKey(plan);
-    if (!key || etaRequestKey === key) return;
-    etaRequestKey = key;
-    try {
-      const meters = await fetchRouteDistanceMeters(plan.origin, plan.destination);
-      const patch = meters ? buildEtaPatch(plan.source, meters, plan.origin, plan.destination) : null;
-      if (patch) {
-        applyEtaPatchToLocal(order, patch);
-        persistEtaPatchToCloud(order, patch);
-        scheduleRender();
-      }
-    } catch (_) {
-    } finally {
-      if (etaRequestKey === key) etaRequestKey = "";
-    }
+    return;
   }
 
   function startLiveTrackOrderListener(order) {
