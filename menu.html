@@ -2436,7 +2436,7 @@ body.is-location-flow-open .floating-added-card {
   background: #FDFDFF;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
   z-index: 0;
 }
@@ -2446,7 +2446,7 @@ body.is-location-flow-open .floating-added-card {
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.just-activated::before {
-  animation: cbeTrackIconFill 0.62s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cbeTrackIconFill 0.54s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon svg {
@@ -2495,7 +2495,7 @@ body.is-location-flow-open .floating-added-card {
   background: #FDFDFF;
   transform: scaleX(0);
   transform-origin: left center;
-  transition: transform 0.64s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.58s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 
@@ -2504,7 +2504,7 @@ body.is-location-flow-open .floating-added-card {
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepLine.just-activated::before {
-  animation: cbeTrackLineFill 0.68s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: cbeTrackLineFill 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 @keyframes cbeTrackIconFill {
@@ -9660,6 +9660,8 @@ if (shouldAutoOpenLocationMap()) {
   let activeOrder = null;
   let remoteFetched = false;
   let refreshTimer = 0;
+  let stepAnimationTimer = 0;
+  let iconSwapTimers = [];
 
   function cleanText(value) {
     return value === null || value === undefined ? "" : String(value).trim();
@@ -9680,6 +9682,14 @@ if (shouldAutoOpenLocationMap()) {
     if (value.seconds) return Number(value.seconds) * 1000;
     const parsed = new Date(value).getTime();
     return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function getPlacedTime(order) {
+    return toTime(order?.paidAt || order?.createdAt || order?.orderTime || order?.orderPlacedAt || order?.placedAt || order?.timestamp || order?.date || order?.updatedAt);
+  }
+
+  function getUpdateTime(order) {
+    return toTime(order?.updatedAt || order?.statusUpdatedAt || order?.lastUpdatedAt || order?.paidAt || order?.createdAt || order?.orderTime);
   }
 
   function normalizeStatus(order) {
@@ -9715,9 +9725,10 @@ if (shouldAutoOpenLocationMap()) {
     return orders
       .filter(isActiveOrder)
       .sort((a, b) => {
-        const at = toTime(a.updatedAt || a.paidAt || a.createdAt);
-        const bt = toTime(b.updatedAt || b.paidAt || b.createdAt);
-        return bt - at;
+        const placedA = getPlacedTime(a);
+        const placedB = getPlacedTime(b);
+        if (placedB !== placedA) return placedB - placedA;
+        return getUpdateTime(b) - getUpdateTime(a);
       })[0] || null;
   }
 
@@ -9830,54 +9841,119 @@ if (shouldAutoOpenLocationMap()) {
     window.setTimeout(() => element.classList.remove("just-activated"), 760);
   }
 
+  function clearStepAnimationTimers() {
+    window.clearTimeout(stepAnimationTimer);
+    iconSwapTimers.forEach(timer => window.clearTimeout(timer));
+    iconSwapTimers = [];
+  }
+
+  function setStepElementState(element, isActive, animate) {
+    const img = element.querySelector(".TrackStepImg");
+
+    if (!isActive) {
+      element.classList.remove("is-active", "just-activated");
+      if (img) img.src = img.dataset.whiteSrc;
+      return;
+    }
+
+    element.classList.add("is-active");
+
+    if (animate) {
+      restartFillAnimation(element);
+      if (img) {
+        img.src = img.dataset.whiteSrc;
+        iconSwapTimers.push(window.setTimeout(() => {
+          if (element.classList.contains("is-active")) {
+            img.src = img.dataset.blackSrc;
+          }
+        }, 240));
+      }
+      return;
+    }
+
+    if (img) img.src = img.dataset.blackSrc;
+  }
+
+  function setLineElementState(element, isActive, animate) {
+    if (!isActive) {
+      element.classList.remove("is-active", "just-activated");
+      return;
+    }
+
+    element.classList.add("is-active");
+
+    if (animate) {
+      restartFillAnimation(element);
+    }
+  }
+
+  function getProgressSequence(step) {
+    const items = [];
+
+    if (step >= 1) items.push({ type: "step", number: 1 });
+    if (step >= 1) items.push({ type: "line", number: 1 });
+    if (step >= 2) items.push({ type: "step", number: 2 });
+    if (step >= 2) items.push({ type: "line", number: 2 });
+    if (step >= 3) items.push({ type: "step", number: 3 });
+    if (step >= 3) items.push({ type: "line", number: 3 });
+    if (step >= 4) items.push({ type: "step", number: 4 });
+
+    return items;
+  }
+
+  function getProgressElement(item) {
+    return document.querySelector(`#floatingTrackCard [data-${item.type}="${item.number}"]`);
+  }
+
   function applyStep(step) {
     const card = document.getElementById("floatingTrackCard");
-    if (card) {
-      card.setAttribute("data-property-1", getCardVariant(step));
-    }
+    if (!card) return;
+
+    card.setAttribute("data-property-1", getCardVariant(step));
+
+    const previousStep = Number(card.dataset.visualStep || 0);
+    if (previousStep === step && card.dataset.progressReady === "1") return;
+
+    clearStepAnimationTimers();
+
+    const targetItems = getProgressSequence(step);
+    const targetKeys = new Set(targetItems.map(item => `${item.type}-${item.number}`));
 
     document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => {
       const number = Number(element.dataset.step || 0);
-      const isActive = number <= step;
-      const wasActive = element.classList.contains("is-active");
-      const img = element.querySelector(".TrackStepImg");
-
-      element.classList.toggle("is-active", isActive);
-
-      if (img) {
-        if (isActive && !wasActive) {
-          restartFillAnimation(element);
-          window.setTimeout(() => {
-            if (element.classList.contains("is-active")) {
-              img.src = img.dataset.blackSrc;
-            }
-          }, 180);
-        } else {
-          img.src = isActive ? img.dataset.blackSrc : img.dataset.whiteSrc;
-        }
-        img.style.opacity = "1";
-      }
-
-      if (!isActive) {
-        element.classList.remove("just-activated");
+      const key = `step-${number}`;
+      if (!targetKeys.has(key)) {
+        setStepElementState(element, false, false);
       }
     });
 
     document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => {
       const number = Number(element.dataset.line || 0);
-      const isActive = number <= Math.min(step, 3);
-      const wasActive = element.classList.contains("is-active");
-
-      element.classList.toggle("is-active", isActive);
-
-      if (isActive && !wasActive) {
-        restartFillAnimation(element);
-      }
-
-      if (!isActive) {
-        element.classList.remove("just-activated");
+      const key = `line-${number}`;
+      if (!targetKeys.has(key)) {
+        setLineElementState(element, false, false);
       }
     });
+
+    let delay = 0;
+    targetItems.forEach(item => {
+      const element = getProgressElement(item);
+      if (!element) return;
+
+      const alreadyActive = element.classList.contains("is-active");
+      if (alreadyActive && previousStep > 0 && previousStep <= step) return;
+
+      const activeDelay = delay;
+      stepAnimationTimer = window.setTimeout(() => {
+        if (item.type === "step") setStepElementState(element, true, true);
+        else setLineElementState(element, true, true);
+      }, activeDelay);
+
+      delay += item.type === "step" ? 430 : 470;
+    });
+
+    card.dataset.visualStep = String(step);
+    card.dataset.progressReady = "1";
   }
 
   function renderTrackCard() {
@@ -9890,11 +9966,28 @@ if (shouldAutoOpenLocationMap()) {
 
     if (!activeOrder || isLocationFlowOpen() || getCartQty() > 0) {
       card.classList.remove("is-visible");
+      if (!activeOrder) {
+        card.dataset.visualStep = "0";
+        card.dataset.progressReady = "0";
+        clearStepAnimationTimers();
+        document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => setStepElementState(element, false, false));
+        document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => setLineElementState(element, false, false));
+      }
       return;
     }
 
     const eta = document.getElementById("floatingTrackEtaMain");
     const statusText = document.getElementById("floatingTrackStatusText");
+
+    const orderIdentity = cleanText(activeOrder?.id || activeOrder?.orderId || activeOrder?.orderNumber || activeOrder?.paymentId || activeOrder?.razorpayPaymentId || getPlacedTime(activeOrder));
+    if (orderIdentity && card.dataset.orderIdentity !== orderIdentity) {
+      card.dataset.orderIdentity = orderIdentity;
+      card.dataset.visualStep = "0";
+      card.dataset.progressReady = "0";
+      clearStepAnimationTimers();
+      document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => setStepElementState(element, false, false));
+      document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => setLineElementState(element, false, false));
+    }
 
     if (eta) eta.textContent = getEtaText(activeOrder);
     if (statusText) statusText.textContent = getStatusText(activeOrder);
