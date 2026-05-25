@@ -2360,7 +2360,6 @@ body.is-location-flow-open .floating-added-card {
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackFloatingStatusText {
-  width: 147px;
   height: 19px;
   justify-content: center;
   display: flex;
@@ -2373,6 +2372,38 @@ body.is-location-flow-open .floating-added-card {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .TrackFloatingStatusText {
+  width: 112px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .Frame156 {
+  width: 132px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .TrackFloatingStatusText {
+  width: 147px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .Frame156 {
+  width: 167px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .TrackFloatingStatusText {
+  width: 81px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .Frame156 {
+  width: 101px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .TrackFloatingStatusText {
+  width: 159px;
+}
+
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .Frame156 {
+  width: 179px;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .Frame119 {
@@ -9684,11 +9715,17 @@ if (shouldAutoOpenLocationMap()) {
 
   function getStatusText(order) {
     const status = normalizeStatus(order);
-    if (status === "preparing") return "Preparing your order";
-    if (status === "ready") return "Order is ready";
-    if (status === "out_for_delivery" || status === "picked_up" || status === "on_the_way") return "Out for delivery";
+    if (status === "preparing" || status === "ready") return "Preparing your order";
+    if (status === "out_for_delivery" || status === "picked_up" || status === "on_the_way") return "On the way";
     if (status === "reached" || status === "arrived") return "Reached your location";
-    return "Order received";
+    return "Order Received";
+  }
+
+  function getCardVariant(step) {
+    if (step >= 4) return "Variant4";
+    if (step === 3) return "Variant3";
+    if (step === 2) return "Variant2";
+    return "Variant1";
   }
 
   function getEtaText(order) {
@@ -9725,6 +9762,11 @@ if (shouldAutoOpenLocationMap()) {
   }
 
   function applyStep(step) {
+    const card = document.getElementById("floatingTrackCard");
+    if (card) {
+      card.setAttribute("data-property-1", getCardVariant(step));
+    }
+
     document.querySelectorAll("#floatingTrackCard [data-step]").forEach(element => {
       const number = Number(element.dataset.step || 0);
       element.classList.toggle("is-active", number <= step);
@@ -9732,7 +9774,7 @@ if (shouldAutoOpenLocationMap()) {
 
     document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => {
       const number = Number(element.dataset.line || 0);
-      element.classList.toggle("is-active", number < step);
+      element.classList.toggle("is-active", number === 1);
     });
   }
 
