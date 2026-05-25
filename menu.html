@@ -9000,13 +9000,26 @@ if (shouldAutoOpenLocationMap()) {
     );
   })();
 </script>
-<script id="cf-menu-section-fixed-transform-v18-script">
+<script id="cf-menu-section-fixed-transform-v24-script">
 (function(){
+  var realScrollStarted = false;
+  function markRealScroll(){
+    realScrollStarted = true;
+  }
+  window.addEventListener('wheel', markRealScroll, { passive: true });
+  window.addEventListener('touchmove', markRealScroll, { passive: true });
+  window.addEventListener('keydown', function(event){
+    var keys = ['ArrowDown','ArrowUp','PageDown','PageUp','Home','End',' '];
+    if (keys.indexOf(event.key) !== -1) realScrollStarted = true;
+  });
   function initMenuSectionFixedTransform(){
     var root = document.querySelector('.cf-figma-menu-root');
     if (!root) return;
-    var topBar = root.querySelector('.TopBar');
+    var topBar = root.querySelector('.TopSection .TopBar');
     if (!topBar) return;
+    root.querySelectorAll('.cf-menu-section-sticky-clone').forEach(function(node){
+      node.remove();
+    });
     var items = [
       { section: root.querySelector('.BestSellingSection'), next: root.querySelector('.ProteinPackSection') },
       { section: root.querySelector('.ProteinPackSection'), next: root.querySelector('.RegularPackSection') },
@@ -9024,22 +9037,48 @@ if (shouldAutoOpenLocationMap()) {
       root.appendChild(clone);
       pairs.push({ textGroup: textGroup, next: item.next, clone: clone });
     });
+    function hideAll(){
+      pairs.forEach(function(pair){
+        pair.clone.classList.remove('is-visible');
+      });
+    }
     function getStickyTop(){
       return Math.round(topBar.getBoundingClientRect().height) + 2;
     }
+    function getPageTop(element){
+      return element.getBoundingClientRect().top + (window.pageYOffset || document.documentElement.scrollTop || 0);
+    }
     function update(){
+      if (!realScrollStarted) {
+        hideAll();
+        return;
+      }
+      var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      if (scrollY < 4) {
+        hideAll();
+        return;
+      }
       var stickyTop = getStickyTop();
+      var activePair = null;
       pairs.forEach(function(pair){
-        var textRect = pair.textGroup.getBoundingClientRect();
-        var nextRect = pair.next ? pair.next.getBoundingClientRect() : null;
-        var active = textRect.top <= stickyTop && (!nextRect || nextRect.top > stickyTop);
+        var startY = getPageTop(pair.textGroup) - stickyTop;
+        var endY = pair.next ? getPageTop(pair.next) - stickyTop : Number.POSITIVE_INFINITY;
+        if (scrollY >= startY && scrollY < endY) activePair = pair;
+      });
+      pairs.forEach(function(pair){
         pair.clone.style.top = stickyTop + 'px';
-        pair.clone.classList.toggle('is-visible', active);
+        pair.clone.classList.toggle('is-visible', pair === activePair);
       });
     }
-    update();
+    hideAll();
     window.addEventListener('scroll', update, { passive: true });
-    window.addEventListener('resize', update);
+    window.addEventListener('resize', function(){
+      hideAll();
+      requestAnimationFrame(update);
+    });
+    window.addEventListener('load', function(){
+      hideAll();
+    });
   }
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initMenuSectionFixedTransform);
