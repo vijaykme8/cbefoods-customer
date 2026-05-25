@@ -9786,7 +9786,8 @@ if (shouldAutoOpenLocationMap()) {
 
     document.querySelectorAll("#floatingTrackCard [data-line]").forEach(element => {
       const number = Number(element.dataset.line || 0);
-      element.classList.toggle("is-active", number === 1);
+      const isActive = number <= Math.min(step, 3);
+      element.classList.toggle("is-active", isActive);
     });
   }
 
