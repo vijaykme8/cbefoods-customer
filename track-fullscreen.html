@@ -1468,6 +1468,175 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   opacity: 0.5 !important;
 }
 
+
+.cf-collapse-motion-card{
+  transition:height 360ms cubic-bezier(.22,.75,.18,1),background-color 180ms ease,opacity 180ms ease;
+  will-change:height;
+}
+.cf-collapse-motion-card.is-collapse-transitioning{
+  overflow:hidden!important;
+}
+.cf-collapse-motion-arrow{
+  transition:transform 320ms cubic-bezier(.22,.75,.18,1),opacity 180ms ease;
+  transform-origin:center center;
+}
+.cf-collapse-motion-card.is-expanded .cf-collapse-motion-arrow{
+  transform:rotate(180deg);
+}
+.cf-collapse-motion-item{
+  transition:opacity 240ms ease,transform 320ms cubic-bezier(.22,.75,.18,1);
+  transition-delay:calc(var(--cf-row-index,0) * 38ms + 40ms);
+}
+.cf-collapse-motion-card.cf-row-entering .cf-collapse-motion-item{
+  opacity:0;
+  transform:translateY(-8px);
+}
+.cf-collapse-motion-card.cf-row-entering.is-row-ready .cf-collapse-motion-item{
+  opacity:1;
+  transform:translateY(0);
+}
+#trackOrderItemsCard{
+  width:390px!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:16px 24px!important;
+  background:#252622!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  flex:none!important;
+  align-self:stretch!important;
+  overflow:visible;
+}
+#trackOrderItemsCard.is-collapse-transitioning{
+  overflow:hidden!important;
+}
+#trackOrderItemsCard .cf-order-items-head{
+  align-self:stretch;
+  width:342px;
+  height:24px;
+  display:inline-flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+#trackOrderItemsCard .cf-order-items-title-wrap{
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:6px;
+  height:19px;
+}
+#trackOrderItemsCard .cf-order-items-title,
+#trackOrderItemsCard .cf-order-items-count{
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+}
+#trackOrderItemsCard .cf-order-items-count{
+  font-weight:500;
+}
+#trackOrderItemsCard .cf-order-items-expanded-list{
+  align-self:stretch;
+  width:342px;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  display:none;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:flex-start;
+  gap:8px;
+  overflow:visible;
+}
+#trackOrderItemsCard.is-expanded .cf-order-items-expanded-list{
+  display:flex;
+}
+#trackOrderItemsCard.is-expanded .cf-order-items-title,
+#trackOrderItemsCard.is-expanded .cf-order-items-count{
+  color:rgba(253,253,255,.50);
+  font-weight:400;
+}
+#trackOrderItemsCard.is-expanded .cf-collapse-motion-arrow{
+  opacity:.5;
+}
+#trackOrderItemsCard .cf-order-item-row{
+  align-self:stretch;
+  width:342px;
+  min-height:26px;
+  height:auto;
+  display:inline-flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:20px;
+  overflow:visible;
+}
+#trackOrderItemsCard .cf-order-item-name{
+  flex:1 1 0;
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+#trackOrderItemsCard .cf-order-item-qty{
+  width:26px;
+  height:26px;
+  padding:8px;
+  background:rgba(253,253,255,.12);
+  border-radius:50px;
+  display:inline-flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  flex:0 0 26px;
+}
+#trackOrderItemsCard .cf-order-item-qty span{
+  align-self:stretch;
+  text-align:center;
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+}
+#trackOrderItemsCard .cf-order-item-price{
+  width:60px;
+  text-align:right;
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+  flex:0 0 60px;
+}
+#trackOrderItemsCard .cf-order-items-empty{
+  width:342px;
+  color:rgba(253,253,255,.50);
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+}
+@media (prefers-reduced-motion: reduce){
+  .cf-collapse-motion-card,
+  .cf-collapse-motion-arrow,
+  .cf-collapse-motion-item{
+    transition:none!important;
+  }
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -1540,15 +1709,15 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
           <div data-layer="Need help? Wrong location." class="NeedHelpWrongLocation" style="width:202px;height:19px;color:#08A045;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Need help? Wrong location.</div>
         </div>
       </div>
-      <div data-layer="order-items-collapse" data-property-1="Default" class="OrderItemsCollapse cf-order-items-card" id="trackOrderItemsCard" role="button" tabindex="0" aria-expanded="false">
-        <div data-layer="Frame 141" class="Frame141 cf-order-items-header">
+      <div id="trackOrderItemsCard" data-layer="order-items-collapse" data-property-1="Default" class="OrderItemsCollapse cf-collapse-row cf-collapse-motion-card" tabindex="0" role="button" aria-expanded="false" style="align-self:stretch;width:390px;height:auto;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
+        <div data-layer="Frame 141" class="Frame141 cf-order-items-head">
           <div data-layer="Frame 150" class="Frame150 cf-order-items-title-wrap">
             <div data-layer="Order Items:" class="OrderItems cf-order-items-title">Order Items:</div>
             <div data-layer="4" id="trackFullOrderItemCount" class="cf-order-items-count">0</div>
           </div>
-          <img alt="" id="trackOrderItemsArrow" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_orderitems_v1" class="cf-order-items-arrow">
+          <img id="trackOrderItemsArrow" class="cf-collapse-motion-arrow" alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_orderitems_transition5_1" style="width:24px;height:24px;display:block">
         </div>
-        <div data-layer="Frame 134" class="Frame134 cf-order-items-list" id="trackOrderItemsExpandedList"></div>
+        <div id="trackOrderItemsExpandedList" data-layer="Frame 134" class="Frame134 cf-order-items-expanded-list"></div>
       </div>
       <div data-layer="bill-details-collapse" data-property-1="Default" class="BillDetailsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
         <div data-layer="Frame 142" class="Frame142" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div data-layer="Bill Details" class="BillDetails" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Bill Details</div><img alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_frame124v1" style="width:24px;height:24px;display:block"></div>
@@ -2104,9 +2273,40 @@ function syncRiderCard(o){
   });
 }
 
+function animateTrackCollapseCard(card,mutate,opening){
+  if(!card||typeof mutate!=='function'){if(typeof mutate==='function')mutate();return}
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce){mutate();return}
+  const from=card.getBoundingClientRect().height;
+  card.classList.remove('is-row-ready');
+  card.classList.toggle('cf-row-entering',!!opening);
+  card.classList.add('is-collapse-transitioning');
+  card.style.height=from+'px';
+  card.style.overflow='hidden';
+  mutate();
+  const rows=card.querySelectorAll('.cf-collapse-motion-item');
+  rows.forEach((row,index)=>row.style.setProperty('--cf-row-index',String(index)));
+  const to=card.scrollHeight;
+  requestAnimationFrame(()=>{
+    card.style.height=to+'px';
+    if(opening)requestAnimationFrame(()=>card.classList.add('is-row-ready'));
+  });
+  const finish=()=>{
+    card.removeEventListener('transitionend',onEnd);
+    card.classList.remove('is-collapse-transitioning','cf-row-entering','is-row-ready');
+    card.style.height='auto';
+    card.style.overflow='visible';
+  };
+  const onEnd=event=>{
+    if(event.target===card&&event.propertyName==='height')finish();
+  };
+  card.addEventListener('transitionend',onEnd);
+  window.setTimeout(finish,520);
+}
 function renderOrderItemsCard(o){
   const card=document.getElementById('trackOrderItemsCard');
   if(!card)return;
+  card.classList.add('cf-collapse-motion-card');
   const list=document.getElementById('trackOrderItemsExpandedList');
   const countEl=document.getElementById('trackFullOrderItemCount');
   const arrow=document.getElementById('trackOrderItemsArrow');
@@ -2116,28 +2316,36 @@ function renderOrderItemsCard(o){
   card.setAttribute('data-property-1',expanded?'Variant2':'Default');
   card.setAttribute('aria-expanded',expanded?'true':'false');
   if(countEl)countEl.textContent=String(count);
-  if(arrow)arrow.src=`./assets/track-fullscreen/${expanded?'arrow-up-icon.svg':'arrow-down-icon.svg'}?v=trackfs_orderitems_v1`;
+  if(arrow){
+    arrow.classList.add('cf-collapse-motion-arrow');
+    arrow.src='./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_orderitems_transition5_1';
+  }
   if(!list)return;
   if(!expanded){
+    list.style.display='none';
     list.innerHTML='';
     return;
   }
+  list.style.display='flex';
   if(!orderItems.length){
-    list.innerHTML='<div class="cf-order-items-empty">No items available</div>';
+    list.innerHTML='<div class="cf-order-items-empty cf-collapse-motion-item">No items available</div>';
     return;
   }
   list.innerHTML=orderItems.map((item,index)=>{
     const name=htmlSafe(itemName(item));
     const qty=itemQty(item);
     const price=money(itemPrice(item)*qty);
-    return `<div data-layer="Frame ${131+index}" class="cf-order-item-row"><div data-layer="${name}" class="cf-order-item-name">${name}</div><div data-layer="Frame 130" class="cf-order-item-qty"><span>${qty}</span></div><div data-layer="${price}" class="cf-order-item-price">${price}</div></div>`;
+    return `<div data-layer="Frame ${131+index}" class="cf-order-item-row cf-collapse-motion-item" style="--cf-row-index:${index}"><div data-layer="${name}" class="cf-order-item-name">${name}</div><div data-layer="Frame 130" class="cf-order-item-qty"><span>${qty}</span></div><div data-layer="${price}" class="cf-order-item-price">${price}</div></div>`;
   }).join('');
 }
 function toggleOrderItemsCard(){
   const card=document.getElementById('trackOrderItemsCard');
   if(!card)return;
-  card.classList.toggle('is-expanded');
-  renderOrderItemsCard(getSelectedOrder());
+  const opening=!card.classList.contains('is-expanded');
+  animateTrackCollapseCard(card,()=>{
+    card.classList.toggle('is-expanded',opening);
+    renderOrderItemsCard(getSelectedOrder());
+  },opening);
 }
 function bindOrderItemsCard(){
   if(window.__trackOrderItemsCardBound)return;
@@ -2160,7 +2368,7 @@ function bindOrderItemsCard(){
 }
 
 function syncEmptyState(o){const id=getOrderId(o);const box=document.getElementById('trackEmptyInline');if(box)box.classList.toggle('is-visible',!id)}
-function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);renderOrderItemsCard(o);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);renderOrderItemsCard(o);bindOrderItemsCard();const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
 function startTrackBikeAnimation(){}
 let pendingRiderRouteKey='';
 let latestRequestedRiderKey='';
