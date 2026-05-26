@@ -1270,6 +1270,176 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   min-height: 19px !important;
   overflow: visible !important;
 }
+
+#trackOrderItemsCard {
+  align-self: stretch !important;
+  width: 390px !important;
+  padding: 16px 24px !important;
+  background: #252622 !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  height: auto !important;
+  min-height: 56px !important;
+  flex: none !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+#trackOrderItemsCard[data-property-1="Variant2"] {
+  min-height: 194px !important;
+}
+
+#trackOrderItemsCard .cf-order-items-header {
+  align-self: stretch !important;
+  width: 342px !important;
+  height: 24px !important;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 10px !important;
+  padding: 0 !important;
+  flex: none !important;
+  order: 0 !important;
+  flex-grow: 0 !important;
+}
+
+#trackOrderItemsCard .cf-order-items-title-wrap {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  padding: 0 !important;
+  gap: 6px !important;
+  height: 19px !important;
+  flex: none !important;
+  order: 0 !important;
+  flex-grow: 0 !important;
+}
+
+#trackOrderItemsCard .cf-order-items-title,
+#trackOrderItemsCard .cf-order-items-count {
+  color: rgba(253, 253, 255, 0.5) !important;
+  font-size: 16px !important;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 19.20px !important;
+  word-wrap: break-word !important;
+  height: 19px !important;
+  flex: none !important;
+}
+
+#trackOrderItemsCard .cf-order-items-title {
+  width: 92px !important;
+}
+
+#trackOrderItemsCard .cf-order-items-count {
+  width: auto !important;
+  min-width: 9px !important;
+}
+
+#trackOrderItemsCard .cf-order-items-arrow {
+  width: 24px !important;
+  height: 24px !important;
+  display: block !important;
+  object-fit: contain !important;
+  opacity: 0.5 !important;
+  flex: none !important;
+}
+
+#trackOrderItemsCard .cf-order-items-list {
+  align-self: stretch !important;
+  width: 342px !important;
+  display: none !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+  padding: 0 !important;
+  gap: 8px !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: none !important;
+  order: 1 !important;
+  flex-grow: 0 !important;
+  overflow: visible !important;
+}
+
+#trackOrderItemsCard.is-expanded .cf-order-items-list {
+  display: flex !important;
+}
+
+#trackOrderItemsCard .cf-order-item-row {
+  align-self: stretch !important;
+  width: 342px !important;
+  min-height: 26px !important;
+  display: inline-flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  gap: 20px !important;
+  padding: 0 !important;
+  flex: none !important;
+  flex-grow: 0 !important;
+}
+
+#trackOrderItemsCard .cf-order-item-name {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 19.20px !important;
+  word-wrap: break-word !important;
+}
+
+#trackOrderItemsCard .cf-order-item-qty {
+  width: 26px !important;
+  height: 26px !important;
+  padding: 8px !important;
+  background: rgba(253, 253, 255, 0.12) !important;
+  border-radius: 50px !important;
+  display: inline-flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 0 0 26px !important;
+}
+
+#trackOrderItemsCard .cf-order-item-qty span {
+  align-self: stretch !important;
+  text-align: center !important;
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 19.20px !important;
+}
+
+#trackOrderItemsCard .cf-order-item-price {
+  width: 60px !important;
+  text-align: right !important;
+  color: #FDFDFF !important;
+  font-size: 16px !important;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 19.20px !important;
+  word-wrap: break-word !important;
+  flex: 0 0 60px !important;
+}
+
+#trackOrderItemsCard .cf-order-items-empty {
+  width: 342px !important;
+  color: rgba(253, 253, 255, 0.6) !important;
+  font-size: 16px !important;
+  font-family: General Sans, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+  font-weight: 400 !important;
+  line-height: 19.20px !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -1342,11 +1512,15 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
           <div data-layer="Need help? Wrong location." class="NeedHelpWrongLocation" style="width:202px;height:19px;color:#08A045;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Need help? Wrong location.</div>
         </div>
       </div>
-      <div data-layer="order-items-collapse" data-property-1="Default" class="OrderItemsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
-        <div data-layer="Frame 141" class="Frame141" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex">
-          <div data-layer="Frame 150" class="Frame150" style="justify-content:flex-start;align-items:center;gap:6px;display:flex"><div data-layer="Order Items:" class="OrderItems" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Order Items:</div><div data-layer="4" id="trackFullOrderItemCount" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">4</div></div>
-          <img alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_frame124v1" style="width:24px;height:24px;display:block">
+      <div data-layer="order-items-collapse" data-property-1="Default" class="OrderItemsCollapse cf-order-items-card" id="trackOrderItemsCard" role="button" tabindex="0" aria-expanded="false">
+        <div data-layer="Frame 141" class="Frame141 cf-order-items-header">
+          <div data-layer="Frame 150" class="Frame150 cf-order-items-title-wrap">
+            <div data-layer="Order Items:" class="OrderItems cf-order-items-title">Order Items:</div>
+            <div data-layer="4" id="trackFullOrderItemCount" class="cf-order-items-count">0</div>
+          </div>
+          <img alt="" id="trackOrderItemsArrow" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_orderitems_v1" class="cf-order-items-arrow">
         </div>
+        <div data-layer="Frame 134" class="Frame134 cf-order-items-list" id="trackOrderItemsExpandedList"></div>
       </div>
       <div data-layer="bill-details-collapse" data-property-1="Default" class="BillDetailsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
         <div data-layer="Frame 142" class="Frame142" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div data-layer="Bill Details" class="BillDetails" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Bill Details</div><img alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_frame124v1" style="width:24px;height:24px;display:block"></div>
@@ -1901,8 +2075,64 @@ function syncRiderCard(o){
     el.classList.toggle('is-disabled',!phone);
   });
 }
+
+function renderOrderItemsCard(o){
+  const card=document.getElementById('trackOrderItemsCard');
+  if(!card)return;
+  const list=document.getElementById('trackOrderItemsExpandedList');
+  const countEl=document.getElementById('trackFullOrderItemCount');
+  const arrow=document.getElementById('trackOrderItemsArrow');
+  const orderItems=items(o);
+  const count=orderItems.length||0;
+  const expanded=card.classList.contains('is-expanded');
+  card.setAttribute('data-property-1',expanded?'Variant2':'Default');
+  card.setAttribute('aria-expanded',expanded?'true':'false');
+  if(countEl)countEl.textContent=String(count);
+  if(arrow)arrow.src=`./assets/track-fullscreen/${expanded?'arrow-up-icon.svg':'arrow-down-icon.svg'}?v=trackfs_orderitems_v1`;
+  if(!list)return;
+  if(!expanded){
+    list.innerHTML='';
+    return;
+  }
+  if(!orderItems.length){
+    list.innerHTML='<div class="cf-order-items-empty">No items available</div>';
+    return;
+  }
+  list.innerHTML=orderItems.map((item,index)=>{
+    const name=htmlSafe(itemName(item));
+    const qty=itemQty(item);
+    const price=money(itemPrice(item)*qty);
+    return `<div data-layer="Frame ${131+index}" class="cf-order-item-row"><div data-layer="${name}" class="cf-order-item-name">${name}</div><div data-layer="Frame 130" class="cf-order-item-qty"><span>${qty}</span></div><div data-layer="${price}" class="cf-order-item-price">${price}</div></div>`;
+  }).join('');
+}
+function toggleOrderItemsCard(){
+  const card=document.getElementById('trackOrderItemsCard');
+  if(!card)return;
+  card.classList.toggle('is-expanded');
+  renderOrderItemsCard(getSelectedOrder());
+}
+function bindOrderItemsCard(){
+  if(window.__trackOrderItemsCardBound)return;
+  window.__trackOrderItemsCardBound=true;
+  document.addEventListener('click',event=>{
+    const card=event.target.closest('#trackOrderItemsCard');
+    if(!card)return;
+    event.preventDefault();
+    event.stopPropagation();
+    toggleOrderItemsCard();
+  },true);
+  document.addEventListener('keydown',event=>{
+    const target=event.target;
+    const card=target&&target.closest?target.closest('#trackOrderItemsCard'):null;
+    if(!card)return;
+    if(event.key!=='Enter'&&event.key!==' ')return;
+    event.preventDefault();
+    toggleOrderItemsCard();
+  },true);
+}
+
 function syncEmptyState(o){const id=getOrderId(o);const box=document.getElementById('trackEmptyInline');if(box)box.classList.toggle('is-visible',!id)}
-function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);renderOrderItemsCard(o);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
 function startTrackBikeAnimation(){}
 let pendingRiderRouteKey='';
 let latestRequestedRiderKey='';
@@ -1997,7 +2227,7 @@ function renderMap(){
 
 function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementById('trackMapZoomIn');const zoomOut=document.getElementById('trackMapZoomOut');if(zoomIn&&zoomIn.dataset.bound!=='1'){zoomIn.dataset.bound='1';zoomIn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomIn({duration:180})})}if(zoomOut&&zoomOut.dataset.bound!=='1'){zoomOut.dataset.bound='1';zoomOut.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomOut({duration:180})})}}
 function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function'){setTrackMapLoading(true);trackMapInitRetryCount+=1;window.clearTimeout(trackMapInitRetryTimer);trackMapInitRetryTimer=window.setTimeout(initMap,Math.min(1200,120+(trackMapInitRetryCount*80)));if(trackMapInitRetryCount>40)setTrackMapLoading(false);return}window.clearTimeout(trackMapInitRetryTimer);trackMapInitRetryCount=0;initializing=true;trackMapFirstRealRenderDone=false;setTrackMapLoading(true);const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.disable()}catch(_){}bindTrackMapControls();bindTrackTemporaryMapZoom();const prepare=()=>{hideBaseMapSymbols();revealTrackMapAfterRealRender();setTimeout(hideBaseMapSymbols,120);setTimeout(()=>{if(!trackMapFirstRealRenderDone)revealTrackMapAfterRealRender()},220);setTimeout(()=>{if(!trackMapFirstRealRenderDone)revealTrackMapAfterRealRender()},700)};map.once('style.load',prepare);map.on('load',prepare);map.on('styledata',()=>{hideBaseMapSymbols();if(!trackMapFirstRealRenderDone)setTimeout(revealTrackMapAfterRealRender,0);setTimeout(hideBaseMapSymbols,180)});map.on('idle',hideBaseMapSymbols);if(map.isStyleLoaded&&map.isStyleLoaded())prepare();else if(map.loaded&&map.loaded())prepare()}).catch(e=>{console.warn('Track Ola map failed to load',e);setTrackMapLoading(false)}).finally(()=>{initializing=false})}
-function boot(){bindFrame77RiderActions();hydrate();startTrackBikeAnimation();initMap();renderMap();finishTrackMapRenderIfReady()}
+function boot(){bindFrame77RiderActions();bindOrderItemsCard();hydrate();startTrackBikeAnimation();initMap();renderMap();finishTrackMapRenderIfReady()}
 function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order)||urlOrderId();if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists){setTrackMapLoading(false);syncEmptyState({});return}const cloud=mergeOrder(getSelectedOrder(),{id:snap.id,orderId:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>{console.warn('Track live order sync failed',err);setTrackMapLoading(false)});firebase.firestore().collection('orders').doc(orderId).get().then(snap=>{if(snap.exists){const cloud=mergeOrder(getSelectedOrder(),{id:snap.id,orderId:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()}else{setTrackMapLoading(false)}}).catch(()=>{})}catch(err){console.warn('Track live order listener failed',err);setTrackMapLoading(false)}}
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-layer="back-button"]')){
