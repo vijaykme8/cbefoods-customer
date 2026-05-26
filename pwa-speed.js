@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260526_track_fullbutton_fill1';
+  const SPEED_VERSION = '20260526_track_stuckfix1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
