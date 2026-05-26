@@ -60,7 +60,7 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   display:block;
 }
 
-.track-ola-marker-customer{width:18px;height:24px}.track-ola-marker-restaurant{width:24px;height:24px}.track-ola-marker-rider{width:22px;height:22px}
+.track-ola-marker-customer{width:24px;height:32px}.track-ola-marker-restaurant{width:30px;height:36px}.track-ola-marker-rider{width:24px;height:24px}
 .track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
 .track-rider-3d-marker{
@@ -1096,7 +1096,7 @@ html,body{background:#12130F!important;color:#FDFDFF!important;min-height:100%;o
 .track-live-map-ready .track-map-preview-pins{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
 .cf-map-line{position:absolute;left:57px;top:49px;width:213px;height:80px;overflow:visible}
 .cf-map-line path{stroke:#FDFDFF;stroke-width:1.5;stroke-dasharray:7 7;fill:none;stroke-linecap:round}
-.cf-customer-marker-svg,.cf-restaurant-marker-svg{display:block;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}.cf-customer-marker-svg{width:18px;height:24px}.cf-restaurant-marker-svg{width:24px;height:29px}
+.cf-customer-marker-svg,.cf-restaurant-marker-svg{display:block;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}.cf-customer-marker-svg{width:24px;height:32px}.cf-restaurant-marker-svg{width:30px;height:36px}
 .cf-stage-icon{width:48px;height:48px;border-radius:40px;display:flex;align-items:center;justify-content:center;background:rgba(253,253,255,.12);transition:background .15s ease}
 .cf-stage-icon img{width:24px;height:24px;display:block;object-fit:contain}
 .cf-stage-icon.active{background:#08A045}
@@ -1122,7 +1122,7 @@ body.track-map-fullscreen-open #trackMapFullscreenBack{display:flex!important}
 .track-map-fullscreen-back svg{width:20px;height:20px;display:block}
 .track-ola-marker{width:24px;height:24px;display:flex;align-items:center;justify-content:center;pointer-events:none}
 .track-ola-marker img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
-.track-ola-marker-customer{width:18px;height:24px}.track-ola-marker-restaurant{width:24px;height:24px}.track-ola-marker-rider{width:22px;height:22px}
+.track-ola-marker-customer{width:24px;height:32px}.track-ola-marker-restaurant{width:30px;height:36px}.track-ola-marker-rider{width:24px;height:24px}
 .track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 @media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot,#trackFullscreenRoot [data-layer="Frame 155"],#trackFullscreenRoot [data-layer="Frame 120"],#trackFullscreenRoot [data-layer="Frame 143"],#trackFullscreenRoot [data-layer="Frame 154"],#trackFullscreenRoot [data-layer="cancellation-details-collapse"],#trackFullscreenRoot [data-layer="top-bar"]{width:100%!important;max-width:390px!important}}
 
@@ -1131,8 +1131,8 @@ body.track-map-fullscreen-open #trackMapFullscreenBack{display:flex!important}
 .track-ola-marker{width:auto!important;height:auto!important;display:inline-flex!important;flex-direction:column!important;align-items:center!important;justify-content:flex-start!important;gap:2px!important;pointer-events:none!important;filter:drop-shadow(0 3px 7px rgba(0,0,0,.30))}
 .track-ola-marker-label{color:#FDFDFF;font-family:'General Sans',Arial,sans-serif;font-size:10px;font-weight:600;line-height:13px;text-align:center;white-space:nowrap;text-shadow:0 2px 7px rgba(0,0,0,.55)}
 .track-ola-marker-icon{display:block;object-fit:contain;filter:none!important}
-.track-ola-marker-customer .track-ola-marker-icon{width:18px!important;height:24px!important}
-.track-ola-marker-restaurant .track-ola-marker-icon{width:24px!important;height:29px!important}
+.track-ola-marker-customer .track-ola-marker-icon{width:24px!important;height:32px!important}
+.track-ola-marker-restaurant .track-ola-marker-icon{width:30px!important;height:36px!important}
 .track-ola-marker-rider .track-ola-marker-label{display:none}
 .track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
@@ -1463,7 +1463,7 @@ function ensureRoute(){if(!map||!map.isStyleLoaded())return false;hideBaseMapSym
 function routeData(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
 function clearRoute(){if(!ensureRoute())return;map.getSource('track-route-source').setData(routeData([]))}
 function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
-function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return;routeRequestToken++;lastRouteState=null;const s=map.getSource('track-route-source');s.setData(routeData(curve(from,to)));map.setPaintProperty('track-route-casing','line-width',0);map.setPaintProperty('track-route-casing','line-opacity',0);map.setPaintProperty('track-route-line','line-color','#FDFDFF');map.setPaintProperty('track-route-line','line-width',2);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1.5,3])}
+function setDottedCurve(from,to){if(!ensureRoute()||!from||!to)return[];routeRequestToken++;lastRouteState=null;const coords=curve(from,to);const s=map.getSource('track-route-source');s.setData(routeData(coords));map.setPaintProperty('track-route-casing','line-width',0);map.setPaintProperty('track-route-casing','line-opacity',0);map.setPaintProperty('track-route-line','line-color','#FDFDFF');map.setPaintProperty('track-route-line','line-width',2);map.setPaintProperty('track-route-line','line-opacity',.96);map.setPaintProperty('track-route-line','line-dasharray',[1.5,3]);return coords}
 let currentRoadRouteCoords=[];
 function drawRoadRoute(coords){if(!ensureRoute()||!Array.isArray(coords)||coords.length<3)return false;currentRoadRouteCoords=coords.slice();map.getSource('track-route-source').setData(routeData(coords));map.setPaintProperty('track-route-casing','line-color','#FDFDFF');map.setPaintProperty('track-route-casing','line-width',9);map.setPaintProperty('track-route-casing','line-opacity',.95);map.setPaintProperty('track-route-line','line-color','#FDFDFF');map.setPaintProperty('track-route-line','line-width',4);map.setPaintProperty('track-route-line','line-opacity',.98);map.setPaintProperty('track-route-line','line-dasharray',[1,0]);return true}
 function routeCacheKey(from,to){const o=getSelectedOrder();const id=getOrderId(o)||'latest';return `cbe_static_road_route_${id}_${from.lat.toFixed(4)}_${from.lng.toFixed(4)}_${to.lat.toFixed(4)}_${to.lng.toFixed(4)}`}
@@ -1473,8 +1473,8 @@ function coordsDistanceMeters(coords){if(!Array.isArray(coords)||coords.length<2
 function projectPointToSegment(location,a,b){const lat0=Number(location.lat);const lng0=Number(location.lng);const latA=Number(a[1]);const lngA=Number(a[0]);const latB=Number(b[1]);const lngB=Number(b[0]);const cos=Math.cos((lat0*Math.PI)/180);const ax=(lngA-lng0)*111320*cos,ay=(latA-lat0)*111320;const bx=(lngB-lng0)*111320*cos,by=(latB-lat0)*111320;const abx=bx-ax,aby=by-ay;const len2=abx*abx+aby*aby;let t=len2?(-(ax*abx+ay*aby)/len2):0;t=Math.max(0,Math.min(1,t));const x=ax+abx*t,y=ay+aby*t;return{t,distanceMeters:Math.sqrt(x*x+y*y),point:[lngA+(lngB-lngA)*t,latA+(latB-latA)*t]}}
 function routeProgressFromLocation(coords,location){if(!Array.isArray(coords)||coords.length<2||!location)return null;let best=null;let distanceBefore=0;let running=0;for(let i=0;i<coords.length-1;i++){const a=coords[i],b=coords[i+1];const segmentMeters=haversineMeters({lat:a[1],lng:a[0]},{lat:b[1],lng:b[0]});const projected=projectPointToSegment(location,a,b);if(!best||projected.distanceMeters<best.distanceMeters){best={...projected,index:i,segmentMeters,distanceBefore:running}}running+=segmentMeters}if(!best)return null;const remainingFromProjection=Math.max(0,best.segmentMeters*(1-best.t));let after=0;for(let i=best.index+1;i<coords.length-1;i++){const a=coords[i],b=coords[i+1];after+=haversineMeters({lat:a[1],lng:a[0]},{lat:b[1],lng:b[0]})}const remainingMeters=remainingFromProjection+after;const remainingCoords=[best.point,...coords.slice(best.index+1)].filter(point=>Array.isArray(point)&&Number.isFinite(point[0])&&Number.isFinite(point[1]));return{distanceMeters:best.distanceMeters,remainingMeters,remainingCoords}}
 function loadFullRouteForOrder(order,source){let coords=Array.isArray(currentFullRoadRouteCoords)&&currentFullRoadRouteCoords.length>=3?currentFullRoadRouteCoords:[];if(coords.length<3)coords=readStoredRouteCoords(order,source);return coords.length>=3?coords:[]}
-function applyStoredRouteProgress(start,customer){const order=getSelectedOrder();let coords=loadFullRouteForOrder(order,'rider_to_customer');if(coords.length<3)return{ready:false,offRoute:true};currentFullRoadRouteCoords=coords.slice();const progress=routeProgressFromLocation(coords,start);if(!progress||!Number.isFinite(progress.remainingMeters))return{ready:false,offRoute:true};if(progress.distanceMeters<=OFF_ROUTE_MIN_METERS&&progress.remainingCoords.length>=2){drawRoadRoute(progress.remainingCoords);persistEtaPatch('rider_to_customer',progress.remainingMeters,start,customer,progress.remainingCoords)}return{ready:true,offRoute:progress.distanceMeters>OFF_ROUTE_MIN_METERS,remainingMeters:progress.remainingMeters,distanceFromRoute:progress.distanceMeters,remainingCoords:progress.remainingCoords}}
-function fit(locs){if(!map||!maplibre)return;const valid=locs.filter(Boolean);if(!valid.length)return;const mode=document.body.classList.contains('track-map-fullscreen-open')?'full':'card';const key=mode+'|'+valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|');if(key===lastFitKey)return;lastFitKey=key;if(valid.length===1){map.setCenter([valid[0].lng,valid[0].lat]);map.setZoom(14);return}const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));map.fitBounds(b,{padding:document.body.classList.contains('track-map-fullscreen-open')?{top:96,bottom:96,left:54,right:54}:{top:260,bottom:76,left:54,right:54},duration:350,maxZoom:15})}
+function applyStoredRouteProgress(start,customer){const order=getSelectedOrder();let coords=loadFullRouteForOrder(order,'rider_to_customer');if(coords.length<3)return{ready:false,offRoute:true};currentFullRoadRouteCoords=coords.slice();const progress=routeProgressFromLocation(coords,start);if(!progress||!Number.isFinite(progress.remainingMeters))return{ready:false,offRoute:true};if(progress.distanceMeters<=OFF_ROUTE_MIN_METERS&&progress.remainingCoords.length>=2){drawRoadRoute(progress.remainingCoords);fit([start,customer],progress.remainingCoords);persistEtaPatch('rider_to_customer',progress.remainingMeters,start,customer,progress.remainingCoords)}return{ready:true,offRoute:progress.distanceMeters>OFF_ROUTE_MIN_METERS,remainingMeters:progress.remainingMeters,distanceFromRoute:progress.distanceMeters,remainingCoords:progress.remainingCoords}}
+function fit(locs,coords=[]){if(!map||!maplibre)return;const valid=locs.filter(Boolean);const routeCoords=Array.isArray(coords)?coords.filter(p=>Array.isArray(p)&&Number.isFinite(p[0])&&Number.isFinite(p[1])):[];if(!valid.length&&!routeCoords.length)return;const mode=document.body.classList.contains('track-map-fullscreen-open')?'full':'card';const coordKey=routeCoords.length?`${routeCoords.length}:${routeCoords[0][1].toFixed(5)},${routeCoords[0][0].toFixed(5)}:${routeCoords[routeCoords.length-1][1].toFixed(5)},${routeCoords[routeCoords.length-1][0].toFixed(5)}`:'';const key=mode+'|'+valid.map(l=>`${l.lat.toFixed(5)},${l.lng.toFixed(5)}`).join('|')+'|'+coordKey;if(key===lastFitKey)return;lastFitKey=key;const b=new maplibre.LngLatBounds();valid.forEach(l=>b.extend([l.lng,l.lat]));routeCoords.forEach(p=>b.extend(p));const isFull=document.body.classList.contains('track-map-fullscreen-open');const padding=isFull?{top:112,bottom:112,left:72,right:72}:{top:282,bottom:110,left:76,right:76};const maxZoom=isFull?13.2:12.4;if(valid.length+routeCoords.length===1){const only=valid[0]||{lng:routeCoords[0][0],lat:routeCoords[0][1]};map.setCenter([only.lng,only.lat]);map.setZoom(maxZoom);return}map.fitBounds(b,{padding,duration:350,maxZoom})}
 function haversineMeters(a,b){if(!a||!b)return Infinity;const R=6371000;const rad=v=>v*Math.PI/180;const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);const lat1=rad(a.lat),lat2=rad(b.lat);const h=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;return 2*R*Math.atan2(Math.sqrt(h),Math.sqrt(1-h))}
 function getOlaDistanceMeters(value){if(value===null||value===undefined||value==='')return 0;if(typeof value==='number')return Number.isFinite(value)?value:0;if(typeof value==='object')return getOlaDistanceMeters(value.value??value.distance??value.distanceMeters??value.distance_meters??value.meters??value.text);const text=String(value).trim().toLowerCase();const n=Number(text.replace(/[^0-9.]/g,''));if(!Number.isFinite(n))return 0;return text.includes('km')?n*1000:n}
 function extractRoadDistanceMeters(data){const routes=data?.routes||data?.data?.routes||data?.result?.routes||data?.paths||data?.data?.paths||data?.route||data?.data?.route||[];const route=Array.isArray(routes)?routes[0]:routes;const legs=Array.isArray(route?.legs)?route.legs:[];const legDistance=legs.reduce((sum,leg)=>sum+getOlaDistanceMeters(leg?.distance||leg?.distanceMeters||leg?.distance_meters),0);if(legDistance>0)return legDistance;return getOlaDistanceMeters(route?.distance||route?.distanceMeters||route?.distance_meters||route?.summary?.distance||data?.distance||data?.distanceMeters||data?.distance_meters)}
@@ -1514,6 +1514,7 @@ async function fetchRoadRoute(from,to,force=false){
       const progress=routeProgressFromLocation(cached.coords,from);
       const drawCoords=progress&&progress.remainingCoords.length>=2?progress.remainingCoords:cached.coords;
       drawRoadRoute(drawCoords);
+      fit([from,to],drawCoords);
       if(progress&&Number(progress.remainingMeters)>0)persistEtaPatch('rider_to_customer',Number(progress.remainingMeters),from,to,drawCoords);
       else if(Number(cached.distanceMeters||0)>0)persistEtaPatch('rider_to_customer',Number(cached.distanceMeters),from,to,cached.coords);
       lastRouteState={from:cached.from||{...from},to:cached.to||{...to},at:Number(cached.at)||Date.now()};
@@ -1540,6 +1541,7 @@ async function fetchRoadRoute(from,to,force=false){
       const drawCoords=progress&&progress.remainingCoords.length>=2?progress.remainingCoords:coords;
       const remainingMeters=progress&&Number(progress.remainingMeters)>0?progress.remainingMeters:distanceMeters;
       drawRoadRoute(drawCoords);
+      fit([from,to],drawCoords);
       writeRouteCache(from,to,coords,distanceMeters);
       if(remainingMeters>0)persistEtaPatch('rider_to_customer',remainingMeters,from,to,coords);
       lastRouteState={from:{...from},to:{...to},at:Date.now()};
@@ -1700,7 +1702,7 @@ function renderMap(){
 
     customerMarker=upsert(customerMarker,'customer',c);
     updateRouteThenMoveRider(start,c);
-    fit([start,c]);
+    fit([start,c],currentRoadRouteCoords);
     return;
   }
 
@@ -1711,8 +1713,8 @@ function renderMap(){
 
   restaurantMarker=upsert(restaurantMarker,'restaurant',r);
   customerMarker=upsert(customerMarker,'customer',c);
-  setDottedCurve(r,c);
-  fit([r,c]);
+  const curveCoords=setDottedCurve(r,c);
+  fit([r,c],curveCoords);
 }
 
 function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementById('trackMapZoomIn');const zoomOut=document.getElementById('trackMapZoomOut');if(zoomIn&&zoomIn.dataset.bound!=='1'){zoomIn.dataset.bound='1';zoomIn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomIn({duration:180})})}if(zoomOut&&zoomOut.dataset.bound!=='1'){zoomOut.dataset.bound='1';zoomOut.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomOut({duration:180})})}}
