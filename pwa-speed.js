@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260526_track_doubletap_reset1';
+  const SPEED_VERSION = '20260526_track_assets_replace1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
