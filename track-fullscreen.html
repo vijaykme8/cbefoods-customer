@@ -1854,10 +1854,10 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   width:342px!important;
   height:43px!important;
   padding:12px 20px!important;
-  background:#12130F!important;
+  background:#FF383C!important;
   border:0!important;
   border-radius:10px!important;
-  outline:1px solid #FF383C!important;
+  outline:0!important;
   outline-offset:-1px!important;
   display:inline-flex!important;
   justify-content:center!important;
@@ -1866,11 +1866,23 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   flex:none!important;
 }
 #trackCancellationCard .cf-cancel-order-button span{
-  color:#FF383C!important;
+  color:#FDFDFF!important;
   font-size:16px!important;
   font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important;
   font-weight:500!important;
   line-height:19.2px!important;
+}
+
+
+#trackCancellationCard .cf-cancel-order-button{
+  background:#FF383C!important;
+  border:0!important;
+  outline:0!important;
+  outline-offset:0!important;
+  box-shadow:none!important;
+}
+#trackCancellationCard .cf-cancel-order-button span{
+  color:#FDFDFF!important;
 }
 
 </style>
@@ -1980,8 +1992,8 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
         </div>
         <div id="trackCancellationExpandedContent" class="cf-cancel-expanded-content" style="align-self:stretch;display:none;flex-direction:column;align-items:flex-start;gap:16px">
           <div data-layer="Click the cancel button to proceed with the order cancellation." class="ClickTheCancelButtonToProceedWithTheOrderCancellation cf-cancel-copy cf-collapse-motion-item" style="width:262px;height:auto;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Click the cancel button to proceed with the order cancellation.</div>
-          <button data-layer="Frame 129" class="Frame129 cf-cancel-order-button cf-collapse-motion-item" id="trackCancelOrderAction" type="button" style="align-self:stretch;width:342px;height:43px;padding-left:20px;padding-right:20px;padding-top:12px;padding-bottom:12px;background:#12130F;border-radius:10px;outline:1px #FF383C solid;outline-offset:-1px;justify-content:center;align-items:center;gap:8px;display:inline-flex">
-            <span data-layer="Cancel the order" class="CancelTheOrder" style="color:#FF383C;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Cancel the order</span>
+          <button data-layer="Frame 129" class="Frame129 cf-cancel-order-button cf-collapse-motion-item" id="trackCancelOrderAction" type="button" style="align-self:stretch;width:342px;height:43px;padding-left:20px;padding-right:20px;padding-top:12px;padding-bottom:12px;background:#FF383C;border-radius:10px;outline:0;outline-offset:0;justify-content:center;align-items:center;gap:8px;display:inline-flex">
+            <span data-layer="Cancel the order" class="CancelTheOrder" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Cancel the order</span>
           </button>
         </div>
       </div>
