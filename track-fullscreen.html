@@ -1440,6 +1440,34 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   line-height: 19.20px !important;
 }
 
+/* cf-order-items-opacity-fix */
+
+#trackOrderItemsCard[data-property-1="Default"] .cf-order-items-title,
+#trackOrderItemsCard[data-property-1="Default"] .cf-order-items-count,
+#trackOrderItemsCard:not(.is-expanded) .cf-order-items-title,
+#trackOrderItemsCard:not(.is-expanded) .cf-order-items-count {
+  color: #FDFDFF !important;
+  opacity: 1 !important;
+}
+
+#trackOrderItemsCard[data-property-1="Default"] .cf-order-items-arrow,
+#trackOrderItemsCard:not(.is-expanded) .cf-order-items-arrow {
+  opacity: 1 !important;
+}
+
+#trackOrderItemsCard[data-property-1="Variant2"] .cf-order-items-title,
+#trackOrderItemsCard[data-property-1="Variant2"] .cf-order-items-count,
+#trackOrderItemsCard.is-expanded .cf-order-items-title,
+#trackOrderItemsCard.is-expanded .cf-order-items-count {
+  color: rgba(253, 253, 255, 0.5) !important;
+  opacity: 1 !important;
+}
+
+#trackOrderItemsCard[data-property-1="Variant2"] .cf-order-items-arrow,
+#trackOrderItemsCard.is-expanded .cf-order-items-arrow {
+  opacity: 0.5 !important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
