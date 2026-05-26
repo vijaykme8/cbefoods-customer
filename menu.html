@@ -5174,7 +5174,7 @@ html, body { min-height: 100%; background: #12130F !important; }
 <div class="CartButton" data-layer="cart-button" style="flex: 1 1 0; justify-content: flex-end; align-items: flex-start; display: inline-flex">
 <div class="Frame179" data-layer="Frame 179" style="align-self: stretch; flex-direction: column; justify-content: space-between; align-items: flex-end; display: inline-flex">
 <div class="PreparingYourOrder TrackFloatingStatusText" data-layer="Preparing Your Order" id="floatingTrackStatusText">Preparing Your Order</div>
-<div class="TrackFloatingDetails" data-layer="₹125 . 3 items" id="floatingTrackDetailsText">₹125  .  3 items</div>
+<div class="TrackFloatingDetails" data-layer="₹125・3 items" id="floatingTrackDetailsText">₹125・3 items</div>
 </div>
 <div class="ArrowRightIcon" data-layer="arrow-right-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
 <img alt="" aria-hidden="true" src="assets/menu/icons/floating-track-card/arrow-right-icon.svg"/>
@@ -9874,7 +9874,7 @@ if (shouldAutoOpenLocationMap()) {
     const total = getFloatingOrderTotal(order);
     const qty = getFloatingOrderQty(order);
     const itemLabel = qty === 1 ? "item" : "items";
-    return `₹${total}  .  ${qty} ${itemLabel}`;
+    return `₹${total}・${qty} ${itemLabel}`;
   }
 
   function getCardVariant(step) {
@@ -10494,7 +10494,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-<script src="pwa-speed.js?v=20260526_floating_track_card2" defer></script>
+<script src="pwa-speed.js?v=20260526_floating_track_dot1" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">
