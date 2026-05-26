@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260526_menu_webp1';
+  const SPEED_VERSION = '20260526_floating_track_card2';
   const APP_CACHE_NAMES = [`cbe-static-${SPEED_VERSION}`, `cbe-html-${SPEED_VERSION}`];
   const APP_CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
   let prefetched = new Set();

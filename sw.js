@@ -1,4 +1,4 @@
-const CBE_CACHE_VERSION = '20260526_menu_webp1';
+const CBE_CACHE_VERSION = '20260526_floating_track_card2';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 const CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
@@ -12,7 +12,7 @@ const PRECACHE_URLS = [
   './profile.html',
   './track-fullscreen.html',
   './order_placed.html',
-  './pwa-speed.js?v=20260526_cache_trim1',
+  './pwa-speed.js?v=20260526_floating_track_card2',
   './firebase-config.js',
   './firebase-mvp.js',
   './assets/cart/dish-img.png',

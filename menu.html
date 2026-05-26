@@ -2296,10 +2296,11 @@ body.is-location-flow-open .floating-added-card {
 .cf-figma-menu-root .FloatingTrackCard {
   position: fixed !important;
   left: 50% !important;
-  bottom: calc(51px + env(safe-area-inset-bottom)) !important;
+  bottom: calc(20px + env(safe-area-inset-bottom)) !important;
   transform: translateX(-50%) translateY(16px) !important;
   z-index: 2290 !important;
   width: 342px !important;
+  height: 106px !important;
   min-height: 106px !important;
   padding: 12px 18px !important;
   background: linear-gradient(90deg, #8806CE 0%, #08A045 100%) !important;
@@ -2307,9 +2308,9 @@ body.is-location-flow-open .floating-added-card {
   border-radius: 14px !important;
   display: inline-flex !important;
   flex-direction: column !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   align-items: flex-start !important;
-  gap: 0 !important;
+  gap: 8px !important;
   box-sizing: border-box !important;
   opacity: 0 !important;
   visibility: hidden !important;
@@ -2317,6 +2318,10 @@ body.is-location-flow-open .floating-added-card {
   transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s ease !important;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+}
+
+body .cf-figma-menu-root .FloatingTrackCard {
+  bottom: calc(20px + env(safe-area-inset-bottom)) !important;
 }
 
 .cf-figma-menu-root .FloatingTrackCard.is-visible {
@@ -2329,6 +2334,10 @@ body.is-location-flow-open .floating-added-card {
 .cf-figma-menu-root .FloatingTrackCard .Frame169 {
   width: 100% !important;
   height: 34px !important;
+  display: inline-flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 51px !important;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .Frame113 {
@@ -2339,6 +2348,10 @@ body.is-location-flow-open .floating-added-card {
   border: 1px solid #FDFDFF !important;
   border-radius: 12px !important;
   box-sizing: border-box !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex: 0 0 auto !important;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackEtaMain {
@@ -2359,6 +2372,34 @@ body.is-location-flow-open .floating-added-card {
   letter-spacing: 0.02em;
 }
 
+.cf-figma-menu-root .FloatingTrackCard .Frame156 {
+  height: 34px !important;
+  flex: 0 0 auto !important;
+  align-self: stretch !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: flex-end !important;
+  gap: 2px !important;
+  display: inline-flex !important;
+}
+
+.cf-figma-menu-root .FloatingTrackCard .CartButton {
+  height: 34px !important;
+  flex: 1 1 0 !important;
+  justify-content: flex-end !important;
+  align-items: flex-start !important;
+  display: inline-flex !important;
+}
+
+.cf-figma-menu-root .FloatingTrackCard .Frame179 {
+  height: 34px !important;
+  align-self: stretch !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: flex-end !important;
+  display: inline-flex !important;
+}
+
 .cf-figma-menu-root .FloatingTrackCard .TrackFloatingStatusText {
   height: 19px;
   justify-content: center;
@@ -2372,44 +2413,50 @@ body.is-location-flow-open .floating-added-card {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: right;
 }
 
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .TrackFloatingStatusText {
-  width: 112px;
+.cf-figma-menu-root .FloatingTrackCard .TrackFloatingDetails {
+  height: 12px;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  color: rgba(253, 253, 255, 0.60);
+  font-size: 12px;
+  font-family: 'General Sans', sans-serif;
+  font-weight: 400;
+  line-height: 100%;
+  white-space: nowrap;
+  text-align: right;
 }
 
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .Frame156 {
-  width: 132px;
-}
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .TrackFloatingStatusText { width: 112px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .Frame179 { width: 112px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .Frame156,
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant1"] .CartButton { width: 132px; }
 
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .TrackFloatingStatusText {
-  width: 147px;
-}
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .TrackFloatingStatusText { width: 151px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .Frame179 { width: 151px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .Frame156,
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .CartButton { width: 171px; }
 
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant2"] .Frame156 {
-  width: 167px;
-}
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .TrackFloatingStatusText { width: 87px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .Frame179 { width: 87px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .Frame156,
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .CartButton { width: 107px; }
 
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .TrackFloatingStatusText {
-  width: 81px;
-}
-
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant3"] .Frame156 {
-  width: 101px;
-}
-
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .TrackFloatingStatusText {
-  width: 159px;
-}
-
-.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .Frame156 {
-  width: 179px;
-}
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .TrackFloatingStatusText { width: 165px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .Frame179 { width: 165px; }
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .Frame156,
+.cf-figma-menu-root .FloatingTrackCard[data-property-1="Variant4"] .CartButton { width: 185px; }
 
 .cf-figma-menu-root .FloatingTrackCard .Frame119 {
   width: 100% !important;
   height: 40px !important;
-  gap: 2.5% !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  display: inline-flex !important;
+  gap: 0 !important;
 }
 
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon {
@@ -2449,16 +2496,6 @@ body.is-location-flow-open .floating-added-card {
   animation: cbeTrackIconFill 0.54s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon svg {
-  width: 20px;
-  height: 20px;
-  display: block;
-}
-
-.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon svg path {
-  fill: #FDFDFF;
-}
-
 .cf-figma-menu-root .FloatingTrackCard .TrackStepIcon img {
   width: 20px;
   height: 20px;
@@ -2469,20 +2506,12 @@ body.is-location-flow-open .floating-added-card {
   transition: opacity 0.16s ease;
 }
 
-.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.is-active {
-  background: rgba(253, 253, 255, 0.12);
-}
-
-.cf-figma-menu-root .FloatingTrackCard .TrackStepIcon.is-active svg path {
-  fill: #12130F;
-}
-
 .cf-figma-menu-root .FloatingTrackCard .TrackStepLine {
-  height: 2px;
+  width: 31px !important;
+  height: 2px !important;
+  flex: 0 0 31px !important;
   border-radius: 10px;
   background: rgba(253, 253, 255, 0.12);
-  flex: 1 1 auto;
-  min-width: 0;
   position: relative;
   overflow: hidden;
 }
@@ -5141,16 +5170,19 @@ html, body { min-height: 100%; background: #12130F !important; }
 <div class="Frame113" data-layer="Frame 113" style="justify-content: center; align-items: center; gap: 10px; display: flex">
 <div class="28m" data-layer="0:28m"><span class="TrackEtaMain" id="floatingTrackEtaMain">0:28</span><span class="TrackEtaSuffix">m</span></div>
 </div>
-<div class="Frame156" data-layer="Frame 156" style="flex-direction: column; justify-content: center; align-items: flex-end; gap: 2px; display: inline-flex">
-<div class="CartButton" data-layer="cart-button" style="justify-content: flex-start; align-items: center; display: inline-flex">
-<div class="PreparingYourOrder TrackFloatingStatusText" data-layer="Preparing your order" id="floatingTrackStatusText">Preparing your order</div>
+<div class="Frame156" data-layer="Frame 156" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-end; gap: 2px; display: inline-flex">
+<div class="CartButton" data-layer="cart-button" style="flex: 1 1 0; justify-content: flex-end; align-items: flex-start; display: inline-flex">
+<div class="Frame179" data-layer="Frame 179" style="align-self: stretch; flex-direction: column; justify-content: space-between; align-items: flex-end; display: inline-flex">
+<div class="PreparingYourOrder TrackFloatingStatusText" data-layer="Preparing Your Order" id="floatingTrackStatusText">Preparing Your Order</div>
+<div class="TrackFloatingDetails" data-layer="₹125 . 3 items" id="floatingTrackDetailsText">₹125  .  3 items</div>
+</div>
 <div class="ArrowRightIcon" data-layer="arrow-right-icon" style="width: 20px; height: 20px; position: relative; overflow: hidden">
 <img alt="" aria-hidden="true" src="assets/menu/icons/floating-track-card/arrow-right-icon.svg"/>
 </div>
 </div>
 </div>
 </div>
-<div class="Frame119" data-layer="Frame 119" style="align-self: stretch; justify-content: space-between; align-items: center; gap: 2.5%; display: inline-flex">
+<div class="Frame119" data-layer="Frame 119" style="align-self: stretch; justify-content: space-between; align-items: center; display: inline-flex">
 <div class="Frame114 TrackStepIcon" data-layer="Frame 114" data-step="1">
 <img alt="" aria-hidden="true" class="TrackStepImg" data-black-src="assets/menu/icons/floating-track-card/received-icon-black.svg" data-white-src="assets/menu/icons/floating-track-card/received-icon-black.svg" src="assets/menu/icons/floating-track-card/received-icon-black.svg"/>
 </div>
@@ -9812,10 +9844,37 @@ if (shouldAutoOpenLocationMap()) {
 
   function getStatusText(order) {
     const status = normalizeStatus(order);
-    if (status === "preparing" || status === "ready") return "Preparing your order";
-    if (status === "out_for_delivery" || status === "picked_up" || status === "on_the_way") return "On the way";
-    if (status === "reached" || status === "arrived") return "Reached your location";
+    if (status === "preparing" || status === "ready") return "Preparing Your Order";
+    if (status === "out_for_delivery" || status === "picked_up" || status === "on_the_way") return "On The Way";
+    if (status === "reached" || status === "arrived") return "Reached Your Location";
     return "Order Received";
+  }
+
+
+  function getFloatingNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : 0;
+  }
+
+  function getFloatingOrderTotal(order) {
+    const direct = getFloatingNumber(order?.total ?? order?.amount ?? order?.grandTotal ?? order?.paidAmount ?? order?.totals?.total ?? order?.totals?.grandTotal);
+    if (direct > 0) return Math.round(direct);
+    const items = Array.isArray(order?.items) ? order.items : [];
+    return Math.round(items.reduce((sum, item) => sum + (getFloatingNumber(item?.price ?? item?.unitPrice ?? item?.amount) * Math.max(1, getFloatingNumber(item?.qty ?? item?.quantity ?? item?.count ?? 1))), 0));
+  }
+
+  function getFloatingOrderQty(order) {
+    const direct = getFloatingNumber(order?.totalQty ?? order?.itemCount ?? order?.itemsCount ?? order?.totals?.totalQty ?? order?.totals?.itemCount);
+    if (direct > 0) return Math.round(direct);
+    const items = Array.isArray(order?.items) ? order.items : [];
+    return Math.round(items.reduce((sum, item) => sum + Math.max(1, getFloatingNumber(item?.qty ?? item?.quantity ?? item?.count ?? 1)), 0));
+  }
+
+  function getFloatingTrackDetailsText(order) {
+    const total = getFloatingOrderTotal(order);
+    const qty = getFloatingOrderQty(order);
+    const itemLabel = qty === 1 ? "item" : "items";
+    return `₹${total}  .  ${qty} ${itemLabel}`;
   }
 
   function getCardVariant(step) {
@@ -10245,6 +10304,7 @@ if (shouldAutoOpenLocationMap()) {
 
     const eta = document.getElementById("floatingTrackEtaMain");
     const statusText = document.getElementById("floatingTrackStatusText");
+    const detailsText = document.getElementById("floatingTrackDetailsText");
 
     const orderIdentity = cleanText(activeOrder?.id || activeOrder?.orderId || activeOrder?.orderNumber || activeOrder?.paymentId || activeOrder?.razorpayPaymentId || getPlacedTime(activeOrder));
     if (orderIdentity && card.dataset.orderIdentity !== orderIdentity) {
@@ -10261,6 +10321,7 @@ if (shouldAutoOpenLocationMap()) {
 
     if (eta) eta.textContent = getEtaText(activeOrder);
     if (statusText) statusText.textContent = getStatusText(activeOrder);
+    if (detailsText) detailsText.textContent = getFloatingTrackDetailsText(activeOrder);
 
     applyStep(getStep(activeOrder));
     card.classList.add("is-visible");
@@ -10433,7 +10494,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-<script src="pwa-speed.js?v=20260526_menu_webp1" defer></script>
+<script src="pwa-speed.js?v=20260526_floating_track_card2" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">
