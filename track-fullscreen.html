@@ -1081,125 +1081,143 @@ body.track-map-fullscreen-open #trackOlaMapCanvas .maplibregl-canvas {
   pointer-events: auto !important;
   touch-action: none !important;
 }
+
+html,body{background:#12130F!important;color:#FDFDFF!important;min-height:100%;overflow-x:hidden}
+.track-fullscreen-shell{width:100%;max-width:390px;min-height:100dvh;margin:0 auto;background:#12130F!important;overflow-x:hidden}
+#trackFullscreenRoot{width:390px!important;min-height:100dvh!important;height:auto!important;background:#12130F!important;color:#FDFDFF!important;position:relative!important;overflow:visible!important}
+#trackFullscreenRoot *{box-sizing:border-box}
+#trackFullscreenRoot [data-layer="Frame 155"]{position:relative!important;width:390px!important;min-height:1448px!important;height:auto!important;left:auto!important;top:auto!important;display:flex!important;flex-direction:column!important;gap:4px!important;background:#12130F!important}
+#trackFullscreenRoot [data-layer="Frame 120"]{position:relative!important;width:390px!important;height:653px!important;overflow:hidden!important;background:#161713!important;flex:none!important}
+#trackOlaMapCanvas{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;z-index:0!important;border-radius:0!important;background:radial-gradient(circle at 22% 36%,rgba(8,160,69,.18),transparent 18%),radial-gradient(circle at 72% 25%,rgba(136,6,206,.18),transparent 22%),linear-gradient(145deg,#20211d 0%,#12130F 52%,#252622 100%)!important}
+#trackOlaMapCanvas canvas{border-radius:0!important}
+#trackOlaMapCanvas .maplibregl-control-container{display:none!important}
+.track-map-controls{display:none!important}
+.track-map-preview-pins{position:absolute;z-index:2;pointer-events:none;opacity:.96}
+.track-live-map-ready .track-map-preview-pins{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
+.cf-map-line{position:absolute;left:57px;top:49px;width:213px;height:80px;overflow:visible}
+.cf-map-line path{stroke:#FDFDFF;stroke-width:1.5;stroke-dasharray:7 7;fill:none;stroke-linecap:round}
+.cf-customer-marker-svg,.cf-restaurant-marker-svg{display:block;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}
+.cf-stage-icon{width:48px;height:48px;border-radius:40px;display:flex;align-items:center;justify-content:center;background:rgba(253,253,255,.12);transition:background .15s ease}
+.cf-stage-icon img{width:24px;height:24px;display:block;object-fit:contain}
+.cf-stage-icon.active{background:#08A045}
+.cf-stage-line{width:31px;height:2px;border-radius:10px;background:rgba(253,253,255,.12);transition:background .15s ease}
+.cf-stage-line.active{background:#FDFDFF}
+.cf-back-button{cursor:pointer;user-select:none}
+.cf-back-button:active,[data-layer="full screen-button"]:active{opacity:.82}
+.cf-track-help{cursor:pointer;user-select:none}
+.cf-track-help:active{opacity:.78}
+.cf-rider-bike{width:96px;height:45px;position:relative;overflow:hidden;flex:none}
+.cf-rider-bike span{position:absolute;display:block}
+.cf-collapse-row{cursor:pointer;user-select:none}
+.cf-collapse-row:active{opacity:.82}
+.cf-inline-empty{display:none;width:100%;padding:28px 24px 40px;background:#12130F;color:#FDFDFF;text-align:center}
+.cf-inline-empty.is-visible{display:block}
+body.track-map-fullscreen-open{overflow:hidden!important}
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="Frame 120"]{position:fixed!important;inset:0!important;z-index:9999!important;width:100vw!important;height:100dvh!important}
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="top-bar"]{display:none!important}
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="Frame 143"]{display:none!important}
+body.track-map-fullscreen-open #trackFullscreenRoot [data-layer="Frame 144"]{top:auto!important;bottom:24px!important;width:calc(100vw - 48px)!important}
+body.track-map-fullscreen-open #trackMapFullscreenBack{display:flex!important}
+.track-map-fullscreen-back{display:none;position:absolute;left:24px;top:calc(env(safe-area-inset-top) + 24px);z-index:6;height:48px;padding:12px 14px;border-radius:50px;background:linear-gradient(0deg,rgba(253,253,255,.34),rgba(253,253,255,.34)),#12130F;border:1px solid rgba(253,253,255,.6);box-shadow:0 4px 8px rgba(253,253,255,.06);align-items:center;gap:8px;color:#FDFDFF;font-size:14px;font-weight:500}
+.track-map-fullscreen-back svg{width:20px;height:20px;display:block}
+.track-ola-marker{width:24px;height:24px;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.track-ola-marker img{width:100%;height:100%;display:block;object-fit:contain;filter:drop-shadow(0 2px 6px rgba(0,0,0,.18))}
+.track-ola-marker-customer{width:18px;height:24px}.track-ola-marker-restaurant{width:24px;height:24px}.track-ola-marker-rider{width:22px;height:22px}
+.track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+@media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot,#trackFullscreenRoot [data-layer="Frame 155"],#trackFullscreenRoot [data-layer="Frame 120"],#trackFullscreenRoot [data-layer="Frame 143"],#trackFullscreenRoot [data-layer="Frame 154"],#trackFullscreenRoot [data-layer="cancellation-details-collapse"],#trackFullscreenRoot [data-layer="top-bar"]{width:100%!important;max-width:390px!important}}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
-<div class="3TrackFullscreen" data-layer="1.3 track-fullscreen" id="trackFullscreenRoot" style="width: 390px; height: 1045px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
-<div class="Frame88" data-layer="Frame 88" style="width: 390px; padding-top: 40px; left: 0px; top: 0px; position: absolute; flex-direction: column; justify-content: flex-start; align-items: center; gap: 20px; display: inline-flex">
-<div class="MapWrapV1" data-layer="map-wrap-v1" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: inline-flex; width: 390px; height: 376px;">
-<div class="TopBar" data-layer="top-bar" style="align-self: stretch; padding-top: 10px; padding-bottom: 10px; padding-left: 12px; padding-right: 16px; border-radius: 14px; justify-content: flex-start; align-items: flex-start; gap: 30px; display: inline-flex; width: 342px; height: 70px;">
-<div class="BackButton" data-layer="back-button" style="border-radius: 14px; justify-content: flex-start; align-items: center; gap: 4px; display: flex; width: 75px; height: 30px;">
-<div class="ArrowLeftIcons" data-layer="arrow-left-icons" style="width: 30px; height: 30px; position: relative; opacity: 0.50; overflow: hidden">
-<img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=trackmapwrap1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/>
-</div>
-<div class="Back" data-layer="back" style="color: #12130F; font-size: 18px; font-family: General Sans; font-weight: 500; line-height: 27px; word-wrap: break-word">back</div>
-</div>
-<div class="DeliverTo" data-layer="deliver-to" style="flex: 1 1 0; flex-direction: column; justify-content: center; align-items: flex-end; gap: 4px; display: inline-flex; width: 209px; height: 50px;">
-<div class="DeliverTo" data-layer="Deliver to:" style="color: rgba(18, 19, 15, 0.50); font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Deliver to:</div>
-<div class="34IndiraNagarPeriyarNagar2ndStreetKalapattiCoimbato" data-layer="9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato.." id="trackFullDeliveryAddress" style="align-self: stretch; text-align: right; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 15.60px; word-wrap: break-word; width: 209px; height: 32px;">9/34, indira nagar, periyar nagar, 2nd street, kalapatti, coimbato..</div>
-</div>
-</div>
-<div class="MapSectionV1" data-layer="map-section-v1" style="align-self: stretch; padding: 16px; border-radius: 14px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex; width: 342px; height: 296px; position: relative; overflow: hidden;">
-<button aria-label="Back from full screen map" class="track-map-fullscreen-back" id="trackMapFullscreenBack" type="button">
-<img alt="" src="./assets/track orders/track-screen/arrow-left-icons.svg?v=mapfull1"/>
-<span>back</span>
-</button>
-
-<div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
-<div class="FloatingContent" data-layer="floating-content" style="align-self: stretch; height: 264px; flex-direction: column; justify-content: flex-end; align-items: flex-end; gap: 20px; display: flex; width: 310px; position: relative; z-index: 2;">
-<div class="FullScreenButton" data-layer="full screen-button" style="padding: 12px; background: #FDFDFF; box-shadow: 2px 3px 14px rgba(0, 0, 0, 0.16), 0px 4px 8px rgba(0, 0, 0, 0.10); border-radius: 50px; justify-content: center; align-items: center; gap: 10px; display: inline-flex; width: 48px; height: 48px;">
-<div class="FullScreenIcons" data-layer="full screen-icons" style="width: 24px; height: 24px; position: relative; overflow: hidden">
-<img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trackmapwrap1" style="width: 100%; height: 100%; display: block; object-fit: contain;"/>
-</div>
-</div>
-</div>
-<div aria-label="Map controls" class="track-map-controls" id="trackMapControls">
-<button aria-label="Zoom in" class="track-map-control-btn" id="trackMapZoomIn" type="button">+</button>
-<button aria-label="Zoom out" class="track-map-control-btn" id="trackMapZoomOut" type="button">−</button>
-</div>
-</div>
-</div>
-<div class="MainContent" data-layer="main-content" style="align-self: stretch; padding-left: 24px; padding-right: 24px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 16px; display: flex">
-<div id="trackOrderStatusCard" data-layer="order-status-card-dynamic" style="width:342px;min-height:194px"></div>
-<div class="Line4" data-layer="Line 4" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
-<div class="Frame77" data-layer="Frame 77" style="align-self: stretch; height: 58px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 6px; display: flex">
-<div class="Rider" data-layer="Rider" style="align-self: stretch; flex: 1 1 0; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Rider</div>
-<div class="Frame76" data-layer="Frame 76" style="align-self: stretch; justify-content: flex-start; align-items: center; gap: 16px; display: inline-flex">
-<div class="RiderDetails" data-layer="rider-details" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
-<span id="trackFullRiderInitial" data-layer="rider-profile-initial" class="Frame77RiderInitial" aria-hidden="true">R</span>
-<div class="AshokKumar" data-layer="Ashok Kumar" id="trackFullRiderName" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Assigning Rider</div>
-</div>
-<div class="Frame80" data-layer="Frame 80" style="justify-content: flex-start; align-items: center; gap: 16px; display: flex">
-<div class="Frame78" id="trackFullCallRiderAction" role="button" aria-label="Call rider" aria-disabled="true" data-rider-action="call" data-layer="Frame 78" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
-<div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #8806CE; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="CallRiderButton" data-layer="call-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/call-rider-button.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-<div class="Call" data-layer="Call" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Call</div>
-</div>
-<div class="Frame79" id="trackFullTextRiderAction" role="button" aria-label="Text rider" aria-disabled="true" data-rider-action="text" data-layer="Frame 79" style="justify-content: flex-start; align-items: center; gap: 6px; display: flex">
-<div class="StatusPreparing" data-layer="status-preparing" style="padding: 8px; background: #12130F; border-radius: 40px; justify-content: flex-start; align-items: center; gap: 10px; display: flex">
-<div class="TextRiderButton" data-layer="text-rider-button" data-svg-wrapper="" style="position: relative"><img alt="" src="./assets/track orders/track-screen/text-rider-button.svg?v=trueola1" style="width:100%;height:100%;display:block;object-fit:contain;"/></div>
-</div>
-<div class="Text" data-layer="Text" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 500; line-height: 19.60px; word-wrap: break-word">Text</div>
-</div>
-</div>
-</div>
-</div>
-<div class="Line3" data-layer="Line 3" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
-<div class="PaymentDetailsGroup" data-layer="payment-details-group" style="align-self: stretch; height: 231px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 10px; display: flex">
-<div class="OrderSummary" data-layer="Order summary" style="align-self: stretch; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Order summary</div>
-<div class="PaymentInfoCard" data-layer="payment-info-card" style="align-self: stretch; padding: 12px; background: #FDFDFF; border-radius: 10px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -1px; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 12px; display: flex">
-<div class="PaymentInformations" data-layer="payment-informations" id="trackPaymentInformations" style="align-self: stretch; flex-direction: column; justify-content: flex-start; align-items: flex-start; gap: 8px; display: flex">
-<div class="BillInfo1" data-layer="bill-info-1" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="MenuItem1" data-layer="menu-item-1" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="X" data-layer="1x" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
-<div class="RegularMeal" data-layer="Regular meal" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Regular meal</div>
-</div>
-<div class="65" data-layer="₹65" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹65</div>
-</div>
-<div class="BillInfo3" data-layer="bill-info-3" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="MenuItem2" data-layer="menu-item-2" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="X" data-layer="1x" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
-<div class="ProteinEggLunch" data-layer="Protein egg lunch" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Protein egg lunch</div>
-</div>
-<div class="89" data-layer="₹89" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹89</div>
-</div>
-<div class="BillInfo4" data-layer="bill-info-4" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="MenuItem3" data-layer="menu-item-3" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="X" data-layer="2x" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">2x</div>
-<div class="ProteinChickenLunch" data-layer="Protein Chicken lunch" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Protein Chicken lunch</div>
-</div>
-<div class="218" data-layer="₹218" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹218</div>
-</div>
-<div class="BillInfo5" data-layer="bill-info-5" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="MenuItem4" data-layer="menu-item-4" style="justify-content: flex-start; align-items: center; gap: 4px; display: flex">
-<div class="X" data-layer="1x" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">1x</div>
-<div class="ChappatiCurry" data-layer="Chappati &amp; Curry" style="color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 500; line-height: 14.40px; word-wrap: break-word">Chappati &amp; Curry</div>
-</div>
-<div class="59" data-layer="₹59" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹59</div>
-</div>
-<div class="TaxInfo6" data-layer="tax-info-6" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="TaxCharges" data-layer="Tax &amp; charges" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">Tax &amp; charges</div>
-<div class="23" data-layer="₹23" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹23</div>
-</div>
-<div class="FeeInfo7" data-layer="fee-info-7" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="DeliveryFee" data-layer="Delivery fee" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">Delivery fee</div>
-<div class="12" data-layer="₹12" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 400; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹12</div>
-</div>
-</div>
-<div class="Divider" data-layer="divider" style="align-self: stretch; height: 0px; outline: 1px rgba(18, 19, 15, 0.12) solid; outline-offset: -0.50px"></div>
-<div class="PaymentTopayInfo" data-layer="payment-topay-info" style="align-self: stretch; justify-content: space-between; align-items: flex-start; display: inline-flex">
-<div class="ToPay" data-layer="Total paid" style="width: 119px; color: #12130F; font-size: 12px; font-family: General Sans; font-weight: 400; line-height: 14.40px; word-wrap: break-word">Total paid</div>
-<div class="466" data-layer="₹466" id="trackTotalPay" style="text-align: right; color: #12130F; font-size: 14px; font-family: General Sans; font-weight: 600; line-height: 16.80px; letter-spacing: 0.28px; word-wrap: break-word">₹466</div>
-</div>
-</div>
-</div>
-<div class="BackToOrdersButton" data-layer="back to menu-button" style="align-self: stretch; height: 55px; padding-left: 20px; padding-right: 20px; padding-top: 14px; padding-bottom: 14px; background: #08A045; border-radius: 10px; justify-content: center; align-items: center; gap: 10px; display: inline-flex">
-<div class="BackToOrders" data-layer="Back to menu" style="color: #FDFDFF; font-size: 18px; font-family: General Sans; font-weight: 600; line-height: 26px; word-wrap: break-word">Back to menu</div>
-</div>
-</div>
-</div>
+<div data-layer="1.1 track-fullscreen" class="TrackFullscreen" id="trackFullscreenRoot">
+  <div data-layer="Frame 155" class="Frame155">
+    <div data-layer="Frame 120" class="Frame120">
+      <div aria-label="Delivery tracking map" class="track-ola-map-canvas" id="trackOlaMapCanvas"></div>
+      <button aria-label="Back from full screen map" class="track-map-fullscreen-back" id="trackMapFullscreenBack" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.31 18.82 3.5 12l6.81-6.82 1.06 1.06L6.36 11.25H21v1.5H6.36l5.01 5.01-1.06 1.06Z" fill="#FDFDFF"/></svg><span>back</span></button>
+      <div data-layer="track-map-preview-pins" class="TrackMapPreviewPins track-map-preview-pins" style="width:342px;height:136px;left:24px;top:339px;position:absolute">
+        <svg class="cf-map-line" viewBox="0 0 220 86" aria-hidden="true"><path d="M2 77 C62 7 111 6 158 47 C180 66 194 52 218 3"/></svg>
+        <div data-layer="customer-pin" class="CustomerPin" style="width:18px;left:46px;top:97px;position:absolute;flex-direction:column;justify-content:flex-start;align-items:center;gap:2px;display:inline-flex">
+          <div data-layer="You" class="You" style="color:#FDFDFF;font-size:10px;font-family:General Sans;font-weight:600;line-height:13px;word-wrap:break-word">You</div>
+          <svg class="cf-customer-marker-svg" width="18" height="24" viewBox="0 0 18 24" fill="none" aria-hidden="true"><path d="M9 1.75C4.72 1.75 1.25 5.2 1.25 9.45c0 5.6 7.75 12.8 7.75 12.8s7.75-7.2 7.75-12.8C16.75 5.2 13.28 1.75 9 1.75Z" fill="#8806CE"/><circle cx="9" cy="9" r="3.15" fill="#FDFDFF"/></svg>
+        </div>
+        <div data-layer="cbefoods-pin" class="CbefoodsPin" style="width:56px;left:241px;top:0px;position:absolute;flex-direction:column;justify-content:flex-start;align-items:center;gap:2px;display:inline-flex">
+          <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="text-align:center;color:#FDFDFF;font-size:10px;font-family:General Sans;font-weight:600;line-height:13px;word-wrap:break-word">Coimbatore<br/>Foods</div>
+          <svg class="cf-restaurant-marker-svg" width="24" height="29" viewBox="0 0 24 29" fill="none" aria-hidden="true"><path d="M12 0C5.85 0 .86 4.99.86 11.14c0 7.65 11.14 17.32 11.14 17.32s11.14-9.67 11.14-17.32C23.14 4.99 18.15 0 12 0Z" fill="#FDFDFF"/><circle cx="12" cy="11.5" r="10.5" fill="#12130F"/><path d="M7.2 16.6h9.6v1.1H7.2v-1.1Zm1.2-7.8h1.1v5.2h-1.1V8.8Zm3.05 0h1.1v5.2h-1.1V8.8Zm3.05 0h1.1v5.2h-1.1V8.8ZM7 14h10v1.2H7V14Z" fill="#FDFDFF"/></svg>
+        </div>
+      </div>
+      <div data-layer="Frame 144" class="Frame144" style="width:342px;height:48px;left:24px;top:595px;position:absolute;justify-content:space-between;align-items:flex-end;display:inline-flex;z-index:4">
+        <div data-layer="nothing" class="Nothing" style="padding:12px;opacity:0;background:linear-gradient(0deg,rgba(253,253,255,.34) 0%,rgba(253,253,255,.34) 100%),#12130F;box-shadow:0 4px 8px rgba(253,253,255,.06);border-radius:50px;outline:1px rgba(253,253,255,.60) solid;outline-offset:-1px;justify-content:center;align-items:center;gap:10px;display:flex"><div style="width:24px;height:24px"></div></div>
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.08 8.45 12 15.55l7.92-7.1" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div data-layer="full screen-button" class="FullScreenButton" style="padding:12px;background:linear-gradient(0deg,rgba(253,253,255,.34) 0%,rgba(253,253,255,.34) 100%),#12130F;box-shadow:0 4px 8px rgba(253,253,255,.06);border-radius:50px;outline:1px rgba(253,253,255,.60) solid;outline-offset:-1px;justify-content:center;align-items:center;gap:10px;display:flex;cursor:pointer">
+          <img alt="" src="./assets/track orders/track-screen/full screen-icons.svg?v=trackui1" style="width:24px;height:24px;display:block;filter:invert(1) brightness(2)"/>
+        </div>
+      </div>
+    </div>
+    <div data-layer="Frame 143" class="Frame143" style="align-self:stretch;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:4px;display:flex">
+      <div data-layer="rider-card" data-property-1="Variant2" class="RiderCard" style="align-self:stretch;height:84px;padding-top:20px;padding-bottom:20px;padding-left:24px;background:#8806CE;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:12px;display:flex">
+        <div data-layer="Frame 147" class="Frame147" style="align-self:stretch;justify-content:center;align-items:center;gap:30px;display:inline-flex">
+          <div data-layer="Frame 146" class="Frame146" style="justify-content:flex-start;align-items:center;gap:4px;display:flex">
+            <img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trackui1" style="width:24px;height:24px;opacity:.5;filter:brightness(0) invert(1)"/>
+            <div data-layer="Assigning Rider" class="AssigningRider" id="trackFullAssigningRider" style="text-align:right;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Assigning Rider</div>
+          </div>
+          <div data-layer="Motorbike" data-property-1="Variant3" class="Motorbike" style="justify-content:flex-start;align-items:flex-end;display:flex">
+            <div class="cf-rider-bike" aria-hidden="true"><span style="width:18.70px;height:8.75px;left:18.70px;top:35px;background:#F3E7FA"></span><span style="width:37.40px;height:21.25px;left:57.35px;top:22.50px;background:#F3E7FA"></span><span style="width:14.96px;height:7.50px;left:12.47px;top:36.25px;background:#DAB3F0"></span><span style="width:31.19px;height:17.50px;left:51.12px;top:26.25px;background:#DAB3F0"></span><span style="width:23.79px;height:9.25px;left:31.23px;top:7.14px;background:#12130F"></span><span style="width:6.56px;height:11.68px;left:8.41px;top:25.11px;background:#12130F"></span><span style="width:17.92px;height:17.97px;left:1.25px;top:26.01px;background:#12130F;border-radius:50%"></span><span style="width:21.51px;height:6.55px;left:33.50px;top:9.84px;background:#08A045"></span><span style="width:53.77px;height:35.54px;left:1.25px;top:1.25px;background:#12130F;border-radius:8px"></span><span style="width:17.92px;height:17.97px;left:40.68px;top:26.01px;background:#12130F;border-radius:50%"></span><span style="width:13.93px;height:8.01px;left:37.55px;top:28.80px;background:#12130F"></span><span style="width:12.55px;height:8.67px;left:1.25px;top:10.15px;background:#08A045"></span><span style="width:25.71px;height:14.32px;left:8.42px;top:8.10px;background:#08A045;border-radius:6px"></span></div>
+          </div>
+        </div>
+      </div>
+      <div data-layer="Frame 124" class="Frame124" style="align-self:stretch;padding-top:20px;padding-bottom:16px;padding-left:24px;padding-right:24px;background:#252622;flex-direction:column;justify-content:center;align-items:flex-start;gap:14px;display:flex">
+        <div data-layer="Frame 127" class="Frame127" style="align-self:stretch;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:6px;display:flex">
+          <div data-layer="Frame 123" class="Frame123" style="align-self:stretch;justify-content:flex-start;align-items:center;gap:8px;display:inline-flex">
+            <div data-layer="Delivering to" class="DeliveringTo" style="color:rgba(253,253,255,.60);font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Delivering to</div>
+            <div data-layer="Frame 122" class="Frame122" style="padding-left:8px;padding-right:8px;padding-top:4px;padding-bottom:4px;background:rgba(253,253,255,.12);border-radius:10px;outline:1px rgba(253,253,255,.12) solid;outline-offset:-1px;justify-content:flex-start;align-items:center;gap:4px;display:flex">
+              <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.67A5.83 5.83 0 0 0 4.17 7.5c0 4.37 5.83 10.83 5.83 10.83s5.83-6.46 5.83-10.83A5.83 5.83 0 0 0 10 1.67Zm0 8.33a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5Z" fill="#FDFDFF"/></svg>
+              <div data-layer="Home" class="Home" id="trackFullAddressTitle" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Home</div>
+            </div>
+          </div>
+          <div data-layer="19/a, indira nagar, periyar nagar, 2nd street, nehru nagar west, kalapatti, 641048." class="AIndiraNagarPeriyarNagar2ndStreetNehruNagarWestKalapatti641048" id="trackFullDeliveryAddress" style="align-self:stretch;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">19/a, indira nagar, periyar nagar, 2nd street, nehru nagar west, kalapatti, 641048.</div>
+        </div>
+        <div data-layer="Frame 125" class="Frame125" style="align-self:stretch;justify-content:flex-start;align-items:flex-start;gap:12px;display:inline-flex">
+          <div data-layer="Landmark:" class="Landmark" style="color:rgba(253,253,255,.50);font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Landmark:</div>
+          <div data-layer="Near pasumai Pharmacy" class="NearPasumaiPharmacy" id="trackFullDeliveryLandmark" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Near pasumai Pharmacy</div>
+        </div>
+        <div data-layer="Frame 129" class="Frame129 cf-track-help" style="align-self:stretch;padding-left:20px;padding-right:20px;padding-top:8px;padding-bottom:8px;justify-content:center;align-items:center;gap:8px;display:inline-flex">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 .01 0ZM11 7h2v7h-2V7Zm0 9h2v2h-2v-2Z" fill="#08A045"/></svg>
+          <div data-layer="Need help? Wrong location." class="NeedHelpWrongLocation" style="color:#08A045;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Need help? Wrong location.</div>
+        </div>
+      </div>
+      <div data-layer="order-items-collapse" data-property-1="Default" class="OrderItemsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
+        <div data-layer="Frame 141" class="Frame141" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex">
+          <div data-layer="Frame 150" class="Frame150" style="justify-content:flex-start;align-items:center;gap:6px;display:flex"><div data-layer="Order Items:" class="OrderItems" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Order Items:</div><div data-layer="4" id="trackFullOrderItemCount" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">4</div></div>
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.08 8.95 12 16.05l7.92-7.1" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div data-layer="bill-details-collapse" data-property-1="Default" class="BillDetailsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
+        <div data-layer="Frame 142" class="Frame142" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div data-layer="Bill Details" class="BillDetails" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Bill Details</div><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.08 8.95 12 16.05l7.92-7.1" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      </div>
+      <div data-layer="Frame 154" class="Frame154" style="width:390px;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#12130F;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:14px;display:flex">
+        <div data-layer="Order ID: CBE1234" class="OrderIdCbe1234" id="trackFullOrderId" style="align-self:stretch;color:rgba(253,253,255,.50);font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Order ID: CBE1234</div>
+        <div data-layer="Frame 134" class="Frame134" style="align-self:stretch;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:6px;display:flex">
+          <div data-layer="Frame 131" class="Frame131" style="align-self:stretch;padding-top:2px;padding-bottom:2px;justify-content:flex-start;align-items:center;gap:20px;display:inline-flex"><div data-layer="Frame 171" class="Frame171" style="flex:1 1 0;justify-content:flex-start;align-items:center;gap:6px;display:flex"><img alt="" src="./assets/track orders/track-screen/clock-icon.svg?v=trackui1" style="width:20px;height:20px;opacity:.54;filter:brightness(0) invert(1)"/><div data-layer="Order Placed On" class="OrderPlacedOn" style="flex:1 1 0;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Order Placed On</div></div><div data-layer="24 May 2026, 10:30am" class="May20261030am" id="trackFullPlacedAt" style="flex:1 1 0;text-align:right;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">24 May 2026, 10:30am</div></div>
+          <div data-layer="Frame 136" class="Frame136" style="align-self:stretch;padding-top:2px;padding-bottom:2px;justify-content:flex-start;align-items:center;gap:20px;display:inline-flex"><div data-layer="Frame 172" class="Frame172" style="flex:1 1 0;justify-content:flex-start;align-items:center;gap:6px;display:flex"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.04a8.96 8.96 0 1 0 0 17.92 8.96 8.96 0 0 0 0-17.92Zm.63 14.59H9.38v-1.25c-1.07-.22-1.99-.9-2.04-2.1h1.35c.07.58.52.96 1.31.96.84 0 1.2-.4 1.2-.9 0-.58-.34-.82-1.5-1.18-1.16-.36-2.14-.87-2.14-2.14 0-1.02.72-1.82 1.82-2.05V5.62h1.25v1.36c1.05.24 1.72.95 1.78 1.98h-1.35c-.06-.5-.38-.83-1.05-.83-.68 0-1.08.31-1.08.82 0 .47.36.69 1.48 1.05 1.23.4 2.2.92 2.2 2.25 0 1.08-.75 1.86-1.98 2.1v1.28Z" fill="#878887"/></svg><div data-layer="Payment" class="Payment" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Payment</div></div><div data-layer="Frame 170" class="Frame170" style="flex:1 1 0;justify-content:flex-start;align-items:center;gap:10px;display:flex"><div data-layer="Paid" class="Paid" style="flex:1 1 0;text-align:right;color:#08A045;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Paid</div><div data-layer="₹391" class="391" id="trackFullPaidAmount" style="text-align:right;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">₹391</div></div></div>
+        </div>
+        <div data-layer="Line 7" class="Line7" style="align-self:stretch;height:0px;outline:1px rgba(253,253,255,.12) solid;outline-offset:-.50px"></div>
+        <div data-layer="Restaurant details" class="RestaurantDetails" style="align-self:stretch;color:rgba(253,253,255,.50);font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Restaurant details</div>
+        <div data-layer="Frame 151" class="Frame151" style="align-self:stretch;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex"><div data-layer="Frame 152" class="Frame152" style="align-self:stretch;justify-content:flex-start;align-items:flex-start;gap:6px;display:inline-flex"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M2 14.7h16v1.2H2v-1.2Zm1-6.7h2v5.4H3V8Zm4 0h2v5.4H7V8Zm4 0h2v5.4h-2V8Zm4 0h2v5.4h-2V8Zm-6-5.6h2v4H9v-4Z" fill="#878887"/></svg><div data-layer="Coimbatore Foods" class="CoimbatoreFoods" id="trackFullRestaurantName" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Coimbatore Foods</div></div><div data-layer="Frame 153" class="Frame153" style="align-self:stretch;justify-content:flex-start;align-items:flex-start;gap:6px;display:inline-flex"><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><path d="M10 1.04A6.56 6.56 0 0 0 3.44 7.6c0 4.79 6.56 11.36 6.56 11.36s6.56-6.57 6.56-11.36A6.56 6.56 0 0 0 10 1.04Zm0 8.96a2.4 2.4 0 1 1 0-4.8 2.4 2.4 0 0 1 0 4.8Z" fill="#878887"/></svg><div data-layer="24, Indira nagar, Nehru nagar, Periyar nagar, Kalapatti, coimbatore-641048" class="IndiraNagarNehruNagarPeriyarNagarKalapattiCoimbatore641048" id="trackFullRestaurantAddress" style="flex:1 1 0;color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:20.80px;word-wrap:break-word">24, Indira nagar, Nehru nagar, Periyar nagar, Kalapatti, coimbatore-641048</div></div></div>
+        <div data-layer="Frame 129" class="Frame129 cf-track-help" style="align-self:stretch;padding-left:20px;padding-right:20px;padding-top:8px;padding-bottom:8px;justify-content:center;align-items:center;gap:8px;display:inline-flex"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 .01 0ZM11 7h2v7h-2V7Zm0 9h2v2h-2v-2Z" fill="#08A045"/></svg><div data-layer="Problem with the order? Call us." class="ProblemWithTheOrderCallUs" style="color:#08A045;font-size:16px;font-family:General Sans;font-weight:500;line-height:19.20px;word-wrap:break-word">Problem with the order? Call us.</div></div>
+      </div>
+      <div data-layer="cancellation-details-collapse" data-property-1="Default" class="CancellationDetailsCollapse cf-collapse-row" style="width:390px;padding-top:16px;padding-bottom:34px;padding-left:24px;padding-right:24px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex"><div data-layer="Frame 142" class="Frame142" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div data-layer="Want to cancel the order?" class="WantToCancelTheOrder" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Want to cancel the order?</div><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.08 8.95 12 16.05l7.92-7.1" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    </div>
+  </div>
+  <div data-layer="top-bar" class="TopBar" style="width:390px;padding-top:50px;padding-bottom:30px;padding-left:24px;padding-right:24px;left:0px;top:0px;position:absolute;background:#12130F;overflow:hidden;border-bottom-right-radius:30px;border-bottom-left-radius:30px;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:20px;display:inline-flex;z-index:5">
+    <div data-layer="Frame 115" class="Frame115" style="align-self:stretch;justify-content:flex-start;align-items:flex-start;gap:10px;display:inline-flex">
+      <div data-layer="back-button" class="Frame cf-back-button" style="width:24px;height:24px;position:relative;overflow:hidden;flex:none"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.31 18.82 3.5 12l6.81-6.82 1.06 1.06L6.36 11.25H21v1.5H6.36l5.01 5.01-1.06 1.06Z" fill="#FDFDFF"/></svg></div>
+      <div data-layer="Frame 111" class="Frame111" style="flex:1 1 0;flex-direction:column;justify-content:center;align-items:flex-start;gap:4px;display:inline-flex"><div data-layer="Order recieved" class="OrderRecieved" id="trackFullStatusTitle" style="align-self:stretch;color:#FDFDFF;font-size:18px;font-family:General Sans;font-weight:500;line-height:21.60px;word-wrap:break-word">Order recieved</div><div data-layer="🚀 We received your order and will start preparing soon." class="WeReceivedYourOrderAndWillStartPreparingSoon" id="trackFullStatusCopy" style="align-self:stretch;color:rgba(253,253,255,.50);font-size:14px;font-family:General Sans;font-weight:500;line-height:16.80px;word-wrap:break-word">🚀 We received your order and will start preparing soon.</div></div>
+      <div data-layer="Frame 112" class="Frame112" style="flex-direction:column;justify-content:center;align-items:center;gap:8px;display:inline-flex"><div data-layer="Deliver in" class="DeliverIn" style="align-self:stretch;text-align:right;color:rgba(253,253,255,.50);font-size:14px;font-family:General Sans;font-weight:500;line-height:16.80px;word-wrap:break-word">Deliver in</div><div data-layer="Frame 113" class="Frame113" style="width:84px;padding:6px;background:rgba(136,6,206,.24);border-radius:12px;outline:2px #8806CE solid;outline-offset:-2px;justify-content:center;align-items:center;gap:10px;display:inline-flex"><div data-layer="0:28m" class="28m" id="trackFullEta" style="color:#FDFDFF;font-size:18px;font-family:General Sans;font-weight:600;line-height:21.60px;letter-spacing:.36px;word-wrap:break-word">0:28m</div></div></div>
+    </div>
+    <div data-layer="Frame 119" class="Frame119" style="align-self:stretch;justify-content:space-between;align-items:center;display:inline-flex"><div class="cf-stage-icon active" data-stage="1"><img alt="" src="./assets/track orders/status-order-received-icon.svg?v=trackui1"/></div><div class="cf-stage-line" data-stage-line="1"></div><div class="cf-stage-icon" data-stage="2"><img alt="" src="./assets/track orders/status-preparing-icon.svg?v=trackui1"/></div><div class="cf-stage-line" data-stage-line="2"></div><div class="cf-stage-icon" data-stage="3"><img alt="" src="./assets/track orders/status-outfordelivery-icon.svg?v=trackui1"/></div><div class="cf-stage-line" data-stage-line="3"></div><div class="cf-stage-icon" data-stage="4"><img alt="" src="./assets/track orders/status-delivered-icon.svg?v=trackui1"/></div></div>
+  </div>
+  <div id="trackEmptyInline" class="cf-inline-empty"><div style="font-size:18px;font-weight:600;line-height:22px;margin-bottom:8px">No active order</div><div style="font-size:14px;line-height:18px;color:rgba(253,253,255,.56)">Your live tracking will appear here after placing an order.</div></div>
 </div>
 </main>
 <script src="firebase-config.js"></script>
@@ -1573,7 +1591,18 @@ function buildOrderStatusCard(o){
   return `<div data-layer="${cfg.layer}" class="cf-order-status-card ${cfg.cls}"><div data-layer="Highlight-info" class="cf-highlight-info"><div data-layer="${cfg.title}" class="cf-highlight-title">${cfg.title}</div></div><div data-layer="status-progress-bar-v${cfg.active>1?2:1}" class="cf-status-progress"><div data-layer="${cfg.copy}" class="cf-status-copy">${cfg.copy}</div><div data-layer="status-icons-set" class="cf-status-icons-set">${stepHtml(1,'status-order-received','status-order-received-icon.svg',cfg)}${connectorHtml(1,cfg)}${stepHtml(2,'status-preparing','status-preparing-icon.svg',cfg)}${connectorHtml(2,cfg)}${stepHtml(3,'status-outfordelivery','status-outfordelivery-icon.svg',cfg)}${connectorHtml(3,cfg)}${stepHtml(4,'status-delivered','status-delivered-icon.svg',cfg)}</div></div><div data-layer="eta&partner-content" class="cf-eta-partner-content"><div data-layer="eta-content" class="cf-eta-content"><div data-layer="Coimbatore Foods" class="cf-restaurant-name">Coimbatore Foods</div><div data-layer="eta-time" class="cf-eta-time"><span data-layer="25 - 35mins" id="trackFullEta">${etaText}</span></div></div>${riderCardHtml(o)}</div></div>`;
 }
 function renderStatusCard(o){const host=document.getElementById('trackOrderStatusCard');if(host)host.innerHTML=buildOrderStatusCard(o)}
-function hydrate(){const o=getSelectedOrder();renderStatusCard(o);setText('trackFullDeliveryAddress',address(o));setText('trackFullEta',eta(o));const rider=riderName(o);setText('trackFullAssigningRider',hasAssignedRider(o)?'Rider Assigned':'Assigning Rider.');setText('trackFullRiderName',rider||'Assigning Rider');updateFrame77Rider(o);renderSummary(o)}
+function valueFromPaths(o,paths){for(const path of paths){let cur=o;for(const key of path.split('.')){if(cur==null){cur=null;break}cur=cur[key]}if(cur!==undefined&&cur!==null&&String(cur).trim())return String(cur).trim()}return''}
+function activeLocationObject(){const a=readJSON('active_delivery_location')||readJSON('selectedDeliveryLocation')||{};return a&&typeof a==='object'?a:{}}
+function addressTitle(o){const loc=activeLocationObject();return valueFromPaths(o,['deliveryAddressTitle','addressTitle','addressType','saveAs','deliveryLocation.title','deliveryLocation.type','address.label'])||loc.title||loc.type||loc.label||'Home'}
+function addressLandmark(o){const loc=activeLocationObject();return valueFromPaths(o,['landmark','deliveryLandmark','deliveryLocation.landmark','address.landmark'])||loc.landmark||'Not added'}
+function restaurantAddress(o){return valueFromPaths(o,['restaurantAddress','restaurantLocation.address','adminLocation.address','restaurant.address'])||'Real Estates Covai, 9/102, Periyar Nagar, Nehru Nagar West, Coimbatore, Tamil Nadu, 641048'}
+function totalAmount(o){const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;return Number(o.total??o.amount??o.paidAmount??o.totals?.total??(itemTotal+fee+tax))||0}
+function orderPlacedDate(o){const raw=o.createdAt||o.placedAt||o.orderPlacedAt||o.orderedAt||o.orderTime||o.timestamp||o.paymentTime||o.paidAt;let d=null;if(raw instanceof Date)d=raw;else if(raw&&typeof raw==='object'&&raw.seconds)d=new Date(raw.seconds*1000);else if(typeof raw==='number')d=new Date(raw>9999999999?raw:raw*1000);else if(raw)d=new Date(raw);if(!d||Number.isNaN(d.getTime()))d=new Date();return d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).replace(',','')}
+function topStatusConfig(o){const v=getStatusVariant(o);if(v===4)return{title:'Reached your location',copy:'📍 Rider reached your location.',active:4};if(v===3)return{title:'Out for delivery',copy:'🛵 Rider picked up your order.',active:3};if(v===2)return{title:'Preparing',copy:'🍳 Your food is being prepared.',active:2};return{title:'Order recieved',copy:'🚀 We received your order and will start preparing soon.',active:1}}
+function syncStage(active){document.querySelectorAll('.cf-stage-icon').forEach(el=>el.classList.toggle('active',Number(el.dataset.stage)<=active));document.querySelectorAll('.cf-stage-line').forEach(el=>el.classList.toggle('active',Number(el.dataset.stageLine)<active))}
+function syncRiderCard(o){const assigned=hasAssignedRider(o);const name=riderName(o);setText('trackFullAssigningRider',assigned?(name||'Rider Assigned'):'Assigning Rider')}
+function syncEmptyState(o){const id=getOrderId(o);const box=document.getElementById('trackEmptyInline');if(box)box.classList.toggle('is-visible',!id)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',address(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
 let pendingRiderRouteKey='';
 let latestRequestedRiderKey='';
 
@@ -1629,6 +1658,7 @@ async function updateRouteThenMoveRider(start,customer){
 
 function renderMap(){
   if(!map||!map.isStyleLoaded())return;
+  document.body.classList.add('track-live-map-ready');
 
   const o=getSelectedOrder();
   const r=restLoc(o),c=custLoc(o),rd=riderLoc(o);
@@ -1671,6 +1701,10 @@ document.addEventListener('click',e=>{
   }
   if(e.target.closest('[data-layer="back to menu-button"]')){
     window.location.href='menu.html';
+    return;
+  }
+  if(e.target.closest('.cf-track-help')){
+    window.location.href='tel:+919876543210';
   }
 },true);
 window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);
@@ -1727,7 +1761,7 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;wind
 })();
 </script>
 
-<script defer="" src="pwa-speed.js?v=20260526_track_fullscreen_only1"></script>
+<script defer="" src="pwa-speed.js?v=20260526_track_ui_refine1"></script>
 
 <script>
 (function(){
