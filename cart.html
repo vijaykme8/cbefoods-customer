@@ -4195,6 +4195,67 @@ body {
     };
   }
 
+
+  function makeOrderLightForLocalStorage(order) {
+    let compact;
+    try {
+      compact = JSON.parse(JSON.stringify(order || {}));
+    } catch (_) {
+      compact = { ...(order || {}) };
+    }
+
+    [
+      'etaRouteCoords',
+      'restaurantToCustomerRouteCoords',
+      'riderToCustomerRouteCoords',
+      'fullRoadRouteCoords',
+      'currentRoadRouteCoords',
+      'routeCoords',
+      'polylineCoords',
+      'overviewPath',
+      'overview_path'
+    ].forEach(key => {
+      if (Object.prototype.hasOwnProperty.call(compact, key)) delete compact[key];
+    });
+
+    return compact;
+  }
+
+  function safeSetJSON(key, value) {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.warn(`Local order write failed for ${key}`, error);
+      return false;
+    }
+  }
+
+  function saveConfirmedOrderLocally(order) {
+    const compactOrder = makeOrderLightForLocalStorage(order);
+    safeSetJSON('current_order', compactOrder);
+    safeSetJSON('cbe_track_selected_order', compactOrder);
+
+    try {
+      const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+      const safeHistory = Array.isArray(history) ? history : Object.values(history || {});
+      const orderKey = String(compactOrder.id || compactOrder.paymentId || compactOrder.createdAt);
+      const withoutDuplicate = safeHistory.filter(savedOrder => {
+        const savedKey = String(savedOrder?.id || savedOrder?.paymentId || savedOrder?.createdAt || '');
+        return savedKey !== orderKey;
+      });
+      withoutDuplicate.unshift(compactOrder);
+      if (!safeSetJSON('order_history', withoutDuplicate.slice(0, 20))) {
+        safeSetJSON('order_history', [compactOrder]);
+      }
+    } catch (error) {
+      console.warn('Local order history write failed', error);
+      safeSetJSON('order_history', [compactOrder]);
+    }
+
+    return compactOrder;
+  }
+
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
     let order = {
       ...snapshot,
@@ -4214,33 +4275,30 @@ body {
     try {
       const etaPatch = await getInitialRestaurantEtaPatch(order);
       if (etaPatch) order = { ...order, ...etaPatch };
-    } catch (_) {}
-
-    localStorage.setItem('current_order', JSON.stringify(order));
-
-    try {
-      const history = JSON.parse(localStorage.getItem('order_history') || '[]');
-      const safeHistory = Array.isArray(history) ? history : Object.values(history || {});
-      const orderKey = String(order.id || order.paymentId || order.createdAt);
-      const withoutDuplicate = safeHistory.filter(savedOrder => {
-        const savedKey = String(savedOrder?.id || savedOrder?.paymentId || savedOrder?.createdAt || '');
-        return savedKey !== orderKey;
-      });
-      withoutDuplicate.unshift(order);
-      localStorage.setItem('order_history', JSON.stringify(withoutDuplicate.slice(0, 20)));
-    } catch {
-      localStorage.setItem('order_history', JSON.stringify([order]));
+    } catch (error) {
+      console.warn('Initial ETA patch failed; continuing order save', error);
     }
+
+    saveConfirmedOrderLocally(order);
 
     if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
       window.TiffinMVP.saveOrderToCloud(order).catch(error => console.warn('Order cloud sync failed', error));
     }
 
-    saveOrderToCustomerMemory(order);
-    clearCartAfterPaidOrder(order);
-    renderCart();
+    try {
+      saveOrderToCustomerMemory(order);
+    } catch (error) {
+      console.warn('Customer order memory write skipped', error);
+    }
 
-    window.location.href = 'order_placed.html';
+    try {
+      clearCartAfterPaidOrder(order);
+    } catch (error) {
+      console.warn('Cart clear after paid order failed', error);
+    }
+
+    renderCart();
+    window.location.href = `order_placed.html?orderId=${encodeURIComponent(order.id || order.paymentId || '')}`;
   }
 
   function openRazorpayPayment(snapshot) {
@@ -4476,6 +4534,6 @@ body {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260526_track_fullscreen_only1" defer></script>
+<script src="pwa-speed.js?v=20260524_ui_refine_nonav_clean1" defer></script>
 </body>
 </html>
