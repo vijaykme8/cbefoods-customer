@@ -1629,6 +1629,143 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   font-weight:400;
   line-height:19.2px;
 }
+
+#trackBillDetailsCard{
+  align-self:stretch!important;
+  width:390px!important;
+  height:auto!important;
+  min-height:0!important;
+  padding:16px 24px!important;
+  background:#252622!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  justify-content:flex-start!important;
+  gap:10px!important;
+  flex:none!important;
+  overflow:visible;
+  cursor:pointer!important;
+  user-select:none!important;
+  -webkit-user-select:none!important;
+}
+#trackBillDetailsCard.is-collapse-transitioning{
+  overflow:hidden!important;
+}
+#trackBillDetailsCard .cf-bill-details-head{
+  align-self:stretch;
+  width:342px;
+  height:24px;
+  display:inline-flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+#trackBillDetailsCard .cf-bill-details-title{
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+}
+#trackBillDetailsCard .cf-bill-details-arrow{
+  width:24px!important;
+  height:24px!important;
+  display:block!important;
+  object-fit:contain!important;
+  opacity:1!important;
+  flex:none!important;
+}
+#trackBillDetailsCard .cf-bill-details-expanded-list{
+  align-self:stretch;
+  width:342px;
+  height:auto;
+  min-height:0;
+  max-height:none;
+  display:none;
+  flex-direction:column;
+  justify-content:flex-start;
+  align-items:flex-start;
+  gap:8px;
+  overflow:visible;
+}
+#trackBillDetailsCard.is-expanded .cf-bill-details-expanded-list{
+  display:flex;
+}
+#trackBillDetailsCard.is-expanded .cf-bill-details-title{
+  color:rgba(253,253,255,.50);
+}
+#trackBillDetailsCard.is-expanded .cf-bill-details-arrow{
+  opacity:.5!important;
+}
+#trackBillDetailsCard .cf-bill-row{
+  align-self:stretch;
+  width:342px;
+  min-height:26px;
+  height:auto;
+  display:inline-flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:20px;
+  overflow:visible;
+}
+#trackBillDetailsCard .cf-bill-label{
+  flex:1 1 0;
+  min-width:0;
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+  white-space:normal;
+  overflow:visible;
+  text-overflow:clip;
+}
+#trackBillDetailsCard .cf-bill-label-group{
+  flex:1 1 0;
+  min-width:0;
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:10px;
+  overflow:visible;
+}
+#trackBillDetailsCard .cf-bill-label-group .cf-bill-label{
+  flex:0 0 auto;
+}
+#trackBillDetailsCard .cf-bill-muted{
+  color:rgba(253,253,255,.50);
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  white-space:nowrap;
+}
+#trackBillDetailsCard .cf-bill-price{
+  width:60px;
+  text-align:right;
+  color:#FDFDFF;
+  font-size:16px;
+  font-family:General Sans,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-weight:400;
+  line-height:19.2px;
+  word-wrap:break-word;
+  flex:0 0 60px;
+}
+#trackBillDetailsCard .cf-bill-row.total .cf-bill-label,
+#trackBillDetailsCard .cf-bill-row.total .cf-bill-price{
+  font-weight:500;
+}
+#trackBillDetailsCard .cf-bill-divider{
+  align-self:stretch;
+  width:342px;
+  height:0;
+  outline:1px rgba(253,253,255,.12) solid;
+  outline-offset:-.5px;
+  flex:none;
+}
+
 @media (prefers-reduced-motion: reduce){
   .cf-collapse-motion-card,
   .cf-collapse-motion-arrow,
@@ -1719,8 +1856,12 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
         </div>
         <div id="trackOrderItemsExpandedList" data-layer="Frame 134" class="Frame134 cf-order-items-expanded-list"></div>
       </div>
-      <div data-layer="bill-details-collapse" data-property-1="Default" class="BillDetailsCollapse cf-collapse-row" style="align-self:stretch;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
-        <div data-layer="Frame 142" class="Frame142" style="align-self:stretch;justify-content:space-between;align-items:flex-start;display:inline-flex"><div data-layer="Bill Details" class="BillDetails" style="color:#FDFDFF;font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Bill Details</div><img alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_frame124v1" style="width:24px;height:24px;display:block"></div>
+      <div id="trackBillDetailsCard" data-layer="bill-details-collapse" data-property-1="Default" class="BillDetailsCollapse cf-collapse-row cf-collapse-motion-card" tabindex="0" role="button" aria-expanded="false" style="align-self:stretch;width:390px;height:auto;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#252622;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px;display:flex">
+        <div data-layer="Frame 142" class="Frame142 cf-bill-details-head">
+          <div data-layer="Bill Details" class="BillDetails cf-bill-details-title">Bill Details</div>
+          <img id="trackBillDetailsArrow" class="cf-collapse-motion-arrow cf-bill-details-arrow" alt="" src="./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_billdetails_transition5_1" style="width:24px;height:24px;display:block">
+        </div>
+        <div id="trackBillDetailsExpandedList" data-layer="Frame 140" class="Frame140 cf-bill-details-expanded-list"></div>
       </div>
       <div data-layer="Frame 154" class="Frame154" style="width:390px;padding-left:24px;padding-right:24px;padding-top:16px;padding-bottom:16px;background:#12130F;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:14px;display:flex">
         <div data-layer="Order ID: CBE1234" class="OrderIdCbe1234" id="trackFullOrderId" style="align-self:stretch;color:rgba(253,253,255,.50);font-size:16px;font-family:General Sans;font-weight:400;line-height:19.20px;word-wrap:break-word">Order ID: CBE1234</div>
@@ -2367,8 +2508,88 @@ function bindOrderItemsCard(){
   },true);
 }
 
+
+function trackBillNumber(o,paths,fallback=0){
+  for(const path of paths){
+    let cur=o;
+    for(const key of path.split('.')){if(cur==null){cur=null;break}cur=cur[key]}
+    if(cur!==undefined&&cur!==null&&cur!==''){
+      const n=Number(String(cur).replace(/[^0-9.-]/g,''));
+      if(Number.isFinite(n))return n;
+    }
+  }
+  return fallback;
+}
+function trackBillMoney(value){
+  const n=Number(value||0);
+  if(!Number.isFinite(n))return '₹0';
+  if(Math.abs(n-Math.round(n))<0.01)return `₹${Math.round(n)}`;
+  return `₹${n.toFixed(1).replace(/\.0$/,'')}`;
+}
+function trackBillDetails(o){
+  const orderItems=items(o);
+  const computedItemTotal=orderItems.reduce((sum,item)=>sum+itemPrice(item)*itemQty(item),0);
+  const itemTotal=trackBillNumber(o,['itemTotal','itemsTotal','subtotal','subTotal','totals.itemTotal','totals.itemsTotal','totals.subtotal','totals.subTotal'],computedItemTotal);
+  const deliveryFee=trackBillNumber(o,['deliveryFee','delivery_fee','totals.delivery','totals.deliveryFee','fees.delivery','charges.delivery'],0);
+  const packingCharge=trackBillNumber(o,['restaurantPackingCharge','restaurant_packing_charge','packingCharge','packagingCharge','packingFee','packagingFee','totals.packing','totals.packingCharge','totals.packaging','totals.packagingCharge','fees.packing','charges.packing'],0);
+  const tax=trackBillNumber(o,['tax','gst','gstTax','gst_tax','taxAmount','totals.tax','totals.gst','totals.gstTax','fees.tax','charges.tax'],0);
+  const total=trackBillNumber(o,['total','amount','paidAmount','grandTotal','grand_total','totals.total','totals.grandTotal'],itemTotal+deliveryFee+packingCharge+tax);
+  return{itemTotal,deliveryFee,packingCharge,tax,total};
+}
+function renderBillDetailsCard(o){
+  const card=document.getElementById('trackBillDetailsCard');
+  if(!card)return;
+  card.classList.add('cf-collapse-motion-card');
+  const list=document.getElementById('trackBillDetailsExpandedList');
+  const arrow=document.getElementById('trackBillDetailsArrow');
+  const expanded=card.classList.contains('is-expanded');
+  card.setAttribute('data-property-1',expanded?'Variant2':'Default');
+  card.setAttribute('aria-expanded',expanded?'true':'false');
+  if(arrow){
+    arrow.classList.add('cf-collapse-motion-arrow');
+    arrow.src='./assets/track-fullscreen/arrow-down-icon.svg?v=trackfs_billdetails_transition5_1';
+  }
+  if(!list)return;
+  if(!expanded){
+    list.style.display='none';
+    list.innerHTML='';
+    return;
+  }
+  const bill=trackBillDetails(o);
+  list.style.display='flex';
+  list.innerHTML=`<div data-layer="Frame 139" class="cf-bill-row cf-collapse-motion-item" style="--cf-row-index:0"><div data-layer="Item Total" class="cf-bill-label">Item Total</div><div data-layer="${trackBillMoney(bill.itemTotal)}" class="cf-bill-price">${trackBillMoney(bill.itemTotal)}</div></div><div data-layer="Frame 135" class="cf-bill-row cf-collapse-motion-item" style="--cf-row-index:1"><div data-layer="Frame 139" class="cf-bill-label-group"><div data-layer="Delivery Fee" class="cf-bill-label">Delivery Fee</div><div data-layer="/ ₹7 Per km" class="cf-bill-muted">/ ₹7 Per km</div></div><div data-layer="${trackBillMoney(bill.deliveryFee)}" class="cf-bill-price">${trackBillMoney(bill.deliveryFee)}</div></div><div data-layer="Frame 136" class="cf-bill-row cf-collapse-motion-item" style="--cf-row-index:2"><div data-layer="Restaurant Packing charge" class="cf-bill-label">Restaurant Packing charge</div><div data-layer="${trackBillMoney(bill.packingCharge)}" class="cf-bill-price">${trackBillMoney(bill.packingCharge)}</div></div><div data-layer="Frame 138" class="cf-bill-row cf-collapse-motion-item" style="--cf-row-index:3"><div data-layer="GST & Tax" class="cf-bill-label">GST & Tax</div><div data-layer="${trackBillMoney(bill.tax)}" class="cf-bill-price">${trackBillMoney(bill.tax)}</div></div><div data-layer="Line 5" class="cf-bill-divider cf-collapse-motion-item" style="--cf-row-index:4"></div><div data-layer="Frame 137" class="cf-bill-row total cf-collapse-motion-item" style="--cf-row-index:5"><div data-layer="Total Amt." class="cf-bill-label">Total Amt.</div><div data-layer="${trackBillMoney(bill.total)}" class="cf-bill-price">${trackBillMoney(bill.total)}</div></div>`;
+}
+function toggleBillDetailsCard(){
+  const card=document.getElementById('trackBillDetailsCard');
+  if(!card)return;
+  const opening=!card.classList.contains('is-expanded');
+  animateTrackCollapseCard(card,()=>{
+    card.classList.toggle('is-expanded',opening);
+    renderBillDetailsCard(getSelectedOrder());
+  },opening);
+}
+function bindBillDetailsCard(){
+  if(window.__trackBillDetailsCardBound)return;
+  window.__trackBillDetailsCardBound=true;
+  document.addEventListener('click',event=>{
+    const card=event.target.closest('#trackBillDetailsCard');
+    if(!card)return;
+    event.preventDefault();
+    event.stopPropagation();
+    toggleBillDetailsCard();
+  },true);
+  document.addEventListener('keydown',event=>{
+    const target=event.target;
+    const card=target&&target.closest?target.closest('#trackBillDetailsCard'):null;
+    if(!card)return;
+    if(event.key!=='Enter'&&event.key!==' ')return;
+    event.preventDefault();
+    toggleBillDetailsCard();
+  },true);
+}
+
 function syncEmptyState(o){const id=getOrderId(o);const box=document.getElementById('trackEmptyInline');if(box)box.classList.toggle('is-visible',!id)}
-function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);renderOrderItemsCard(o);bindOrderItemsCard();const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);renderOrderItemsCard(o);bindOrderItemsCard();renderBillDetailsCard(o);bindBillDetailsCard();const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
 function startTrackBikeAnimation(){}
 let pendingRiderRouteKey='';
 let latestRequestedRiderKey='';
