@@ -1201,6 +1201,11 @@ body.track-map-fullscreen-open #trackMapFullscreenBack{display:flex!important}
 .track-ola-marker-rider .track-ola-marker-label{display:none}
 .track-ola-rider-dot{width:22px;height:22px;border-radius:999px;background:#08A045;border:3px solid #FDFDFF;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 
+
+*{scrollbar-width:none!important;-ms-overflow-style:none!important}
+*::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
+html::-webkit-scrollbar,body::-webkit-scrollbar,.track-fullscreen-shell::-webkit-scrollbar,#trackFullscreenRoot::-webkit-scrollbar{width:0!important;height:0!important;display:none!important;background:transparent!important}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
