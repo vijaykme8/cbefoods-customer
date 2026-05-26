@@ -76,7 +76,7 @@ button,a{font:inherit}button{border:0;background:transparent;padding:0;cursor:po
   display:block;
 }
 
-#trackFullDeliveryAddress{display:-webkit-box!important;-webkit-line-clamp:2!important;line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:normal!important}
+#trackFullDeliveryAddress{display:block!important;-webkit-line-clamp:unset!important;line-clamp:unset!important;-webkit-box-orient:initial!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important}
 [data-layer="back-button"],[data-layer="back to menu-button"],[data-layer="full screen-button"]{cursor:pointer;user-select:none}
 [data-layer="back-button"]:active,[data-layer="back to menu-button"]:active,[data-layer="full screen-button"]:active{opacity:.82}
 @media(max-width:389px){.track-fullscreen-shell,#trackFullscreenRoot{width:100%!important;max-width:390px}}
@@ -1358,6 +1358,45 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
   line-height:19.2px!important;
 }
 
+
+/* cf-track-full-address-no-clamp */
+
+#trackFullscreenRoot [data-layer="Frame 124"]{
+  height:auto!important;
+  min-height:195px!important;
+  align-items:flex-start!important;
+}
+#trackFullscreenRoot [data-layer="Frame 124"] [data-layer="Frame 127"]{
+  height:auto!important;
+  min-height:72px!important;
+}
+#trackFullscreenRoot [data-layer="Frame 124"] #trackFullDeliveryAddress{
+  display:block!important;
+  width:342px!important;
+  height:auto!important;
+  min-height:38px!important;
+  max-height:none!important;
+  -webkit-line-clamp:unset!important;
+  line-clamp:unset!important;
+  -webkit-box-orient:initial!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  word-wrap:break-word!important;
+}
+#trackFullscreenRoot [data-layer="Frame 124"] [data-layer="Frame 125"]{
+  height:auto!important;
+  min-height:19px!important;
+}
+#trackFullscreenRoot [data-layer="Frame 124"] #trackFullDeliveryLandmark{
+  flex:1 1 0!important;
+  min-width:0!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  word-wrap:break-word!important;
+}
+
 </style>
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
@@ -1930,6 +1969,22 @@ function valueFromPaths(o,paths){for(const path of paths){let cur=o;for(const ke
 function activeLocationObject(){const a=readJSON('active_delivery_location')||readJSON('selectedDeliveryLocation')||{};return a&&typeof a==='object'?a:{}}
 function addressTitle(o){const loc=activeLocationObject();return valueFromPaths(o,['deliveryAddressTitle','addressTitle','addressType','saveAs','deliveryLocation.title','deliveryLocation.type','address.label'])||loc.title||loc.type||loc.label||'Home'}
 function addressLandmark(o){const loc=activeLocationObject();const value=valueFromPaths(o,['landmark','deliveryLandmark','delivery_location_landmark','deliveryLocation.landmark','deliveryLocation.landmarkText','address.landmark','customerLocation.landmark'])||loc.landmark||loc.landmarkText||loc.deliveryLandmark||'';return textClean(value)||'Not added'}
+
+function deliveryDoorNo(o){
+  const loc=activeLocationObject();
+  return valueFromPaths(o,['doorNo','door_no','doorNumber','house','houseNo','house_no','flat','flatNo','deliveryDoorNo','deliveryLocation.doorNo','deliveryLocation.door_no','deliveryLocation.house','deliveryLocation.flat','address.doorNo','address.house'])||loc.doorNo||loc.door_no||loc.house||loc.flat||'';
+}
+function deliveryAddressText(o){
+  const base=String(address(o)||'').trim();
+  const door=String(deliveryDoorNo(o)||'').trim();
+  if(!base)return door;
+  if(!door)return base;
+  const cleanDoor=door.replace(/[, ]+$/,'');
+  const lowerBase=base.toLowerCase();
+  const lowerDoor=cleanDoor.toLowerCase();
+  if(lowerBase===lowerDoor||lowerBase.startsWith(lowerDoor+',')||lowerBase.startsWith(lowerDoor+' '))return base;
+  return `${cleanDoor}, ${base}`;
+}
 function restaurantAddress(o){return valueFromPaths(o,['restaurantAddress','restaurantLocation.address','adminLocation.address','restaurant.address'])||'Real Estates Covai, 9/102, Periyar Nagar, Nehru Nagar West, Coimbatore, Tamil Nadu, 641048'}
 function totalAmount(o){const its=items(o);const itemTotal=its.reduce((s,i)=>s+itemPrice(i)*itemQty(i),0);const fee=Number(o.deliveryFee??o.totals?.delivery??0)||0;const tax=Number(o.tax??o.totals?.tax??0)||0;return Number(o.total??o.amount??o.paidAmount??o.totals?.total??(itemTotal+fee+tax))||0}
 function orderPlacedDate(o){const raw=o.createdAt||o.placedAt||o.orderPlacedAt||o.orderedAt||o.orderTime||o.timestamp||o.paymentTime||o.paidAt;let d=null;if(raw instanceof Date)d=raw;else if(raw&&typeof raw==='object'&&raw.seconds)d=new Date(raw.seconds*1000);else if(typeof raw==='number')d=new Date(raw>9999999999?raw:raw*1000);else if(raw)d=new Date(raw);if(!d||Number.isNaN(d.getTime()))d=new Date();return d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'numeric',minute:'2-digit',hour12:true}).replace(',','')}
@@ -1974,7 +2029,7 @@ function syncRiderCard(o){
   });
 }
 function syncEmptyState(o){const id=getOrderId(o);const box=document.getElementById('trackEmptyInline');if(box)box.classList.toggle('is-visible',!id)}
-function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',address(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
+function hydrate(){const o=getSelectedOrder();renderStatusCard(o);const cfg=topStatusConfig(o);setText('trackFullStatusTitle',cfg.title);setText('trackFullStatusCopy',cfg.copy);setText('trackFullEta',eta(o));setText('trackFullAddressTitle',addressTitle(o));setText('trackFullDeliveryAddress',deliveryAddressText(o)||'Delivery address not available');setText('trackFullDeliveryLandmark',addressLandmark(o));setText('trackFullOrderItemCount',items(o).length||0);const oid=getOrderId(o);setText('trackFullOrderId',oid?`Order ID: ${oid}`:'Order ID: -');setText('trackFullPlacedAt',orderPlacedDate(o));setText('trackFullPaidAmount',money(totalAmount(o)));setText('trackFullRestaurantName',o.restaurantName||'Coimbatore Foods');setText('trackFullRestaurantAddress',restaurantAddress(o));syncStage(cfg.active);syncRiderCard(o);updateFrame77Rider(o);renderSummary(o);syncEmptyState(o)}
 function startTrackBikeAnimation(){}
 let pendingRiderRouteKey='';
 let latestRequestedRiderKey='';
