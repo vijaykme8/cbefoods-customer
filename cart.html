@@ -4256,6 +4256,150 @@ body {
     return compactOrder;
   }
 
+
+  function sanitizeFirestoreValue(value) {
+    if (value === undefined) return null;
+    if (value === null) return null;
+    if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+    if (typeof value === 'string' || typeof value === 'boolean') return value;
+    if (value instanceof Date) return value.toISOString();
+    if (Array.isArray(value)) return value.map(sanitizeFirestoreValue).filter(item => item !== undefined);
+    if (typeof value === 'object') {
+      const out = {};
+      Object.keys(value).forEach(key => {
+        const clean = sanitizeFirestoreValue(value[key]);
+        if (clean !== undefined) out[key] = clean;
+      });
+      return out;
+    }
+    return null;
+  }
+
+  function buildLightOrderCache(order) {
+    const light = sanitizeFirestoreValue(order || {});
+    [
+      'etaRouteCoords',
+      'restaurantToCustomerRouteCoords',
+      'riderToCustomerRouteCoords',
+      'routeCoords',
+      'currentRoadRouteCoords',
+      'overviewPath',
+      'overview_path',
+      'polylinePoints'
+    ].forEach(key => {
+      if (key in light) delete light[key];
+    });
+    return light;
+  }
+
+  function writePaidOrderLocalCache(order) {
+    const lightOrder = buildLightOrderCache(order);
+    localStorage.setItem('current_order', JSON.stringify(lightOrder));
+
+    try {
+      const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+      const safeHistory = Array.isArray(history) ? history : Object.values(history || {});
+      const orderKey = String(lightOrder.id || lightOrder.orderId || lightOrder.paymentId || lightOrder.createdAt || '');
+      const withoutDuplicate = safeHistory.filter(savedOrder => {
+        const savedKey = String(savedOrder?.id || savedOrder?.orderId || savedOrder?.paymentId || savedOrder?.createdAt || '');
+        return savedKey !== orderKey;
+      });
+      withoutDuplicate.unshift(lightOrder);
+      localStorage.setItem('order_history', JSON.stringify(withoutDuplicate.slice(0, 20)));
+    } catch {
+      localStorage.setItem('order_history', JSON.stringify([lightOrder]));
+    }
+  }
+
+  function getCheckoutCustomerDocId(order) {
+    const profile = getCustomerProfileForCheckout();
+    return cleanText(
+      order?.customerId ||
+      order?.customer?.uid ||
+      order?.customer?.id ||
+      profile.id ||
+      customerMemory.identity?.docId ||
+      customerMemory.identity?.uid ||
+      localStorage.getItem('cust_uid') ||
+      localStorage.getItem('customer_uid') ||
+      ''
+    );
+  }
+
+  async function savePaidOrderDirectToFirestore(order) {
+    if (!window.firebase || !window.TIFFIN_FIREBASE_CONFIG || !window.TIFFIN_FIREBASE_CONFIG.apiKey) {
+      throw new Error('Firebase is not ready for order save.');
+    }
+
+    if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+
+    const db = firebase.firestore();
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || `CBE-${Date.now()}`);
+    const customerDocId = getCheckoutCustomerDocId(order);
+    const payload = sanitizeFirestoreValue({
+      ...order,
+      id: orderId,
+      orderId,
+      customerId: customerDocId || order.customerId || '',
+      status: order.status || 'confirmed',
+      paymentStatus: order.paymentStatus || 'paid',
+      source: order.source || 'customer_pwa',
+      updatedAtClient: new Date().toISOString()
+    });
+
+    await db.collection('orders').doc(orderId).set(payload, { merge: true });
+
+    if (customerDocId) {
+      await db.collection('customers').doc(customerDocId).collection('orders').doc(orderId).set(payload, { merge: true });
+      await db.collection('customers').doc(customerDocId).set({
+        lastOrderId: orderId,
+        lastOrderAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }, { merge: true });
+    }
+
+    return payload;
+  }
+
+  async function persistPaidOrderBeforeRedirect(order) {
+    const cleanOrder = sanitizeFirestoreValue(order);
+    writePaidOrderLocalCache(cleanOrder);
+
+    let saved = false;
+    let lastError = null;
+
+    if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+      try {
+        await window.TiffinMVP.saveOrderToCloud(cleanOrder);
+        saved = true;
+      } catch (error) {
+        lastError = error;
+        console.warn('Order cloud sync failed through TiffinMVP', error);
+      }
+    }
+
+    try {
+      await savePaidOrderDirectToFirestore(cleanOrder);
+      saved = true;
+    } catch (error) {
+      lastError = error;
+      console.warn('Direct Firestore order save failed', error);
+    }
+
+    if (!saved) {
+      throw lastError || new Error('Paid order could not be saved to Firestore.');
+    }
+
+    try {
+      saveOrderToCustomerMemory(cleanOrder);
+    } catch (error) {
+      console.warn('Customer order memory sync failed', error);
+    }
+
+    return cleanOrder;
+  }
+
+
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
     let order = {
       ...snapshot,
@@ -4276,29 +4420,15 @@ body {
       const etaPatch = await getInitialRestaurantEtaPatch(order);
       if (etaPatch) order = { ...order, ...etaPatch };
     } catch (error) {
-      console.warn('Initial ETA patch failed; continuing order save', error);
+      console.warn('Initial ETA save skipped', error);
     }
 
-    saveConfirmedOrderLocally(order);
+    const savedOrder = await persistPaidOrderBeforeRedirect(order);
 
-    if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
-      window.TiffinMVP.saveOrderToCloud(order).catch(error => console.warn('Order cloud sync failed', error));
-    }
-
-    try {
-      saveOrderToCustomerMemory(order);
-    } catch (error) {
-      console.warn('Customer order memory write skipped', error);
-    }
-
-    try {
-      clearCartAfterPaidOrder(order);
-    } catch (error) {
-      console.warn('Cart clear after paid order failed', error);
-    }
-
+    clearCartAfterPaidOrder(savedOrder);
     renderCart();
-    window.location.href = `order_placed.html?orderId=${encodeURIComponent(order.id || order.paymentId || '')}`;
+
+    window.location.href = `order_placed.html?orderId=${encodeURIComponent(savedOrder.id || savedOrder.orderId || '')}`;
   }
 
   function openRazorpayPayment(snapshot) {
@@ -4534,6 +4664,6 @@ body {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260526_menu_webp1" defer></script>
+<script src="pwa-speed.js?v=20260526_order_persist_fix2" defer></script>
 </body>
 </html>
