@@ -1096,7 +1096,7 @@ html,body{background:#12130F!important;color:#FDFDFF!important;min-height:100%;o
 .track-live-map-ready .track-map-preview-pins{opacity:0;visibility:hidden;transition:opacity .2s ease,visibility .2s ease}
 .cf-map-line{position:absolute;left:57px;top:49px;width:213px;height:80px;overflow:visible}
 .cf-map-line path{stroke:#FDFDFF;stroke-width:1.5;stroke-dasharray:7 7;fill:none;stroke-linecap:round}
-.cf-customer-marker-svg,.cf-restaurant-marker-svg{display:block;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}
+.cf-customer-marker-svg,.cf-restaurant-marker-svg{display:block;object-fit:contain;filter:drop-shadow(0 3px 7px rgba(0,0,0,.3))}.cf-customer-marker-svg{width:18px;height:24px}.cf-restaurant-marker-svg{width:24px;height:29px}
 .cf-stage-icon{width:48px;height:48px;border-radius:40px;display:flex;align-items:center;justify-content:center;background:rgba(253,253,255,.12);transition:background .15s ease}
 .cf-stage-icon img{width:24px;height:24px;display:block;object-fit:contain}
 .cf-stage-icon.active{background:#08A045}
@@ -1149,11 +1149,11 @@ body.track-map-fullscreen-open #trackMapFullscreenBack{display:flex!important}
         <svg class="cf-map-line" viewBox="0 0 220 86" aria-hidden="true"><path d="M2 77 C62 7 111 6 158 47 C180 66 194 52 218 3"/></svg>
         <div data-layer="customer-pin" class="CustomerPin" style="width:18px;left:46px;top:97px;position:absolute;flex-direction:column;justify-content:flex-start;align-items:center;gap:2px;display:inline-flex">
           <div data-layer="You" class="You" style="color:#FDFDFF;font-size:10px;font-family:General Sans;font-weight:600;line-height:13px;word-wrap:break-word">You</div>
-          <svg class="cf-customer-marker-svg" width="18" height="24" viewBox="0 0 18 24" fill="none" aria-hidden="true"><path d="M9 1.75C4.72 1.75 1.25 5.2 1.25 9.45c0 5.6 7.75 12.8 7.75 12.8s7.75-7.2 7.75-12.8C16.75 5.2 13.28 1.75 9 1.75Z" fill="#8806CE"/><circle cx="9" cy="9" r="3.15" fill="#FDFDFF"/></svg>
+          <img class="cf-customer-marker-svg" src="./assets/track-fullscreen/customer-marker.svg?v=trackfs1" alt="">
         </div>
         <div data-layer="cbefoods-pin" class="CbefoodsPin" style="width:56px;left:241px;top:0px;position:absolute;flex-direction:column;justify-content:flex-start;align-items:center;gap:2px;display:inline-flex">
           <div data-layer="Coimbatore Foods" class="CoimbatoreFoods" style="text-align:center;color:#FDFDFF;font-size:10px;font-family:General Sans;font-weight:600;line-height:13px;word-wrap:break-word">Coimbatore<br/>Foods</div>
-          <svg class="cf-restaurant-marker-svg" width="24" height="29" viewBox="0 0 24 29" fill="none" aria-hidden="true"><path d="M12 0C5.85 0 .86 4.99.86 11.14c0 7.65 11.14 17.32 11.14 17.32s11.14-9.67 11.14-17.32C23.14 4.99 18.15 0 12 0Z" fill="#FDFDFF"/><circle cx="12" cy="11.5" r="10.5" fill="#12130F"/><path d="M7.2 16.6h9.6v1.1H7.2v-1.1Zm1.2-7.8h1.1v5.2h-1.1V8.8Zm3.05 0h1.1v5.2h-1.1V8.8Zm3.05 0h1.1v5.2h-1.1V8.8ZM7 14h10v1.2H7V14Z" fill="#FDFDFF"/></svg>
+          <img class="cf-restaurant-marker-svg" src="./assets/track-fullscreen/restaurant-marker-icon.svg?v=trackfs1" alt="">
         </div>
       </div>
       <div data-layer="Frame 144" class="Frame144" style="width:342px;height:48px;left:24px;top:595px;position:absolute;justify-content:space-between;align-items:flex-end;display:inline-flex;z-index:4">
@@ -1273,9 +1273,9 @@ function makeMarkerElement(type){
   el.className=`track-ola-marker track-ola-marker-${type}`;
 
   if(type==='restaurant'){
-    el.innerHTML='<div class="track-ola-marker-label">Coimbatore<br>Foods</div><img class="track-ola-marker-icon" src="./assets/track%20orders/track-screen/restaurant-icon.svg?v=trackpin4" alt="">';
+    el.innerHTML='<div class="track-ola-marker-label">Coimbatore<br>Foods</div><img class="track-ola-marker-icon" src="./assets/track-fullscreen/restaurant-marker-icon.svg?v=trackfs1" alt="">';
   }else if(type==='customer'){
-    el.innerHTML='<div class="track-ola-marker-label">You</div><img class="track-ola-marker-icon" src="./assets/track%20orders/track-screen/customer-icon.svg?v=trackpin4" alt="">';
+    el.innerHTML='<div class="track-ola-marker-label">You</div><img class="track-ola-marker-icon" src="./assets/track-fullscreen/customer-marker.svg?v=trackfs1" alt="">';
   }else{
     el.innerHTML='<div class="track-ola-rider-dot"></div>';
   }
@@ -1459,7 +1459,7 @@ function hideBaseMapSymbols(){
     });
   }catch(_){ }
 }
-function ensureRoute(){if(!map||!map.isStyleLoaded())return false;hideBaseMapSymbols();if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-casing'))map.addLayer({id:'track-route-casing',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':0,'line-opacity':0}},map.getLayer('track-route-line')?'track-route-line':undefined);if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#12130F','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.9}});return true}
+function ensureRoute(){if(!map||!map.isStyleLoaded())return false;hideBaseMapSymbols();if(!map.getSource('track-route-source'))map.addSource('track-route-source',{type:'geojson',data:{type:'FeatureCollection',features:[]}});if(!map.getLayer('track-route-casing'))map.addLayer({id:'track-route-casing',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':0,'line-opacity':0}},map.getLayer('track-route-line')?'track-route-line':undefined);if(!map.getLayer('track-route-line'))map.addLayer({id:'track-route-line',type:'line',source:'track-route-source',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':'#FDFDFF','line-width':2,'line-dasharray':[1.5,3],'line-opacity':.95}});return true}
 function routeData(coords){return{type:'FeatureCollection',features:[{type:'Feature',properties:{},geometry:{type:'LineString',coordinates:coords||[]}}]}}
 function clearRoute(){if(!ensureRoute())return;map.getSource('track-route-source').setData(routeData([]))}
 function curve(from,to){if(!from||!to)return[];const out=[];const dx=to.lng-from.lng,dy=to.lat-from.lat;const cx=(from.lng+to.lng)/2-dy*.32,cy=(from.lat+to.lat)/2+dx*.32;for(let i=0;i<=36;i++){const t=i/36,o=1-t;out.push([o*o*from.lng+2*o*t*cx+t*t*to.lng,o*o*from.lat+2*o*t*cy+t*t*to.lat])}return out}
@@ -1716,7 +1716,7 @@ function renderMap(){
 }
 
 function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementById('trackMapZoomIn');const zoomOut=document.getElementById('trackMapZoomOut');if(zoomIn&&zoomIn.dataset.bound!=='1'){zoomIn.dataset.bound='1';zoomIn.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomIn({duration:180})})}if(zoomOut&&zoomOut.dataset.bound!=='1'){zoomOut.dataset.bound='1';zoomOut.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();map.zoomOut({duration:180})})}}
-function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',()=>{hideBaseMapSymbols();renderMap()});map.on('styledata',hideBaseMapSymbols);if(map.loaded()){hideBaseMapSymbols();renderMap()}}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
+function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function')return;initializing=true;const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.enable()}catch(_){}bindTrackMapControls();map.on('load',()=>{hideBaseMapSymbols();setTimeout(hideBaseMapSymbols,250);setTimeout(hideBaseMapSymbols,900);renderMap()});map.on('styledata',()=>{hideBaseMapSymbols();setTimeout(hideBaseMapSymbols,180)});map.on('idle',hideBaseMapSymbols);if(map.loaded()){hideBaseMapSymbols();setTimeout(hideBaseMapSymbols,250);renderMap()}}).catch(e=>console.warn('Track Ola map failed to load',e)).finally(()=>{initializing=false})}
 function boot(){bindFrame77RiderActions();hydrate();initMap();renderMap()}
 function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order);if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);liveUnsubscribe=firebase.firestore().collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists)return;const cloud=mergeOrder(order,{id:snap.id,...snap.data()});writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()},err=>console.warn('Track live order sync failed',err))}catch(err){console.warn('Track live order listener failed',err)}}
 document.addEventListener('click',e=>{

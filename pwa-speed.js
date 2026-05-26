@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260526_track_map_clean1';
+  const SPEED_VERSION = '20260526_track_marker_assets1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
