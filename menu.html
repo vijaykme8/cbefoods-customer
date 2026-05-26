@@ -6699,7 +6699,7 @@ function getLocationBackTarget() {
 
   if (mode === "cart" || mode === "cart-payment") return "cart.html";
   if (mode === "profile") return "profile.html";
-  if (mode === "track") return "track.html";
+  if (mode === "track") return "track-fullscreen.html";
 
   return "";
 }
@@ -6714,7 +6714,7 @@ function getLocationReturnTarget() {
 
   if (mode === "cart") return "cart.html";
   if (mode === "profile") return "profile.html";
-  if (mode === "track") return "track.html";
+  if (mode === "track") return "track-fullscreen.html";
 
   return "";
 }
@@ -10273,6 +10273,19 @@ if (shouldAutoOpenLocationMap()) {
     window.setTimeout(renderTrackCard, 450);
   }
 
+  function openTrackFullscreen() {
+    const order = activeOrder || pickLatestActiveOrder(readLocalOrders());
+    const id = cleanText(order?.id || order?.orderId || order?.order_id || order?.receipt || order?.razorpayOrderId || order?.razorpay_order_id || "");
+
+    if (order && typeof order === "object") {
+      try {
+        localStorage.setItem("cbe_track_selected_order", JSON.stringify(order));
+      } catch (_) {}
+    }
+
+    window.location.href = id ? `track-fullscreen.html?orderId=${encodeURIComponent(id)}` : "track-fullscreen.html";
+  }
+
   function bindCard() {
     const card = document.getElementById("floatingTrackCard");
     if (!card || card.dataset.boundTrackOpen === "1") return;
@@ -10280,13 +10293,13 @@ if (shouldAutoOpenLocationMap()) {
     card.dataset.boundTrackOpen = "1";
 
     card.addEventListener("click", () => {
-      window.location.href = "track.html";
+      openTrackFullscreen();
     });
 
     card.addEventListener("keydown", event => {
       if (event.key !== "Enter" && event.key !== " ") return;
       event.preventDefault();
-      window.location.href = "track.html";
+      openTrackFullscreen();
     });
   }
 
@@ -10420,7 +10433,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-<script src="pwa-speed.js?v=20260524_ui_refine_nonav_clean1" defer></script>
+<script src="pwa-speed.js?v=20260526_track_fullscreen_only1" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">

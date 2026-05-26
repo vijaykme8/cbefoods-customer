@@ -1,9 +1,8 @@
 (() => {
-  const SPEED_VERSION = '20260524_ui_refine_nonav_clean1';
+  const SPEED_VERSION = '20260526_track_fullscreen_only1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
-    'track.html',
     'profile.html',
     'track-fullscreen.html',
     'order_placed.html'
@@ -12,7 +11,6 @@
 
   const IMAGE_ASSETS = [
     'assets/cart/dish-img.png',
-    'assets/track orders/track-img.svg',
     'assets/menu/icons/user profile.svg',
     'assets/menu/icons/pen-icon.svg',
     'assets/menu/icons/arrow-right-icon.svg',
