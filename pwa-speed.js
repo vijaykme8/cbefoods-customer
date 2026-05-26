@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260526_track_hide_scrollbar1';
+  const SPEED_VERSION = '20260526_track_maxmin_icons1';
   const APP_PAGES = [
     'menu.html',
     'cart.html',
