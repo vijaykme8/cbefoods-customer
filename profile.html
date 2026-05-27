@@ -899,11 +899,13 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
         }
         let latestByUid = [];
         let latestByPhone = [];
+        let latestStoreByUid = [];
+        let latestStoreByPhone = [];
         function mergeAndRender() {
           const map = new Map();
-          [...latestByPhone, ...latestByUid].forEach(order => {
+          [...latestByUid, ...latestByPhone, ...latestStoreByUid, ...latestStoreByPhone].forEach(order => {
             if (!order || !order.id) return;
-            map.set(order.id, order);
+            map.set(order.id, { ...(map.get(order.id) || {}), ...order });
           });
           const orders = Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
           saveAndRefresh(orders);

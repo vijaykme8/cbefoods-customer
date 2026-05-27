@@ -9792,6 +9792,8 @@ if (shouldAutoOpenLocationMap()) {
   let etaRequestKey = '';
   let liveTrackUnsubscribe = null;
   let liveTrackOrderId = '';
+  let liveTrackTopSnapshot = null;
+  let liveTrackStoreSnapshot = null;
   const ETA_SECONDS_PER_KM = 160;
   const ETA_PREPARATION_EXTRA_MINUTES = 5;
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325 };
@@ -9897,14 +9899,33 @@ if (shouldAutoOpenLocationMap()) {
 
   function normalizeRemoteOrder(doc) {
     const data = doc.data ? doc.data() : doc;
+    const primaryStatus = data.adminStatus || data.status || data.orderStatus || data.deliveryStatus || data.riderStatus || data.trackStatus || "confirmed";
     return {
       id: doc.id || data.id || data.orderId || "",
       orderId: data.orderId || doc.id || data.id || "",
       ...data,
-      status: data.status || data.orderStatus || data.adminStatus || "confirmed",
-      orderStatus: data.orderStatus || data.status || data.adminStatus || "confirmed",
-      adminStatus: data.adminStatus || data.status || data.orderStatus || "confirmed"
+      status: data.status || primaryStatus,
+      orderStatus: data.orderStatus || data.status || primaryStatus,
+      adminStatus: data.adminStatus || data.status || data.orderStatus || primaryStatus,
+      deliveryStatus: data.deliveryStatus || primaryStatus
     };
+  }
+
+  function getStoreOrdersCollection(db) {
+    return db.collection("stores").doc(window.TIFFIN_STORE_ID || "main").collection("orders");
+  }
+
+  function mergeOrderForAdminStatus(base, incoming, preferIncomingStatus = true) {
+    const merged = { ...(base || {}), ...(incoming || {}) };
+    const statusSource = preferIncomingStatus ? incoming : merged;
+    const primaryStatus = cleanText(statusSource?.adminStatus || statusSource?.status || statusSource?.orderStatus || statusSource?.deliveryStatus || statusSource?.riderStatus || statusSource?.trackStatus);
+    if (primaryStatus) {
+      merged.status = statusSource.status || primaryStatus;
+      merged.orderStatus = statusSource.orderStatus || statusSource.status || primaryStatus;
+      merged.adminStatus = statusSource.adminStatus || statusSource.status || statusSource.orderStatus || primaryStatus;
+      merged.deliveryStatus = statusSource.deliveryStatus || primaryStatus;
+    }
+    return merged;
   }
 
   async function getOrdersByQuery(query) {
@@ -9929,12 +9950,16 @@ if (shouldAutoOpenLocationMap()) {
 
       const db = firebase.firestore();
       const queries = [];
+      const storeOrders = getStoreOrdersCollection(db);
       if (customerId) {
         queries.push(getOrdersByQuery(db.collection("orders").where("customerId", "==", customerId)));
         queries.push(getOrdersByQuery(db.collection("orders").where("customerUid", "==", customerId)));
+        queries.push(getOrdersByQuery(storeOrders.where("customerId", "==", customerId)));
+        queries.push(getOrdersByQuery(storeOrders.where("customerUid", "==", customerId)));
       }
       if (customerPhone) {
         queries.push(getOrdersByQuery(db.collection("orders").where("customerPhone", "==", customerPhone)));
+        queries.push(getOrdersByQuery(storeOrders.where("customerPhone", "==", customerPhone)));
       }
 
       const remoteGroups = await Promise.all(queries);
@@ -9942,7 +9967,7 @@ if (shouldAutoOpenLocationMap()) {
       remoteGroups.flat().forEach(order => {
         const id = getOrderIdentity(order);
         if (!id) return;
-        orderMap.set(id, order);
+        orderMap.set(id, mergeOrderForAdminStatus(orderMap.get(id), order, true));
       });
 
       const orders = Array.from(orderMap.values());
@@ -10266,13 +10291,30 @@ if (shouldAutoOpenLocationMap()) {
     try {
       if (liveTrackUnsubscribe) liveTrackUnsubscribe();
       liveTrackOrderId = orderId;
-      liveTrackUnsubscribe = firebase.firestore().collection("orders").doc(orderId).onSnapshot(snapshot => {
-        if (!snapshot.exists) return;
-        const cloud = { ...(activeOrder || order), id: snapshot.id, ...snapshot.data() };
-        activeOrder = cloud;
-        try { localStorage.setItem("current_order", JSON.stringify(cloud)); } catch (_) {}
+      liveTrackTopSnapshot = null;
+      liveTrackStoreSnapshot = null;
+      const db = firebase.firestore();
+      const renderMergedLiveOrder = () => {
+        const merged = mergeOrderForAdminStatus(liveTrackTopSnapshot || activeOrder || order, liveTrackStoreSnapshot || {}, Boolean(liveTrackStoreSnapshot));
+        activeOrder = merged;
+        try {
+          localStorage.setItem("current_order", JSON.stringify(merged));
+          localStorage.setItem("cbe_track_selected_order", JSON.stringify(merged));
+        } catch (_) {}
         scheduleRender();
-      }, () => {});
+      };
+      const unsubs = [];
+      unsubs.push(db.collection("orders").doc(orderId).onSnapshot(snapshot => {
+        if (!snapshot.exists) return;
+        liveTrackTopSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+        renderMergedLiveOrder();
+      }, () => {}));
+      unsubs.push(getStoreOrdersCollection(db).doc(orderId).onSnapshot(snapshot => {
+        if (!snapshot.exists) return;
+        liveTrackStoreSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+        renderMergedLiveOrder();
+      }, () => {}));
+      liveTrackUnsubscribe = () => unsubs.forEach(unsub => { try { unsub(); } catch (_) {} });
     } catch (_) {}
   }
 
