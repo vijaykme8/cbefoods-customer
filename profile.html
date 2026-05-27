@@ -74,6 +74,72 @@ button,input{font:inherit}button{border:0;background:none;padding:0;color:inheri
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);z-index:80;width:max-content;max-width:min(342px,calc(100vw - 48px));padding:11px 14px;background:var(--white);color:var(--black);border-radius:999px;font-size:13px;font-weight:600;line-height:18px;opacity:0;transition:transform .24s ease,opacity .24s ease;pointer-events:none}.toast.show{transform:translate(-50%,0);opacity:1}
 @media(max-width:360px){.profile-app-topbar{padding-left:18px;padding-right:18px}.profile-app-topbar-inner{width:calc(100vw - 36px)}.profile-hero{padding-left:18px;padding-right:18px}.profile-top-inner,.profile-collapse-inner,.past-orders-title,.order-cards-group{max-width:calc(100vw - 36px)}.profile-collapse-row,.past-order-section{padding-left:18px;padding-right:18px}.profile-name,.profile-phone{max-width:116px}.profile-screen .track-past-time,.profile-screen .track-past-total-inline,.profile-screen .track-past-total-inline span,.profile-screen .track-past-total-inline strong{font-size:14px}.profile-screen .track-past-order-id-pill{font-size:15px}}
 </style>
+
+<style id="cbe-avatar-hard-circle-fix">
+.user-profile {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  position: relative !important;
+  overflow: visible !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+.avatar-circle,
+#avatarCircle {
+  width: 56px !important;
+  height: 56px !important;
+  min-width: 56px !important;
+  min-height: 56px !important;
+  max-width: 56px !important;
+  max-height: 56px !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  display: block !important;
+  position: relative !important;
+  background: #878887 !important;
+  clip-path: circle(50% at 50% 50%) !important;
+  contain: paint !important;
+  flex: 0 0 56px !important;
+}
+.avatar-circle > img,
+#avatarCircle > img,
+.avatar-circle > img.profile-photo-img,
+#avatarCircle > img.profile-photo-img,
+.avatar-circle > img.profile-icon-img,
+#avatarCircle > img.profile-icon-img {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: block !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  transform: none !important;
+}
+.avatar-circle > img.profile-photo-img,
+#avatarCircle > img.profile-photo-img {
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+.avatar-circle > img.profile-icon-img,
+#avatarCircle > img.profile-icon-img {
+  object-fit: contain !important;
+  object-position: center center !important;
+  padding: 0 !important;
+}
+</style>
+
 </head>
 <body>
 <main class="profile-screen" aria-label="Profile screen">
@@ -165,7 +231,7 @@ function bindEvents(){
 }
 function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderActiveOrdersCount();renderPastOrders()}
 function renderActiveOrdersCount(){if(!els.activeOrdersCount)return;els.activeOrdersCount.textContent=String(getActiveOrdersCount())}
-function renderProfile(){const name=cleanText(profile.name)||'Customer';const firstName=name.split(/\s+/).filter(Boolean)[0]||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;if(els.topbarGreeting)els.topbarGreeting.textContent='Hello! '+firstName;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img class="profile-photo-img" alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<img class="profile-icon-img" alt="Profile icon" src="./assets/profile/user-edit-icon.svg" />'}}
+function renderProfile(){const name=cleanText(profile.name)||'Customer';const firstName=name.split(/\s+/).filter(Boolean)[0]||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;if(els.topbarGreeting)els.topbarGreeting.textContent='Hello! '+firstName;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img class="profile-photo-img" alt="Profile photo" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center center;border-radius:50%;display:block;" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<img class="profile-icon-img" alt="Profile icon" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center center;border-radius:50%;display:block;" src="./assets/profile/user-edit-icon.svg" />'}}
 function renderAddresses(){
  const addresses=getSavedAddresses();
  els.savedAddressList.innerHTML='';
