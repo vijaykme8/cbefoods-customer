@@ -9794,6 +9794,7 @@ if (shouldAutoOpenLocationMap()) {
   let liveTrackOrderId = '';
   let liveTrackTopSnapshot = null;
   let liveTrackStoreSnapshot = null;
+  let liveTrackCustomerSnapshot = null;
   const ETA_SECONDS_PER_KM = 160;
   const ETA_PREPARATION_EXTRA_MINUTES = 5;
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325 };
@@ -9882,13 +9883,19 @@ if (shouldAutoOpenLocationMap()) {
     );
   }
 
+  function normalizeOrderPhone(value) {
+    const digits = cleanText(value).replace(/\D/g, "");
+    if (!digits) return "";
+    return digits.length > 10 ? digits.slice(-10) : digits;
+  }
+
   function getCustomerPhoneForOrders() {
     try {
       const authUser = window.firebase && firebase.auth ? firebase.auth().currentUser : null;
-      const authPhone = normalizePhone(authUser?.phoneNumber || "");
+      const authPhone = normalizeOrderPhone(authUser?.phoneNumber || "");
       if (authPhone) return authPhone;
     } catch (_) {}
-    return normalizePhone(
+    return normalizeOrderPhone(
       window.CBECustomerStore?.identity?.phone ||
       localStorage.getItem("cust_phone") ||
       localStorage.getItem("customer_phone") ||
@@ -9956,6 +9963,7 @@ if (shouldAutoOpenLocationMap()) {
         queries.push(getOrdersByQuery(db.collection("orders").where("customerUid", "==", customerId)));
         queries.push(getOrdersByQuery(storeOrders.where("customerId", "==", customerId)));
         queries.push(getOrdersByQuery(storeOrders.where("customerUid", "==", customerId)));
+        queries.push(getOrdersByQuery(db.collection("customers").doc(customerId).collection("orders")));
       }
       if (customerPhone) {
         queries.push(getOrdersByQuery(db.collection("orders").where("customerPhone", "==", customerPhone)));
@@ -10293,9 +10301,11 @@ if (shouldAutoOpenLocationMap()) {
       liveTrackOrderId = orderId;
       liveTrackTopSnapshot = null;
       liveTrackStoreSnapshot = null;
+      liveTrackCustomerSnapshot = null;
       const db = firebase.firestore();
       const renderMergedLiveOrder = () => {
-        const merged = mergeOrderForAdminStatus(liveTrackTopSnapshot || activeOrder || order, liveTrackStoreSnapshot || {}, Boolean(liveTrackStoreSnapshot));
+        let merged = mergeOrderForAdminStatus(liveTrackTopSnapshot || activeOrder || order, liveTrackStoreSnapshot || {}, Boolean(liveTrackStoreSnapshot));
+        merged = mergeOrderForAdminStatus(merged, liveTrackCustomerSnapshot || {}, Boolean(liveTrackCustomerSnapshot));
         activeOrder = merged;
         try {
           localStorage.setItem("current_order", JSON.stringify(merged));
@@ -10314,6 +10324,14 @@ if (shouldAutoOpenLocationMap()) {
         liveTrackStoreSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
         renderMergedLiveOrder();
       }, () => {}));
+      const customerDocId = getCustomerDocId(order) || getCustomerId();
+      if (customerDocId) {
+        unsubs.push(db.collection("customers").doc(customerDocId).collection("orders").doc(orderId).onSnapshot(snapshot => {
+          if (!snapshot.exists) return;
+          liveTrackCustomerSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+          renderMergedLiveOrder();
+        }, () => {}));
+      }
       liveTrackUnsubscribe = () => unsubs.forEach(unsub => { try { unsub(); } catch (_) {} });
     } catch (_) {}
   }
