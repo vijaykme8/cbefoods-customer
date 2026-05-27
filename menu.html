@@ -8572,6 +8572,106 @@ if (shouldAutoOpenLocationMap()) {
 
 
 </script>
+<script id="cbe-firestore-quota-guard">
+(function () {
+  if (window.__CBE_FIRESTORE_QUOTA_GUARD__) return;
+  window.__CBE_FIRESTORE_QUOTA_GUARD__ = true;
+
+  const OPTIONAL_IMAGE_KEYS = [
+    "TIFFIN_CUSTOMER_AVATAR",
+    "CBE_CUSTOMER_AVATAR",
+    "cbe_customer_avatar",
+    "customer_avatar",
+    "cust_avatar",
+    "profile_avatar",
+    "customer_profile_photo",
+    "cust_profile_photo",
+    "profile_photo",
+    "customerProfilePhoto",
+    "customer_photo",
+    "cust_photo",
+    "user_photo",
+    "TIFFIN_PROFILE_PHOTO"
+  ];
+
+  function isQuotaError(error) {
+    return !!error && (
+      error.name === "QuotaExceededError" ||
+      error.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+      String(error.message || "").toLowerCase().includes("quota")
+    );
+  }
+
+  function safeRemove(key) {
+    try { localStorage.removeItem(key); } catch (_) {}
+  }
+
+  function cleanupLargeLocalStorage() {
+    try {
+      const keys = [];
+      for (let i = 0; i < localStorage.length; i += 1) {
+        const key = localStorage.key(i);
+        if (key) keys.push(key);
+      }
+
+      keys.forEach(key => {
+        let value = "";
+        try { value = localStorage.getItem(key) || ""; } catch (_) {}
+
+        const isFirestoreMutationKey =
+          key.indexOf("firestore_mutations_") === 0 ||
+          key.indexOf("firestore_sequence_number_") === 0;
+
+        const isDuplicateProfileImageKey = OPTIONAL_IMAGE_KEYS.includes(key);
+        const isLargeOptionalProfileObject =
+          (key === "TIFFIN_CUSTOMER_PROFILE" || key === "customerProfile" || key === "CBE_CUSTOMER_PROFILE") &&
+          value.length > 350000 &&
+          value.indexOf("data:image/") !== -1;
+
+        if (isFirestoreMutationKey || isDuplicateProfileImageKey || isLargeOptionalProfileObject) {
+          safeRemove(key);
+        }
+      });
+    } catch (_) {}
+  }
+
+  cleanupLargeLocalStorage();
+
+  try {
+    const originalSetItem = Storage.prototype.setItem;
+    Storage.prototype.setItem = function cbeSafeSetItem(key, value) {
+      try {
+        return originalSetItem.call(this, key, value);
+      } catch (error) {
+        if (!isQuotaError(error)) throw error;
+
+        cleanupLargeLocalStorage();
+
+        try {
+          return originalSetItem.call(this, key, value);
+        } catch (secondError) {
+          const storageKey = String(key || "");
+          const valueSize = String(value || "").length;
+          const canSkip =
+            storageKey.indexOf("firestore_") === 0 ||
+            OPTIONAL_IMAGE_KEYS.includes(storageKey) ||
+            valueSize > 350000;
+
+          if (canSkip) {
+            try {
+              console.warn("Skipped optional localStorage write after quota cleanup:", storageKey);
+            } catch (_) {}
+            return undefined;
+          }
+
+          throw secondError;
+        }
+      }
+    };
+  } catch (_) {}
+})();
+</script>
+
 <script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.12.1/firebase-auth-compat.js"></script>
