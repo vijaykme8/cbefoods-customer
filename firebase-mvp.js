@@ -190,7 +190,7 @@
     await upsertCustomerProfile({ defaultAddress: location, activeDeliveryLocation: location, addressUpdatedAtClient: nowISO() });
   }
 
-  function normalizeCloudOrder(id, data, sourceRank = 0, sourceName = 'remote') {
+  function normalizeCloudOrder(id, data) {
     if (!data) return null;
     const pickedStatus = pickOrderStatus(data) || 'confirmed';
     const order = { id, ...data };
@@ -205,41 +205,7 @@
     order.orderStatus = pickedStatus;
     order.adminStatus = pickedStatus;
     order.deliveryStatus = pickedStatus;
-    order.__orderSourceRank = sourceRank;
-    order.__orderSource = sourceName;
     return order;
-  }
-
-  function stampOrderStatus(order, pickedStatus) {
-    if (!order || !pickedStatus) return order;
-    order.status = pickedStatus;
-    order.orderStatus = pickedStatus;
-    order.adminStatus = pickedStatus;
-    order.deliveryStatus = pickedStatus;
-    return order;
-  }
-
-  function mergeCloudOrdersByAuthority({ local = null, customer = null, top = null, store = null } = {}) {
-    const merged = { ...(local || {}), ...(customer || {}), ...(top || {}), ...(store || {}) };
-    const pickedStatus = pickOrderStatus(store) || pickOrderStatus(top) || pickOrderStatus(customer) || pickOrderStatus(local) || pickOrderStatus(merged) || '';
-    const rank = store ? 3 : top ? 2 : customer ? 1 : local ? 0 : 0;
-    merged.__orderSourceRank = rank;
-    merged.__orderSource = store ? 'store' : top ? 'top' : customer ? 'customer' : 'local';
-    return pickedStatus ? stampOrderStatus(merged, pickedStatus) : merged;
-  }
-
-  function mergeCloudOrdersBySourceRank(existing, incoming) {
-    if (!existing) return incoming || null;
-    if (!incoming) return existing;
-    const existingRank = Number(existing.__orderSourceRank || 0);
-    const incomingRank = Number(incoming.__orderSourceRank || 0);
-    const merged = incomingRank >= existingRank ? { ...existing, ...incoming } : { ...incoming, ...existing };
-    const pickedStatus = incomingRank >= existingRank
-      ? (pickOrderStatus(incoming) || pickOrderStatus(existing) || pickOrderStatus(merged))
-      : (pickOrderStatus(existing) || pickOrderStatus(incoming) || pickOrderStatus(merged));
-    merged.__orderSourceRank = Math.max(existingRank, incomingRank);
-    merged.__orderSource = incomingRank >= existingRank ? (incoming.__orderSource || existing.__orderSource || 'remote') : (existing.__orderSource || incoming.__orderSource || 'remote');
-    return pickedStatus ? stampOrderStatus(merged, pickedStatus) : merged;
   }
 
   async function saveOrderToCloud(order) {
@@ -317,9 +283,9 @@
     const unsubs = [];
     const snapshots = {};
     function render() {
-      const merged = mergeCloudOrdersByAuthority({ local: order, customer: snapshots.customer, top: snapshots.top, store: snapshots.store });
+      const merged = Object.assign({}, snapshots.top || {}, snapshots.store || {}, snapshots.customer || {});
       if (!merged.id && !merged.orderId) return;
-      const normalized = normalizeCloudOrder(orderId, merged, merged.__orderSourceRank || 0, merged.__orderSource || 'remote');
+      const normalized = normalizeCloudOrder(orderId, merged);
       safeSetItem('current_order', JSON.stringify(normalized));
       safeSetItem('cbe_track_selected_order', JSON.stringify(normalized));
       if (typeof window.renderTrack === 'function') window.renderTrack();
@@ -408,11 +374,11 @@
     }, error => console.warn('Menu sync failed', error));
   }
 
-  function subscribeQuery(query, bucket, callback, sourceRank = 0, sourceName = 'remote') {
+  function subscribeQuery(query, bucket, callback) {
     return query.limit(30).onSnapshot(snapshot => {
-      bucket.items = snapshot.docs.map(doc => normalizeCloudOrder(doc.id, doc.data(), sourceRank, sourceName)).filter(Boolean);
+      bucket.items = snapshot.docs.map(doc => normalizeCloudOrder(doc.id, doc.data())).filter(Boolean);
       callback();
-    }, error => console.warn(`${sourceName} order history sync failed`, error));
+    }, error => console.warn('Order history sync failed', error));
   }
 
   function loadOrderHistory() {
@@ -427,32 +393,32 @@
       buckets.flatMap(bucket => bucket.items || []).forEach(order => {
         const id = clean(order.id || order.orderId);
         if (!id) return;
-        map.set(id, mergeCloudOrdersBySourceRank(map.get(id), order));
+        map.set(id, Object.assign({}, map.get(id) || {}, order));
       });
       saveLocalOrders(Array.from(map.values()));
     }
     const storeOrders = db.collection('stores').doc(STORE_ID).collection('orders');
     if (customerId) {
       [
-        { query: db.collection('orders').where('customerId', '==', customerId), sourceRank: 2, sourceName: 'top' },
-        { query: db.collection('orders').where('customerUid', '==', customerId), sourceRank: 2, sourceName: 'top' },
-        { query: storeOrders.where('customerId', '==', customerId), sourceRank: 3, sourceName: 'store' },
-        { query: storeOrders.where('customerUid', '==', customerId), sourceRank: 3, sourceName: 'store' },
-        { query: db.collection('customers').doc(customerId).collection('orders'), sourceRank: 1, sourceName: 'customer' }
-      ].forEach(entry => {
+        db.collection('orders').where('customerId', '==', customerId),
+        db.collection('orders').where('customerUid', '==', customerId),
+        storeOrders.where('customerId', '==', customerId),
+        storeOrders.where('customerUid', '==', customerId),
+        db.collection('customers').doc(customerId).collection('orders')
+      ].forEach(query => {
         const bucket = { items: [] };
         buckets.push(bucket);
-        historyUnsubscribes.push(subscribeQuery(entry.query, bucket, render, entry.sourceRank, entry.sourceName));
+        historyUnsubscribes.push(subscribeQuery(query, bucket, render));
       });
     }
     if (phone) {
       [
-        { query: db.collection('orders').where('customerPhone', '==', phone), sourceRank: 2, sourceName: 'top' },
-        { query: storeOrders.where('customerPhone', '==', phone), sourceRank: 3, sourceName: 'store' }
-      ].forEach(entry => {
+        db.collection('orders').where('customerPhone', '==', phone),
+        storeOrders.where('customerPhone', '==', phone)
+      ].forEach(query => {
         const bucket = { items: [] };
         buckets.push(bucket);
-        historyUnsubscribes.push(subscribeQuery(entry.query, bucket, render, entry.sourceRank, entry.sourceName));
+        historyUnsubscribes.push(subscribeQuery(query, bucket, render));
       });
     }
     return () => historyUnsubscribes.forEach(unsub => { try { unsub(); } catch (_) {} });

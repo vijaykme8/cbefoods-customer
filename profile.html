@@ -864,9 +864,8 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
     if (!candidates.length) return "";
     return candidates.sort((a, b) => (PROFILE_REMOTE_STATUS_RANK[b] || 0) - (PROFILE_REMOTE_STATUS_RANK[a] || 0))[0];
   }
-  function normalizeOrder(id, data, sourceRank = 0, sourceName = "remote") {
+  function normalizeOrder(id, data) {
     if (!data) return null;
-    const pickedStatus = getOrderStatus(data) || "confirmed";
     return {
       id,
       ...data,
@@ -876,34 +875,11 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
       items: Array.isArray(data.items) ? data.items : [],
       total: Number(data.totals?.total ?? data.total ?? data.totalPaid ?? data.amount ?? 0),
       restaurantName: data.restaurantName || data.storeName || "Coimbatore Foods",
-      status: pickedStatus,
-      orderStatus: pickedStatus,
-      adminStatus: pickedStatus,
-      deliveryStatus: pickedStatus,
-      __orderSourceRank: sourceRank,
-      __orderSource: sourceName
+      status: getOrderStatus(data) || "confirmed",
+      orderStatus: getOrderStatus(data) || "confirmed",
+      adminStatus: getOrderStatus(data) || "confirmed",
+      deliveryStatus: getOrderStatus(data) || "confirmed"
     };
-  }
-  function stampOrderStatus(order, pickedStatus) {
-    if (!order || !pickedStatus) return order;
-    order.status = pickedStatus;
-    order.orderStatus = pickedStatus;
-    order.adminStatus = pickedStatus;
-    order.deliveryStatus = pickedStatus;
-    return order;
-  }
-  function mergeOrderBySourceRank(existing, incoming) {
-    if (!existing) return incoming || null;
-    if (!incoming) return existing;
-    const existingRank = Number(existing.__orderSourceRank || 0);
-    const incomingRank = Number(incoming.__orderSourceRank || 0);
-    const merged = incomingRank >= existingRank ? { ...existing, ...incoming } : { ...incoming, ...existing };
-    const pickedStatus = incomingRank >= existingRank
-      ? (getOrderStatus(incoming) || getOrderStatus(existing) || getOrderStatus(merged))
-      : (getOrderStatus(existing) || getOrderStatus(incoming) || getOrderStatus(merged));
-    merged.__orderSourceRank = Math.max(existingRank, incomingRank);
-    merged.__orderSource = incomingRank >= existingRank ? (incoming.__orderSource || existing.__orderSource || "remote") : (existing.__orderSource || incoming.__orderSource || "remote");
-    return pickedStatus ? stampOrderStatus(merged, pickedStatus) : merged;
   }
   function saveAndRefresh(orders) {
     try {
@@ -934,12 +910,11 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
         let latestByPhone = [];
         let latestStoreByUid = [];
         let latestStoreByPhone = [];
-        let latestCustomerOrders = [];
         function mergeAndRender() {
           const map = new Map();
-          [...latestCustomerOrders, ...latestByUid, ...latestByPhone, ...latestStoreByUid, ...latestStoreByPhone].forEach(order => {
+          [...latestByUid, ...latestByPhone, ...latestStoreByUid, ...latestStoreByPhone].forEach(order => {
             if (!order || !order.id) return;
-            map.set(order.id, mergeOrderBySourceRank(map.get(order.id), order));
+            map.set(order.id, { ...(map.get(order.id) || {}), ...order });
           });
           const orders = Array.from(map.values()).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
           saveAndRefresh(orders);
@@ -949,7 +924,7 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
             .where("customerId", "==", customerId)
             .limit(30)
             .onSnapshot(snapshot => {
-              latestByUid = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data(), 2, "top")).filter(Boolean);
+              latestByUid = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
               mergeAndRender();
             }, error => console.warn("Profile order history UID sync failed", error));
         }
@@ -958,24 +933,25 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
             .where("customerPhone", "==", customerPhone)
             .limit(30)
             .onSnapshot(snapshot => {
-              latestByPhone = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data(), 2, "top")).filter(Boolean);
+              latestByPhone = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
               mergeAndRender();
             }, error => console.warn("Profile order history phone sync failed", error));
         }
         const storeOrders = db.collection("stores").doc(window.TIFFIN_STORE_ID || "main").collection("orders");
         if (customerId) {
           storeOrders.where("customerId", "==", customerId).limit(30).onSnapshot(snapshot => {
-            latestStoreByUid = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data(), 3, "store")).filter(Boolean);
+            latestStoreByUid = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
             mergeAndRender();
           }, error => console.warn("Profile store order UID sync failed", error));
           db.collection("customers").doc(customerId).collection("orders").limit(30).onSnapshot(snapshot => {
-            latestCustomerOrders = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data(), 1, "customer")).filter(Boolean);
+            const customerOrders = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
+            latestStoreByUid = [...latestStoreByUid.filter(order => !customerOrders.some(item => item.id === order.id)), ...customerOrders];
             mergeAndRender();
           }, error => console.warn("Profile customer order sync failed", error));
         }
         if (customerPhone) {
           storeOrders.where("customerPhone", "==", customerPhone).limit(30).onSnapshot(snapshot => {
-            latestStoreByPhone = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data(), 3, "store")).filter(Boolean);
+            latestStoreByPhone = snapshot.docs.map(doc => normalizeOrder(doc.id, doc.data())).filter(Boolean);
             mergeAndRender();
           }, error => console.warn("Profile store order phone sync failed", error));
         }
@@ -1004,6 +980,6 @@ function foodIconSvg(){return`<svg width="18" height="18" viewBox="0 0 24 24" fi
   }, { passive: false });
 })();
 </script>
-<script src="pwa-speed.js?v=20260527_customer_prod_ready_fix2" defer></script>
+<script src="pwa-speed.js?v=20260527_customer_pwa_fix1" defer></script>
 </body>
 </html>

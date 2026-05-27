@@ -208,7 +208,7 @@ export async function onRequest(context) {
 
   try {
     if (type === "config") {
-      return jsonResponse({ proxyOnly: true }, 200, requestOrigin);
+      return jsonResponse({ apiKey }, 200, requestOrigin);
     }
 
     if (type === "style") {

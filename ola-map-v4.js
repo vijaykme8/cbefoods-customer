@@ -4,8 +4,8 @@
    =========================================================
    CBE Foods Ola Maps V4 shared helper
    Swiggy-like map behavior foundation:
-   - Cloudflare Pages Function proxies Ola map style/tiles so API key is not exposed
-   - Cloudflare Pages Function also handles reverse/directions
+   - Direct Ola map tiles in browser for speed
+   - Cloudflare Pages Function only for reverse/directions/config
    - MapLibre loader
 ========================================================= */
 (function () {
@@ -40,7 +40,23 @@
   }
 
   async function getBrowserKey() {
-    return "";
+    if (window.CBE_OLA_BROWSER_API_KEY) {
+      return clean(window.CBE_OLA_BROWSER_API_KEY);
+    }
+
+    if (browserKeyPromise) return browserKeyPromise;
+
+    browserKeyPromise = fetch(`${PROXY_URL}?type=config`, { cache: "no-store" })
+      .then(async response => {
+        if (!response.ok) throw new Error(`Ola config failed: ${response.status}`);
+        const data = await response.json();
+        const key = clean(data.apiKey || data.olaMapsApiKey || data.key);
+        if (!key) throw new Error("Ola browser key missing from config response");
+        window.CBE_OLA_BROWSER_API_KEY = key;
+        return key;
+      });
+
+    return browserKeyPromise;
   }
 
   function withApiKey(rawUrl, apiKey) {
@@ -56,18 +72,18 @@
   }
 
   async function styleUrl() {
-    return `${PROXY_URL}?type=style&theme=${encodeURIComponent(getMapTheme())}&_=${Date.now()}`;
+    const apiKey = await getBrowserKey();
+    return withApiKey(getStyleUrlForTheme(getMapTheme()), apiKey);
   }
 
   async function transformRequest(url) {
-    return transformRequestSync(url);
+    const apiKey = await getBrowserKey();
+    return { url: withApiKey(url, apiKey) };
   }
 
   function transformRequestSync(url) {
-    try {
-      if (isOlaUrl(url)) return { url: `${PROXY_URL}?type=proxy&url=${encodeURIComponent(url)}` };
-    } catch (_) {}
-    return { url };
+    const apiKey = clean(window.CBE_OLA_BROWSER_API_KEY);
+    return { url: withApiKey(url, apiKey) };
   }
 
   function loadMapLibre() {
@@ -422,6 +438,7 @@
 
   async function createMap(options) {
     const maplibregl = await loadMapLibre();
+    await getBrowserKey();
     const style = await styleUrl();
 
     const map = new maplibregl.Map({
