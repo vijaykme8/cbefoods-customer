@@ -4275,8 +4275,57 @@ body {
     return null;
   }
 
+  function roundRouteNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? Number(number.toFixed(6)) : null;
+  }
+
+  function compactRoutePoint(point) {
+    if (Array.isArray(point)) {
+      const lng = roundRouteNumber(point[0]);
+      const lat = roundRouteNumber(point[1]);
+      return lng === null || lat === null ? null : [lng, lat];
+    }
+
+    if (point && typeof point === 'object') {
+      const lng = roundRouteNumber(point.lng ?? point.lon ?? point.long ?? point.longitude ?? point[0]);
+      const lat = roundRouteNumber(point.lat ?? point.latitude ?? point[1]);
+      return lng === null || lat === null ? null : [lng, lat];
+    }
+
+    return null;
+  }
+
+  function compactRouteCoordsForFirestore(list, maxPoints = 650) {
+    if (!Array.isArray(list)) return [];
+    const points = list.map(compactRoutePoint).filter(Boolean);
+    if (points.length <= maxPoints) return points;
+    const step = Math.ceil(points.length / maxPoints);
+    const compacted = points.filter((_, index) => index === 0 || index === points.length - 1 || index % step === 0);
+    return compacted.slice(0, maxPoints - 1).concat([points[points.length - 1]]);
+  }
+
+  function preparePaidOrderForFirestore(order) {
+    const cleanOrder = sanitizeFirestoreValue(order || {});
+    [
+      'etaRouteCoords',
+      'restaurantToCustomerRouteCoords',
+      'riderToCustomerRouteCoords',
+      'routeCoords',
+      'currentRoadRouteCoords',
+      'fullRoadRouteCoords',
+      'polylineCoords',
+      'overviewPath',
+      'overview_path',
+      'polylinePoints'
+    ].forEach(key => {
+      if (Array.isArray(cleanOrder[key])) cleanOrder[key] = compactRouteCoordsForFirestore(cleanOrder[key]);
+    });
+    return cleanOrder;
+  }
+
   function buildLightOrderCache(order) {
-    const light = sanitizeFirestoreValue(order || {});
+    const light = preparePaidOrderForFirestore(order || {});
     [
       'etaRouteCoords',
       'restaurantToCustomerRouteCoords',
@@ -4295,6 +4344,7 @@ body {
   function writePaidOrderLocalCache(order) {
     const lightOrder = buildLightOrderCache(order);
     localStorage.setItem('current_order', JSON.stringify(lightOrder));
+    localStorage.setItem('cbe_track_selected_order', JSON.stringify(lightOrder));
 
     try {
       const history = JSON.parse(localStorage.getItem('order_history') || '[]');
@@ -4306,14 +4356,17 @@ body {
       });
       withoutDuplicate.unshift(lightOrder);
       localStorage.setItem('order_history', JSON.stringify(withoutDuplicate.slice(0, 20)));
+      localStorage.setItem('TIFFIN_ORDER_HISTORY', JSON.stringify(withoutDuplicate.slice(0, 20)));
     } catch {
       localStorage.setItem('order_history', JSON.stringify([lightOrder]));
+      localStorage.setItem('TIFFIN_ORDER_HISTORY', JSON.stringify([lightOrder]));
     }
   }
 
-  function getCheckoutCustomerDocId(order) {
+  function getCheckoutCustomerDocId(order, firebaseUser = null) {
     const profile = getCustomerProfileForCheckout();
     return cleanText(
+      firebaseUser?.uid ||
       order?.customerId ||
       order?.customer?.uid ||
       order?.customer?.id ||
@@ -4326,77 +4379,199 @@ body {
     );
   }
 
-  async function savePaidOrderDirectToFirestore(order) {
+  function wait(ms) {
+    return new Promise(resolve => window.setTimeout(resolve, ms));
+  }
+
+  async function waitForFirebaseOrderSaveReady(timeoutMs = 8000) {
     if (!window.firebase || !window.TIFFIN_FIREBASE_CONFIG || !window.TIFFIN_FIREBASE_CONFIG.apiKey) {
       throw new Error('Firebase is not ready for order save.');
     }
 
     if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
 
+    const auth = firebase.auth ? firebase.auth() : null;
     const db = firebase.firestore();
-    const orderId = cleanText(order.id || order.orderId || order.paymentId || `CBE-${Date.now()}`);
-    const customerDocId = getCheckoutCustomerDocId(order);
-    const payload = sanitizeFirestoreValue({
+
+    if (!auth) return { db, user: null };
+    if (auth.currentUser) return { db, user: auth.currentUser };
+
+    const user = await new Promise(resolve => {
+      let done = false;
+      let unsubscribe = null;
+      const finish = value => {
+        if (done) return;
+        done = true;
+        try { if (unsubscribe) unsubscribe(); } catch (_) {}
+        resolve(value || auth.currentUser || null);
+      };
+
+      try {
+        unsubscribe = auth.onAuthStateChanged(value => finish(value), () => finish(auth.currentUser || null));
+      } catch (_) {
+        finish(auth.currentUser || null);
+      }
+
+      window.setTimeout(() => finish(auth.currentUser || null), timeoutMs);
+    });
+
+    return { db, user };
+  }
+
+  function buildFirestoreOrderPayload(order, orderId, customerDocId, firebaseUser) {
+    const profile = getCustomerProfileForCheckout();
+    const customerName = cleanText(order.customerName || order.customer?.name || profile.name || 'Customer');
+    const customerPhone = phone10(order.customerPhone || order.customer?.phone || order.customer?.contact || profile.phone || '');
+    const customerEmail = cleanText(order.customerEmail || order.customer?.email || profile.email || '');
+    const createdAtClient = cleanText(order.createdAtClient || order.createdAt || new Date().toISOString());
+    const totalValue = Number(order.total ?? order.totals?.total ?? 0) || 0;
+    const totalQty = Number(order.totalQty ?? order.totals?.totalQty ?? (Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0) : 0)) || 0;
+
+    return preparePaidOrderForFirestore({
       ...order,
       id: orderId,
       orderId,
-      customerId: customerDocId || order.customerId || '',
+      storeId: window.TIFFIN_STORE_ID || 'main',
+      customerId: customerDocId,
+      customerUid: customerDocId,
+      customerName,
+      customerPhone,
+      customerEmail,
+      customer: {
+        ...(order.customer || {}),
+        uid: customerDocId,
+        id: customerDocId,
+        name: customerName,
+        phone: customerPhone,
+        contact: customerPhone,
+        email: customerEmail
+      },
       status: order.status || 'confirmed',
+      orderStatus: order.orderStatus || order.status || 'confirmed',
+      adminStatus: order.adminStatus || order.status || 'confirmed',
       paymentStatus: order.paymentStatus || 'paid',
+      paymentProvider: order.paymentProvider || 'Razorpay',
+      paid: true,
+      isPaid: true,
+      total: totalValue,
+      totalQty,
+      totals: {
+        ...(order.totals || {}),
+        total: Number(order.totals?.total ?? totalValue) || totalValue,
+        totalQty
+      },
+      createdAtClient,
+      placedAtClient: order.placedAtClient || createdAtClient,
+      updatedAtClient: new Date().toISOString(),
       source: order.source || 'customer_pwa',
-      updatedAtClient: new Date().toISOString()
+      customerAuthUid: firebaseUser?.uid || customerDocId || ''
     });
+  }
 
-    await db.collection('orders').doc(orderId).set(payload, { merge: true });
+  async function savePaidOrderDirectToFirestore(order) {
+    const ready = await waitForFirebaseOrderSaveReady();
+    const db = ready.db;
+    const user = ready.user;
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || `CBE-${Date.now()}`);
+    const customerDocId = getCheckoutCustomerDocId(order, user);
+    const payload = buildFirestoreOrderPayload(order, orderId, customerDocId, user);
+    const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
+    const orderPayload = {
+      ...payload,
+      createdAt: serverTimestamp,
+      updatedAt: serverTimestamp,
+      lastSyncedAt: serverTimestamp
+    };
+
+    await db.collection('orders').doc(orderId).set(orderPayload, { merge: true });
+
+    const extraWrites = [];
 
     if (customerDocId) {
-      await db.collection('customers').doc(customerDocId).collection('orders').doc(orderId).set(payload, { merge: true });
-      await db.collection('customers').doc(customerDocId).set({
+      extraWrites.push(db.collection('customers').doc(customerDocId).collection('orders').doc(orderId).set(orderPayload, { merge: true }));
+      extraWrites.push(db.collection('customers').doc(customerDocId).set({
+        uid: customerDocId,
+        phone: payload.customerPhone || '',
+        name: payload.customerName || '',
         lastOrderId: orderId,
-        lastOrderAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      }, { merge: true });
+        lastOrderAt: serverTimestamp,
+        updatedAt: serverTimestamp
+      }, { merge: true }));
     }
+
+    extraWrites.push(db.collection('stores').doc(window.TIFFIN_STORE_ID || 'main').collection('orders').doc(orderId).set(orderPayload, { merge: true }));
+
+    const results = await Promise.allSettled(extraWrites);
+    results.forEach(result => {
+      if (result.status === 'rejected') console.warn('Secondary order mirror save failed', result.reason);
+    });
 
     return payload;
   }
 
+  function queuePaidOrderRetry(order, error) {
+    try {
+      const queue = JSON.parse(localStorage.getItem('cbe_paid_order_retry_queue') || '[]');
+      const safeQueue = Array.isArray(queue) ? queue : [];
+      const orderId = cleanText(order?.id || order?.orderId || order?.paymentId || `CBE-${Date.now()}`);
+      const withoutDuplicate = safeQueue.filter(item => cleanText(item?.id || item?.orderId || item?.paymentId || '') !== orderId);
+      withoutDuplicate.unshift({
+        ...preparePaidOrderForFirestore(order),
+        id: orderId,
+        orderId,
+        retryQueuedAt: new Date().toISOString(),
+        retryReason: cleanText(error?.message || error || 'order_save_failed')
+      });
+      localStorage.setItem('cbe_paid_order_retry_queue', JSON.stringify(withoutDuplicate.slice(0, 10)));
+    } catch (queueError) {
+      console.warn('Paid order retry queue failed', queueError);
+    }
+  }
+
   async function persistPaidOrderBeforeRedirect(order) {
-    const cleanOrder = sanitizeFirestoreValue(order);
+    const cleanOrder = preparePaidOrderForFirestore(order);
     writePaidOrderLocalCache(cleanOrder);
 
-    let saved = false;
     let lastError = null;
 
-    if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+    for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        await window.TiffinMVP.saveOrderToCloud(cleanOrder);
-        saved = true;
+        const savedOrder = await savePaidOrderDirectToFirestore(cleanOrder);
+        try {
+          if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+            await window.TiffinMVP.saveOrderToCloud(savedOrder);
+          }
+        } catch (error) {
+          console.warn('Order cloud mirror sync failed through TiffinMVP', error);
+        }
+
+        try {
+          saveOrderToCustomerMemory(savedOrder);
+        } catch (error) {
+          console.warn('Customer order memory sync failed', error);
+        }
+
+        writePaidOrderLocalCache(savedOrder);
+        return savedOrder;
       } catch (error) {
         lastError = error;
-        console.warn('Order cloud sync failed through TiffinMVP', error);
+        console.warn(`Paid order Firestore save attempt ${attempt + 1} failed`, error);
+        await wait(900 + attempt * 900);
       }
     }
 
-    try {
-      await savePaidOrderDirectToFirestore(cleanOrder);
-      saved = true;
-    } catch (error) {
-      lastError = error;
-      console.warn('Direct Firestore order save failed', error);
+    if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+      try {
+        const savedOrder = await window.TiffinMVP.saveOrderToCloud(cleanOrder);
+        if (savedOrder) return preparePaidOrderForFirestore({ ...cleanOrder, ...savedOrder });
+      } catch (error) {
+        lastError = error;
+        console.warn('Fallback order cloud sync failed through TiffinMVP', error);
+      }
     }
 
-    if (!saved) {
-      throw lastError || new Error('Paid order could not be saved to Firestore.');
-    }
-
-    try {
-      saveOrderToCustomerMemory(cleanOrder);
-    } catch (error) {
-      console.warn('Customer order memory sync failed', error);
-    }
-
-    return cleanOrder;
+    queuePaidOrderRetry(cleanOrder, lastError);
+    throw lastError || new Error('Paid order could not be saved to Firestore.');
   }
 
 
