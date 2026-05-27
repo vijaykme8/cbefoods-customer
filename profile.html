@@ -17,20 +17,20 @@
 :root{--white:#FDFDFF;--black:#12130F;--panel:#252622;--muted:rgba(253,253,255,.50);--muted-strong:rgba(253,253,255,.60);--line:rgba(253,253,255,.12);--line-soft:rgba(253,253,255,.08);--soft:rgba(253,253,255,.12);--cta:#08A045;--danger:#FF5A5F;--violet:#8806CE}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;min-height:100%;background:var(--black);color:var(--white);touch-action:manipulation;-webkit-text-size-adjust:100%;overscroll-behavior:none}
-body{font-family:'General Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:block;overflow-x:hidden}
+body{font-family:'General Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:flex;justify-content:center}
 button,input{font:inherit}button{border:0;background:none;padding:0;color:inherit;cursor:pointer}button,a,[role="button"]{touch-action:manipulation}.visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-.profile-screen{width:390px;max-width:100vw;min-height:100dvh;margin:0 auto;background:linear-gradient(0deg,rgba(253,253,255,.02),rgba(253,253,255,.02)),var(--black);color:var(--white);overflow-x:hidden;padding-top:224px;position:relative}
-.profile-fixed-top{position:fixed;z-index:1000;top:0;left:0;right:0;margin:0 auto;width:390px;max-width:100vw;height:220px;padding:140px 24px 24px;background:var(--panel);display:flex;align-items:flex-end;justify-content:center}
-.profile-top-inner{width:342px;max-width:calc(100vw - 48px);height:56px;display:flex;align-items:center;justify-content:flex-start;gap:94px;margin:0 auto}
-.profile-user-group{width:196px;height:56px;min-width:0;display:flex;align-items:center;gap:16px;flex:0 0 196px}
-.user-profile{width:56px;height:56px;position:relative;overflow:visible;flex:0 0 auto;display:flex;justify-content:flex-end;align-items:flex-start;border-radius:25px}
+.profile-screen{width:390px;max-width:100vw;min-height:100dvh;background:linear-gradient(0deg,rgba(253,253,255,.02),rgba(253,253,255,.02)),var(--black);color:var(--white);overflow-x:hidden;padding-top:0}
+.profile-app-topbar{position:fixed;z-index:90;top:0;left:50%;transform:translateX(-50%);width:390px;max-width:100vw;height:94px;padding:calc(40px + env(safe-area-inset-top,0px)) 24px 18px;background:transparent;display:flex;align-items:flex-end;justify-content:space-between;pointer-events:none}.profile-app-topbar button{pointer-events:auto}.back-button{height:30px;border-radius:14px;display:inline-flex;justify-content:flex-start;align-items:center;gap:4px}.topbar-icon-30{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;opacity:.9}.back-text{color:var(--white);font-size:18px;font-weight:500;line-height:27px}.profile-hero{width:390px;max-width:100vw;height:220px;padding:140px 24px 24px;background:var(--panel);display:flex;align-items:flex-end;justify-content:center}
+.profile-top-inner{width:342px;max-width:calc(100vw - 48px);height:56px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.profile-user-group{min-width:0;display:flex;align-items:center;gap:16px;flex:1 1 auto}
+.user-profile{width:56px;height:56px;position:relative;overflow:visible;flex:0 0 auto}
 .avatar-circle{width:56px;height:56px;border-radius:25px;background:#878887;color:var(--white);display:grid;place-items:center;font-size:22px;font-weight:600;line-height:1;overflow:hidden}
-.avatar-circle img{width:100%;height:100%;object-fit:cover;display:block}.profile-placeholder-icon{background:transparent}.user-profile:not(.has-photo) .avatar-circle{background:transparent}.user-profile:not(.has-photo) .avatar-edit-icon{display:none}
-.avatar-edit-icon{width:16px;height:16px;padding:6px;position:absolute;right:0;top:0;background:var(--cta);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
-.name-number{width:124px;height:44px;min-width:0;display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-start}
-.profile-name{width:124px;max-width:124px;color:var(--white);font-size:16px;font-weight:500;line-height:140%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile-phone{width:124px;max-width:124px;color:var(--muted);font-size:16px;font-weight:500;line-height:140%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.edit-button{width:52px;height:20px;display:inline-flex;align-items:center;gap:2px;color:var(--cta);font-size:16px;font-weight:500;line-height:120%;flex:0 0 52px}
+.avatar-circle img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-edit-icon{width:28px;height:28px;position:absolute;right:-2px;top:-2px;background:var(--cta);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}
+.name-number{min-width:0;display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-start}
+.profile-name{max-width:132px;color:var(--white);font-size:16px;font-weight:500;line-height:140%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-phone{max-width:132px;color:var(--muted);font-size:16px;font-weight:500;line-height:140%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.edit-button{height:20px;display:inline-flex;align-items:center;gap:2px;color:var(--cta);font-size:16px;font-weight:500;line-height:120%;flex:0 0 auto}
 .edit-button svg{width:20px;height:20px;flex:0 0 auto;display:block}
 .profile-content{width:390px;max-width:100vw;display:flex;flex-direction:column;align-items:flex-start;gap:4px}
 .profile-collapse-row{width:390px;max-width:100vw;min-height:56px;padding:16px 24px;background:var(--panel);display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:10px}
@@ -73,29 +73,36 @@ button,input{font:inherit}button{border:0;background:none;padding:0;color:inheri
 .menu-popover{position:fixed;inset:0;z-index:50;display:none;align-items:flex-start;justify-content:center;padding-top:92px;background:rgba(0,0,0,.28)}.menu-popover.show{display:flex}.menu-card{width:min(342px,calc(100vw - 48px));background:#1B1C18;border:1px solid var(--line-soft);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.28);overflow:hidden}.menu-action{width:100%;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;color:var(--white);font-size:15px;font-weight:500;border-bottom:1px solid var(--line-soft)}.menu-action:last-child{border-bottom:0}.menu-action.danger{color:var(--danger)}
 .sheet-backdrop{position:fixed;inset:0;z-index:60;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.42)}.sheet-backdrop.show{display:flex}.sheet{width:min(390px,100vw);background:#1B1C18;color:var(--white);border-radius:24px 24px 0 0;padding:18px 24px 20px;box-shadow:0 -12px 32px rgba(0,0,0,.34)}.sheet-handle{width:44px;height:4px;border-radius:99px;background:rgba(253,253,255,.16);margin:0 auto 18px}.sheet-title{font-size:20px;line-height:28px;font-weight:600;margin-bottom:14px}.sheet-input{width:100%;height:54px;border-radius:10px;border:1px solid var(--line-soft);padding:0 16px;outline:none;background:var(--soft);color:var(--white);font-size:18px;font-weight:500}.sheet-input::placeholder{color:rgba(253,253,255,.36)}.sheet-input:focus{border-color:rgba(8,160,69,.7)}.sheet-actions{display:flex;align-items:center;gap:10px;margin-top:14px}.sheet-btn{flex:1;height:46px;border-radius:12px;display:grid;place-items:center;font-size:15px;font-weight:600}.sheet-btn.cancel{border:1px solid var(--line-soft);color:var(--white)}.sheet-btn.save{background:var(--cta);color:var(--white)}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,120px);z-index:80;width:max-content;max-width:min(342px,calc(100vw - 48px));padding:11px 14px;background:var(--white);color:var(--black);border-radius:999px;font-size:13px;font-weight:600;line-height:18px;opacity:0;transition:transform .24s ease,opacity .24s ease;pointer-events:none}.toast.show{transform:translate(-50%,0);opacity:1}
-@media(max-width:360px){.profile-fixed-top{padding-left:18px;padding-right:18px}.profile-top-inner,.profile-collapse-inner,.past-orders-title,.order-cards-group{max-width:calc(100vw - 36px)}.profile-collapse-row,.past-order-section{padding-left:18px;padding-right:18px}.profile-name,.profile-phone{max-width:116px}.profile-screen .track-past-time,.profile-screen .track-past-total-inline,.profile-screen .track-past-total-inline span,.profile-screen .track-past-total-inline strong{font-size:14px}.profile-screen .track-past-order-id-pill{font-size:15px}}
+@media(max-width:360px){.profile-app-topbar{padding-left:18px;padding-right:18px}.profile-hero{padding-left:18px;padding-right:18px}.profile-top-inner,.profile-collapse-inner,.past-orders-title,.order-cards-group{max-width:calc(100vw - 36px)}.profile-collapse-row,.past-order-section{padding-left:18px;padding-right:18px}.profile-name,.profile-phone{max-width:116px}.profile-screen .track-past-time,.profile-screen .track-past-total-inline,.profile-screen .track-past-total-inline span,.profile-screen .track-past-total-inline strong{font-size:14px}.profile-screen .track-past-order-id-pill{font-size:15px}}
 </style>
 </head>
 <body>
 <main class="profile-screen" aria-label="Profile screen">
-  <header class="profile-fixed-top" aria-label="Profile top bar">
-    <div class="profile-top-inner">
-      <div class="profile-user-group">
-        <button class="user-profile" type="button" id="avatarButton" aria-label="Edit profile photo">
-          <span class="avatar-circle" id="avatarCircle"><img class="profile-placeholder-icon" alt="" src="./assets/profile/user-edit-icon.svg" /></span>
-          <span class="avatar-edit-icon" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none"><path d="M4.2 13.93 3.75 16.25l2.32-.45 8.94-8.94-1.87-1.87-8.94 8.94Z" fill="#FDFDFF"/><path d="M14.1 4.04 15 3.14a1.25 1.25 0 0 1 1.77 0l.09.09c.49.49.49 1.28 0 1.77l-.9.9-1.86-1.86Z" fill="#FDFDFF"/></svg></span>
-        </button>
-        <input type="file" id="avatarInput" accept="image/*" hidden />
-        <div class="name-number">
-          <div class="profile-name" id="profileName">Customer</div>
-          <div class="profile-phone" id="profilePhone">+91-0000000000</div>
-        </div>
-      </div>
-      <button class="edit-button" type="button" id="editNameButton" aria-label="Edit profile name"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.12 14.92 2.5 17.5l2.58-.62 9.79-9.79-1.96-1.96-9.79 9.79Z" fill="#08A045"/><path d="m13.73 4.3.94-.94a1.57 1.57 0 0 1 2.22 0l.25.25c.61.61.61 1.61 0 2.22l-.94.94-2.47-2.47Z" fill="#08A045"/></svg><span>Edit</span></button>
-    </div>
+  <header class="profile-app-topbar" aria-label="Profile top bar">
+    <button class="back-button" type="button" id="backButton" aria-label="Go back">
+      <span class="topbar-icon-30" aria-hidden="true"><svg viewBox="0 0 30 30" width="30" height="30" fill="none"><path d="M15 27.5C8.096 27.5 2.5 21.904 2.5 15S8.096 2.5 15 2.5 27.5 8.096 27.5 15 21.904 27.5 15 27.5Z" stroke="#FDFDFF" stroke-width="1.5"/><path d="M16.58 10.59 12.18 15l4.4 4.41" stroke="#FDFDFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="back-text">back</span>
+    </button>
+    <button class="topbar-icon-30" type="button" id="dotMenuButton" aria-label="Open profile options"><svg viewBox="0 0 30 30" width="30" height="30" fill="none" aria-hidden="true"><circle cx="6.8" cy="15" r="2.2" fill="#FDFDFF"/><circle cx="15" cy="15" r="2.2" fill="#FDFDFF"/><circle cx="23.2" cy="15" r="2.2" fill="#FDFDFF"/></svg></button>
   </header>
 
   <section class="profile-content">
+    <section class="profile-hero" aria-label="Profile details">
+      <div class="profile-top-inner">
+        <div class="profile-user-group">
+          <button class="user-profile" type="button" id="avatarButton" aria-label="Edit profile photo">
+            <span class="avatar-circle" id="avatarCircle"><span id="avatarInitial">C</span></span>
+            <span class="avatar-edit-icon" aria-hidden="true"><svg viewBox="0 0 20 20" width="14" height="14" fill="none"><path d="M4.2 13.93 3.75 16.25l2.32-.45 8.94-8.94-1.87-1.87-8.94 8.94Z" fill="#FDFDFF"/><path d="M14.1 4.04 15 3.14a1.25 1.25 0 0 1 1.77 0l.09.09c.49.49.49 1.28 0 1.77l-.9.9-1.86-1.86Z" fill="#FDFDFF"/></svg></span>
+          </button>
+          <input type="file" id="avatarInput" accept="image/*" hidden />
+          <div class="name-number">
+            <div class="profile-name" id="profileName">Customer</div>
+            <div class="profile-phone" id="profilePhone">+91-0000000000</div>
+          </div>
+        </div>
+        <button class="edit-button" type="button" id="editNameButton" aria-label="Edit profile name"><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M3.12 14.92 2.5 17.5l2.58-.62 9.79-9.79-1.96-1.96-9.79 9.79Z" fill="#08A045"/><path d="m13.73 4.3.94-.94a1.57 1.57 0 0 1 2.22 0l.25.25c.61.61.61 1.61 0 2.22l-.94.94-2.47-2.47Z" fill="#08A045"/></svg><span>Edit</span></button>
+      </div>
+    </section>
     <button class="profile-collapse-row" type="button" id="addAddressButton" aria-label="Manage saved address">
       <span class="profile-collapse-inner"><span class="profile-collapse-title">Saved address</span><span class="chevron-right" aria-hidden="true"></span></span>
     </button>
@@ -142,7 +149,7 @@ function bindEvents(){
 }
 function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderActiveOrdersCount();renderPastOrders()}
 function renderActiveOrdersCount(){if(!els.activeOrdersCount)return;els.activeOrdersCount.textContent=String(getActiveOrdersCount())}
-function renderProfile(){const name=cleanText(profile.name)||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){if(els.avatarButton)els.avatarButton.classList.add('has-photo');els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{if(els.avatarButton)els.avatarButton.classList.remove('has-photo');els.avatarCircle.innerHTML='<img class="profile-placeholder-icon" alt="" src="./assets/profile/user-edit-icon.svg" />'}}
+function renderProfile(){const name=cleanText(profile.name)||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<span id="avatarInitial">'+escapeHtml(getInitial(name))+'</span>'}}
 function renderAddresses(){const addresses=getSavedAddresses();els.savedAddressList.innerHTML='';if(!addresses.length){els.savedAddressList.innerHTML='<div class="empty-state">No saved address yet. Add one from the map flow.</div>';return}addresses.slice(0,6).forEach((address,index)=>{const row=document.createElement('div');row.className='address-row';row.innerHTML=`<div class="inside-wrap"><div class="address-left-group"><div class="title-with-icon">${getAddressIcon(address.type||address.title||'')}<span class="address-title-text">${escapeHtml(address.title||address.type||'Saved address')}</span></div><div class="address-line">${escapeHtml(address.line||'Address details not available')}</div></div><button class="edit-button" type="button" data-address-index="${index}" aria-label="Edit ${escapeAttribute(address.title||'address')}">${editIconSvg()}<span>Edit</span></button><button class="address-dot-button" type="button" aria-label="More options for ${escapeAttribute(address.title||'address')}">${dotMenuSvg()}</button></div>`;row.querySelector('.edit-button').addEventListener('click',()=>{localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_ID',address.id||'');localStorage.setItem('TIFFIN_PROFILE_EDIT_ADDRESS_INDEX',String(index));sessionStorage.setItem('cbe_location_return_to','profile');sessionStorage.setItem('cbe_open_location_map','1');location.href='menu.html?openLocation=1&returnTo=profile&profileAction=editAddress&addressIndex='+encodeURIComponent(index)});els.savedAddressList.appendChild(row);if(index<Math.min(addresses.length,6)-1){const div=document.createElement('div');div.className='divider';els.savedAddressList.appendChild(div)}})}
 function renderPastOrders(){
  const orders=getPastOrders();
