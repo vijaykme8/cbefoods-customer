@@ -3254,33 +3254,72 @@ body {
   }
 
   function clearCartAfterPaidOrder(order = {}) {
-    
-    window.clearTimeout(customerMemory.syncTimer);
+    try { window.clearTimeout(customerMemory.syncTimer); } catch (_) {}
 
-    localStorage.removeItem(CART_KEY);
-    clearCartInstructions();
-    markCartClearedLocally();
-    localStorage.removeItem('checkout_snapshot');
-    localStorage.removeItem('pending_order');
-    sessionStorage.removeItem('cbe_checkout_after_address');
+    try { localStorage.setItem(CART_KEY, JSON.stringify([])); } catch (_) {}
+    try { localStorage.removeItem(CART_KEY); } catch (_) {}
+    try { clearCartInstructions(); } catch (_) {}
+    try { markCartClearedLocally(); } catch (_) {}
 
-    if (!customerMemory.docRef) return;
+    [
+      'checkout_snapshot',
+      'pending_order',
+      'cbe_checkout_after_address',
+      'cbe_payment_waiting_screen',
+      'cbe_waiting_for_payment',
+      'payment_waiting_screen',
+      'waiting_for_payment'
+    ].forEach(key => {
+      try { localStorage.removeItem(key); } catch (_) {}
+      try { sessionStorage.removeItem(key); } catch (_) {}
+    });
 
     const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
+    const clearedAt = new Date().toISOString();
 
-    customerMemory.docRef.set({
+    if (!customerMemory.docRef) return Promise.resolve();
+
+    return customerMemory.docRef.set({
       cartItems: [],
       cart: [],
-      currentCart: [],
-      cartUpdatedAt: new Date().toISOString(),
-      lastCartClearedAt: new Date().toISOString(),
-      lastCartSyncAt: new Date().toISOString(),
+      currentCart: {
+        items: [],
+        instructions: {},
+        clearedAt
+      },
+      cartUpdatedAt: clearedAt,
+      lastCartClearedAt: clearedAt,
+      lastCartSyncAt: clearedAt,
       lastCartSyncReason: 'payment_success_cart_cleared',
-      lastOrderId: orderId || firebase.firestore.FieldValue.delete?.() || '',
-      updatedAt: new Date().toISOString()
+      lastOrderId: orderId || '',
+      updatedAt: clearedAt
     }, { merge: true }).catch(error => {
       console.warn('Customer cart clear sync failed', error);
     });
+  }
+
+  function goToOrderPlaced(order = {}) {
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
+    const target = `order_placed.html${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ''}`;
+    try {
+      window.location.replace(target);
+    } catch (_) {
+      window.location.href = target;
+    }
+  }
+
+  async function readTopLevelOrderIfExists(orderId, fallbackOrder = {}) {
+    const safeOrderId = cleanText(orderId);
+    if (!safeOrderId || !window.firebase || !firebase.firestore) return null;
+    try {
+      if (!firebase.apps.length) firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);
+      const snap = await firebase.firestore().collection('orders').doc(safeOrderId).get();
+      if (!snap.exists) return null;
+      return preparePaidOrderForFirestore({ ...fallbackOrder, id: snap.id, orderId: snap.id, ...snap.data() });
+    } catch (error) {
+      console.warn('Paid order verification failed', error);
+      return null;
+    }
   }
 
 
@@ -4533,10 +4572,12 @@ body {
     writePaidOrderLocalCache(cleanOrder);
 
     let lastError = null;
+    const orderId = cleanText(cleanOrder.id || cleanOrder.orderId || cleanOrder.paymentId || `CBE-${Date.now()}`);
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
-        const savedOrder = await savePaidOrderDirectToFirestore(cleanOrder);
+        const savedOrder = await savePaidOrderDirectToFirestore({ ...cleanOrder, id: orderId, orderId });
+
         try {
           if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
             await window.TiffinMVP.saveOrderToCloud(savedOrder);
@@ -4556,29 +4597,52 @@ body {
       } catch (error) {
         lastError = error;
         console.warn(`Paid order Firestore save attempt ${attempt + 1} failed`, error);
-        await wait(900 + attempt * 900);
+
+        const verifiedOrder = await readTopLevelOrderIfExists(orderId, cleanOrder);
+        if (verifiedOrder) {
+          writePaidOrderLocalCache(verifiedOrder);
+          return verifiedOrder;
+        }
+
+        await wait(700 + attempt * 700);
       }
     }
 
     if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
       try {
-        const savedOrder = await window.TiffinMVP.saveOrderToCloud(cleanOrder);
-        if (savedOrder) return preparePaidOrderForFirestore({ ...cleanOrder, ...savedOrder });
+        const savedOrder = await window.TiffinMVP.saveOrderToCloud({ ...cleanOrder, id: orderId, orderId });
+        if (savedOrder) {
+          const normalized = preparePaidOrderForFirestore({ ...cleanOrder, ...savedOrder, id: savedOrder.id || orderId, orderId: savedOrder.orderId || savedOrder.id || orderId });
+          writePaidOrderLocalCache(normalized);
+          return normalized;
+        }
       } catch (error) {
         lastError = error;
         console.warn('Fallback order cloud sync failed through TiffinMVP', error);
       }
     }
 
-    queuePaidOrderRetry(cleanOrder, lastError);
+    const verifiedOrder = await readTopLevelOrderIfExists(orderId, cleanOrder);
+    if (verifiedOrder) {
+      writePaidOrderLocalCache(verifiedOrder);
+      return verifiedOrder;
+    }
+
+    queuePaidOrderRetry({ ...cleanOrder, id: orderId, orderId }, lastError);
     throw lastError || new Error('Paid order could not be saved to Firestore.');
   }
 
 
+
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
+    const generatedOrderId = cleanText(snapshot.id || snapshot.orderId || paymentResponse.razorpay_payment_id || `CBE-${Date.now()}`);
     let order = {
       ...snapshot,
+      id: generatedOrderId,
+      orderId: generatedOrderId,
       status: 'confirmed',
+      orderStatus: 'confirmed',
+      adminStatus: 'confirmed',
       paymentStatus: 'paid',
       paymentProvider: 'Razorpay',
       paymentId: paymentResponse.razorpay_payment_id || `dev_payment_${Date.now()}`,
@@ -4589,7 +4653,7 @@ body {
       updatedAt: new Date().toISOString()
     };
 
-    setPlaceOrderLoading(true, 'Placing order');
+    setPlaceOrderLoading(false);
 
     try {
       const etaPatch = await getInitialRestaurantEtaPatch(order);
@@ -4600,11 +4664,13 @@ body {
 
     const savedOrder = await persistPaidOrderBeforeRedirect(order);
 
-    clearCartAfterPaidOrder(savedOrder);
-    renderCart();
+    try { writePaidOrderLocalCache(savedOrder); } catch (error) { console.warn('Paid order local cache failed', error); }
+    try { await clearCartAfterPaidOrder(savedOrder); } catch (error) { console.warn('Paid cart clear failed', error); }
+    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
 
-    window.location.href = `order_placed.html?orderId=${encodeURIComponent(savedOrder.id || savedOrder.orderId || '')}`;
+    goToOrderPlaced(savedOrder);
   }
+
 
   function openRazorpayPayment(snapshot) {
     const key = getRazorpayKeyId();
@@ -4648,10 +4714,28 @@ body {
         color: '#8806CE'
       },
       handler(response) {
-        saveConfirmedOrder(snapshot, response).catch(error => {
-          console.warn('Order save failed', error);
-          setPlaceOrderLoading(false);
-          showToast('Payment succeeded, but order save failed. Please contact support.');
+        saveConfirmedOrder(snapshot, response).catch(async error => {
+          console.warn('Paid order save/redirect failed', error);
+          const fallbackOrder = preparePaidOrderForFirestore({
+            ...snapshot,
+            id: snapshot.id || snapshot.orderId || response.razorpay_payment_id || `CBE-${Date.now()}`,
+            orderId: snapshot.orderId || snapshot.id || response.razorpay_payment_id || `CBE-${Date.now()}`,
+            status: 'confirmed',
+            orderStatus: 'confirmed',
+            adminStatus: 'confirmed',
+            paymentStatus: 'paid',
+            paymentProvider: 'Razorpay',
+            paymentId: response.razorpay_payment_id || `dev_payment_${Date.now()}`,
+            razorpayPaymentId: response.razorpay_payment_id || '',
+            paidAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
+          writePaidOrderLocalCache(fallbackOrder);
+          queuePaidOrderRetry(fallbackOrder, error);
+          await clearCartAfterPaidOrder(fallbackOrder);
+          try { renderCart(); } catch (_) {}
+          showToast('Payment successful. Order sync is retrying.');
+          window.setTimeout(() => goToOrderPlaced(fallbackOrder), 450);
         });
       },
       modal: {
@@ -4664,7 +4748,7 @@ body {
       }
     };
 
-    setPlaceOrderLoading(true, 'Opening payment');
+    setPlaceOrderLoading(false);
     const razorpay = new window.Razorpay(options);
     razorpay.open();
   }
