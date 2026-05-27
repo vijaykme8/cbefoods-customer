@@ -12,3 +12,7 @@ node_modules/
 *_design.html
 customer-app-shell-*.zip
 customer-app-like-pages-speed-fix.zip
+
+__MACOSX/
+*.bak-*
+._*

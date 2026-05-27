@@ -10038,7 +10038,7 @@ if (shouldAutoOpenLocationMap()) {
     );
   }
 
-  function normalizeRemoteOrder(doc) {
+  function normalizeRemoteOrder(doc, sourceRank = 0, sourceName = "local") {
     const data = doc.data ? doc.data() : doc;
     const primaryStatus = pickOrderStatus(data) || "confirmed";
     return {
@@ -10048,7 +10048,9 @@ if (shouldAutoOpenLocationMap()) {
       status: primaryStatus,
       orderStatus: primaryStatus,
       adminStatus: primaryStatus,
-      deliveryStatus: primaryStatus
+      deliveryStatus: primaryStatus,
+      __orderSourceRank: sourceRank,
+      __orderSource: sourceName
     };
   }
 
@@ -10056,24 +10058,56 @@ if (shouldAutoOpenLocationMap()) {
     return db.collection("stores").doc(window.TIFFIN_STORE_ID || "main").collection("orders");
   }
 
-  function mergeOrderForAdminStatus(base, incoming, preferIncomingStatus = true) {
-    const merged = { ...(base || {}), ...(incoming || {}) };
-    const statusSource = preferIncomingStatus ? incoming : merged;
-    const primaryStatus = pickOrderStatus(statusSource);
-    if (primaryStatus) {
-      merged.status = primaryStatus;
-      merged.orderStatus = primaryStatus;
-      merged.adminStatus = primaryStatus;
-      merged.deliveryStatus = primaryStatus;
-    }
-    return merged;
+  function getOrderSourceRank(order) {
+    const rank = Number(order?.__orderSourceRank || 0);
+    return Number.isFinite(rank) ? rank : 0;
   }
 
-  async function getOrdersByQuery(query) {
+  function stampOrderStatus(order, primaryStatus) {
+    if (!order || !primaryStatus) return order;
+    order.status = primaryStatus;
+    order.orderStatus = primaryStatus;
+    order.adminStatus = primaryStatus;
+    order.deliveryStatus = primaryStatus;
+    return order;
+  }
+
+  function mergeOrderBySourceRank(existing, incoming) {
+    if (!existing) return incoming || null;
+    if (!incoming) return existing;
+    const existingRank = getOrderSourceRank(existing);
+    const incomingRank = getOrderSourceRank(incoming);
+    const merged = incomingRank >= existingRank ? { ...existing, ...incoming } : { ...incoming, ...existing };
+    const primaryStatus = incomingRank >= existingRank
+      ? (pickOrderStatus(incoming) || pickOrderStatus(existing) || pickOrderStatus(merged))
+      : (pickOrderStatus(existing) || pickOrderStatus(incoming) || pickOrderStatus(merged));
+    merged.__orderSourceRank = Math.max(existingRank, incomingRank);
+    merged.__orderSource = incomingRank >= existingRank ? (incoming.__orderSource || existing.__orderSource || "remote") : (existing.__orderSource || incoming.__orderSource || "remote");
+    return stampOrderStatus(merged, primaryStatus);
+  }
+
+  function mergeOrderByAuthority(sources = {}) {
+    const local = sources.local || null;
+    const customer = sources.customer || null;
+    const top = sources.top || null;
+    const store = sources.store || null;
+    const merged = { ...(local || {}), ...(customer || {}), ...(top || {}), ...(store || {}) };
+    const primaryStatus = pickOrderStatus(store) || pickOrderStatus(top) || pickOrderStatus(customer) || pickOrderStatus(local) || pickOrderStatus(merged) || "";
+    const rank = store ? 3 : top ? 2 : customer ? 1 : local ? 0 : 0;
+    merged.__orderSourceRank = rank;
+    merged.__orderSource = store ? "store" : top ? "top" : customer ? "customer" : "local";
+    return primaryStatus ? stampOrderStatus(merged, primaryStatus) : merged;
+  }
+
+  function mergeOrderForAdminStatus(base, incoming, preferIncomingStatus = true) {
+    return mergeOrderBySourceRank(base, incoming) || { ...(base || {}), ...(incoming || {}) };
+  }
+
+  async function getOrdersByQuery(query, sourceRank = 0, sourceName = "remote") {
     try {
       const snapshot = await query.limit(30).get();
       const orders = [];
-      snapshot.forEach(doc => orders.push(normalizeRemoteOrder(doc)));
+      snapshot.forEach(doc => orders.push(normalizeRemoteOrder(doc, sourceRank, sourceName)));
       return orders;
     } catch (error) {
       console.warn("Menu active order query failed", error);
@@ -10093,15 +10127,15 @@ if (shouldAutoOpenLocationMap()) {
       const queries = [];
       const storeOrders = getStoreOrdersCollection(db);
       if (customerId) {
-        queries.push(getOrdersByQuery(db.collection("orders").where("customerId", "==", customerId)));
-        queries.push(getOrdersByQuery(db.collection("orders").where("customerUid", "==", customerId)));
-        queries.push(getOrdersByQuery(storeOrders.where("customerId", "==", customerId)));
-        queries.push(getOrdersByQuery(storeOrders.where("customerUid", "==", customerId)));
-        queries.push(getOrdersByQuery(db.collection("customers").doc(customerId).collection("orders")));
+        queries.push(getOrdersByQuery(db.collection("orders").where("customerId", "==", customerId), 2, "top"));
+        queries.push(getOrdersByQuery(db.collection("orders").where("customerUid", "==", customerId), 2, "top"));
+        queries.push(getOrdersByQuery(storeOrders.where("customerId", "==", customerId), 3, "store"));
+        queries.push(getOrdersByQuery(storeOrders.where("customerUid", "==", customerId), 3, "store"));
+        queries.push(getOrdersByQuery(db.collection("customers").doc(customerId).collection("orders"), 1, "customer"));
       }
       if (customerPhone) {
-        queries.push(getOrdersByQuery(db.collection("orders").where("customerPhone", "==", customerPhone)));
-        queries.push(getOrdersByQuery(storeOrders.where("customerPhone", "==", customerPhone)));
+        queries.push(getOrdersByQuery(db.collection("orders").where("customerPhone", "==", customerPhone), 2, "top"));
+        queries.push(getOrdersByQuery(storeOrders.where("customerPhone", "==", customerPhone), 3, "store"));
       }
 
       const remoteGroups = await Promise.all(queries);
@@ -10109,7 +10143,7 @@ if (shouldAutoOpenLocationMap()) {
       remoteGroups.flat().forEach(order => {
         const id = getOrderIdentity(order);
         if (!id) return;
-        orderMap.set(id, mergeOrderForAdminStatus(orderMap.get(id), order, true));
+        orderMap.set(id, mergeOrderBySourceRank(orderMap.get(id), order));
       });
 
       const orders = Array.from(orderMap.values());
@@ -10438,8 +10472,12 @@ if (shouldAutoOpenLocationMap()) {
       liveTrackCustomerSnapshot = null;
       const db = firebase.firestore();
       const renderMergedLiveOrder = () => {
-        let merged = mergeOrderForAdminStatus(liveTrackTopSnapshot || activeOrder || order, liveTrackStoreSnapshot || {}, Boolean(liveTrackStoreSnapshot));
-        merged = mergeOrderForAdminStatus(merged, liveTrackCustomerSnapshot || {}, Boolean(liveTrackCustomerSnapshot));
+        const merged = mergeOrderByAuthority({
+          local: activeOrder || order,
+          customer: liveTrackCustomerSnapshot,
+          top: liveTrackTopSnapshot,
+          store: liveTrackStoreSnapshot
+        });
         activeOrder = merged;
         try {
           localStorage.setItem("current_order", JSON.stringify(merged));
@@ -10450,21 +10488,21 @@ if (shouldAutoOpenLocationMap()) {
       const unsubs = [];
       unsubs.push(db.collection("orders").doc(orderId).onSnapshot(snapshot => {
         if (!snapshot.exists) return;
-        liveTrackTopSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+        liveTrackTopSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() }, 2, "top");
         renderMergedLiveOrder();
-      }, () => {}));
+      }, error => console.warn("Menu top-level order live sync failed", error)));
       unsubs.push(getStoreOrdersCollection(db).doc(orderId).onSnapshot(snapshot => {
         if (!snapshot.exists) return;
-        liveTrackStoreSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+        liveTrackStoreSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() }, 3, "store");
         renderMergedLiveOrder();
-      }, () => {}));
+      }, error => console.warn("Menu store order live sync failed", error)));
       const customerDocId = getCustomerDocId(order) || getCustomerId();
       if (customerDocId) {
         unsubs.push(db.collection("customers").doc(customerDocId).collection("orders").doc(orderId).onSnapshot(snapshot => {
           if (!snapshot.exists) return;
-          liveTrackCustomerSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() });
+          liveTrackCustomerSnapshot = normalizeRemoteOrder({ id: snapshot.id, ...snapshot.data() }, 1, "customer");
           renderMergedLiveOrder();
-        }, () => {}));
+        }, error => console.warn("Menu customer order live sync failed", error)));
       }
       liveTrackUnsubscribe = () => unsubs.forEach(unsub => { try { unsub(); } catch (_) {} });
     } catch (_) {}
@@ -10824,7 +10862,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-<script src="pwa-speed.js?v=20260527_customer_pwa_fix1" defer></script>
+<script src="pwa-speed.js?v=20260527_customer_prod_ready_fix2" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">

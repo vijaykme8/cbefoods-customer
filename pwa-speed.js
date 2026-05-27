@@ -1,5 +1,5 @@
 (() => {
-  const SPEED_VERSION = '20260527_customer_pwa_fix1';
+  const SPEED_VERSION = '20260527_customer_prod_ready_fix2';
   const APP_CACHE_NAMES = [`cbe-static-${SPEED_VERSION}`, `cbe-html-${SPEED_VERSION}`];
   const APP_CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
   const LARGE_PROFILE_KEYS = [
