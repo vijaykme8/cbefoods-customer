@@ -25,7 +25,7 @@ button,input{font:inherit}button{border:0;background:none;padding:0;color:inheri
 .profile-user-group{min-width:0;display:flex;align-items:center;gap:16px;flex:1 1 auto}
 .user-profile{width:56px;height:56px;position:relative;overflow:visible;flex:0 0 auto}
 .avatar-circle{width:56px;height:56px;border-radius:25px;background:#878887;color:var(--white);display:grid;place-items:center;font-size:22px;font-weight:600;line-height:1;overflow:hidden}
-.avatar-circle img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar-circle img{width:100%;height:100%;display:block}.avatar-circle img.profile-photo-img{object-fit:cover;object-position:center center}.avatar-circle img.profile-icon-img{object-fit:contain;object-position:center center}
 .avatar-edit-icon{width:28px;height:28px;position:absolute;right:-2px;top:-2px;background:var(--cta);border-radius:20px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden}.avatar-edit-icon img{width:14px;height:14px;display:block;object-fit:contain;filter:brightness(0) invert(1)}
 .name-number{min-width:0;display:inline-flex;flex-direction:column;justify-content:center;align-items:flex-start}
 .profile-name{max-width:132px;color:var(--white);font-size:16px;font-weight:500;line-height:140%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -165,7 +165,7 @@ function bindEvents(){
 }
 function refreshFromStorage(){profile=loadProfile();renderAll()}window.CBEProfileRefresh=refreshFromStorage;window.renderOrders=renderPastOrders;function renderAll(){renderProfile();renderAddresses();renderActiveOrdersCount();renderPastOrders()}
 function renderActiveOrdersCount(){if(!els.activeOrdersCount)return;els.activeOrdersCount.textContent=String(getActiveOrdersCount())}
-function renderProfile(){const name=cleanText(profile.name)||'Customer';const firstName=name.split(/\s+/).filter(Boolean)[0]||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;if(els.topbarGreeting)els.topbarGreeting.textContent='Hello! '+firstName;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<img alt="Profile icon" src="./assets/profile/user-edit-icon.svg" />'}}
+function renderProfile(){const name=cleanText(profile.name)||'Customer';const firstName=name.split(/\s+/).filter(Boolean)[0]||'Customer';const phone=normalizePhone(profile.phone||profile.mobile||profile.number||'');const digits=phone.digits||'0000000000';const displayPhone=phone.display||'+91-0000000000';els.profileName.textContent=name;if(els.topbarGreeting)els.topbarGreeting.textContent='Hello! '+firstName;els.nameFieldValue.textContent=name;els.profilePhone.textContent=displayPhone;els.phoneDigits.textContent=digits;if(profile.avatarDataUrl){els.avatarCircle.innerHTML='<img class="profile-photo-img" alt="Profile photo" src="'+escapeAttribute(profile.avatarDataUrl)+'" />'}else{els.avatarCircle.innerHTML='<img class="profile-icon-img" alt="Profile icon" src="./assets/profile/user-edit-icon.svg" />'}}
 function renderAddresses(){
  const addresses=getSavedAddresses();
  els.savedAddressList.innerHTML='';

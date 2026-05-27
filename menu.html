@@ -215,6 +215,7 @@ img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center center;
   display: block;
 }
 .location-copy {
@@ -4778,6 +4779,24 @@ html, body { min-height: 100%; background: #12130F !important; }
   transform: translateX(-50%) translateY(0) !important;
 }
 </style>
+
+<style id="cbe-profile-image-cover-center">
+#menuProfileAvatarImg.is-customer-photo,
+.cf-figma-menu-root #menuProfileAvatarImg.is-customer-photo,
+.cf-figma-menu-root .UserProfile.avatar.is-customer-photo {
+  width: 46px !important;
+  height: 46px !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+  border-radius: 50% !important;
+  overflow: hidden !important;
+  display: block !important;
+}
+#menuProfileAvatarImg:not(.is-customer-photo) {
+  object-fit: contain !important;
+  object-position: center center !important;
+}
+</style>
 </head>
 <body>
 <div class="1Menu app cf-figma-menu-root" data-layer="1.1 Menu" style="width: 390px; height: 2440px; position: relative; background: linear-gradient(0deg, rgba(253, 253, 255, 0.02) 0%, rgba(253, 253, 255, 0.02) 100%), #12130F; overflow: hidden">
@@ -9217,12 +9236,16 @@ if (shouldAutoOpenLocationMap()) {
         img.setAttribute("src", DEFAULT_AVATAR_SRC);
       };
       img.classList.add("is-customer-photo");
+      img.style.objectFit = "cover";
+      img.style.objectPosition = "center center";
       img.setAttribute("src", avatarSrc);
       return;
     }
 
     img.onerror = null;
     img.classList.remove("is-customer-photo");
+    img.style.objectFit = "contain";
+    img.style.objectPosition = "center center";
     img.setAttribute("src", DEFAULT_AVATAR_SRC);
   }
 
