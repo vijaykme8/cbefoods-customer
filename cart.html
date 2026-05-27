@@ -4626,6 +4626,171 @@ body {
 
 
 
+  function getPlacedOrderTarget(order = {}) {
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
+    return `order_placed.html${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ''}`;
+  }
+
+  function showInstantOrderPlacedScreen(order = {}) {
+    const total = order.total ?? order.totals?.total ?? order.amount ?? order.paidAmount ?? 0;
+    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
+    const eta = cleanText(order.eta || order.estimatedDeliveryTime || '15 - 25 mins');
+    const target = getPlacedOrderTarget(order);
+
+    try {
+      if (target && window.history && window.history.replaceState) {
+        window.history.replaceState({ paidOrderId: orderId || null }, '', target);
+      }
+    } catch (_) {}
+
+    let overlay = document.getElementById('instantOrderPlacedOverlay');
+    if (!overlay) {
+      overlay = document.createElement('section');
+      overlay.id = 'instantOrderPlacedOverlay';
+      overlay.className = 'instant-order-placed-overlay';
+      overlay.setAttribute('aria-live', 'assertive');
+      overlay.setAttribute('role', 'status');
+      document.body.appendChild(overlay);
+    }
+
+    overlay.innerHTML = `
+      <div class="instant-order-placed-card">
+        <div class="instant-order-tick" aria-hidden="true">
+          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="50" fill="#8806CE" fill-opacity="0.34"/>
+            <path d="M29 51.5L43.2 65.5L72 36" stroke="#FDFDFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="instant-order-copy">
+          <div class="instant-payment-successful">Payment successful</div>
+          <h1>Your order has<br>been placed</h1>
+          <p>We are sending your order to the restaurant. You can track the status from Track orders.</p>
+        </div>
+        <div class="instant-order-info">
+          <div><span>Order ID</span><strong>${escapeHTML(orderId || 'Syncing')}</strong></div>
+          <div><span>Total paid</span><strong>${money(total)}</strong></div>
+          <div><span>Estimated time</span><strong>${escapeHTML(eta)}</strong></div>
+        </div>
+      </div>
+    `;
+
+    if (!document.getElementById('instantOrderPlacedStyle')) {
+      const style = document.createElement('style');
+      style.id = 'instantOrderPlacedStyle';
+      style.textContent = `
+        html.instant-order-lock,
+        body.instant-order-lock {
+          overflow: hidden !important;
+          background: #12130F !important;
+        }
+        .instant-order-placed-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 2147483647;
+          width: 100vw;
+          min-height: 100dvh;
+          display: flex;
+          justify-content: center;
+          align-items: stretch;
+          background: #12130F;
+          color: #FDFDFF;
+          font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        .instant-order-placed-card {
+          position: relative;
+          width: 100%;
+          max-width: 390px;
+          min-height: 100dvh;
+          padding: 144px 24px 40px;
+          background: linear-gradient(0deg, rgba(253,253,255,0.02), rgba(253,253,255,0.02)), #12130F;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 28px;
+        }
+        .instant-order-tick {
+          width: 140px;
+          height: 140px;
+          border-radius: 100px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .instant-order-tick svg {
+          width: 140px;
+          height: 140px;
+          display: block;
+        }
+        .instant-order-copy {
+          width: 342px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 10px;
+          text-align: center;
+        }
+        .instant-payment-successful {
+          color: #8806CE;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 120%;
+        }
+        .instant-order-copy h1 {
+          margin: 0;
+          color: #FDFDFF;
+          font-size: 30px;
+          font-weight: 600;
+          line-height: 120%;
+          letter-spacing: -0.02em;
+        }
+        .instant-order-copy p {
+          margin: 0;
+          color: rgba(253,253,255,0.50);
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 140%;
+        }
+        .instant-order-info {
+          width: 342px;
+          padding: 14px 16px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+          background: rgba(253,253,255,0.12);
+          border: 1px solid rgba(253,253,255,0.08);
+          border-radius: 14px;
+        }
+        .instant-order-info div {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+        }
+        .instant-order-info span {
+          color: rgba(253,253,255,0.50);
+          font-size: 14px;
+          line-height: 120%;
+        }
+        .instant-order-info strong {
+          max-width: 190px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          color: #FDFDFF;
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 120%;
+          text-align: right;
+        }
+      `;
+      document.head.appendChild(style);
+    }
+
+    document.documentElement.classList.add('instant-order-lock');
+    document.body.classList.add('instant-order-lock');
+  }
+
+
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
     const generatedOrderId = cleanText(snapshot.id || snapshot.orderId || paymentResponse.razorpay_payment_id || `CBE-${Date.now()}`);
     let order = {
@@ -4646,10 +4811,23 @@ body {
     };
 
     setPlaceOrderLoading(false);
+    showInstantOrderPlacedScreen(order);
+
+    try { writePaidOrderLocalCache(order); } catch (error) { console.warn('Paid order local cache failed', error); }
+
+    const cartClearPromise = clearCartAfterPaidOrder(order).catch(error => {
+      console.warn('Paid cart clear sync failed', error);
+    });
+
+    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
 
     try {
       const etaPatch = await getInitialRestaurantEtaPatch(order);
-      if (etaPatch) order = { ...order, ...etaPatch };
+      if (etaPatch) {
+        order = { ...order, ...etaPatch };
+        try { writePaidOrderLocalCache(order); } catch (_) {}
+        showInstantOrderPlacedScreen(order);
+      }
     } catch (error) {
       console.warn('Initial ETA save skipped', error);
     }
@@ -4657,12 +4835,9 @@ body {
     const savedOrder = await persistPaidOrderBeforeRedirect(order);
 
     try { writePaidOrderLocalCache(savedOrder); } catch (error) { console.warn('Paid order local cache failed', error); }
-    try { await clearCartAfterPaidOrder(savedOrder); } catch (error) { console.warn('Paid cart clear failed', error); }
-    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
-
+    await cartClearPromise;
     goToOrderPlaced(savedOrder);
   }
-
 
   function openRazorpayPayment(snapshot) {
     const key = getRazorpayKeyId();
@@ -4722,11 +4897,11 @@ body {
             paidAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
           });
+          showInstantOrderPlacedScreen(fallbackOrder);
           writePaidOrderLocalCache(fallbackOrder);
           queuePaidOrderRetry(fallbackOrder, error);
-          await clearCartAfterPaidOrder(fallbackOrder);
-          try { renderCart(); } catch (_) {}
-          window.setTimeout(() => goToOrderPlaced(fallbackOrder), 120);
+          try { clearCartAfterPaidOrder(fallbackOrder); } catch (_) {}
+          window.requestAnimationFrame(() => goToOrderPlaced(fallbackOrder));
         });
       },
       modal: {
