@@ -653,6 +653,98 @@ button {
   text-decoration: none;
 }
 
+.payment-finalization-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  background: #12130F;
+  color: #FDFDFF;
+  text-align: center;
+}
+
+.payment-finalization-screen[hidden] {
+  display: none !important;
+}
+
+.payment-finalization-card {
+  width: 100%;
+  max-width: 342px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 24px;
+  border-radius: 22px;
+  background: rgba(253, 253, 255, 0.08);
+  border: 1px solid rgba(253, 253, 255, 0.10);
+}
+
+.payment-finalization-spinner {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 3px solid rgba(253, 253, 255, 0.20);
+  border-top-color: #08A045;
+  animation: paymentFinalizationSpin 850ms linear infinite;
+}
+
+.payment-finalization-title {
+  margin: 0;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.payment-finalization-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.68);
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 145%;
+}
+
+.payment-finalization-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.payment-finalization-actions[hidden] {
+  display: none !important;
+}
+
+.payment-finalization-actions button {
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 12px;
+  background: #08A045;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.payment-finalization-actions .secondary-payment-action {
+  background: rgba(253, 253, 255, 0.12);
+  color: #FDFDFF;
+}
+
+@keyframes paymentFinalizationSpin {
+  to { transform: rotate(360deg); }
+}
+
 .toast {
   position: fixed;
   z-index: 100;
@@ -1807,139 +1899,6 @@ body {
   white-space: nowrap !important;
 }
 
-
-.paid-finalization-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 12000;
-  width: 100%;
-  max-width: 390px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
-  color: #FDFDFF;
-  overflow: hidden;
-}
-
-.paid-finalization-screen[hidden] {
-  display: none !important;
-}
-
-.paid-finalization-content {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-}
-
-.paid-finalization-icon {
-  width: 140px;
-  height: 140px;
-  padding: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  background: rgba(136, 6, 206, 0.34);
-}
-
-.paid-finalization-icon svg {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-
-.paid-finalization-text {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.paid-finalization-eyebrow {
-  color: #8806CE;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 120%;
-}
-
-.paid-finalization-title {
-  margin: 0;
-  color: #FDFDFF;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-copy {
-  margin: 0;
-  color: rgba(253, 253, 255, 0.58);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 140%;
-}
-
-.paid-finalization-loader {
-  width: 42px;
-  height: 42px;
-  border: 3px solid rgba(253, 253, 255, 0.14);
-  border-top-color: #08A045;
-  border-radius: 50%;
-  animation: paidFinalizationSpin 0.85s linear infinite;
-}
-
-.paid-finalization-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.paid-finalization-retry {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  background: #08A045;
-  color: #FDFDFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-note {
-  min-height: 18px;
-  color: rgba(253, 253, 255, 0.45);
-  font-size: 12px;
-  line-height: 140%;
-}
-
-.cart-paid-finalizing .top-bar,
-.cart-paid-finalizing .cart-content,
-.cart-paid-finalizing .empty-state,
-.cart-paid-finalizing .placeorder-section,
-.cart-paid-finalizing .cart-options-layer,
-.cart-paid-finalizing .cart-dialog-layer,
-.cart-paid-finalizing .toast {
-  visibility: hidden;
-}
-
-@keyframes paidFinalizationSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 </style>
 
 <style id="cf-mobile-zoom-lock">
@@ -2125,139 +2084,6 @@ body {
   max-height: none !important;
   overflow: visible !important;
 }
-
-.paid-finalization-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 12000;
-  width: 100%;
-  max-width: 390px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
-  color: #FDFDFF;
-  overflow: hidden;
-}
-
-.paid-finalization-screen[hidden] {
-  display: none !important;
-}
-
-.paid-finalization-content {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-}
-
-.paid-finalization-icon {
-  width: 140px;
-  height: 140px;
-  padding: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  background: rgba(136, 6, 206, 0.34);
-}
-
-.paid-finalization-icon svg {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-
-.paid-finalization-text {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.paid-finalization-eyebrow {
-  color: #8806CE;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 120%;
-}
-
-.paid-finalization-title {
-  margin: 0;
-  color: #FDFDFF;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-copy {
-  margin: 0;
-  color: rgba(253, 253, 255, 0.58);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 140%;
-}
-
-.paid-finalization-loader {
-  width: 42px;
-  height: 42px;
-  border: 3px solid rgba(253, 253, 255, 0.14);
-  border-top-color: #08A045;
-  border-radius: 50%;
-  animation: paidFinalizationSpin 0.85s linear infinite;
-}
-
-.paid-finalization-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.paid-finalization-retry {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  background: #08A045;
-  color: #FDFDFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-note {
-  min-height: 18px;
-  color: rgba(253, 253, 255, 0.45);
-  font-size: 12px;
-  line-height: 140%;
-}
-
-.cart-paid-finalizing .top-bar,
-.cart-paid-finalizing .cart-content,
-.cart-paid-finalizing .empty-state,
-.cart-paid-finalizing .placeorder-section,
-.cart-paid-finalizing .cart-options-layer,
-.cart-paid-finalizing .cart-dialog-layer,
-.cart-paid-finalizing .toast {
-  visibility: hidden;
-}
-
-@keyframes paidFinalizationSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 </style>
 
 <style id="cf-cart-v5-bill-details">
@@ -2406,139 +2232,6 @@ body {
 .cart-shell:not(.is-empty) .placeorder-section {
   bottom: 0 !important;
 }
-
-.paid-finalization-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 12000;
-  width: 100%;
-  max-width: 390px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
-  color: #FDFDFF;
-  overflow: hidden;
-}
-
-.paid-finalization-screen[hidden] {
-  display: none !important;
-}
-
-.paid-finalization-content {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-}
-
-.paid-finalization-icon {
-  width: 140px;
-  height: 140px;
-  padding: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  background: rgba(136, 6, 206, 0.34);
-}
-
-.paid-finalization-icon svg {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-
-.paid-finalization-text {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.paid-finalization-eyebrow {
-  color: #8806CE;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 120%;
-}
-
-.paid-finalization-title {
-  margin: 0;
-  color: #FDFDFF;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-copy {
-  margin: 0;
-  color: rgba(253, 253, 255, 0.58);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 140%;
-}
-
-.paid-finalization-loader {
-  width: 42px;
-  height: 42px;
-  border: 3px solid rgba(253, 253, 255, 0.14);
-  border-top-color: #08A045;
-  border-radius: 50%;
-  animation: paidFinalizationSpin 0.85s linear infinite;
-}
-
-.paid-finalization-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.paid-finalization-retry {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  background: #08A045;
-  color: #FDFDFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-note {
-  min-height: 18px;
-  color: rgba(253, 253, 255, 0.45);
-  font-size: 12px;
-  line-height: 140%;
-}
-
-.cart-paid-finalizing .top-bar,
-.cart-paid-finalizing .cart-content,
-.cart-paid-finalizing .empty-state,
-.cart-paid-finalizing .placeorder-section,
-.cart-paid-finalizing .cart-options-layer,
-.cart-paid-finalizing .cart-dialog-layer,
-.cart-paid-finalizing .toast {
-  visibility: hidden;
-}
-
-@keyframes paidFinalizationSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 </style>
 
 
@@ -2731,139 +2424,6 @@ body {
 .cart-dialog-actions .danger-action {
   background: #E23009;
 }
-
-.paid-finalization-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 12000;
-  width: 100%;
-  max-width: 390px;
-  min-height: 100dvh;
-  margin: 0 auto;
-  left: 50%;
-  transform: translateX(-50%);
-  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
-  color: #FDFDFF;
-  overflow: hidden;
-}
-
-.paid-finalization-screen[hidden] {
-  display: none !important;
-}
-
-.paid-finalization-content {
-  position: absolute;
-  left: 24px;
-  right: 24px;
-  top: 160px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  text-align: center;
-}
-
-.paid-finalization-icon {
-  width: 140px;
-  height: 140px;
-  padding: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 100px;
-  background: rgba(136, 6, 206, 0.34);
-}
-
-.paid-finalization-icon svg {
-  width: 100px;
-  height: 100px;
-  display: block;
-}
-
-.paid-finalization-text {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  align-items: center;
-}
-
-.paid-finalization-eyebrow {
-  color: #8806CE;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 120%;
-}
-
-.paid-finalization-title {
-  margin: 0;
-  color: #FDFDFF;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-copy {
-  margin: 0;
-  color: rgba(253, 253, 255, 0.58);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 140%;
-}
-
-.paid-finalization-loader {
-  width: 42px;
-  height: 42px;
-  border: 3px solid rgba(253, 253, 255, 0.14);
-  border-top-color: #08A045;
-  border-radius: 50%;
-  animation: paidFinalizationSpin 0.85s linear infinite;
-}
-
-.paid-finalization-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.paid-finalization-retry {
-  width: 100%;
-  height: 48px;
-  border-radius: 10px;
-  background: #08A045;
-  color: #FDFDFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.paid-finalization-note {
-  min-height: 18px;
-  color: rgba(253, 253, 255, 0.45);
-  font-size: 12px;
-  line-height: 140%;
-}
-
-.cart-paid-finalizing .top-bar,
-.cart-paid-finalizing .cart-content,
-.cart-paid-finalizing .empty-state,
-.cart-paid-finalizing .placeorder-section,
-.cart-paid-finalizing .cart-options-layer,
-.cart-paid-finalizing .cart-dialog-layer,
-.cart-paid-finalizing .toast {
-  visibility: hidden;
-}
-
-@keyframes paidFinalizationSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 </style>
 </head>
 
@@ -2995,26 +2555,17 @@ body {
     </div>
   </div>
 
-  <section class="paid-finalization-screen" id="paidFinalizationScreen" hidden aria-live="assertive" aria-busy="true">
-    <div class="paid-finalization-content">
-      <div class="paid-finalization-icon" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none">
-          <circle cx="50" cy="50" r="50" fill="#8806CE"/>
-          <path d="M29 51.5L43.4 65.5L72 34.5" stroke="#FDFDFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <div class="paid-finalization-text">
-        <div class="paid-finalization-eyebrow" id="paidFinalizationEyebrow">Payment successful</div>
-        <h1 class="paid-finalization-title" id="paidFinalizationTitle">Placing your order</h1>
-        <p class="paid-finalization-copy" id="paidFinalizationCopy">Please wait. We are saving your order with the restaurant.</p>
-      </div>
-      <div class="paid-finalization-loader" id="paidFinalizationLoader" aria-hidden="true"></div>
-      <div class="paid-finalization-actions">
-        <button class="paid-finalization-retry" id="paidFinalizationRetryButton" type="button" hidden>Retry saving order</button>
-        <div class="paid-finalization-note" id="paidFinalizationNote"></div>
+  <div class="payment-finalization-screen" id="paymentFinalizationScreen" hidden aria-live="assertive" aria-busy="true">
+    <div class="payment-finalization-card">
+      <div class="payment-finalization-spinner" id="paymentFinalizationSpinner" aria-hidden="true"></div>
+      <h1 class="payment-finalization-title" id="paymentFinalizationTitle">Confirming your order</h1>
+      <p class="payment-finalization-copy" id="paymentFinalizationCopy">Please wait. We are sending your paid order to the restaurant.</p>
+      <div class="payment-finalization-actions" id="paymentFinalizationActions" hidden>
+        <button type="button" id="retryPaymentOrderSaveBtn">Retry confirmation</button>
+        <button type="button" class="secondary-payment-action" id="contactRestaurantAfterPaymentBtn">Contact restaurant</button>
       </div>
     </div>
-  </section>
+  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script>
@@ -3040,16 +2591,8 @@ body {
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325, name: 'Coimbatore Foods' };
   const DELIVERY_INSTRUCTIONS_KEY = 'cbe_cart_delivery_instructions';
   const FOOD_INSTRUCTIONS_KEY = 'cbe_cart_food_instructions';
-  const PAID_ORDER_PENDING_SAVE_KEY = 'cbe_paid_order_pending_save';
 
   const cartShell = document.getElementById('cartShell');
-  const paidFinalizationScreen = document.getElementById('paidFinalizationScreen');
-  const paidFinalizationEyebrow = document.getElementById('paidFinalizationEyebrow');
-  const paidFinalizationTitle = document.getElementById('paidFinalizationTitle');
-  const paidFinalizationCopy = document.getElementById('paidFinalizationCopy');
-  const paidFinalizationLoader = document.getElementById('paidFinalizationLoader');
-  const paidFinalizationRetryButton = document.getElementById('paidFinalizationRetryButton');
-  const paidFinalizationNote = document.getElementById('paidFinalizationNote');
   const itemsCountEl = document.getElementById('itemsCount');
   const deliveryAddressEl = document.getElementById('deliveryAddress');
   const itemCardsEl = document.getElementById('itemCards');
@@ -3060,6 +2603,14 @@ body {
   const toPayEl = document.getElementById('toPay');
   const bottomTotalEl = document.getElementById('bottomTotal');
   const toastEl = document.getElementById('toast');
+  const paymentFinalizationScreen = document.getElementById('paymentFinalizationScreen');
+  const paymentFinalizationSpinner = document.getElementById('paymentFinalizationSpinner');
+  const paymentFinalizationTitle = document.getElementById('paymentFinalizationTitle');
+  const paymentFinalizationCopy = document.getElementById('paymentFinalizationCopy');
+  const paymentFinalizationActions = document.getElementById('paymentFinalizationActions');
+  const retryPaymentOrderSaveBtn = document.getElementById('retryPaymentOrderSaveBtn');
+  const contactRestaurantAfterPaymentBtn = document.getElementById('contactRestaurantAfterPaymentBtn');
+  const PAID_ORDER_CONFIRMATION_KEY = 'cbe_paid_order_confirmation_pending';
   const billDetailsSection = document.getElementById('billDetailsSection');
   const billDetailsToggle = document.getElementById('billDetailsToggle');
   const billDetailsArrow = document.getElementById('billDetailsArrow');
@@ -3811,123 +3362,6 @@ body {
       updatedAt: new Date().toISOString()
     }, { merge: true }).catch(error => {
       console.warn('Customer last order memory sync failed', error);
-    });
-  }
-
-  function setPaidFinalizationScreen(state = 'saving', options = {}) {
-    if (!paidFinalizationScreen) return;
-
-    const orderId = cleanText(options.orderId || '');
-    const errorText = cleanText(options.error || '');
-
-    paidFinalizationScreen.hidden = false;
-    paidFinalizationScreen.setAttribute('aria-busy', state === 'saving' ? 'true' : 'false');
-    cartShell?.classList.add('cart-paid-finalizing');
-
-    if (state === 'saved') {
-      if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Order saved';
-      if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Order placed';
-      if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Your order is confirmed with the restaurant.';
-      if (paidFinalizationLoader) paidFinalizationLoader.hidden = true;
-      if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = true;
-      if (paidFinalizationNote) paidFinalizationNote.textContent = orderId ? `Order ID ${orderId}` : '';
-      return;
-    }
-
-    if (state === 'failed') {
-      if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Payment successful';
-      if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Saving order';
-      if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Payment is received, but the order did not reach the restaurant yet. Please retry. Do not place another order.';
-      if (paidFinalizationLoader) paidFinalizationLoader.hidden = true;
-      if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = false;
-      if (paidFinalizationNote) paidFinalizationNote.textContent = errorText ? errorText.slice(0, 120) : 'Order save failed. Retry once internet is stable.';
-      return;
-    }
-
-    if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Payment successful';
-    if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Placing your order';
-    if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Please wait. We are saving your order with the restaurant.';
-    if (paidFinalizationLoader) paidFinalizationLoader.hidden = false;
-    if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = true;
-    if (paidFinalizationNote) paidFinalizationNote.textContent = orderId ? `Order ID ${orderId}` : 'Do not refresh or go back.';
-  }
-
-  function writePendingPaidOrderSave(snapshot, paymentResponse = {}) {
-    try {
-      const orderId = cleanText(snapshot?.id || snapshot?.orderId || paymentResponse?.razorpay_payment_id || `CBE-${Date.now()}`);
-      localStorage.setItem(PAID_ORDER_PENDING_SAVE_KEY, JSON.stringify({
-        snapshot: { ...(snapshot || {}), id: orderId, orderId },
-        paymentResponse: paymentResponse || {},
-        orderId,
-        createdAt: new Date().toISOString()
-      }));
-    } catch (error) {
-      console.warn('Pending paid order save marker failed', error);
-    }
-  }
-
-  function clearPendingPaidOrderSave() {
-    try { localStorage.removeItem(PAID_ORDER_PENDING_SAVE_KEY); } catch (_) {}
-  }
-
-  function getPendingPaidOrderSave() {
-    try {
-      const value = JSON.parse(localStorage.getItem(PAID_ORDER_PENDING_SAVE_KEY) || 'null');
-      if (!value || !value.snapshot) return null;
-      return value;
-    } catch (_) {
-      return null;
-    }
-  }
-
-  async function finalizePaidOrderAfterPayment(snapshot, paymentResponse = {}) {
-    const orderId = cleanText(snapshot?.id || snapshot?.orderId || paymentResponse?.razorpay_payment_id || `CBE-${Date.now()}`);
-    const safeSnapshot = { ...(snapshot || {}), id: orderId, orderId };
-
-    writePendingPaidOrderSave(safeSnapshot, paymentResponse);
-    setPaidFinalizationScreen('saving', { orderId });
-    setPlaceOrderLoading(false);
-
-    try {
-      await saveConfirmedOrder(safeSnapshot, paymentResponse);
-    } catch (error) {
-      console.warn('Paid order save failed before order placed screen', error);
-      const retryOrder = preparePaidOrderForFirestore({
-        ...safeSnapshot,
-        id: orderId,
-        orderId,
-        status: 'confirmed',
-        orderStatus: 'confirmed',
-        adminStatus: 'confirmed',
-        paymentStatus: 'paid',
-        paymentProvider: 'Razorpay',
-        paymentId: paymentResponse.razorpay_payment_id || `dev_payment_${Date.now()}`,
-        razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
-        razorpayOrderId: paymentResponse.razorpay_order_id || '',
-        razorpaySignature: paymentResponse.razorpay_signature || '',
-        paidAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      });
-      queuePaidOrderRetry(retryOrder, error);
-      setPaidFinalizationScreen('failed', { orderId, error: error?.message || error || 'Order save failed' });
-    }
-  }
-
-  async function retryPendingPaidOrderSave() {
-    const pending = getPendingPaidOrderSave();
-    if (!pending || !pending.snapshot) {
-      setPaidFinalizationScreen('failed', { error: 'No pending paid order found. Contact support with your Razorpay payment ID.' });
-      return;
-    }
-    await finalizePaidOrderAfterPayment(pending.snapshot, pending.paymentResponse || {});
-  }
-
-  function resumePendingPaidOrderSaveIfNeeded() {
-    const pending = getPendingPaidOrderSave();
-    if (!pending || !pending.snapshot) return;
-    setPaidFinalizationScreen('failed', {
-      orderId: pending.orderId || pending.snapshot.orderId || pending.snapshot.id || '',
-      error: 'Payment was completed earlier. Retry saving the order before leaving this screen.'
     });
   }
 
@@ -5144,6 +4578,13 @@ body {
     const totalValue = Number(order.total ?? order.totals?.total ?? 0) || 0;
     const totalQty = Number(order.totalQty ?? order.totals?.totalQty ?? (Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0) : 0)) || 0;
 
+    const paymentStatusRaw = cleanText(order.paymentStatus || 'paid').toLowerCase();
+    const hasPaymentReference = Boolean(order.paymentId || order.razorpayPaymentId || order.razorpay_payment_id);
+    const isPaidOrder = hasPaymentReference || ['paid', 'captured', 'success', 'successful', 'confirmed'].includes(paymentStatusRaw);
+    const resolvedStatus = order.status || (isPaidOrder ? 'confirmed' : 'payment_pending');
+    const resolvedOrderStatus = order.orderStatus || resolvedStatus;
+    const resolvedAdminStatus = order.adminStatus || resolvedOrderStatus;
+
     return preparePaidOrderForFirestore({
       ...order,
       id: orderId,
@@ -5163,13 +4604,13 @@ body {
         contact: customerPhone,
         email: customerEmail
       },
-      status: order.status || 'confirmed',
-      orderStatus: order.orderStatus || order.status || 'confirmed',
-      adminStatus: order.adminStatus || order.status || 'confirmed',
-      paymentStatus: order.paymentStatus || 'paid',
+      status: resolvedStatus,
+      orderStatus: resolvedOrderStatus,
+      adminStatus: resolvedAdminStatus,
+      paymentStatus: order.paymentStatus || (isPaidOrder ? 'paid' : 'pending'),
       paymentProvider: order.paymentProvider || 'Razorpay',
-      paid: true,
-      isPaid: true,
+      paid: isPaidOrder,
+      isPaid: isPaidOrder,
       total: totalValue,
       totalQty,
       totals: {
@@ -5312,6 +4753,114 @@ body {
 
 
 
+  function setPaymentFinalizationScreen(state, title, copy, showActions = false) {
+    if (!paymentFinalizationScreen) return;
+    paymentFinalizationScreen.hidden = false;
+    paymentFinalizationScreen.setAttribute('aria-busy', showActions ? 'false' : 'true');
+    if (paymentFinalizationTitle) paymentFinalizationTitle.textContent = title || 'Confirming your order';
+    if (paymentFinalizationCopy) paymentFinalizationCopy.textContent = copy || 'Please wait. We are sending your paid order to the restaurant.';
+    if (paymentFinalizationSpinner) paymentFinalizationSpinner.hidden = Boolean(showActions);
+    if (paymentFinalizationActions) paymentFinalizationActions.hidden = !showActions;
+    document.body.classList.add('payment-finalization-active');
+  }
+
+  function hidePaymentFinalizationScreen() {
+    if (paymentFinalizationScreen) paymentFinalizationScreen.hidden = true;
+    document.body.classList.remove('payment-finalization-active');
+  }
+
+  function rememberPaidConfirmation(order, paymentResponse) {
+    try {
+      localStorage.setItem(PAID_ORDER_CONFIRMATION_KEY, JSON.stringify({
+        order: preparePaidOrderForFirestore(order || {}),
+        paymentResponse: paymentResponse || {},
+        savedAt: new Date().toISOString()
+      }));
+    } catch (error) {
+      console.warn('Paid confirmation recovery write failed', error);
+    }
+  }
+
+  function clearPaidConfirmation() {
+    try { localStorage.removeItem(PAID_ORDER_CONFIRMATION_KEY); } catch (_) {}
+  }
+
+  function readPaidConfirmation() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(PAID_ORDER_CONFIRMATION_KEY) || 'null');
+      if (!parsed || !parsed.order) return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function savePendingPaymentOrderBeforeRazorpay(snapshot) {
+    const pendingOrder = preparePaidOrderForFirestore({
+      ...snapshot,
+      id: snapshot.id || snapshot.orderId || `CBE-${Date.now()}`,
+      orderId: snapshot.orderId || snapshot.id || `CBE-${Date.now()}`,
+      status: 'payment_pending',
+      orderStatus: 'payment_pending',
+      adminStatus: 'payment_pending',
+      paymentStatus: 'pending',
+      paymentProvider: 'Razorpay',
+      paid: false,
+      isPaid: false,
+      checkoutStartedAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      adminNote: 'Customer opened Razorpay checkout. Do not prepare until paymentStatus becomes paid.'
+    });
+
+    const savedPending = await savePaidOrderDirectToFirestore(pendingOrder);
+    try {
+      localStorage.setItem('checkout_snapshot', JSON.stringify(savedPending));
+      localStorage.setItem('pending_order', JSON.stringify(savedPending));
+    } catch (_) {}
+    return savedPending;
+  }
+
+  function showPaidConfirmationRetry(order, paymentResponse, error) {
+    rememberPaidConfirmation(order, paymentResponse);
+    setPaymentFinalizationScreen(
+      'retry',
+      'Payment received',
+      'Your payment is received, but the order is not confirmed with the restaurant yet. Please tap Retry. Do not place another order.',
+      true
+    );
+    if (error) console.warn('Paid order confirmation is waiting for retry', error);
+  }
+
+  async function retryPendingPaidOrderSave() {
+    const pending = readPaidConfirmation();
+    if (!pending?.order) {
+      hidePaymentFinalizationScreen();
+      showToast('No pending paid order found. Please contact restaurant support.');
+      return;
+    }
+
+    setPaymentFinalizationScreen(
+      'saving',
+      'Confirming your order',
+      'Please wait. We are sending your paid order to the restaurant.',
+      false
+    );
+
+    try {
+      await saveConfirmedOrder(pending.order, pending.paymentResponse || {});
+    } catch (error) {
+      showPaidConfirmationRetry(pending.order, pending.paymentResponse || {}, error);
+    }
+  }
+
+  function recoverPaidConfirmationIfNeeded() {
+    const pending = readPaidConfirmation();
+    if (!pending?.order) return false;
+    showPaidConfirmationRetry(pending.order, pending.paymentResponse || {}, null);
+    return true;
+  }
+
+
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
     const generatedOrderId = cleanText(snapshot.id || snapshot.orderId || paymentResponse.razorpay_payment_id || `CBE-${Date.now()}`);
     let order = {
@@ -5342,13 +4891,12 @@ body {
 
     const savedOrder = await persistPaidOrderBeforeRedirect(order);
 
-    try { clearPendingPaidOrderSave(); } catch (_) {}
     try { writePaidOrderLocalCache(savedOrder); } catch (error) { console.warn('Paid order local cache failed', error); }
-    setPaidFinalizationScreen('saved', { orderId: savedOrder.id || savedOrder.orderId || generatedOrderId });
     try { await clearCartAfterPaidOrder(savedOrder); } catch (error) { console.warn('Paid cart clear failed', error); }
     try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
 
-    window.setTimeout(() => goToOrderPlaced(savedOrder), 250);
+    clearPaidConfirmation();
+    goToOrderPlaced(savedOrder);
   }
 
 
@@ -5394,9 +4942,34 @@ body {
         color: '#8806CE'
       },
       handler(response) {
-        finalizePaidOrderAfterPayment(snapshot, response).catch(error => {
-          console.warn('Paid order finalization failed', error);
-          setPaidFinalizationScreen('failed', { orderId: snapshot.id || snapshot.orderId || response.razorpay_payment_id || '', error: error?.message || error || 'Order save failed' });
+        const paidOrder = preparePaidOrderForFirestore({
+          ...snapshot,
+          id: snapshot.id || snapshot.orderId || response.razorpay_payment_id || `CBE-${Date.now()}`,
+          orderId: snapshot.orderId || snapshot.id || response.razorpay_payment_id || `CBE-${Date.now()}`,
+          status: 'confirmed',
+          orderStatus: 'confirmed',
+          adminStatus: 'confirmed',
+          paymentStatus: 'paid',
+          paymentProvider: 'Razorpay',
+          paymentId: response.razorpay_payment_id || `dev_payment_${Date.now()}`,
+          razorpayPaymentId: response.razorpay_payment_id || '',
+          razorpayOrderId: response.razorpay_order_id || '',
+          razorpaySignature: response.razorpay_signature || '',
+          paidAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        });
+
+        rememberPaidConfirmation(paidOrder, response);
+        setPaymentFinalizationScreen(
+          'saving',
+          'Confirming your order',
+          'Payment received. Sending your order to the restaurant now.',
+          false
+        );
+
+        saveConfirmedOrder(paidOrder, response).catch(error => {
+          queuePaidOrderRetry(paidOrder, error);
+          showPaidConfirmationRetry(paidOrder, response, error);
         });
       },
       modal: {
@@ -5414,7 +4987,7 @@ body {
     razorpay.open();
   }
 
-  function handlePlaceOrder() {
+  async function handlePlaceOrder() {
     const cart = loadCartRaw();
     if (!cart.length) {
       renderCart();
@@ -5435,8 +5008,17 @@ body {
     });
     scheduleCustomerMemorySync('cart_payment_started');
 
-    const snapshot = buildCheckoutSnapshot(cart, address);
-    openRazorpayPayment(snapshot);
+    setPlaceOrderLoading(true, 'Creating order...');
+
+    try {
+      const snapshot = buildCheckoutSnapshot(cart, address);
+      const pendingOrder = await savePendingPaymentOrderBeforeRazorpay(snapshot);
+      openRazorpayPayment(pendingOrder);
+    } catch (error) {
+      console.warn('Could not create pending order before Razorpay', error);
+      setPlaceOrderLoading(false);
+      showToast('Could not connect order to restaurant. Please try again.');
+    }
   }
 
   function continuePaymentFromAddressIfNeeded() {
@@ -5461,8 +5043,7 @@ body {
       const address = getDeliveryAddress();
       if (!isUsableDeliveryAddress(address)) return;
 
-      const snapshot = buildCheckoutSnapshot(cart, address);
-      openRazorpayPayment(snapshot);
+      handlePlaceOrder();
     }, 350);
   }
 
@@ -5517,12 +5098,6 @@ body {
   cancelClearCartBtn?.addEventListener('click', closeCartDialog);
   confirmClearCartBtn?.addEventListener('click', clearCartFromOptions);
   cancelInstructionsBtn?.addEventListener('click', closeCartDialog);
-  paidFinalizationRetryButton?.addEventListener('click', () => {
-    retryPendingPaidOrderSave().catch(error => {
-      console.warn('Paid order retry failed', error);
-      setPaidFinalizationScreen('failed', { error: error?.message || error || 'Retry failed' });
-    });
-  });
 
   saveInstructionsBtn?.addEventListener('click', () => {
     saveCartInstructions(deliveryInstructionsInput?.value || '', foodInstructionsInput?.value || '');
@@ -5548,8 +5123,13 @@ body {
     }
   });
 
-  resumePendingPaidOrderSaveIfNeeded();
-  renderCart();
+  retryPaymentOrderSaveBtn?.addEventListener('click', retryPendingPaidOrderSave);
+  contactRestaurantAfterPaymentBtn?.addEventListener('click', () => {
+    window.location.href = 'tel:+918888888888';
+  });
+
+  const hasPendingPaidConfirmation = recoverPaidConfirmationIfNeeded();
+  if (!hasPendingPaidConfirmation) renderCart();
   bootCustomerMemorySync();
   window.setTimeout(() => scheduleCustomerMemorySync('cart_page_opened'), 1200);
   continuePaymentFromAddressIfNeeded();
