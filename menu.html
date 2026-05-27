@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Tiffin CBE">
 <meta name="theme-color" content="#8806CE">
 <title>Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest">
+<link rel="manifest" id="pwa-manifest" href="./manifest.webmanifest">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css">
 <style>
 @font-face {
@@ -5457,16 +5457,10 @@ html, body { min-height: 100%; background: #12130F !important; }
 </div>
 
 <script>
-const mf = {
-  name:"Tiffin CBE",
-  short_name:"Tiffin",
-  start_url:"./",
-  display:"standalone",
-  background_color:"#0d0600",
-  theme_color:"#0d0600"
-};
-const blob = new Blob([JSON.stringify(mf)], { type:'application/json' });
-document.getElementById('pwa-manifest').href = URL.createObjectURL(blob);
+(function(){
+  const link = document.getElementById('pwa-manifest');
+  if (link) link.href = './manifest.webmanifest';
+})();
 </script>
 <script>window.CBE_OLA_MAP_THEME = "dark";</script>
 <script src="ola-map-v4.js?v=20260523_appfeel1"></script>
@@ -9928,8 +9922,48 @@ if (shouldAutoOpenLocationMap()) {
     return toTime(order?.updatedAt || order?.statusUpdatedAt || order?.lastUpdatedAt || order?.paidAt || order?.createdAt || order?.orderTime);
   }
 
+  const ORDER_STATUS_RANK = {
+    cancelled: 100,
+    canceled: 100,
+    delivered: 90,
+    completed: 90,
+    reached: 80,
+    arrived: 80,
+    reached_customer: 80,
+    reached_location: 80,
+    at_customer: 80,
+    picked_up: 70,
+    pickup_done: 70,
+    out_for_delivery: 70,
+    outfordelivery: 70,
+    on_the_way: 70,
+    on_way: 70,
+    preparing: 60,
+    cooking: 60,
+    ready: 60,
+    accepted: 50,
+    admin_accepted: 50,
+    confirmed_by_restaurant: 50,
+    confirmed: 40,
+    order_received: 40,
+    received: 40,
+    placed: 40,
+    paid: 35,
+    pending: 10
+  };
+
+  function normalizeStatusText(value) {
+    return cleanText(value).toLowerCase().replace(/[\s-]+/g, "_");
+  }
+
+  function pickOrderStatus(order) {
+    const candidates = [order?.adminStatus, order?.orderStatus, order?.deliveryStatus, order?.riderStatus, order?.trackStatus, order?.status].map(normalizeStatusText).filter(Boolean);
+    if (!candidates.length) return "";
+    return candidates.sort((a, b) => (ORDER_STATUS_RANK[b] || 0) - (ORDER_STATUS_RANK[a] || 0))[0];
+  }
+
   function normalizeStatus(order) {
-    return cleanText(order?.adminStatus || order?.orderStatus || order?.deliveryStatus || order?.riderStatus || order?.status || order?.trackStatus || "").toLowerCase().replace(/\s+/g, "_").replace(/-/g, "_");
+    return pickOrderStatus(order);
   }
 
   function isPaid(order) {
@@ -10006,15 +10040,15 @@ if (shouldAutoOpenLocationMap()) {
 
   function normalizeRemoteOrder(doc) {
     const data = doc.data ? doc.data() : doc;
-    const primaryStatus = data.adminStatus || data.status || data.orderStatus || data.deliveryStatus || data.riderStatus || data.trackStatus || "confirmed";
+    const primaryStatus = pickOrderStatus(data) || "confirmed";
     return {
       id: doc.id || data.id || data.orderId || "",
       orderId: data.orderId || doc.id || data.id || "",
       ...data,
-      status: data.status || primaryStatus,
-      orderStatus: data.orderStatus || data.status || primaryStatus,
-      adminStatus: data.adminStatus || data.status || data.orderStatus || primaryStatus,
-      deliveryStatus: data.deliveryStatus || primaryStatus
+      status: primaryStatus,
+      orderStatus: primaryStatus,
+      adminStatus: primaryStatus,
+      deliveryStatus: primaryStatus
     };
   }
 
@@ -10025,12 +10059,12 @@ if (shouldAutoOpenLocationMap()) {
   function mergeOrderForAdminStatus(base, incoming, preferIncomingStatus = true) {
     const merged = { ...(base || {}), ...(incoming || {}) };
     const statusSource = preferIncomingStatus ? incoming : merged;
-    const primaryStatus = cleanText(statusSource?.adminStatus || statusSource?.status || statusSource?.orderStatus || statusSource?.deliveryStatus || statusSource?.riderStatus || statusSource?.trackStatus);
+    const primaryStatus = pickOrderStatus(statusSource);
     if (primaryStatus) {
-      merged.status = statusSource.status || primaryStatus;
-      merged.orderStatus = statusSource.orderStatus || statusSource.status || primaryStatus;
-      merged.adminStatus = statusSource.adminStatus || statusSource.status || statusSource.orderStatus || primaryStatus;
-      merged.deliveryStatus = statusSource.deliveryStatus || primaryStatus;
+      merged.status = primaryStatus;
+      merged.orderStatus = primaryStatus;
+      merged.adminStatus = primaryStatus;
+      merged.deliveryStatus = primaryStatus;
     }
     return merged;
   }
@@ -10790,7 +10824,7 @@ if (shouldAutoOpenLocationMap()) {
   window.addEventListener("pageshow", boot);
 })();
 </script>
-<script src="pwa-speed.js?v=20260526_floating_track_dot1" defer></script>
+<script src="pwa-speed.js?v=20260527_customer_pwa_fix1" defer></script>
 
 
 <script id="cf-mobile-zoom-lock-script">

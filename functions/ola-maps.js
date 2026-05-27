@@ -21,17 +21,32 @@ const OLA_DIRECTIONS_URL =
 const OLA_DIRECTIONS_BASIC_URL =
   "https://api.olamaps.io/routing/v1/directions/basic";
 
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+function isAllowedRequestOrigin(origin) {
+  if (!origin) return true;
+  try {
+    const url = new URL(origin);
+    const host = url.hostname.toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "customer-dev.cbefoods-customer.pages.dev" || host === "cbefoods-customer.pages.dev" || host.endsWith(".cbefoods-customer.pages.dev");
+  } catch {
+    return false;
+  }
+}
 
-function jsonResponse(data, status = 200) {
+function corsHeaders(origin) {
+  const allowedOrigin = isAllowedRequestOrigin(origin) ? (origin || "*") : "https://customer-dev.cbefoods-customer.pages.dev";
+  return {
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+    "Vary": "Origin",
+  };
+}
+
+function jsonResponse(data, status = 200, origin = "") {
   return new Response(JSON.stringify(data), {
     status,
     headers: {
-      ...CORS_HEADERS,
+      ...corsHeaders(origin),
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "public, max-age=60",
     },
@@ -111,7 +126,7 @@ function rewriteOlaUrls(value, origin) {
 
 async function fetchOla(rawUrl, apiKey, origin, options = {}) {
   if (!isAllowedOlaUrl(rawUrl)) {
-    return jsonResponse({ message: "Blocked non-Ola URL" }, 403);
+    return jsonResponse({ message: "Blocked non-Ola URL" }, 403, origin);
   }
 
   const upstreamUrl = withApiKey(rawUrl, apiKey);
@@ -141,12 +156,12 @@ async function fetchOla(rawUrl, apiKey, origin, options = {}) {
     try {
       const data = JSON.parse(text);
       const rewritten = rewriteOlaUrls(data, origin);
-      return jsonResponse(rewritten, upstream.status);
+      return jsonResponse(rewritten, upstream.status, origin);
     } catch {
       return new Response(text, {
         status: upstream.status,
         headers: {
-          ...CORS_HEADERS,
+          ...corsHeaders(origin),
           "Content-Type": contentType || "application/json; charset=utf-8",
           "Cache-Control": "public, max-age=60",
         },
@@ -159,7 +174,7 @@ async function fetchOla(rawUrl, apiKey, origin, options = {}) {
   return new Response(body, {
     status: upstream.status,
     headers: {
-      ...CORS_HEADERS,
+      ...corsHeaders(origin),
       "Content-Type": contentType || "application/octet-stream",
       "Cache-Control": "public, max-age=86400",
     },
@@ -170,25 +185,30 @@ export async function onRequest(context) {
   const { request, env } = context;
 
   if (request.method === "OPTIONS") {
-    return new Response(null, { headers: CORS_HEADERS });
+    const requestOrigin = request.headers.get("Origin") || new URL(request.url).origin;
+    return new Response(null, { headers: corsHeaders(requestOrigin) });
   }
+
+  const url = new URL(request.url);
+  const origin = url.origin;
+  const requestOrigin = request.headers.get("Origin") || origin;
+  if (!isAllowedRequestOrigin(requestOrigin)) return jsonResponse({ message: "Origin not allowed" }, 403, requestOrigin);
 
   const apiKey = env.OLA_MAPS_API_KEY;
 
   if (!apiKey) {
     return jsonResponse(
       { message: "Missing Cloudflare env var OLA_MAPS_API_KEY" },
-      500
+      500,
+      requestOrigin
     );
   }
 
-  const url = new URL(request.url);
-  const origin = url.origin;
   const type = url.searchParams.get("type") || "style";
 
   try {
     if (type === "config") {
-      return jsonResponse({ apiKey });
+      return jsonResponse({ apiKey }, 200, requestOrigin);
     }
 
     if (type === "style") {
@@ -198,7 +218,7 @@ export async function onRequest(context) {
     if (type === "proxy") {
       const targetUrl = url.searchParams.get("url");
       if (!targetUrl) {
-        return jsonResponse({ message: "Missing proxy url" }, 400);
+        return jsonResponse({ message: "Missing proxy url" }, 400, requestOrigin);
       }
       return await fetchOla(targetUrl, apiKey, origin);
     }
@@ -208,7 +228,7 @@ export async function onRequest(context) {
       const lng = url.searchParams.get("lng");
 
       if (!lat || !lng) {
-        return jsonResponse({ message: "lat and lng are required" }, 400);
+        return jsonResponse({ message: "lat and lng are required" }, 400, requestOrigin);
       }
 
       const reverseUrl =
@@ -227,7 +247,8 @@ export async function onRequest(context) {
       if (!originLat || !originLng || !destLat || !destLng) {
         return jsonResponse(
           { message: "originLat, originLng, destLat and destLng are required" },
-          400
+          400,
+          requestOrigin
         );
       }
 
@@ -262,14 +283,15 @@ export async function onRequest(context) {
       );
     }
 
-    return jsonResponse({ message: "Unknown Ola proxy type" }, 400);
+    return jsonResponse({ message: "Unknown Ola proxy type" }, 400, requestOrigin);
   } catch (error) {
     return jsonResponse(
       {
         message: "Ola proxy failed",
         error: error.message || String(error),
       },
-      500
+      500,
+      requestOrigin
     );
   }
 }

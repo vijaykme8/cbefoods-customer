@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
 <meta name="theme-color" content="#8806CE" />
 <title>Cart - Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest" />
+<link rel="manifest" id="pwa-manifest" href="./manifest.webmanifest" />
 
 <script>
   if (!localStorage.getItem('cust_auth')) {
@@ -4485,9 +4485,9 @@ body {
         contact: customerPhone,
         email: customerEmail
       },
-      status: order.status || 'confirmed',
-      orderStatus: order.orderStatus || order.status || 'confirmed',
-      adminStatus: order.adminStatus || order.status || 'confirmed',
+      status: order.orderStatus || order.adminStatus || order.status || 'confirmed',
+      orderStatus: order.orderStatus || order.adminStatus || order.status || 'confirmed',
+      adminStatus: order.adminStatus || order.orderStatus || order.status || 'confirmed',
       paymentStatus: order.paymentStatus || 'paid',
       paymentProvider: order.paymentProvider || 'Razorpay',
       paid: true,
@@ -4577,14 +4577,6 @@ body {
     for (let attempt = 0; attempt < 3; attempt += 1) {
       try {
         const savedOrder = await savePaidOrderDirectToFirestore({ ...cleanOrder, id: orderId, orderId });
-
-        try {
-          if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
-            await window.TiffinMVP.saveOrderToCloud(savedOrder);
-          }
-        } catch (error) {
-          console.warn('Order cloud mirror sync failed through TiffinMVP', error);
-        }
 
         try {
           saveOrderToCustomerMemory(savedOrder);
@@ -4698,7 +4690,7 @@ body {
       currency: 'INR',
       name: 'Tiffin CBE',
       description: 'Food order payment',
-      image: 'assets/icons/icon-192.png',
+      image: './assets/icons/icon-192.png',
       prefill: {
         name: snapshot.customer.name || '',
         contact: snapshot.customer.phone || '',
@@ -4734,8 +4726,7 @@ body {
           queuePaidOrderRetry(fallbackOrder, error);
           await clearCartAfterPaidOrder(fallbackOrder);
           try { renderCart(); } catch (_) {}
-          showToast('Payment successful. Order sync is retrying.');
-          window.setTimeout(() => goToOrderPlaced(fallbackOrder), 450);
+          window.setTimeout(() => goToOrderPlaced(fallbackOrder), 120);
         });
       },
       modal: {
@@ -4923,6 +4914,6 @@ body {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260526_order_persist_fix2" defer></script>
+<script src="pwa-speed.js?v=20260527_customer_pwa_fix1" defer></script>
 </body>
 </html>

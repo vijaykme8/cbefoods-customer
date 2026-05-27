@@ -1,9 +1,45 @@
 (() => {
-  const P260526_order_persist_fix2';
+  const SPEED_VERSION = '20260527_customer_pwa_fix1';
   const APP_CACHE_NAMES = [`cbe-static-${SPEED_VERSION}`, `cbe-html-${SPEED_VERSION}`];
   const APP_CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
+  const LARGE_PROFILE_KEYS = [
+    'TIFFIN_CUSTOMER_AVATAR','CBE_CUSTOMER_AVATAR','cbe_customer_avatar','customer_avatar','cust_avatar','profile_avatar','customer_profile_photo','cust_profile_photo','profile_photo','customerProfilePhoto','customer_photo','cust_photo','user_photo','TIFFIN_PROFILE_PHOTO'
+  ];
   let prefetched = new Set();
   let isNavigating = false;
+
+  function safeStorageGet(key) {
+    try { return localStorage.getItem(key); } catch (_) { return null; }
+  }
+
+  function safeStorageSet(key, value) {
+    try {
+      localStorage.setItem(key, value);
+      return true;
+    } catch (error) {
+      cleanupLargeLocalStorage();
+      try {
+        localStorage.setItem(key, value);
+        return true;
+      } catch (_) {
+        console.warn('Local storage write skipped', key, error);
+        return false;
+      }
+    }
+  }
+
+  function cleanupLargeLocalStorage() {
+    try {
+      LARGE_PROFILE_KEYS.forEach(key => localStorage.removeItem(key));
+      Object.keys(localStorage).forEach(key => {
+        if (key.startsWith('firestore_mutations_') || key.startsWith('firestore_sequence_number_')) localStorage.removeItem(key);
+        if (/avatar|photo|image/i.test(key)) {
+          const value = localStorage.getItem(key) || '';
+          if (value.length > 250000 && key !== 'TIFFIN_CUSTOMER_PROFILE' && key !== 'customerProfile' && key !== 'CBE_CUSTOMER_PROFILE') localStorage.removeItem(key);
+        }
+      });
+    } catch (_) {}
+  }
 
   function injectAppFeelCss() {
     if (document.getElementById('cbe-app-feel-style')) return;
@@ -20,7 +56,7 @@
   }
 
   function safeUrl(href) {
-    try { return new URL(href, window.location.href); } catch { return null; }
+    try { return new URL(href, window.location.href); } catch (_) { return null; }
   }
 
   function isSameOriginLocalUrl(url) {
@@ -66,7 +102,7 @@
 
   function warmMapShellIfUseful() {
     const route = (window.location.pathname.split('/').pop() || 'menu.html').toLowerCase();
-    if (route !== 'menu.html' && route !== 'cart.html' && route !== 'profile.html' && route !== 'track-fullscreen.html') return;
+    if (!['menu.html','cart.html','profile.html','track-fullscreen.html'].includes(route)) return;
     addPreconnect('https://unpkg.com');
     addPreconnect('https://api.olamaps.io');
   }
@@ -78,7 +114,7 @@
       const parsed = JSON.parse(raw);
       const items = Array.isArray(parsed) ? parsed : Object.values(parsed || {});
       return items.some(item => Number(item?.qty ?? item?.quantity ?? item?.count ?? 0) > 0);
-    } catch { return false; }
+    } catch (_) { return false; }
   }
 
   function warmRazorpayIfUseful() {
@@ -112,22 +148,18 @@
     if (shouldSkipTransitionForAnchor(anchor, event)) return;
     const url = safeUrl(anchor.href);
     if (!url) return;
-
     if (isCurrentPage(url)) {
       event.preventDefault();
-      if (window.CoimbatoreFoodsBottomNav?.refresh) window.CoimbatoreFoodsBottomNav.refresh();
+      window.CoimbatoreFoodsBottomNav?.refresh?.();
       return;
     }
-
     event.preventDefault();
     if (isNavigating) return;
     isNavigating = true;
     anchor.classList.add('is-pressing');
     warmUrl(url);
-
     const reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (!reducedMotion) document.body.classList.add('cbe-page-leaving');
-
     window.setTimeout(() => window.location.assign(url.href), reducedMotion ? 0 : 85);
   }
 
@@ -146,9 +178,7 @@
     window.addEventListener('load', () => {
       navigator.serviceWorker.register(`sw.js?v=${SPEED_VERSION}`).then(registration => {
         registration.update?.();
-        if (navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ type: 'CBE_CLEAN_CACHES' });
-        }
+        if (navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: 'CBE_CLEAN_CACHES' });
         cleanOldCaches();
       }).catch(() => cleanOldCaches());
     });
@@ -163,6 +193,7 @@
   }
 
   function boot() {
+    cleanupLargeLocalStorage();
     injectAppFeelCss();
     document.body?.classList.remove('cbe-page-leaving');
     document.body?.classList.add('pwa-speed-ready');
@@ -177,6 +208,7 @@
     }, 900);
   }
 
+  cleanupLargeLocalStorage();
   registerServiceWorker();
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
@@ -191,6 +223,9 @@
 
   window.CBEPWASpeed = {
     version: SPEED_VERSION,
+    safeStorageGet,
+    safeStorageSet,
+    cleanupLargeLocalStorage,
     cleanOldCaches,
     warmMapShellIfUseful,
     warmRazorpayIfUseful,
