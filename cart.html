@@ -653,98 +653,6 @@ button {
   text-decoration: none;
 }
 
-.payment-finalization-screen {
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 24px;
-  background: #12130F;
-  color: #FDFDFF;
-  text-align: center;
-}
-
-.payment-finalization-screen[hidden] {
-  display: none !important;
-}
-
-.payment-finalization-card {
-  width: 100%;
-  max-width: 342px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 24px;
-  border-radius: 22px;
-  background: rgba(253, 253, 255, 0.08);
-  border: 1px solid rgba(253, 253, 255, 0.10);
-}
-
-.payment-finalization-spinner {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  border: 3px solid rgba(253, 253, 255, 0.20);
-  border-top-color: #08A045;
-  animation: paymentFinalizationSpin 850ms linear infinite;
-}
-
-.payment-finalization-title {
-  margin: 0;
-  color: #FDFDFF;
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.payment-finalization-copy {
-  margin: 0;
-  color: rgba(253, 253, 255, 0.68);
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 145%;
-}
-
-.payment-finalization-actions {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 4px;
-}
-
-.payment-finalization-actions[hidden] {
-  display: none !important;
-}
-
-.payment-finalization-actions button {
-  width: 100%;
-  min-height: 48px;
-  border: 0;
-  border-radius: 12px;
-  background: #08A045;
-  color: #FDFDFF;
-  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 120%;
-}
-
-.payment-finalization-actions .secondary-payment-action {
-  background: rgba(253, 253, 255, 0.12);
-  color: #FDFDFF;
-}
-
-@keyframes paymentFinalizationSpin {
-  to { transform: rotate(360deg); }
-}
-
 .toast {
   position: fixed;
   z-index: 100;
@@ -2554,18 +2462,6 @@ body {
       </div>
     </div>
   </div>
-
-  <div class="payment-finalization-screen" id="paymentFinalizationScreen" hidden aria-live="assertive" aria-busy="true">
-    <div class="payment-finalization-card">
-      <div class="payment-finalization-spinner" id="paymentFinalizationSpinner" aria-hidden="true"></div>
-      <h1 class="payment-finalization-title" id="paymentFinalizationTitle">Confirming your order</h1>
-      <p class="payment-finalization-copy" id="paymentFinalizationCopy">Please wait. We are sending your paid order to the restaurant.</p>
-      <div class="payment-finalization-actions" id="paymentFinalizationActions" hidden>
-        <button type="button" id="retryPaymentOrderSaveBtn">Retry confirmation</button>
-        <button type="button" class="secondary-payment-action" id="contactRestaurantAfterPaymentBtn">Contact restaurant</button>
-      </div>
-    </div>
-  </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script>
@@ -2603,14 +2499,6 @@ body {
   const toPayEl = document.getElementById('toPay');
   const bottomTotalEl = document.getElementById('bottomTotal');
   const toastEl = document.getElementById('toast');
-  const paymentFinalizationScreen = document.getElementById('paymentFinalizationScreen');
-  const paymentFinalizationSpinner = document.getElementById('paymentFinalizationSpinner');
-  const paymentFinalizationTitle = document.getElementById('paymentFinalizationTitle');
-  const paymentFinalizationCopy = document.getElementById('paymentFinalizationCopy');
-  const paymentFinalizationActions = document.getElementById('paymentFinalizationActions');
-  const retryPaymentOrderSaveBtn = document.getElementById('retryPaymentOrderSaveBtn');
-  const contactRestaurantAfterPaymentBtn = document.getElementById('contactRestaurantAfterPaymentBtn');
-  const PAID_ORDER_CONFIRMATION_KEY = 'cbe_paid_order_confirmation_pending';
   const billDetailsSection = document.getElementById('billDetailsSection');
   const billDetailsToggle = document.getElementById('billDetailsToggle');
   const billDetailsArrow = document.getElementById('billDetailsArrow');
@@ -4578,13 +4466,6 @@ body {
     const totalValue = Number(order.total ?? order.totals?.total ?? 0) || 0;
     const totalQty = Number(order.totalQty ?? order.totals?.totalQty ?? (Array.isArray(order.items) ? order.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0) : 0)) || 0;
 
-    const paymentStatusRaw = cleanText(order.paymentStatus || 'paid').toLowerCase();
-    const hasPaymentReference = Boolean(order.paymentId || order.razorpayPaymentId || order.razorpay_payment_id);
-    const isPaidOrder = hasPaymentReference || ['paid', 'captured', 'success', 'successful', 'confirmed'].includes(paymentStatusRaw);
-    const resolvedStatus = order.status || (isPaidOrder ? 'confirmed' : 'payment_pending');
-    const resolvedOrderStatus = order.orderStatus || resolvedStatus;
-    const resolvedAdminStatus = order.adminStatus || resolvedOrderStatus;
-
     return preparePaidOrderForFirestore({
       ...order,
       id: orderId,
@@ -4604,13 +4485,13 @@ body {
         contact: customerPhone,
         email: customerEmail
       },
-      status: resolvedStatus,
-      orderStatus: resolvedOrderStatus,
-      adminStatus: resolvedAdminStatus,
-      paymentStatus: order.paymentStatus || (isPaidOrder ? 'paid' : 'pending'),
+      status: order.status || 'confirmed',
+      orderStatus: order.orderStatus || order.status || 'confirmed',
+      adminStatus: order.adminStatus || order.status || 'confirmed',
+      paymentStatus: order.paymentStatus || 'paid',
       paymentProvider: order.paymentProvider || 'Razorpay',
-      paid: isPaidOrder,
-      isPaid: isPaidOrder,
+      paid: true,
+      isPaid: true,
       total: totalValue,
       totalQty,
       totals: {
@@ -4753,165 +4634,188 @@ body {
 
 
 
-  function setPaymentFinalizationScreen(state, title, copy, showActions = false) {
-    if (!paymentFinalizationScreen) return;
-    paymentFinalizationScreen.hidden = false;
-    paymentFinalizationScreen.setAttribute('aria-busy', showActions ? 'false' : 'true');
-    if (paymentFinalizationTitle) paymentFinalizationTitle.textContent = title || 'Confirming your order';
-    if (paymentFinalizationCopy) paymentFinalizationCopy.textContent = copy || 'Please wait. We are sending your paid order to the restaurant.';
-    if (paymentFinalizationSpinner) paymentFinalizationSpinner.hidden = Boolean(showActions);
-    if (paymentFinalizationActions) paymentFinalizationActions.hidden = !showActions;
-    document.body.classList.add('payment-finalization-active');
+  const PAID_ORDER_FINALIZATION_KEY = 'cbe_paid_order_finalization_v2';
+
+  function getRazorpayBackendUrl(action, params = {}) {
+    const query = new URLSearchParams({ action, ...params });
+    return `/razorpay?${query.toString()}`;
   }
 
-  function hidePaymentFinalizationScreen() {
-    if (paymentFinalizationScreen) paymentFinalizationScreen.hidden = true;
-    document.body.classList.remove('payment-finalization-active');
-  }
-
-  function rememberPaidConfirmation(order, paymentResponse) {
-    try {
-      localStorage.setItem(PAID_ORDER_CONFIRMATION_KEY, JSON.stringify({
-        order: preparePaidOrderForFirestore(order || {}),
-        paymentResponse: paymentResponse || {},
-        savedAt: new Date().toISOString()
-      }));
-    } catch (error) {
-      console.warn('Paid confirmation recovery write failed', error);
+  function showPaidFinalizationScreen(title = 'Confirming your order', message = 'Payment received. We are placing your order with the restaurant.') {
+    let layer = document.getElementById('paidFinalizationScreen');
+    if (!layer) {
+      layer = document.createElement('div');
+      layer.id = 'paidFinalizationScreen';
+      layer.style.cssText = 'position:fixed;inset:0;z-index:999999;background:#12130F;color:#FDFDFF;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;font-family:General Sans,system-ui;-webkit-font-smoothing:antialiased;';
+      layer.innerHTML = `
+        <div style="width:72px;height:72px;border-radius:28px;background:#08A045;display:flex;align-items:center;justify-content:center;margin-bottom:22px;box-shadow:0 18px 40px rgba(8,160,69,.22);">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12.5L9.2 16.5L19.5 7" stroke="#FDFDFF" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div id="paidFinalizationTitle" style="font-size:22px;font-weight:700;line-height:28px;margin-bottom:8px;">Confirming your order</div>
+        <div id="paidFinalizationMessage" style="max-width:310px;font-size:15px;font-weight:500;line-height:22px;color:rgba(253,253,255,.68);">Payment received. We are placing your order with the restaurant.</div>
+        <div style="width:190px;height:4px;border-radius:20px;overflow:hidden;background:rgba(253,253,255,.12);margin-top:26px;position:relative;"><div style="position:absolute;inset:0;width:45%;border-radius:20px;background:#08A045;animation:cbePaidProgress 1.1s ease-in-out infinite;"></div></div>
+        <style>@keyframes cbePaidProgress{0%{transform:translateX(-120%)}100%{transform:translateX(260%)}}</style>
+      `;
+      document.body.appendChild(layer);
     }
+    const titleEl = document.getElementById('paidFinalizationTitle');
+    const messageEl = document.getElementById('paidFinalizationMessage');
+    if (titleEl) titleEl.textContent = title;
+    if (messageEl) messageEl.textContent = message;
+    layer.style.display = 'flex';
+    try { document.body.classList.add('paid-finalization-active'); } catch (_) {}
   }
 
-  function clearPaidConfirmation() {
-    try { localStorage.removeItem(PAID_ORDER_CONFIRMATION_KEY); } catch (_) {}
+  function hidePaidFinalizationScreen() {
+    const layer = document.getElementById('paidFinalizationScreen');
+    if (layer) layer.style.display = 'none';
+    try { document.body.classList.remove('paid-finalization-active'); } catch (_) {}
   }
 
-  function readPaidConfirmation() {
+  function readPaidFinalizationState() {
     try {
-      const parsed = JSON.parse(localStorage.getItem(PAID_ORDER_CONFIRMATION_KEY) || 'null');
-      if (!parsed || !parsed.order) return null;
-      return parsed;
+      const data = JSON.parse(localStorage.getItem(PAID_ORDER_FINALIZATION_KEY) || 'null');
+      return data && typeof data === 'object' ? data : null;
     } catch (_) {
       return null;
     }
   }
 
-  async function savePendingPaymentOrderBeforeRazorpay(snapshot) {
-    const pendingOrder = preparePaidOrderForFirestore({
-      ...snapshot,
-      id: snapshot.id || snapshot.orderId || `CBE-${Date.now()}`,
-      orderId: snapshot.orderId || snapshot.id || `CBE-${Date.now()}`,
-      status: 'payment_pending',
-      orderStatus: 'payment_pending',
-      adminStatus: 'payment_pending',
-      paymentStatus: 'pending',
-      paymentProvider: 'Razorpay',
-      paid: false,
-      isPaid: false,
-      checkoutStartedAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      adminNote: 'Customer opened Razorpay checkout. Do not prepare until paymentStatus becomes paid.'
+  function writePaidFinalizationState(state) {
+    try { localStorage.setItem(PAID_ORDER_FINALIZATION_KEY, JSON.stringify(state || {})); } catch (_) {}
+  }
+
+  function clearPaidFinalizationState() {
+    try { localStorage.removeItem(PAID_ORDER_FINALIZATION_KEY); } catch (_) {}
+  }
+
+  async function callRazorpayBackend(action, payload = {}) {
+    const response = await fetch(getRazorpayBackendUrl(action), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+      cache: 'no-store'
     });
-
-    const savedPending = await savePaidOrderDirectToFirestore(pendingOrder);
-    try {
-      localStorage.setItem('checkout_snapshot', JSON.stringify(savedPending));
-      localStorage.setItem('pending_order', JSON.stringify(savedPending));
-    } catch (_) {}
-    return savedPending;
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.message || `Razorpay ${action} failed`);
+    return data;
   }
 
-  function showPaidConfirmationRetry(order, paymentResponse, error) {
-    rememberPaidConfirmation(order, paymentResponse);
-    setPaymentFinalizationScreen(
-      'retry',
-      'Payment received',
-      'Your payment is received, but the order is not confirmed with the restaurant yet. Please tap Retry. Do not place another order.',
-      true
-    );
-    if (error) console.warn('Paid order confirmation is waiting for retry', error);
+  async function readRazorpayFinalizeStatus(checkoutId) {
+    const response = await fetch(getRazorpayBackendUrl('status', { checkoutId }), { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || data.ok === false) throw new Error(data.message || 'Order status check failed');
+    return data;
   }
 
-  async function retryPendingPaidOrderSave() {
-    const pending = readPaidConfirmation();
-    if (!pending?.order) {
-      hidePaymentFinalizationScreen();
-      showToast('No pending paid order found. Please contact restaurant support.');
-      return;
-    }
-
-    setPaymentFinalizationScreen(
-      'saving',
-      'Confirming your order',
-      'Please wait. We are sending your paid order to the restaurant.',
-      false
-    );
-
-    try {
-      await saveConfirmedOrder(pending.order, pending.paymentResponse || {});
-    } catch (error) {
-      showPaidConfirmationRetry(pending.order, pending.paymentResponse || {}, error);
-    }
+  async function createBackendRazorpayOrder(snapshot) {
+    return callRazorpayBackend('create-order', { order: snapshot, storeId: window.TIFFIN_STORE_ID || 'main' });
   }
 
-  function recoverPaidConfirmationIfNeeded() {
-    const pending = readPaidConfirmation();
-    if (!pending?.order) return false;
-    showPaidConfirmationRetry(pending.order, pending.paymentResponse || {}, null);
-    return true;
-  }
-
-
-  async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
-    const generatedOrderId = cleanText(snapshot.id || snapshot.orderId || paymentResponse.razorpay_payment_id || `CBE-${Date.now()}`);
-    let order = {
+  function normalizeBackendSavedOrder(snapshot, backendOrder) {
+    const order = preparePaidOrderForFirestore({
       ...snapshot,
-      id: generatedOrderId,
-      orderId: generatedOrderId,
-      status: 'confirmed',
-      orderStatus: 'confirmed',
-      adminStatus: 'confirmed',
-      paymentStatus: 'paid',
-      paymentProvider: 'Razorpay',
-      paymentId: paymentResponse.razorpay_payment_id || `dev_payment_${Date.now()}`,
-      razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
-      razorpayOrderId: paymentResponse.razorpay_order_id || '',
-      razorpaySignature: paymentResponse.razorpay_signature || '',
-      paidAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
+      ...(backendOrder || {}),
+      id: backendOrder?.id || backendOrder?.orderId || snapshot.id,
+      orderId: backendOrder?.orderId || backendOrder?.id || snapshot.orderId || snapshot.id,
+      status: backendOrder?.status || 'confirmed',
+      orderStatus: backendOrder?.orderStatus || 'confirmed',
+      adminStatus: backendOrder?.adminStatus || 'confirmed',
+      paymentStatus: backendOrder?.paymentStatus || 'paid'
+    });
+    return order;
+  }
 
-    setPlaceOrderLoading(false);
-
-    try {
-      const etaPatch = await getInitialRestaurantEtaPatch(order);
-      if (etaPatch) order = { ...order, ...etaPatch };
-    } catch (error) {
-      console.warn('Initial ETA save skipped', error);
-    }
-
-    const savedOrder = await persistPaidOrderBeforeRedirect(order);
-
-    try { writePaidOrderLocalCache(savedOrder); } catch (error) { console.warn('Paid order local cache failed', error); }
-    try { await clearCartAfterPaidOrder(savedOrder); } catch (error) { console.warn('Paid cart clear failed', error); }
-    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
-
-    clearPaidConfirmation();
+  async function finishSavedPaidOrder(snapshot, backendOrder) {
+    const savedOrder = normalizeBackendSavedOrder(snapshot, backendOrder);
+    writePaidOrderLocalCache(savedOrder);
+    try { saveOrderToCustomerMemory(savedOrder); } catch (error) { console.warn('Customer order memory sync failed', error); }
+    await clearCartAfterPaidOrder(savedOrder);
+    clearPaidFinalizationState();
     goToOrderPlaced(savedOrder);
   }
 
+  async function waitForWebhookFinalizedOrder(checkoutId, snapshot, maxMs = 120000) {
+    const startedAt = Date.now();
+    let lastError = null;
+    while (Date.now() - startedAt < maxMs) {
+      try {
+        const status = await readRazorpayFinalizeStatus(checkoutId);
+        if (status.status === 'finalized' && status.orderId && status.order) {
+          await finishSavedPaidOrder(snapshot, status.order);
+          return true;
+        }
+      } catch (error) {
+        lastError = error;
+      }
+      await wait(3000);
+    }
+    if (lastError) console.warn('Paid order webhook confirmation is still pending', lastError);
+    showPaidFinalizationScreen('Order confirmation is taking longer', 'Your payment is received. We are confirming the order with the restaurant. Please do not pay again.');
+    return false;
+  }
 
-  function openRazorpayPayment(snapshot) {
-    const key = getRazorpayKeyId();
+  async function finalizePaidOrderAfterPayment(snapshot, paymentResponse, backendOrder) {
+    const state = {
+      checkoutId: backendOrder.checkoutId,
+      razorpayOrderId: paymentResponse.razorpay_order_id || backendOrder.razorpayOrderId,
+      paymentId: paymentResponse.razorpay_payment_id || '',
+      signature: paymentResponse.razorpay_signature || '',
+      snapshot,
+      savedAt: new Date().toISOString()
+    };
+    writePaidFinalizationState(state);
+    showPaidFinalizationScreen('Confirming your order', 'Payment received. We are placing your order with the restaurant.');
 
-
-    if (!key) {
-      localStorage.removeItem('pending_order');
-      localStorage.removeItem('checkout_snapshot');
-      setPlaceOrderLoading(false);
-      showToast('Razorpay key is missing. Add your Razorpay key before testing payment.');
-      return;
+    try {
+      const result = await callRazorpayBackend('finalize', {
+        checkoutId: state.checkoutId,
+        razorpay_order_id: state.razorpayOrderId,
+        razorpay_payment_id: state.paymentId,
+        razorpay_signature: state.signature
+      });
+      if (result.order) {
+        await finishSavedPaidOrder(snapshot, result.order);
+        return;
+      }
+      if (result.orderId) {
+        const status = await readRazorpayFinalizeStatus(state.checkoutId);
+        if (status.order) {
+          await finishSavedPaidOrder(snapshot, status.order);
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Frontend paid order finalization failed, waiting for webhook repair', error);
     }
 
+    await waitForWebhookFinalizedOrder(state.checkoutId, snapshot);
+  }
+
+  async function resumePaidOrderFinalizationIfNeeded() {
+    const state = readPaidFinalizationState();
+    if (!state?.checkoutId || !state?.snapshot) return;
+    showPaidFinalizationScreen('Confirming your order', 'Payment received. We are placing your order with the restaurant.');
+    try {
+      if (state.paymentId && state.razorpayOrderId && state.signature) {
+        const result = await callRazorpayBackend('finalize', {
+          checkoutId: state.checkoutId,
+          razorpay_order_id: state.razorpayOrderId,
+          razorpay_payment_id: state.paymentId,
+          razorpay_signature: state.signature
+        });
+        if (result.order) {
+          await finishSavedPaidOrder(state.snapshot, result.order);
+          return;
+        }
+      }
+    } catch (error) {
+      console.warn('Resume paid order finalization failed, waiting for backend status', error);
+    }
+    await waitForWebhookFinalizedOrder(state.checkoutId, state.snapshot);
+  }
+
+  async function openRazorpayPayment(snapshot) {
     if (!window.Razorpay) {
       localStorage.removeItem('pending_order');
       localStorage.removeItem('checkout_snapshot');
@@ -4920,10 +4824,29 @@ body {
       return;
     }
 
+    let backendOrder;
+    try {
+      setPlaceOrderLoading(true, 'Creating payment...');
+      backendOrder = await createBackendRazorpayOrder(snapshot);
+    } catch (error) {
+      console.warn('Razorpay backend order creation failed', error);
+      setPlaceOrderLoading(false);
+      showToast('Payment service is not ready. Please try again in a moment.');
+      return;
+    }
+
+    const key = backendOrder.keyId || getRazorpayKeyId();
+    if (!key || !backendOrder.razorpayOrderId) {
+      setPlaceOrderLoading(false);
+      showToast('Payment service is not ready. Please try again in a moment.');
+      return;
+    }
+
     const options = {
       key,
-      amount: Math.max(1, Math.round(snapshot.total * 100)),
-      currency: 'INR',
+      amount: backendOrder.amount || Math.max(1, Math.round(snapshot.total * 100)),
+      currency: backendOrder.currency || 'INR',
+      order_id: backendOrder.razorpayOrderId,
       name: 'Tiffin CBE',
       description: 'Food order payment',
       image: 'assets/icons/icon-192.png',
@@ -4933,43 +4856,17 @@ body {
         email: snapshot.customer.email || ''
       },
       notes: {
-        order_id: snapshot.id,
+        checkoutId: backendOrder.checkoutId || '',
+        order_id: backendOrder.orderId || snapshot.id,
         address: snapshot.deliveryAddress,
         delivery_instructions: snapshot.deliveryInstructions || '',
         food_instructions: snapshot.foodInstructions || ''
       },
-      theme: {
-        color: '#8806CE'
-      },
+      theme: { color: '#8806CE' },
       handler(response) {
-        const paidOrder = preparePaidOrderForFirestore({
-          ...snapshot,
-          id: snapshot.id || snapshot.orderId || response.razorpay_payment_id || `CBE-${Date.now()}`,
-          orderId: snapshot.orderId || snapshot.id || response.razorpay_payment_id || `CBE-${Date.now()}`,
-          status: 'confirmed',
-          orderStatus: 'confirmed',
-          adminStatus: 'confirmed',
-          paymentStatus: 'paid',
-          paymentProvider: 'Razorpay',
-          paymentId: response.razorpay_payment_id || `dev_payment_${Date.now()}`,
-          razorpayPaymentId: response.razorpay_payment_id || '',
-          razorpayOrderId: response.razorpay_order_id || '',
-          razorpaySignature: response.razorpay_signature || '',
-          paidAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        });
-
-        rememberPaidConfirmation(paidOrder, response);
-        setPaymentFinalizationScreen(
-          'saving',
-          'Confirming your order',
-          'Payment received. Sending your order to the restaurant now.',
-          false
-        );
-
-        saveConfirmedOrder(paidOrder, response).catch(error => {
-          queuePaidOrderRetry(paidOrder, error);
-          showPaidConfirmationRetry(paidOrder, response, error);
+        finalizePaidOrderAfterPayment(snapshot, response, backendOrder).catch(error => {
+          console.warn('Paid order finalization crashed', error);
+          showPaidFinalizationScreen('Confirming your order', 'Your payment is received. We are confirming the order with the restaurant. Please do not pay again.');
         });
       },
       modal: {
@@ -4987,7 +4884,7 @@ body {
     razorpay.open();
   }
 
-  async function handlePlaceOrder() {
+  function handlePlaceOrder() {
     const cart = loadCartRaw();
     if (!cart.length) {
       renderCart();
@@ -5008,17 +4905,8 @@ body {
     });
     scheduleCustomerMemorySync('cart_payment_started');
 
-    setPlaceOrderLoading(true, 'Creating order...');
-
-    try {
-      const snapshot = buildCheckoutSnapshot(cart, address);
-      const pendingOrder = await savePendingPaymentOrderBeforeRazorpay(snapshot);
-      openRazorpayPayment(pendingOrder);
-    } catch (error) {
-      console.warn('Could not create pending order before Razorpay', error);
-      setPlaceOrderLoading(false);
-      showToast('Could not connect order to restaurant. Please try again.');
-    }
+    const snapshot = buildCheckoutSnapshot(cart, address);
+    openRazorpayPayment(snapshot);
   }
 
   function continuePaymentFromAddressIfNeeded() {
@@ -5043,7 +4931,8 @@ body {
       const address = getDeliveryAddress();
       if (!isUsableDeliveryAddress(address)) return;
 
-      handlePlaceOrder();
+      const snapshot = buildCheckoutSnapshot(cart, address);
+      openRazorpayPayment(snapshot);
     }, 350);
   }
 
@@ -5123,15 +5012,10 @@ body {
     }
   });
 
-  retryPaymentOrderSaveBtn?.addEventListener('click', retryPendingPaidOrderSave);
-  contactRestaurantAfterPaymentBtn?.addEventListener('click', () => {
-    window.location.href = 'tel:+918888888888';
-  });
-
-  const hasPendingPaidConfirmation = recoverPaidConfirmationIfNeeded();
-  if (!hasPendingPaidConfirmation) renderCart();
+  renderCart();
   bootCustomerMemorySync();
   window.setTimeout(() => scheduleCustomerMemorySync('cart_page_opened'), 1200);
+  resumePaidOrderFinalizationIfNeeded().catch(error => console.warn('Paid order resume failed', error));
   continuePaymentFromAddressIfNeeded();
 })();
 </script>
