@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Tiffin CBE" />
 <meta name="theme-color" content="#8806CE" />
 <title>Cart - Coimbatore Foods</title>
-<link rel="manifest" id="pwa-manifest" href="./manifest.webmanifest" />
+<link rel="manifest" id="pwa-manifest" />
 
 <script>
   if (!localStorage.getItem('cust_auth')) {
@@ -1807,6 +1807,139 @@ body {
   white-space: nowrap !important;
 }
 
+
+.paid-finalization-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  color: #FDFDFF;
+  overflow: hidden;
+}
+
+.paid-finalization-screen[hidden] {
+  display: none !important;
+}
+
+.paid-finalization-content {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.paid-finalization-icon {
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background: rgba(136, 6, 206, 0.34);
+}
+
+.paid-finalization-icon svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+.paid-finalization-text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.paid-finalization-eyebrow {
+  color: #8806CE;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.paid-finalization-title {
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.58);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.paid-finalization-loader {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(253, 253, 255, 0.14);
+  border-top-color: #08A045;
+  border-radius: 50%;
+  animation: paidFinalizationSpin 0.85s linear infinite;
+}
+
+.paid-finalization-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paid-finalization-retry {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  background: #08A045;
+  color: #FDFDFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-note {
+  min-height: 18px;
+  color: rgba(253, 253, 255, 0.45);
+  font-size: 12px;
+  line-height: 140%;
+}
+
+.cart-paid-finalizing .top-bar,
+.cart-paid-finalizing .cart-content,
+.cart-paid-finalizing .empty-state,
+.cart-paid-finalizing .placeorder-section,
+.cart-paid-finalizing .cart-options-layer,
+.cart-paid-finalizing .cart-dialog-layer,
+.cart-paid-finalizing .toast {
+  visibility: hidden;
+}
+
+@keyframes paidFinalizationSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
 
 <style id="cf-mobile-zoom-lock">
@@ -1992,6 +2125,139 @@ body {
   max-height: none !important;
   overflow: visible !important;
 }
+
+.paid-finalization-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  color: #FDFDFF;
+  overflow: hidden;
+}
+
+.paid-finalization-screen[hidden] {
+  display: none !important;
+}
+
+.paid-finalization-content {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.paid-finalization-icon {
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background: rgba(136, 6, 206, 0.34);
+}
+
+.paid-finalization-icon svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+.paid-finalization-text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.paid-finalization-eyebrow {
+  color: #8806CE;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.paid-finalization-title {
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.58);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.paid-finalization-loader {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(253, 253, 255, 0.14);
+  border-top-color: #08A045;
+  border-radius: 50%;
+  animation: paidFinalizationSpin 0.85s linear infinite;
+}
+
+.paid-finalization-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paid-finalization-retry {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  background: #08A045;
+  color: #FDFDFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-note {
+  min-height: 18px;
+  color: rgba(253, 253, 255, 0.45);
+  font-size: 12px;
+  line-height: 140%;
+}
+
+.cart-paid-finalizing .top-bar,
+.cart-paid-finalizing .cart-content,
+.cart-paid-finalizing .empty-state,
+.cart-paid-finalizing .placeorder-section,
+.cart-paid-finalizing .cart-options-layer,
+.cart-paid-finalizing .cart-dialog-layer,
+.cart-paid-finalizing .toast {
+  visibility: hidden;
+}
+
+@keyframes paidFinalizationSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
 
 <style id="cf-cart-v5-bill-details">
@@ -2140,6 +2406,139 @@ body {
 .cart-shell:not(.is-empty) .placeorder-section {
   bottom: 0 !important;
 }
+
+.paid-finalization-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  color: #FDFDFF;
+  overflow: hidden;
+}
+
+.paid-finalization-screen[hidden] {
+  display: none !important;
+}
+
+.paid-finalization-content {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.paid-finalization-icon {
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background: rgba(136, 6, 206, 0.34);
+}
+
+.paid-finalization-icon svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+.paid-finalization-text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.paid-finalization-eyebrow {
+  color: #8806CE;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.paid-finalization-title {
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.58);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.paid-finalization-loader {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(253, 253, 255, 0.14);
+  border-top-color: #08A045;
+  border-radius: 50%;
+  animation: paidFinalizationSpin 0.85s linear infinite;
+}
+
+.paid-finalization-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paid-finalization-retry {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  background: #08A045;
+  color: #FDFDFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-note {
+  min-height: 18px;
+  color: rgba(253, 253, 255, 0.45);
+  font-size: 12px;
+  line-height: 140%;
+}
+
+.cart-paid-finalizing .top-bar,
+.cart-paid-finalizing .cart-content,
+.cart-paid-finalizing .empty-state,
+.cart-paid-finalizing .placeorder-section,
+.cart-paid-finalizing .cart-options-layer,
+.cart-paid-finalizing .cart-dialog-layer,
+.cart-paid-finalizing .toast {
+  visibility: hidden;
+}
+
+@keyframes paidFinalizationSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
 
 
@@ -2332,6 +2731,139 @@ body {
 .cart-dialog-actions .danger-action {
   background: #E23009;
 }
+
+.paid-finalization-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  width: 100%;
+  max-width: 390px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(0deg, rgba(253, 253, 255, 0.02), rgba(253, 253, 255, 0.02)), #12130F;
+  color: #FDFDFF;
+  overflow: hidden;
+}
+
+.paid-finalization-screen[hidden] {
+  display: none !important;
+}
+
+.paid-finalization-content {
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  top: 160px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+
+.paid-finalization-icon {
+  width: 140px;
+  height: 140px;
+  padding: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 100px;
+  background: rgba(136, 6, 206, 0.34);
+}
+
+.paid-finalization-icon svg {
+  width: 100px;
+  height: 100px;
+  display: block;
+}
+
+.paid-finalization-text {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+
+.paid-finalization-eyebrow {
+  color: #8806CE;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 120%;
+}
+
+.paid-finalization-title {
+  margin: 0;
+  color: #FDFDFF;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-copy {
+  margin: 0;
+  color: rgba(253, 253, 255, 0.58);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+}
+
+.paid-finalization-loader {
+  width: 42px;
+  height: 42px;
+  border: 3px solid rgba(253, 253, 255, 0.14);
+  border-top-color: #08A045;
+  border-radius: 50%;
+  animation: paidFinalizationSpin 0.85s linear infinite;
+}
+
+.paid-finalization-actions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.paid-finalization-retry {
+  width: 100%;
+  height: 48px;
+  border-radius: 10px;
+  background: #08A045;
+  color: #FDFDFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 120%;
+}
+
+.paid-finalization-note {
+  min-height: 18px;
+  color: rgba(253, 253, 255, 0.45);
+  font-size: 12px;
+  line-height: 140%;
+}
+
+.cart-paid-finalizing .top-bar,
+.cart-paid-finalizing .cart-content,
+.cart-paid-finalizing .empty-state,
+.cart-paid-finalizing .placeorder-section,
+.cart-paid-finalizing .cart-options-layer,
+.cart-paid-finalizing .cart-dialog-layer,
+.cart-paid-finalizing .toast {
+  visibility: hidden;
+}
+
+@keyframes paidFinalizationSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 </style>
 </head>
 
@@ -2462,6 +2994,27 @@ body {
       </div>
     </div>
   </div>
+
+  <section class="paid-finalization-screen" id="paidFinalizationScreen" hidden aria-live="assertive" aria-busy="true">
+    <div class="paid-finalization-content">
+      <div class="paid-finalization-icon" aria-hidden="true">
+        <svg viewBox="0 0 100 100" fill="none">
+          <circle cx="50" cy="50" r="50" fill="#8806CE"/>
+          <path d="M29 51.5L43.4 65.5L72 34.5" stroke="#FDFDFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="paid-finalization-text">
+        <div class="paid-finalization-eyebrow" id="paidFinalizationEyebrow">Payment successful</div>
+        <h1 class="paid-finalization-title" id="paidFinalizationTitle">Placing your order</h1>
+        <p class="paid-finalization-copy" id="paidFinalizationCopy">Please wait. We are saving your order with the restaurant.</p>
+      </div>
+      <div class="paid-finalization-loader" id="paidFinalizationLoader" aria-hidden="true"></div>
+      <div class="paid-finalization-actions">
+        <button class="paid-finalization-retry" id="paidFinalizationRetryButton" type="button" hidden>Retry saving order</button>
+        <div class="paid-finalization-note" id="paidFinalizationNote"></div>
+      </div>
+    </div>
+  </section>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </div>
 <script>
@@ -2487,8 +3040,16 @@ body {
   const DEFAULT_RESTAURANT_LOCATION = { lat: 11.051992, lng: 77.0427325, name: 'Coimbatore Foods' };
   const DELIVERY_INSTRUCTIONS_KEY = 'cbe_cart_delivery_instructions';
   const FOOD_INSTRUCTIONS_KEY = 'cbe_cart_food_instructions';
+  const PAID_ORDER_PENDING_SAVE_KEY = 'cbe_paid_order_pending_save';
 
   const cartShell = document.getElementById('cartShell');
+  const paidFinalizationScreen = document.getElementById('paidFinalizationScreen');
+  const paidFinalizationEyebrow = document.getElementById('paidFinalizationEyebrow');
+  const paidFinalizationTitle = document.getElementById('paidFinalizationTitle');
+  const paidFinalizationCopy = document.getElementById('paidFinalizationCopy');
+  const paidFinalizationLoader = document.getElementById('paidFinalizationLoader');
+  const paidFinalizationRetryButton = document.getElementById('paidFinalizationRetryButton');
+  const paidFinalizationNote = document.getElementById('paidFinalizationNote');
   const itemsCountEl = document.getElementById('itemsCount');
   const deliveryAddressEl = document.getElementById('deliveryAddress');
   const itemCardsEl = document.getElementById('itemCards');
@@ -3250,6 +3811,123 @@ body {
       updatedAt: new Date().toISOString()
     }, { merge: true }).catch(error => {
       console.warn('Customer last order memory sync failed', error);
+    });
+  }
+
+  function setPaidFinalizationScreen(state = 'saving', options = {}) {
+    if (!paidFinalizationScreen) return;
+
+    const orderId = cleanText(options.orderId || '');
+    const errorText = cleanText(options.error || '');
+
+    paidFinalizationScreen.hidden = false;
+    paidFinalizationScreen.setAttribute('aria-busy', state === 'saving' ? 'true' : 'false');
+    cartShell?.classList.add('cart-paid-finalizing');
+
+    if (state === 'saved') {
+      if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Order saved';
+      if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Order placed';
+      if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Your order is confirmed with the restaurant.';
+      if (paidFinalizationLoader) paidFinalizationLoader.hidden = true;
+      if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = true;
+      if (paidFinalizationNote) paidFinalizationNote.textContent = orderId ? `Order ID ${orderId}` : '';
+      return;
+    }
+
+    if (state === 'failed') {
+      if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Payment successful';
+      if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Saving order';
+      if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Payment is received, but the order did not reach the restaurant yet. Please retry. Do not place another order.';
+      if (paidFinalizationLoader) paidFinalizationLoader.hidden = true;
+      if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = false;
+      if (paidFinalizationNote) paidFinalizationNote.textContent = errorText ? errorText.slice(0, 120) : 'Order save failed. Retry once internet is stable.';
+      return;
+    }
+
+    if (paidFinalizationEyebrow) paidFinalizationEyebrow.textContent = 'Payment successful';
+    if (paidFinalizationTitle) paidFinalizationTitle.textContent = 'Placing your order';
+    if (paidFinalizationCopy) paidFinalizationCopy.textContent = 'Please wait. We are saving your order with the restaurant.';
+    if (paidFinalizationLoader) paidFinalizationLoader.hidden = false;
+    if (paidFinalizationRetryButton) paidFinalizationRetryButton.hidden = true;
+    if (paidFinalizationNote) paidFinalizationNote.textContent = orderId ? `Order ID ${orderId}` : 'Do not refresh or go back.';
+  }
+
+  function writePendingPaidOrderSave(snapshot, paymentResponse = {}) {
+    try {
+      const orderId = cleanText(snapshot?.id || snapshot?.orderId || paymentResponse?.razorpay_payment_id || `CBE-${Date.now()}`);
+      localStorage.setItem(PAID_ORDER_PENDING_SAVE_KEY, JSON.stringify({
+        snapshot: { ...(snapshot || {}), id: orderId, orderId },
+        paymentResponse: paymentResponse || {},
+        orderId,
+        createdAt: new Date().toISOString()
+      }));
+    } catch (error) {
+      console.warn('Pending paid order save marker failed', error);
+    }
+  }
+
+  function clearPendingPaidOrderSave() {
+    try { localStorage.removeItem(PAID_ORDER_PENDING_SAVE_KEY); } catch (_) {}
+  }
+
+  function getPendingPaidOrderSave() {
+    try {
+      const value = JSON.parse(localStorage.getItem(PAID_ORDER_PENDING_SAVE_KEY) || 'null');
+      if (!value || !value.snapshot) return null;
+      return value;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function finalizePaidOrderAfterPayment(snapshot, paymentResponse = {}) {
+    const orderId = cleanText(snapshot?.id || snapshot?.orderId || paymentResponse?.razorpay_payment_id || `CBE-${Date.now()}`);
+    const safeSnapshot = { ...(snapshot || {}), id: orderId, orderId };
+
+    writePendingPaidOrderSave(safeSnapshot, paymentResponse);
+    setPaidFinalizationScreen('saving', { orderId });
+    setPlaceOrderLoading(false);
+
+    try {
+      await saveConfirmedOrder(safeSnapshot, paymentResponse);
+    } catch (error) {
+      console.warn('Paid order save failed before order placed screen', error);
+      const retryOrder = preparePaidOrderForFirestore({
+        ...safeSnapshot,
+        id: orderId,
+        orderId,
+        status: 'confirmed',
+        orderStatus: 'confirmed',
+        adminStatus: 'confirmed',
+        paymentStatus: 'paid',
+        paymentProvider: 'Razorpay',
+        paymentId: paymentResponse.razorpay_payment_id || `dev_payment_${Date.now()}`,
+        razorpayPaymentId: paymentResponse.razorpay_payment_id || '',
+        razorpayOrderId: paymentResponse.razorpay_order_id || '',
+        razorpaySignature: paymentResponse.razorpay_signature || '',
+        paidAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+      queuePaidOrderRetry(retryOrder, error);
+      setPaidFinalizationScreen('failed', { orderId, error: error?.message || error || 'Order save failed' });
+    }
+  }
+
+  async function retryPendingPaidOrderSave() {
+    const pending = getPendingPaidOrderSave();
+    if (!pending || !pending.snapshot) {
+      setPaidFinalizationScreen('failed', { error: 'No pending paid order found. Contact support with your Razorpay payment ID.' });
+      return;
+    }
+    await finalizePaidOrderAfterPayment(pending.snapshot, pending.paymentResponse || {});
+  }
+
+  function resumePendingPaidOrderSaveIfNeeded() {
+    const pending = getPendingPaidOrderSave();
+    if (!pending || !pending.snapshot) return;
+    setPaidFinalizationScreen('failed', {
+      orderId: pending.orderId || pending.snapshot.orderId || pending.snapshot.id || '',
+      error: 'Payment was completed earlier. Retry saving the order before leaving this screen.'
     });
   }
 
@@ -4485,9 +5163,9 @@ body {
         contact: customerPhone,
         email: customerEmail
       },
-      status: order.orderStatus || order.adminStatus || order.status || 'confirmed',
-      orderStatus: order.orderStatus || order.adminStatus || order.status || 'confirmed',
-      adminStatus: order.adminStatus || order.orderStatus || order.status || 'confirmed',
+      status: order.status || 'confirmed',
+      orderStatus: order.orderStatus || order.status || 'confirmed',
+      adminStatus: order.adminStatus || order.status || 'confirmed',
       paymentStatus: order.paymentStatus || 'paid',
       paymentProvider: order.paymentProvider || 'Razorpay',
       paid: true,
@@ -4579,6 +5257,14 @@ body {
         const savedOrder = await savePaidOrderDirectToFirestore({ ...cleanOrder, id: orderId, orderId });
 
         try {
+          if (window.TiffinMVP && typeof window.TiffinMVP.saveOrderToCloud === 'function') {
+            await window.TiffinMVP.saveOrderToCloud(savedOrder);
+          }
+        } catch (error) {
+          console.warn('Order cloud mirror sync failed through TiffinMVP', error);
+        }
+
+        try {
           saveOrderToCustomerMemory(savedOrder);
         } catch (error) {
           console.warn('Customer order memory sync failed', error);
@@ -4626,171 +5312,6 @@ body {
 
 
 
-  function getPlacedOrderTarget(order = {}) {
-    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
-    return `order_placed.html${orderId ? `?orderId=${encodeURIComponent(orderId)}` : ''}`;
-  }
-
-  function showInstantOrderPlacedScreen(order = {}) {
-    const total = order.total ?? order.totals?.total ?? order.amount ?? order.paidAmount ?? 0;
-    const orderId = cleanText(order.id || order.orderId || order.paymentId || '');
-    const eta = cleanText(order.eta || order.estimatedDeliveryTime || '15 - 25 mins');
-    const target = getPlacedOrderTarget(order);
-
-    try {
-      if (target && window.history && window.history.replaceState) {
-        window.history.replaceState({ paidOrderId: orderId || null }, '', target);
-      }
-    } catch (_) {}
-
-    let overlay = document.getElementById('instantOrderPlacedOverlay');
-    if (!overlay) {
-      overlay = document.createElement('section');
-      overlay.id = 'instantOrderPlacedOverlay';
-      overlay.className = 'instant-order-placed-overlay';
-      overlay.setAttribute('aria-live', 'assertive');
-      overlay.setAttribute('role', 'status');
-      document.body.appendChild(overlay);
-    }
-
-    overlay.innerHTML = `
-      <div class="instant-order-placed-card">
-        <div class="instant-order-tick" aria-hidden="true">
-          <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="50" cy="50" r="50" fill="#8806CE" fill-opacity="0.34"/>
-            <path d="M29 51.5L43.2 65.5L72 36" stroke="#FDFDFF" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <div class="instant-order-copy">
-          <div class="instant-payment-successful">Payment successful</div>
-          <h1>Your order has<br>been placed</h1>
-          <p>We are sending your order to the restaurant. You can track the status from Track orders.</p>
-        </div>
-        <div class="instant-order-info">
-          <div><span>Order ID</span><strong>${escapeHTML(orderId || 'Syncing')}</strong></div>
-          <div><span>Total paid</span><strong>${money(total)}</strong></div>
-          <div><span>Estimated time</span><strong>${escapeHTML(eta)}</strong></div>
-        </div>
-      </div>
-    `;
-
-    if (!document.getElementById('instantOrderPlacedStyle')) {
-      const style = document.createElement('style');
-      style.id = 'instantOrderPlacedStyle';
-      style.textContent = `
-        html.instant-order-lock,
-        body.instant-order-lock {
-          overflow: hidden !important;
-          background: #12130F !important;
-        }
-        .instant-order-placed-overlay {
-          position: fixed;
-          inset: 0;
-          z-index: 2147483647;
-          width: 100vw;
-          min-height: 100dvh;
-          display: flex;
-          justify-content: center;
-          align-items: stretch;
-          background: #12130F;
-          color: #FDFDFF;
-          font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-        .instant-order-placed-card {
-          position: relative;
-          width: 100%;
-          max-width: 390px;
-          min-height: 100dvh;
-          padding: 144px 24px 40px;
-          background: linear-gradient(0deg, rgba(253,253,255,0.02), rgba(253,253,255,0.02)), #12130F;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 28px;
-        }
-        .instant-order-tick {
-          width: 140px;
-          height: 140px;
-          border-radius: 100px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        .instant-order-tick svg {
-          width: 140px;
-          height: 140px;
-          display: block;
-        }
-        .instant-order-copy {
-          width: 342px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 10px;
-          text-align: center;
-        }
-        .instant-payment-successful {
-          color: #8806CE;
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 120%;
-        }
-        .instant-order-copy h1 {
-          margin: 0;
-          color: #FDFDFF;
-          font-size: 30px;
-          font-weight: 600;
-          line-height: 120%;
-          letter-spacing: -0.02em;
-        }
-        .instant-order-copy p {
-          margin: 0;
-          color: rgba(253,253,255,0.50);
-          font-size: 14px;
-          font-weight: 400;
-          line-height: 140%;
-        }
-        .instant-order-info {
-          width: 342px;
-          padding: 14px 16px;
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          background: rgba(253,253,255,0.12);
-          border: 1px solid rgba(253,253,255,0.08);
-          border-radius: 14px;
-        }
-        .instant-order-info div {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 12px;
-        }
-        .instant-order-info span {
-          color: rgba(253,253,255,0.50);
-          font-size: 14px;
-          line-height: 120%;
-        }
-        .instant-order-info strong {
-          max-width: 190px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          color: #FDFDFF;
-          font-size: 14px;
-          font-weight: 500;
-          line-height: 120%;
-          text-align: right;
-        }
-      `;
-      document.head.appendChild(style);
-    }
-
-    document.documentElement.classList.add('instant-order-lock');
-    document.body.classList.add('instant-order-lock');
-  }
-
-
   async function saveConfirmedOrder(snapshot, paymentResponse = {}) {
     const generatedOrderId = cleanText(snapshot.id || snapshot.orderId || paymentResponse.razorpay_payment_id || `CBE-${Date.now()}`);
     let order = {
@@ -4811,33 +5332,25 @@ body {
     };
 
     setPlaceOrderLoading(false);
-    showInstantOrderPlacedScreen(order);
-
-    try { writePaidOrderLocalCache(order); } catch (error) { console.warn('Paid order local cache failed', error); }
-
-    const cartClearPromise = clearCartAfterPaidOrder(order).catch(error => {
-      console.warn('Paid cart clear sync failed', error);
-    });
-
-    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
 
     try {
       const etaPatch = await getInitialRestaurantEtaPatch(order);
-      if (etaPatch) {
-        order = { ...order, ...etaPatch };
-        try { writePaidOrderLocalCache(order); } catch (_) {}
-        showInstantOrderPlacedScreen(order);
-      }
+      if (etaPatch) order = { ...order, ...etaPatch };
     } catch (error) {
       console.warn('Initial ETA save skipped', error);
     }
 
     const savedOrder = await persistPaidOrderBeforeRedirect(order);
 
+    try { clearPendingPaidOrderSave(); } catch (_) {}
     try { writePaidOrderLocalCache(savedOrder); } catch (error) { console.warn('Paid order local cache failed', error); }
-    await cartClearPromise;
-    goToOrderPlaced(savedOrder);
+    setPaidFinalizationScreen('saved', { orderId: savedOrder.id || savedOrder.orderId || generatedOrderId });
+    try { await clearCartAfterPaidOrder(savedOrder); } catch (error) { console.warn('Paid cart clear failed', error); }
+    try { renderCart(); } catch (error) { console.warn('Paid cart render refresh failed', error); }
+
+    window.setTimeout(() => goToOrderPlaced(savedOrder), 250);
   }
+
 
   function openRazorpayPayment(snapshot) {
     const key = getRazorpayKeyId();
@@ -4865,7 +5378,7 @@ body {
       currency: 'INR',
       name: 'Tiffin CBE',
       description: 'Food order payment',
-      image: './assets/icons/icon-192.png',
+      image: 'assets/icons/icon-192.png',
       prefill: {
         name: snapshot.customer.name || '',
         contact: snapshot.customer.phone || '',
@@ -4881,27 +5394,9 @@ body {
         color: '#8806CE'
       },
       handler(response) {
-        saveConfirmedOrder(snapshot, response).catch(async error => {
-          console.warn('Paid order save/redirect failed', error);
-          const fallbackOrder = preparePaidOrderForFirestore({
-            ...snapshot,
-            id: snapshot.id || snapshot.orderId || response.razorpay_payment_id || `CBE-${Date.now()}`,
-            orderId: snapshot.orderId || snapshot.id || response.razorpay_payment_id || `CBE-${Date.now()}`,
-            status: 'confirmed',
-            orderStatus: 'confirmed',
-            adminStatus: 'confirmed',
-            paymentStatus: 'paid',
-            paymentProvider: 'Razorpay',
-            paymentId: response.razorpay_payment_id || `dev_payment_${Date.now()}`,
-            razorpayPaymentId: response.razorpay_payment_id || '',
-            paidAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          });
-          showInstantOrderPlacedScreen(fallbackOrder);
-          writePaidOrderLocalCache(fallbackOrder);
-          queuePaidOrderRetry(fallbackOrder, error);
-          try { clearCartAfterPaidOrder(fallbackOrder); } catch (_) {}
-          window.requestAnimationFrame(() => goToOrderPlaced(fallbackOrder));
+        finalizePaidOrderAfterPayment(snapshot, response).catch(error => {
+          console.warn('Paid order finalization failed', error);
+          setPaidFinalizationScreen('failed', { orderId: snapshot.id || snapshot.orderId || response.razorpay_payment_id || '', error: error?.message || error || 'Order save failed' });
         });
       },
       modal: {
@@ -5022,6 +5517,12 @@ body {
   cancelClearCartBtn?.addEventListener('click', closeCartDialog);
   confirmClearCartBtn?.addEventListener('click', clearCartFromOptions);
   cancelInstructionsBtn?.addEventListener('click', closeCartDialog);
+  paidFinalizationRetryButton?.addEventListener('click', () => {
+    retryPendingPaidOrderSave().catch(error => {
+      console.warn('Paid order retry failed', error);
+      setPaidFinalizationScreen('failed', { error: error?.message || error || 'Retry failed' });
+    });
+  });
 
   saveInstructionsBtn?.addEventListener('click', () => {
     saveCartInstructions(deliveryInstructionsInput?.value || '', foodInstructionsInput?.value || '');
@@ -5047,6 +5548,7 @@ body {
     }
   });
 
+  resumePendingPaidOrderSaveIfNeeded();
   renderCart();
   bootCustomerMemorySync();
   window.setTimeout(() => scheduleCustomerMemorySync('cart_page_opened'), 1200);
@@ -5089,6 +5591,6 @@ body {
     );
   })();
 </script>
-<script src="pwa-speed.js?v=20260527_customer_pwa_fix1" defer></script>
+<script src="pwa-speed.js?v=20260526_order_persist_fix2" defer></script>
 </body>
 </html>
