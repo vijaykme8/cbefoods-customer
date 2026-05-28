@@ -218,6 +218,47 @@ async function getDoc(env, docPath) {
   }
 }
 
+async function queryDocs(env, parentPath, collectionId, fieldPath, value, limit = 5) {
+  if (!value) return [];
+  const body = {
+    structuredQuery: {
+      from: [{ collectionId }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath },
+          op: 'EQUAL',
+          value: { stringValue: String(value) }
+        }
+      },
+      limit
+    }
+  };
+  const base = parentPath ? `${firestoreBase(env)}/${parentPath}:runQuery` : `${firestoreBase(env)}:runQuery`;
+  const rows = await firestoreFetch(env, base, { method: 'POST', body: JSON.stringify(body) });
+  return (Array.isArray(rows) ? rows : []).filter(item => item.document).map(item => ({ id: item.document.name.split('/').pop(), data: docToObject(item.document) || {} }));
+}
+
+async function findOrderByOrderId(env, collectionParentPath, orderId) {
+  const rows = await queryDocs(env, collectionParentPath, 'orders', 'orderId', orderId, 3);
+  if (rows.length) return { id: rows[0].id, ...rows[0].data };
+  const idRows = await queryDocs(env, collectionParentPath, 'orders', 'id', orderId, 3);
+  if (idRows.length) return { id: idRows[0].id, ...idRows[0].data };
+  return null;
+}
+
+function mergeOrderForStatus(topOrder, storeOrder) {
+  const merged = { ...(topOrder || {}), ...(storeOrder || {}) };
+  const source = storeOrder || topOrder || merged;
+  const primary = text(source.adminStatus || source.orderStatus || source.deliveryStatus || source.riderStatus || source.trackStatus || source.status);
+  if (primary) {
+    merged.status = primary;
+    merged.orderStatus = primary;
+    merged.adminStatus = primary;
+    merged.deliveryStatus = primary;
+  }
+  return merged;
+}
+
 async function setDoc(env, docPath, data) {
   const fields = {};
   const params = new URLSearchParams();
@@ -473,6 +514,22 @@ async function handleStatus(request, env, origin) {
   return json({ ok: true, status: intent.status || 'pending', orderId: '' }, 200, origin);
 }
 
+
+async function handleOrderStatus(request, env, origin) {
+  const url = new URL(request.url);
+  const orderId = text(url.searchParams.get('orderId') || url.searchParams.get('id'));
+  if (!orderId) return bad('orderId is required.', 400, origin);
+  const storeId = text(url.searchParams.get('storeId') || env.STORE_ID || 'main') || 'main';
+  let topOrder = await getDoc(env, `orders/${orderId}`);
+  let storeOrder = await getDoc(env, `stores/${storeId}/orders/${orderId}`);
+  if (topOrder) topOrder = { id: topOrder.id || orderId, orderId: topOrder.orderId || orderId, ...topOrder };
+  if (storeOrder) storeOrder = { id: storeOrder.id || orderId, orderId: storeOrder.orderId || orderId, ...storeOrder };
+  if (!topOrder) topOrder = await findOrderByOrderId(env, '', orderId);
+  if (!storeOrder) storeOrder = await findOrderByOrderId(env, `stores/${storeId}`, orderId);
+  const order = mergeOrderForStatus(topOrder, storeOrder);
+  return json({ ok: true, found: Boolean(topOrder || storeOrder), orderId, storeId, order: (topOrder || storeOrder) ? order : null, sources: { top: Boolean(topOrder), store: Boolean(storeOrder) } }, 200, origin);
+}
+
 async function handleWebhook(request, env, origin) {
   const signature = request.headers.get('x-razorpay-signature') || '';
   const rawBody = await request.text();
@@ -504,6 +561,7 @@ export async function onRequest({ request, env }) {
     const action = text(url.searchParams.get('action'));
     if (request.method === 'OPTIONS') return json({ ok: true }, 200, origin);
     if (request.method === 'GET' && action === 'status') return await handleStatus(request, env, origin);
+    if (request.method === 'GET' && action === 'order-status') return await handleOrderStatus(request, env, origin);
     if (request.method !== 'POST') return bad('Method not allowed.', 405, origin);
     if (action === 'create-order') return await handleCreateOrder(request, env, origin);
     if (action === 'finalize') return await handleFinalize(request, env, origin);

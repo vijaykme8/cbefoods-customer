@@ -2044,7 +2044,7 @@ const ETA_UPDATE_MIN_DIFF_METERS=25;
 const ETA_SECONDS_PER_KM=160;const ETA_PREPARATION_EXTRA_MINUTES=5;
 let map=null,maplibre=null,restaurantMarker=null,customerMarker=null,riderMarker=null,initializing=false;
 let trackMapInitRetryTimer=null,trackMapInitRetryCount=0;
-let liveUnsubscribe=null,trackLiveRefreshTimer=null,routeRequestToken=0,lastRouteState=null,lastFitKey='',liveTopOrderSnapshot=null,liveStoreOrderSnapshot=null;
+let liveUnsubscribe=null,routeRequestToken=0,lastRouteState=null,lastFitKey='',liveTopOrderSnapshot=null,liveStoreOrderSnapshot=null,trackServerStatusTimer=null,trackServerStatusBusy=false,lastServerTrackJson='';
 let currentFullRoadRouteCoords=[];
 function readJSON(k){try{const r=localStorage.getItem(k);return r?JSON.parse(r):null}catch{return null}}
 function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}
@@ -2882,17 +2882,42 @@ function bindTrackMapControls(){if(!map)return;const zoomIn=document.getElementB
 function initMap(){const canvas=document.getElementById('trackOlaMapCanvas');if(!canvas||map||initializing)return;if(!window.CBEOlaMapV4||typeof window.CBEOlaMapV4.createMap!=='function'){setTrackMapLoading(true);trackMapInitRetryCount+=1;window.clearTimeout(trackMapInitRetryTimer);trackMapInitRetryTimer=window.setTimeout(initMap,Math.min(1200,120+(trackMapInitRetryCount*80)));if(trackMapInitRetryCount>40)setTrackMapLoading(false);return}window.clearTimeout(trackMapInitRetryTimer);trackMapInitRetryCount=0;initializing=true;trackMapFirstRealRenderDone=false;setTrackMapLoading(true);const o=getSelectedOrder();const center=custLoc(o)||restLoc(o);window.CBEOlaMapV4.createMap({container:canvas,center:[center.lng,center.lat],zoom:13.4,controls:false}).then(({map:created,maplibregl})=>{map=created;window.trackOlaMapInstance=map;maplibre=maplibregl||window.maplibregl;try{map.dragPan?.enable();map.touchZoomRotate?.enable();map.scrollZoom?.enable();map.keyboard?.enable();map.doubleClickZoom?.disable()}catch(_){}bindTrackMapControls();bindTrackTemporaryMapZoom();const prepare=()=>{hideBaseMapSymbols();revealTrackMapAfterRealRender();setTimeout(hideBaseMapSymbols,120);setTimeout(()=>{if(!trackMapFirstRealRenderDone)revealTrackMapAfterRealRender()},220);setTimeout(()=>{if(!trackMapFirstRealRenderDone)revealTrackMapAfterRealRender()},700)};map.once('style.load',prepare);map.on('load',prepare);map.on('styledata',()=>{hideBaseMapSymbols();if(!trackMapFirstRealRenderDone)setTimeout(revealTrackMapAfterRealRender,0);setTimeout(hideBaseMapSymbols,180)});map.on('idle',hideBaseMapSymbols);if(map.isStyleLoaded&&map.isStyleLoaded())prepare();else if(map.loaded&&map.loaded())prepare()}).catch(e=>{console.warn('Track Ola map failed to load',e);setTrackMapLoading(false)}).finally(()=>{initializing=false})}
 function boot(){bindFrame77RiderActions();bindOrderItemsCard();hydrate();startTrackBikeAnimation();initMap();renderMap();finishTrackMapRenderIfReady()}
 function getStoreOrderDoc(db,orderId){return db.collection('stores').doc(window.TIFFIN_STORE_ID||'main').collection('orders').doc(orderId)}
-function getStoreOrdersCollection(db){return db.collection('stores').doc(window.TIFFIN_STORE_ID||'main').collection('orders')}
-function liveDocToOrder(doc){const data=doc&&typeof doc.data==='function'?doc.data():doc||{};const docId=doc?.id||data.id||data.orderId||'';return{id:docId,orderId:data.orderId||docId,...data}}
-function liveOrderUpdatedAt(order){const values=[order?.statusUpdatedAt,order?.adminUpdatedAt,order?.updatedAt,order?.deliveredAt,order?.assignedAt,order?.paidAt,order?.createdAt,order?.orderTime];for(const value of values){const t=Date.parse(value);if(Number.isFinite(t))return t}return 0}
-function liveOrderMatches(order,orderId){const target=String(orderId||'').trim();if(!target)return false;const ids=[order?.id,order?.orderId,order?.order_id,order?.orderNumber,order?.receipt,order?.displayOrderId,order?.trackingId].map(v=>String(v||'').trim()).filter(Boolean);return ids.includes(target)}
-function pickTrackOrderFromSnapshot(snapshot,orderId){let best=null;snapshot&&snapshot.forEach&&snapshot.forEach(doc=>{const order=liveDocToOrder(doc);if(!liveOrderMatches(order,orderId))return;if(!best||liveOrderUpdatedAt(order)>=liveOrderUpdatedAt(best))best=order});return best}
-function mergeAdminSyncedTrackOrder(){const local=getSelectedOrder();const top=liveTopOrderSnapshot||{};const store=liveStoreOrderSnapshot||{};let merged=mergeOrder(local,top);merged=mergeOrder(merged,store);const primary=status(Object.keys(store).length?store:Object.keys(top).length?top:merged);if(primary){merged.status=primary;merged.orderStatus=primary;merged.adminStatus=primary;merged.deliveryStatus=primary}return merged}
+function mergeAdminSyncedTrackOrder(){const base=mergeOrder(getSelectedOrder(),liveTopOrderSnapshot||{});const store=liveStoreOrderSnapshot||{};const merged=mergeOrder(base,store);const statusSource=Object.keys(store).length?store:merged;const primary=status(statusSource);if(primary){merged.status=primary;merged.orderStatus=primary;merged.adminStatus=primary;merged.deliveryStatus=primary}return merged}
 function persistLiveTrackOrderAndRender(){const cloud=mergeAdminSyncedTrackOrder();writeJSON('current_order',cloud);writeJSON('cbe_track_selected_order',cloud);boot()}
-function applyTopLiveOrder(order){if(!order)return;liveTopOrderSnapshot=order;persistLiveTrackOrderAndRender()}
-function applyStoreLiveOrder(order){if(!order)return;liveStoreOrderSnapshot=order;persistLiveTrackOrderAndRender()}
-async function refreshTrackLiveOnce(db,orderId){try{const storeOrders=getStoreOrdersCollection(db);const tasks=[db.collection('orders').doc(orderId).get(),getStoreOrderDoc(db,orderId).get(),db.collection('orders').where('orderId','==',orderId).limit(10).get(),storeOrders.where('orderId','==',orderId).limit(10).get(),db.collection('orders').where('id','==',orderId).limit(10).get(),storeOrders.where('id','==',orderId).limit(10).get()];const results=await Promise.allSettled(tasks);const topDirect=results[0]?.value;const storeDirect=results[1]?.value;const topByOrderId=results[2]?.value;const storeByOrderId=results[3]?.value;const topById=results[4]?.value;const storeById=results[5]?.value;if(topDirect&&topDirect.exists)liveTopOrderSnapshot=liveDocToOrder(topDirect);const pickedTop=pickTrackOrderFromSnapshot(topByOrderId,orderId)||pickTrackOrderFromSnapshot(topById,orderId);if(pickedTop)liveTopOrderSnapshot=pickedTop;if(storeDirect&&storeDirect.exists)liveStoreOrderSnapshot=liveDocToOrder(storeDirect);const pickedStore=pickTrackOrderFromSnapshot(storeByOrderId,orderId)||pickTrackOrderFromSnapshot(storeById,orderId);if(pickedStore)liveStoreOrderSnapshot=pickedStore;if(liveTopOrderSnapshot||liveStoreOrderSnapshot)persistLiveTrackOrderAndRender()}catch(err){console.warn('Track live refresh failed',err)}}
-function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order)||urlOrderId();if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);const db=firebase.firestore();const unsubs=[];const storeOrders=getStoreOrdersCollection(db);liveTopOrderSnapshot=null;liveStoreOrderSnapshot=null;unsubs.push(db.collection('orders').doc(orderId).onSnapshot(snap=>{if(snap.exists)applyTopLiveOrder(liveDocToOrder(snap))},err=>{console.warn('Track top doc sync failed',err)}));unsubs.push(getStoreOrderDoc(db,orderId).onSnapshot(snap=>{if(snap.exists)applyStoreLiveOrder(liveDocToOrder(snap))},err=>{console.warn('Track store doc sync failed',err)}));unsubs.push(db.collection('orders').where('orderId','==',orderId).limit(10).onSnapshot(snap=>applyTopLiveOrder(pickTrackOrderFromSnapshot(snap,orderId)),err=>{console.warn('Track top orderId query failed',err)}));unsubs.push(storeOrders.where('orderId','==',orderId).limit(10).onSnapshot(snap=>applyStoreLiveOrder(pickTrackOrderFromSnapshot(snap,orderId)),err=>{console.warn('Track store orderId query failed',err)}));unsubs.push(db.collection('orders').where('id','==',orderId).limit(10).onSnapshot(snap=>applyTopLiveOrder(pickTrackOrderFromSnapshot(snap,orderId)),err=>{console.warn('Track top id query failed',err)}));unsubs.push(storeOrders.where('id','==',orderId).limit(10).onSnapshot(snap=>applyStoreLiveOrder(pickTrackOrderFromSnapshot(snap,orderId)),err=>{console.warn('Track store id query failed',err)}));window.clearInterval(trackLiveRefreshTimer);trackLiveRefreshTimer=window.setInterval(()=>refreshTrackLiveOnce(db,orderId),3000);liveUnsubscribe=()=>{window.clearInterval(trackLiveRefreshTimer);trackLiveRefreshTimer=null;unsubs.forEach(unsub=>{try{unsub()}catch{}})};refreshTrackLiveOnce(db,orderId).then(()=>{if(!liveTopOrderSnapshot&&!liveStoreOrderSnapshot)setTrackMapLoading(false)})}catch(err){console.warn('Track live order listener failed',err);setTrackMapLoading(false)}}
+
+function mergeServerTrackOrder(remoteOrder){
+  const current=getSelectedOrder();
+  const merged=mergeOrder(mergeOrder(mergeOrder(current,liveTopOrderSnapshot||{}),liveStoreOrderSnapshot||{}),remoteOrder||{});
+  const primary=status(remoteOrder||merged);
+  if(primary){merged.status=primary;merged.orderStatus=primary;merged.adminStatus=primary;merged.deliveryStatus=primary}
+  return merged;
+}
+async function refreshTrackStatusFromServer(){
+  const order=getSelectedOrder();
+  const orderId=urlOrderId()||getOrderId(order);
+  if(!orderId||trackServerStatusBusy)return;
+  trackServerStatusBusy=true;
+  try{
+    const response=await fetch(`/razorpay?action=order-status&orderId=${encodeURIComponent(orderId)}&_=${Date.now()}`,{cache:'no-store',headers:{'cache-control':'no-cache'}});
+    const data=await response.json().catch(()=>null);
+    if(!response.ok||!data||!data.ok||!data.order)return;
+    const nextJson=JSON.stringify(data.order);
+    if(nextJson===lastServerTrackJson)return;
+    lastServerTrackJson=nextJson;
+    const merged=mergeServerTrackOrder(data.order);
+    writeJSON('current_order',merged);
+    writeJSON('cbe_track_selected_order',merged);
+    boot();
+  }catch(error){console.warn('Track server status sync failed',error)}
+  finally{trackServerStatusBusy=false}
+}
+function startTrackServerStatusPolling(){
+  if(trackServerStatusTimer)return;
+  refreshTrackStatusFromServer();
+  trackServerStatusTimer=window.setInterval(refreshTrackStatusFromServer,2500);
+}
+
+function startLiveOrderListener(){const order=getSelectedOrder();const orderId=getOrderId(order)||urlOrderId();if(!orderId||liveUnsubscribe||!window.firebase||!window.TIFFIN_FIREBASE_CONFIG)return;try{if(!firebase.apps.length)firebase.initializeApp(window.TIFFIN_FIREBASE_CONFIG);const db=firebase.firestore();const unsubs=[];liveTopOrderSnapshot=null;liveStoreOrderSnapshot=null;unsubs.push(db.collection('orders').doc(orderId).onSnapshot(snap=>{if(!snap.exists){setTrackMapLoading(false);return}liveTopOrderSnapshot={id:snap.id,orderId:snap.id,...snap.data()};persistLiveTrackOrderAndRender()},err=>{console.warn('Track top-level order sync failed',err);setTrackMapLoading(false)}));unsubs.push(getStoreOrderDoc(db,orderId).onSnapshot(snap=>{if(!snap.exists)return;liveStoreOrderSnapshot={id:snap.id,orderId:snap.id,...snap.data()};persistLiveTrackOrderAndRender()},err=>{console.warn('Track store order sync failed',err)}));liveUnsubscribe=()=>unsubs.forEach(unsub=>{try{unsub()}catch{}});Promise.allSettled([db.collection('orders').doc(orderId).get(),getStoreOrderDoc(db,orderId).get()]).then(results=>{const top=results[0]?.value;const store=results[1]?.value;if(top&&top.exists)liveTopOrderSnapshot={id:top.id,orderId:top.id,...top.data()};if(store&&store.exists)liveStoreOrderSnapshot={id:store.id,orderId:store.id,...store.data()};if((top&&top.exists)||(store&&store.exists))persistLiveTrackOrderAndRender();else{setTrackMapLoading(false);syncEmptyState({})}}).catch(()=>{})}catch(err){console.warn('Track live order listener failed',err);setTrackMapLoading(false)}}
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-layer="back-button"]')){
     window.location.href='menu.html';
@@ -2906,7 +2931,7 @@ document.addEventListener('click',e=>{
     window.location.href='tel:+919876543210';
   }
 },true);
-window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden)boot()});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe();window.clearInterval(trackLiveRefreshTimer)}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener()},700);
+window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;window.addEventListener('storage',e=>{if(['current_order','order_history','cbe_track_selected_order','restaurant_location','admin_restaurant_location','default_restaurant_location','active_delivery_location','rider_live_location'].includes(e.key))boot()});document.addEventListener('visibilitychange',()=>{if(!document.hidden){boot();refreshTrackStatusFromServer()}});window.addEventListener('pagehide',()=>{try{if(liveUnsubscribe)liveUnsubscribe()}catch{}try{if(trackServerStatusTimer)window.clearInterval(trackServerStatusTimer)}catch{}});boot();setTimeout(()=>{boot();startLiveOrderListener();startTrackServerStatusPolling()},700);
 })();
 </script>
 <script>
