@@ -46,21 +46,6 @@ function envText(env, ...names) {
   return '';
 }
 
-function safeEnvDiagnostics(env) {
-  const keys = Object.keys(env || {}).sort();
-  return {
-    ok: true,
-    visibleEnvKeys: keys,
-    hasRazorpayKeyId: Boolean(envText(env, 'RAZORPAY_KEY_ID')),
-    hasRazorpayKeySecret: Boolean(envText(env, 'RAZORPAY_KEY_SECRET')),
-    hasFirebaseProjectId: Boolean(envText(env, 'FIREBASE_PROJECT_ID')),
-    hasFirebaseServiceAccountJson: Boolean(envText(env, 'FIREBASE_SERVICE_ACCOUNT_JSON')),
-    hasAllowedOrigins: Boolean(envText(env, 'ALLOWED_ORIGINS')),
-    hasStoreId: Boolean(envText(env, 'STORE_ID')),
-    note: 'This endpoint shows only variable names/presence. It never returns secret values.'
-  };
-}
-
 function phone10(value) {
   const digits = text(value).replace(/\D/g, '');
   return digits.length > 10 ? digits.slice(-10) : digits;
@@ -518,7 +503,6 @@ export async function onRequest({ request, env }) {
     const url = new URL(request.url);
     const action = text(url.searchParams.get('action'));
     if (request.method === 'OPTIONS') return json({ ok: true }, 200, origin);
-    if (action === 'diag') return json(safeEnvDiagnostics(env), 200, origin);
     if (request.method === 'GET' && action === 'status') return await handleStatus(request, env, origin);
     if (request.method !== 'POST') return bad('Method not allowed.', 405, origin);
     if (action === 'create-order') return await handleCreateOrder(request, env, origin);
