@@ -27,6 +27,7 @@
   }
   let mapLibrePromise = null;
   let browserKeyPromise = null;
+  let styleObjectPromise = null;
   const ROUTE_CACHE = new Map();
 
 
@@ -74,6 +75,30 @@
   async function styleUrl() {
     const apiKey = await getBrowserKey();
     return withApiKey(getStyleUrlForTheme(getMapTheme()), apiKey);
+  }
+
+  function sanitizeOlaStyle(style) {
+    const cleaned = JSON.parse(JSON.stringify(style || {}));
+    const blocked = value => {
+      const text = String(value || "").toLowerCase();
+      return text.includes("3d_model") || text.includes("3d-model") || text.includes("building_3d") || text.includes("3d_building");
+    };
+    cleaned.layers = Array.isArray(cleaned.layers)
+      ? cleaned.layers.filter(layer => !blocked(layer.id) && !blocked(layer["source-layer"]))
+      : [];
+    return cleaned;
+  }
+
+  async function styleObject() {
+    if (styleObjectPromise) return styleObjectPromise;
+    styleObjectPromise = (async () => {
+      const url = await styleUrl();
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Ola style failed: ${response.status}`);
+      const style = await response.json();
+      return sanitizeOlaStyle(style);
+    })();
+    return styleObjectPromise;
   }
 
   async function transformRequest(url) {
@@ -439,7 +464,7 @@
   async function createMap(options) {
     const maplibregl = await loadMapLibre();
     await getBrowserKey();
-    const style = await styleUrl();
+    const style = await styleObject();
 
     const map = new maplibregl.Map({
       container: options.container,
@@ -493,6 +518,7 @@
     formatDistance,
     formatDuration,
     withApiKey,
+    styleObject,
     PROXY_URL,
     getMapTheme
   };
