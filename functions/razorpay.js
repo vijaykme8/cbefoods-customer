@@ -291,40 +291,23 @@ function statusRank(value) {
   return ORDER_STATUS_RANK[key] || 0;
 }
 
-function collectOrderStatuses(order) {
-  if (!order || typeof order !== 'object') return [];
-  return [
-    order.adminStatus,
-    order.orderStatus,
-    order.deliveryStatus,
-    order.riderStatus,
-    order.trackStatus,
-    order.liveStatus,
-    order.effectiveStatus,
-    order.status,
-    order.delivery?.status,
-    order.tracking?.status,
-    order.rider?.status
-  ].map(normalizeOrderStatus).filter(Boolean);
+const ORDER_STATUS_FIELD_PATHS = ['currentStatus', 'canonicalStatus', 'adminStatus', 'status', 'orderStatus', 'deliveryStatus', 'trackStatus', 'liveStatus', 'riderStatus', 'delivery.status', 'tracking.status', 'rider.status', 'effectiveStatus'];
+
+function readOrderStatusPath(order, path) {
+  return path.split('.').reduce((value, key) => value && typeof value === 'object' ? value[key] : undefined, order);
 }
 
-function pickBestOrderStatus(...orders) {
-  const statuses = orders.flatMap(collectOrderStatuses);
-  if (!statuses.length) return '';
-  return statuses.sort((a, b) => statusRank(b) - statusRank(a))[0] || statuses[0];
+function pickCanonicalOrderStatus(order) {
+  if (!order || typeof order !== 'object') return '';
+  for (const field of ORDER_STATUS_FIELD_PATHS) {
+    const value = normalizeOrderStatus(readOrderStatusPath(order, field));
+    if (value) return value;
+  }
+  return '';
 }
 
 function mergeOrderForStatus(topOrder, storeOrder) {
-  const merged = { ...(topOrder || {}), ...(storeOrder || {}) };
-  const primary = pickBestOrderStatus(topOrder, storeOrder, merged);
-  if (primary) {
-    merged.status = primary;
-    merged.orderStatus = primary;
-    merged.adminStatus = primary;
-    merged.deliveryStatus = primary;
-    merged.effectiveStatus = primary;
-  }
-  return merged;
+  return { ...(topOrder || {}), ...(storeOrder || {}) };
 }
 
 async function setDoc(env, docPath, data) {
