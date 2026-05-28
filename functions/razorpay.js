@@ -36,6 +36,31 @@ function text(value) {
   return value === null || value === undefined ? '' : String(value).trim();
 }
 
+
+function envText(env, ...names) {
+  for (const name of names) {
+    const value = env && env[name];
+    const cleaned = text(value);
+    if (cleaned) return cleaned;
+  }
+  return '';
+}
+
+function safeEnvDiagnostics(env) {
+  const keys = Object.keys(env || {}).sort();
+  return {
+    ok: true,
+    visibleEnvKeys: keys,
+    hasRazorpayKeyId: Boolean(envText(env, 'RAZORPAY_KEY_ID')),
+    hasRazorpayKeySecret: Boolean(envText(env, 'RAZORPAY_KEY_SECRET')),
+    hasFirebaseProjectId: Boolean(envText(env, 'FIREBASE_PROJECT_ID')),
+    hasFirebaseServiceAccountJson: Boolean(envText(env, 'FIREBASE_SERVICE_ACCOUNT_JSON')),
+    hasAllowedOrigins: Boolean(envText(env, 'ALLOWED_ORIGINS')),
+    hasStoreId: Boolean(envText(env, 'STORE_ID')),
+    note: 'This endpoint shows only variable names/presence. It never returns secret values.'
+  };
+}
+
 function phone10(value) {
   const digits = text(value).replace(/\D/g, '');
   return digits.length > 10 ? digits.slice(-10) : digits;
@@ -88,13 +113,15 @@ function constantEqual(a, b) {
 }
 
 async function verifyPaymentSignature(env, razorpayOrderId, paymentId, signature) {
-  const expected = await hmacHex(env.RAZORPAY_KEY_SECRET, `${razorpayOrderId}|${paymentId}`);
+  const secret = envText(env, 'RAZORPAY_KEY_SECRET');
+  const expected = await hmacHex(secret, `${razorpayOrderId}|${paymentId}`);
   return constantEqual(expected, signature);
 }
 
 async function verifyWebhookSignature(env, rawBody, signature) {
-  if (!env.RAZORPAY_WEBHOOK_SECRET) return false;
-  const expected = await hmacHex(env.RAZORPAY_WEBHOOK_SECRET, rawBody);
+  const webhookSecret = envText(env, 'RAZORPAY_WEBHOOK_SECRET');
+  if (!webhookSecret) return false;
+  const expected = await hmacHex(webhookSecret, rawBody);
   return constantEqual(expected, signature);
 }
 
@@ -239,8 +266,12 @@ async function findCheckoutIntentByRazorpayOrderId(env, razorpayOrderId) {
 }
 
 function razorpayAuth(env) {
-  if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) throw new Error('Razorpay keys are missing.');
-  return `Basic ${base64(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`)}`;
+  const keyId = envText(env, 'RAZORPAY_KEY_ID');
+  const keySecret = envText(env, 'RAZORPAY_KEY_SECRET');
+  if (!keyId || !keySecret) {
+    throw new Error('Razorpay keys are missing in Cloudflare Pages Functions runtime. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET as runtime variables/secrets for Preview, then redeploy.');
+  }
+  return `Basic ${base64(`${keyId}:${keySecret}`)}`;
 }
 
 async function createRazorpayOrder(env, payload) {
@@ -422,7 +453,7 @@ async function handleCreateOrder(request, env, origin) {
     updatedAt: nowIso()
   };
   await setDoc(env, `checkoutIntents/${checkoutId}`, intent);
-  return json({ ok: true, keyId: env.RAZORPAY_KEY_ID, checkoutId, orderId, razorpayOrderId: razorpayOrder.id, amount: amountPaise, currency: 'INR', receipt }, 200, origin);
+  return json({ ok: true, keyId: envText(env, 'RAZORPAY_KEY_ID'), checkoutId, orderId, razorpayOrderId: razorpayOrder.id, amount: amountPaise, currency: 'INR', receipt }, 200, origin);
 }
 
 async function handleFinalize(request, env, origin) {
@@ -487,11 +518,12 @@ export async function onRequest({ request, env }) {
     const url = new URL(request.url);
     const action = text(url.searchParams.get('action'));
     if (request.method === 'OPTIONS') return json({ ok: true }, 200, origin);
-    if (request.method === 'GET' && action === 'status') return handleStatus(request, env, origin);
+    if (action === 'diag') return json(safeEnvDiagnostics(env), 200, origin);
+    if (request.method === 'GET' && action === 'status') return await handleStatus(request, env, origin);
     if (request.method !== 'POST') return bad('Method not allowed.', 405, origin);
-    if (action === 'create-order') return handleCreateOrder(request, env, origin);
-    if (action === 'finalize') return handleFinalize(request, env, origin);
-    if (action === 'webhook') return handleWebhook(request, env, origin);
+    if (action === 'create-order') return await handleCreateOrder(request, env, origin);
+    if (action === 'finalize') return await handleFinalize(request, env, origin);
+    if (action === 'webhook') return await handleWebhook(request, env, origin);
     return bad('Unknown Razorpay action.', 404, origin);
   } catch (error) {
     return bad(error.message || 'Razorpay function failed.', 500, origin);
