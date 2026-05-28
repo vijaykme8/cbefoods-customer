@@ -246,15 +246,83 @@ async function findOrderByOrderId(env, collectionParentPath, orderId) {
   return null;
 }
 
+const ORDER_STATUS_RANK = {
+  cancelled: 100,
+  canceled: 100,
+  delivered: 95,
+  completed: 95,
+  reached: 88,
+  arrived: 88,
+  reached_customer: 88,
+  reached_location: 88,
+  at_customer: 88,
+  at_customer_location: 88,
+  picked_up: 80,
+  pickup_done: 80,
+  out_for_delivery: 80,
+  outfordelivery: 80,
+  on_the_way: 80,
+  on_way: 80,
+  onway: 80,
+  rider_started: 80,
+  preparing: 70,
+  cooking: 70,
+  food_preparing: 70,
+  in_kitchen: 70,
+  in_progress: 70,
+  ready: 68,
+  accepted: 60,
+  admin_accepted: 60,
+  confirmed_by_restaurant: 60,
+  confirmed: 50,
+  order_received: 50,
+  received: 50,
+  placed: 50,
+  paid: 45,
+  pending: 10
+};
+
+function normalizeOrderStatus(value) {
+  return text(value).toLowerCase().replace(/[\s-]+/g, '_');
+}
+
+function statusRank(value) {
+  const key = normalizeOrderStatus(value);
+  return ORDER_STATUS_RANK[key] || 0;
+}
+
+function collectOrderStatuses(order) {
+  if (!order || typeof order !== 'object') return [];
+  return [
+    order.adminStatus,
+    order.orderStatus,
+    order.deliveryStatus,
+    order.riderStatus,
+    order.trackStatus,
+    order.liveStatus,
+    order.effectiveStatus,
+    order.status,
+    order.delivery?.status,
+    order.tracking?.status,
+    order.rider?.status
+  ].map(normalizeOrderStatus).filter(Boolean);
+}
+
+function pickBestOrderStatus(...orders) {
+  const statuses = orders.flatMap(collectOrderStatuses);
+  if (!statuses.length) return '';
+  return statuses.sort((a, b) => statusRank(b) - statusRank(a))[0] || statuses[0];
+}
+
 function mergeOrderForStatus(topOrder, storeOrder) {
   const merged = { ...(topOrder || {}), ...(storeOrder || {}) };
-  const source = storeOrder || topOrder || merged;
-  const primary = text(source.adminStatus || source.orderStatus || source.deliveryStatus || source.riderStatus || source.trackStatus || source.status);
+  const primary = pickBestOrderStatus(topOrder, storeOrder, merged);
   if (primary) {
     merged.status = primary;
     merged.orderStatus = primary;
     merged.adminStatus = primary;
     merged.deliveryStatus = primary;
+    merged.effectiveStatus = primary;
   }
   return merged;
 }
