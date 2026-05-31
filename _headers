@@ -1,0 +1,21 @@
+
+/index.html
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/splash.html
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/*.html
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/sw.js
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/manifest.webmanifest
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/pwa-refresh.js
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+
+/portrait-lock.css
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0

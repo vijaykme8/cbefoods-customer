@@ -2,6 +2,12 @@
 
 <html lang="en">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta name="x5-orientation" content="portrait">
+<meta name="screen-orientation" content="portrait">
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
 <meta content="yes" name="apple-mobile-web-app-capable"/>
@@ -9,7 +15,7 @@
 <meta content="Tiffin CBE" name="apple-mobile-web-app-title"/>
 <meta content="#8806CE" name="theme-color"/>
 <title>Track Order - Coimbatore Foods</title>
-<link id="pwa-manifest" rel="manifest" href="./manifest.webmanifest"/>
+<link id="pwa-manifest" rel="manifest" href="./manifest.webmanifest?v=20260531_ios_refresh_portrait1"/>
 <link href="https://unpkg.com/maplibre-gl@5.9.0/dist/maplibre-gl.css" rel="stylesheet"/>
 <script>
   if (!localStorage.getItem('cust_auth')) {
@@ -1906,6 +1912,7 @@ body.track-map-fullscreen-open .track-map-fullscreen-back img{opacity:1!importan
 }
 
 </style>
+<link rel="stylesheet" href="./portrait-lock.css?v=20260531_ios_refresh_portrait1">
 </head>
 <body class="no-bottom-nav" data-bottom-nav="off">
 <main class="track-fullscreen-shell">
@@ -3016,5 +3023,6 @@ window.renderTrackMapPreview=boot;window.renderRestaurantCustomerCurve=boot;wind
 })();
 </script>
 
+<script src="./pwa-refresh.js?v=20260531_ios_refresh_portrait1" defer></script>
 </body>
 </html>

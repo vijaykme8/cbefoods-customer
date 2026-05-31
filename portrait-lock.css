@@ -1,0 +1,47 @@
+@media screen and (orientation: landscape) and (max-height: 540px) {
+  html,
+  body {
+    overflow: hidden !important;
+    background: #12130F !important;
+  }
+
+  body::before {
+    content: "Please rotate your phone";
+    position: fixed;
+    inset: 0;
+    z-index: 2147483646;
+    background: #12130F;
+    color: #FDFDFF;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 24px;
+    font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  body::after {
+    content: "This app is designed for portrait mode only.";
+    position: fixed;
+    left: 24px;
+    right: 24px;
+    top: calc(50% + 34px);
+    z-index: 2147483647;
+    color: rgba(253, 253, 255, 0.64);
+    text-align: center;
+    font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  body > * {
+    visibility: hidden !important;
+  }
+
+  body::before,
+  body::after {
+    visibility: visible !important;
+  }
+}
