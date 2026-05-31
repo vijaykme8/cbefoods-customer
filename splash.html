@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tiffin CBE">
+<meta name="theme-color" content="#12130F">
+<title>Opening</title>
+<link rel="manifest" id="pwa-manifest" href="./manifest.webmanifest">
+<link rel="preload" href="./assets/splash/logo-peparo-notext.svg" as="image">
+<link rel="preload" href="./assets/splash/peparo-text-logo.svg" as="image">
+<style>
+@font-face {
+  font-family: 'General Sans';
+  src: url('./fonts/GeneralSans/GeneralSans-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #12130F;
+  color: #FDFDFF;
+  font-family: 'General Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  touch-action: manipulation;
+  -webkit-text-size-adjust: 100%;
+  overscroll-behavior: none;
+}
+
+.splash-screen {
+  width: 100vw;
+  height: 100dvh;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, #31322D 0%, #12130F 100%),
+    linear-gradient(180deg, #F1F1F1 0%, #FFFFFF 100%);
+  display: grid;
+  place-items: center;
+}
+
+.splash-content {
+  width: min(342px, calc(100vw - 48px));
+  height: 225px;
+  margin-top: -95px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.splash-logo {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto;
+  margin: -10px 0;
+}
+
+.splash-wordmark {
+  width: 240px;
+  height: 75px;
+  object-fit: contain;
+  display: block;
+  flex: 0 0 auto;
+}
+
+.splash-fallback {
+  position: absolute;
+  left: 50%;
+  bottom: max(28px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  color: rgba(253, 253, 255, 0.46);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  opacity: 0;
+  animation: splashHint 0.25s ease 1.2s forwards;
+}
+
+@keyframes splashHint {
+  to { opacity: 1; }
+}
+
+@media (min-width: 700px) {
+  .splash-screen {
+    max-width: 430px;
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px rgba(253, 253, 255, 0.06);
+  }
+
+  body {
+    background: #050604;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .splash-logo,
+  .splash-wordmark {
+    animation: splashIn 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .splash-wordmark {
+    animation-delay: 0.08s;
+  }
+
+  @keyframes splashIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+</style>
+</head>
+<body>
+  <main class="splash-screen" aria-label="Opening app">
+    <section class="splash-content">
+      <img class="splash-logo" src="./assets/splash/logo-peparo-notext.svg" alt="">
+      <img class="splash-wordmark" src="./assets/splash/peparo-text-logo.svg" alt="Peparo">
+    </section>
+    <p class="splash-fallback">Opening...</p>
+  </main>
+
+<script>
+(function openAfterSplash() {
+  const SPLASH_DURATION = 2000;
+  const LOGIN_PAGE = "login.html";
+  const MENU_PAGE = "menu.html";
+
+  function hasCustomerSession() {
+    try {
+      return localStorage.getItem("cust_auth") === "1";
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function nextPage() {
+    return hasCustomerSession() ? MENU_PAGE : LOGIN_PAGE;
+  }
+
+  window.setTimeout(function () {
+    window.location.replace(nextPage());
+  }, SPLASH_DURATION);
+})();
+</script>
+<script id="cf-mobile-zoom-lock-script">
+  (function () {
+    if (window.__cfMobileZoomLock) return;
+    window.__cfMobileZoomLock = true;
+
+    let lastTouchEnd = 0;
+
+    document.addEventListener(
+      "touchend",
+      function (event) {
+        const now = Date.now();
+        if (now - lastTouchEnd <= 300) {
+          event.preventDefault();
+        }
+        lastTouchEnd = now;
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturestart",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+
+    document.addEventListener(
+      "gesturechange",
+      function (event) {
+        event.preventDefault();
+      },
+      { passive: false }
+    );
+  })();
+</script>
+</body>
+</html>

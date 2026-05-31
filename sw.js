@@ -1,10 +1,11 @@
-const CBE_CACHE_VERSION = '20260531_customer_app_icon1';
+const CBE_CACHE_VERSION = '20260531_customer_splash1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 const CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
 const PRECACHE_URLS = [
   './',
   './index.html',
+  './splash.html',
   './login.html',
   './menu.html',
   './cart.html',
@@ -12,6 +13,8 @@ const PRECACHE_URLS = [
   './track-fullscreen.html',
   './order_placed.html',
   './manifest.webmanifest',
+  './assets/splash/logo-peparo-notext.svg',
+  './assets/splash/peparo-text-logo.svg',
   './assets/icons/app-icon-192.png',
   './assets/icons/app-icon-512.png',
   './assets/icons/apple-touch-icon.png',

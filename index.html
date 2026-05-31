@@ -12,27 +12,7 @@
 
 <script>
 (function routeCustomerEntry() {
-  const LOGIN_PAGE = "login.html";
-  const MENU_PAGE = "menu.html";
-
-  function hasCustomerSession() {
-    try {
-      return localStorage.getItem("cust_auth") === "1";
-    } catch (_) {
-      return false;
-    }
-  }
-
-  function goTo(target) {
-    window.location.replace(target);
-  }
-
-  if (hasCustomerSession()) {
-    goTo(MENU_PAGE);
-    return;
-  }
-
-  goTo(LOGIN_PAGE);
+  window.location.replace("splash.html");
 })();
 </script>
 
@@ -113,10 +93,10 @@ body {
 </head>
 
 <body>
-  <main class="redirect-card" aria-label="Opening Coimbatore Foods">
-    <h1 class="redirect-title">Opening Coimbatore Foods</h1>
+  <main class="redirect-card" aria-label="Opening app">
+    <h1 class="redirect-title">Opening app</h1>
     <p class="redirect-copy">
-      If nothing happens, <a class="redirect-link" href="login.html">open login</a>.
+      If nothing happens, <a class="redirect-link" href="splash.html">open app</a>.
     </p>
   </main>
 
