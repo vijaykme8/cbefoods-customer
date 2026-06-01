@@ -1,10 +1,11 @@
-const CBE_CACHE_VERSION = '20260531_ios_refresh_portrait1';
+const CBE_CACHE_VERSION = '20260601_customer_haptics1';
 const STATIC_CACHE = `cbe-static-${CBE_CACHE_VERSION}`;
 const HTML_CACHE = `cbe-html-${CBE_CACHE_VERSION}`;
 const CACHE_PREFIXES = ['cbe-static-', 'cbe-html-', 'cbe-runtime-', 'cbe-map-', 'cbe-tiles-', 'maplibre-', 'ola-'];
 const PRECACHE_URLS = [
   './',
   './index.html',
+  './cf-haptics.js',
   './splash.html',
   './login.html',
   './menu.html',
